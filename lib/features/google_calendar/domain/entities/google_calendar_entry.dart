@@ -1,10 +1,10 @@
 import 'package:equatable/equatable.dart';
 
 class GoogleCalendarEntry extends Equatable {
-  const GoogleCalendarEntry({required this.title});
+  const GoogleCalendarEntry({required this.summary});
 
-  final String title;
+  final String summary;
 
   @override
-  List<Object?> get props => [title];
+  List<Object?> get props => [summary];
 }
