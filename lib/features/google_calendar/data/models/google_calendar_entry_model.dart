@@ -1,0 +1,14 @@
+import 'package:meta/meta.dart';
+import 'package:refocus_app/features/google_calendar/domain/entities/google_calendar_entry.dart';
+
+class GoogleCalendarEntryModel extends GoogleCalendarEntry {
+  const GoogleCalendarEntryModel({
+    required String summary,
+  }) : super(summary: summary);
+
+  factory GoogleCalendarEntryModel.fromJson(Map<String, dynamic> json) {
+    return GoogleCalendarEntryModel(
+      summary: json['summary'],
+    );
+  }
+}
