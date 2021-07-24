@@ -11,4 +11,10 @@ class GoogleCalendarEntryModel extends GoogleCalendarEntry {
       summary: json['summary'],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'summary': summary,
+    };
+  }
 }

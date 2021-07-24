@@ -2,9 +2,8 @@ import 'package:dartz/dartz.dart';
 import 'package:refocus_app/core/error/exceptions.dart';
 import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/core/network/network_info.dart';
-import 'package:refocus_app/features/google_calendar/data/datasources/google_calendar_local_data_source.dart';
-import 'package:refocus_app/features/google_calendar/data/datasources/google_calendar_remote_data_source.dart';
-import 'package:refocus_app/features/google_calendar/data/models/google_calendar_entry_model.dart';
+import 'package:refocus_app/features/google_calendar/data/datasources/gcal_local_data_source.dart';
+import 'package:refocus_app/features/google_calendar/data/datasources/gcal_remote_data_source.dart';
 import 'package:refocus_app/features/google_calendar/domain/entities/google_calendar_entry.dart';
 import 'package:refocus_app/features/google_calendar/domain/repositories/google_calendar_repository.dart';
 
@@ -14,8 +13,8 @@ class GoogleCalendarRepositoryImpl implements GoogleCalendarRepository {
       required this.localCalDataSource,
       required this.networkInfo});
 
-  final GoogleCalendarRemoteDataSource remoteCalDataSource;
-  final GoogleCalendarLocalDataSource localCalDataSource;
+  final GCalRemoteDataSource remoteCalDataSource;
+  final GCalLocalDataSource localCalDataSource;
   final NetworkInfo networkInfo;
 
   @override
