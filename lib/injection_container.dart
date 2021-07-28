@@ -12,7 +12,7 @@ import 'package:http/http.dart' as http;
 
 final sl = GetIt.instance;
 
-void init() {
+Future<void> init() async {
   //* Features - Get Calendar Entry
   // Bloc
   sl.registerFactory(
@@ -46,8 +46,8 @@ void init() {
 
   //* External
   // ignore: cascade_invocations
-  sl.registerLazySingletonAsync<SharedPreferences>(
-      SharedPreferences.getInstance);
+  final sharedPreferences = await SharedPreferences.getInstance();
+  sl.registerLazySingleton(() => sharedPreferences);
   sl.registerLazySingleton(() => http.Client()); // ignore: cascade_invocations
   // ignore: cascade_invocations
   sl.registerLazySingleton(() => InternetConnectionChecker());

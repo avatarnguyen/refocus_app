@@ -16,18 +16,16 @@ import 'package:refocus_app/app/app_bloc_observer.dart';
 
 import 'injection_container.dart' as di;
 
-void main() {
+void main() async {
   Bloc.observer = AppBlocObserver();
   FlutterError.onError = (details) {
     log(details.exceptionAsString(), stackTrace: details.stack);
   };
 
+  WidgetsFlutterBinding.ensureInitialized();
+  await di.init();
   runZonedGuarded(
-    () {
-      di.init();
-      WidgetsFlutterBinding.ensureInitialized();
-      runApp(const App());
-    },
+    () => runApp(const App()),
     (error, stackTrace) => log(error.toString(), stackTrace: stackTrace),
   );
 }
