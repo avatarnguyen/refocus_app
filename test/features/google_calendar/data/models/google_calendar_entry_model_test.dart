@@ -8,7 +8,7 @@ import '../../../../fixtures/fixture_reader.dart';
 
 void main() {
   final tGoogleCalendarEntryModel =
-      GoogleCalendarEntryModel(summary: 'Test Dev');
+      GoogleCalendarEntryModel(summary: 'Event Refocus App');
 
   test(
     'should be a subclass of GoogleCalendarEntry',

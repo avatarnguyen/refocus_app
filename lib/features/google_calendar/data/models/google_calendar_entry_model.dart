@@ -1,4 +1,3 @@
-import 'package:meta/meta.dart';
 import 'package:refocus_app/features/google_calendar/domain/entities/google_calendar_entry.dart';
 
 class GoogleCalendarEntryModel extends GoogleCalendarEntry {
@@ -7,14 +6,18 @@ class GoogleCalendarEntryModel extends GoogleCalendarEntry {
   }) : super(summary: summary);
 
   factory GoogleCalendarEntryModel.fromJson(Map<String, dynamic> json) {
+    final items = json['items'] as List;
+    final currentItem = items[0] as Map<String, dynamic>;
     return GoogleCalendarEntryModel(
-      summary: json['summary'],
+      summary: currentItem['summary'].toString(),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'summary': summary,
+      'items': [
+        {'summary': summary}
+      ]
     };
   }
 }
