@@ -1,12 +1,12 @@
 import 'package:get_it/get_it.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:refocus_app/core/network/network_info.dart';
-import 'package:refocus_app/features/google_calendar/data/datasources/gcal_local_data_source.dart';
-import 'package:refocus_app/features/google_calendar/data/datasources/gcal_remote_data_source.dart';
-import 'package:refocus_app/features/google_calendar/data/repositories/google_calendar_repository_impl.dart';
-import 'package:refocus_app/features/google_calendar/domain/repositories/google_calendar_repository.dart';
-import 'package:refocus_app/features/google_calendar/domain/usecases/get_all_calendar_entry.dart';
-import 'package:refocus_app/features/google_calendar/presentation/bloc/gcal_bloc.dart';
+import 'package:refocus_app/features/calendar/data/datasources/gcal_local_data_source.dart';
+import 'package:refocus_app/features/calendar/data/datasources/gcal_remote_data_source.dart';
+import 'package:refocus_app/features/calendar/data/repositories/google_calendar_repository_impl.dart';
+import 'package:refocus_app/features/calendar/domain/repositories/google_calendar_repository.dart';
+import 'package:refocus_app/features/calendar/domain/usecases/get_all_calendar_entry.dart';
+import 'package:refocus_app/features/calendar/presentation/bloc/gcal_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 

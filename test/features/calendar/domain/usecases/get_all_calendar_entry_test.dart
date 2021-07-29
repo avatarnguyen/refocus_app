@@ -2,9 +2,9 @@ import 'package:dartz/dartz.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:refocus_app/core/usecases/usecase.dart';
-import 'package:refocus_app/features/google_calendar/domain/entities/google_calendar_entry.dart';
-import 'package:refocus_app/features/google_calendar/domain/repositories/google_calendar_repository.dart';
-import 'package:refocus_app/features/google_calendar/domain/usecases/get_all_calendar_entry.dart';
+import 'package:refocus_app/features/calendar/domain/entities/google_calendar_entry.dart';
+import 'package:refocus_app/features/calendar/domain/repositories/google_calendar_repository.dart';
+import 'package:refocus_app/features/calendar/domain/usecases/get_all_calendar_entry.dart';
 
 class MockGoogleCalendarRepository extends Mock
     implements GoogleCalendarRepository {}

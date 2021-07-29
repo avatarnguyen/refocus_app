@@ -7,7 +7,7 @@
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:refocus_app/app/app.dart';
-import 'package:refocus_app/features/google_calendar/presentation/pages/calendar_page.dart';
+import 'package:refocus_app/features/calendar/presentation/pages/calendar_page.dart';
 
 void main() {
   group('App', () {

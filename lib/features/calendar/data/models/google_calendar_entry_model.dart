@@ -1,4 +1,4 @@
-import 'package:refocus_app/features/google_calendar/domain/entities/google_calendar_entry.dart';
+import 'package:refocus_app/features/calendar/domain/entities/google_calendar_entry.dart';
 
 class GoogleCalendarEntryModel extends GoogleCalendarEntry {
   const GoogleCalendarEntryModel({

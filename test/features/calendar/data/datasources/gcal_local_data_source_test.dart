@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:refocus_app/core/error/exceptions.dart';
-import 'package:refocus_app/features/google_calendar/data/datasources/gcal_local_data_source.dart';
-import 'package:refocus_app/features/google_calendar/data/models/google_calendar_entry_model.dart';
+import 'package:refocus_app/features/calendar/data/datasources/gcal_local_data_source.dart';
+import 'package:refocus_app/features/calendar/data/models/google_calendar_entry_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../fixtures/fixture_reader.dart';

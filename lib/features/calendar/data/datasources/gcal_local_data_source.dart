@@ -1,8 +1,9 @@
 import 'dart:convert';
 
-import 'package:refocus_app/core/error/exceptions.dart';
-import 'package:refocus_app/features/google_calendar/data/models/google_calendar_entry_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../../../core/error/exceptions.dart';
+import '../models/google_calendar_entry_model.dart';
 
 abstract class GCalLocalDataSource {
   /// Gets the cached [GoogleCalendarEntryModel] which was gotten the last time

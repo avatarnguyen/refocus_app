@@ -3,9 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/core/usecases/usecase.dart';
-import 'package:refocus_app/features/google_calendar/domain/entities/google_calendar_entry.dart';
-import 'package:refocus_app/features/google_calendar/domain/usecases/get_all_calendar_entry.dart';
-import 'package:refocus_app/features/google_calendar/presentation/bloc/gcal_bloc.dart';
+import 'package:refocus_app/features/calendar/domain/entities/google_calendar_entry.dart';
+import 'package:refocus_app/features/calendar/domain/usecases/get_all_calendar_entry.dart';
+import 'package:refocus_app/features/calendar/presentation/bloc/gcal_bloc.dart';
 
 class MockGetAllCalendarEntry extends Mock implements GetAllCalendarEntry {}
 

@@ -1,8 +1,9 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:refocus_app/core/error/exceptions.dart';
-import 'package:refocus_app/features/google_calendar/data/models/google_calendar_entry_model.dart';
+
+import '../../../../core/error/exceptions.dart';
+import '../models/google_calendar_entry_model.dart';
 
 abstract class GCalRemoteDataSource {
   /// Calls the google calendar api endpoint.

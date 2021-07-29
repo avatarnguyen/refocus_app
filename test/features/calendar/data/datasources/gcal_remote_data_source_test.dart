@@ -4,8 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
 import 'package:refocus_app/core/error/exceptions.dart';
-import 'package:refocus_app/features/google_calendar/data/datasources/gcal_remote_data_source.dart';
-import 'package:refocus_app/features/google_calendar/data/models/google_calendar_entry_model.dart';
+import 'package:refocus_app/features/calendar/data/datasources/gcal_remote_data_source.dart';
+import 'package:refocus_app/features/calendar/data/models/google_calendar_entry_model.dart';
 
 import '../../../../fixtures/fixture_reader.dart';
 

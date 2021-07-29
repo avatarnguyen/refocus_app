@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:refocus_app/features/google_calendar/data/models/google_calendar_entry_model.dart';
-import 'package:refocus_app/features/google_calendar/domain/entities/google_calendar_entry.dart';
+import 'package:refocus_app/features/calendar/data/models/google_calendar_entry_model.dart';
+import 'package:refocus_app/features/calendar/domain/entities/google_calendar_entry.dart';
 
 import '../../../../fixtures/fixture_reader.dart';
 

@@ -1,12 +1,10 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:refocus_app/features/google_calendar/presentation/bloc/gcal_bloc.dart';
-import 'package:refocus_app/features/google_calendar/presentation/widgets/widgets.dart';
 import 'package:styled_widget/styled_widget.dart';
 
 import '../../../../injection_container.dart';
+import '../bloc/gcal_bloc.dart';
+import '../widgets/widgets.dart';
 
 class CalendarPage extends StatelessWidget {
   const CalendarPage({Key? key}) : super(key: key);

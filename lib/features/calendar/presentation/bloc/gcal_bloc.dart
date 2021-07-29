@@ -4,8 +4,8 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/core/usecases/usecase.dart';
-import 'package:refocus_app/features/google_calendar/domain/entities/google_calendar_entry.dart';
-import 'package:refocus_app/features/google_calendar/domain/usecases/get_all_calendar_entry.dart';
+import 'package:refocus_app/features/calendar/domain/entities/google_calendar_entry.dart';
+import 'package:refocus_app/features/calendar/domain/usecases/get_all_calendar_entry.dart';
 
 part 'gcal_event.dart';
 part 'gcal_state.dart';

@@ -4,11 +4,11 @@ import 'package:mocktail/mocktail.dart';
 import 'package:refocus_app/core/error/exceptions.dart';
 import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/core/network/network_info.dart';
-import 'package:refocus_app/features/google_calendar/data/datasources/gcal_local_data_source.dart';
-import 'package:refocus_app/features/google_calendar/data/datasources/gcal_remote_data_source.dart';
-import 'package:refocus_app/features/google_calendar/data/models/google_calendar_entry_model.dart';
-import 'package:refocus_app/features/google_calendar/data/repositories/google_calendar_repository_impl.dart';
-import 'package:refocus_app/features/google_calendar/domain/entities/google_calendar_entry.dart';
+import 'package:refocus_app/features/calendar/data/datasources/gcal_local_data_source.dart';
+import 'package:refocus_app/features/calendar/data/datasources/gcal_remote_data_source.dart';
+import 'package:refocus_app/features/calendar/data/models/google_calendar_entry_model.dart';
+import 'package:refocus_app/features/calendar/data/repositories/google_calendar_repository_impl.dart';
+import 'package:refocus_app/features/calendar/domain/entities/google_calendar_entry.dart';
 
 class MockRemoteDataSource extends Mock implements GCalRemoteDataSource {}
 
