@@ -58,9 +58,12 @@ void main() {
   }
 
   group('getGoogleCalendarEntry', () {
-    final event = google_api.Event.fromJson(
-        json.decode(fixture('google_calendar_entry.json')));
-    final tGoogleCalendarEntryModel = GCalEventEntryModel(appointment: event);
+    final tGoogleCalendarEntryModel = GCalEventEntryModel(
+      subject: 'Event Refocus App',
+      id: '4okqcu9vna2ak7jt7545ndlp9n',
+      start: {'dateTime': '2021-07-19T16:45:00+02:00'},
+      end: {'dateTime': '2021-07-19T18:30:00+02:00'},
+    );
 
     final GCalEventEntry tGoogleCalendarEntry = tGoogleCalendarEntryModel;
     test(

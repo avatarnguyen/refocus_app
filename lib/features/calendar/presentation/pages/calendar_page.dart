@@ -44,7 +44,7 @@ class CalendarWidget extends StatelessWidget {
               );
             } else if (state is Loaded) {
               return MessageDisplay(
-                message: state.gCalEntry.appointment.summary ?? '',
+                message: state.gCalEntry.subject,
               );
             } else {
               return const MessageDisplay(

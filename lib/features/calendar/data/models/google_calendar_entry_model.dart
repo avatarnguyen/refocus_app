@@ -3,14 +3,52 @@ import 'package:googleapis/calendar/v3.dart' as google_api;
 
 class GCalEventEntryModel extends GCalEventEntry {
   const GCalEventEntryModel({
-    required google_api.Event appointment,
-  }) : super(appointment: appointment);
+    required id,
+    required subject,
+    colorId,
+    notes,
+    location,
+    recurrence,
+    recurringEventId,
+    start,
+    end,
+  }) : super(
+          id: id,
+          colorId: colorId,
+          notes: notes,
+          subject: subject,
+          location: location,
+          recurrence: recurrence,
+          recurringEventId: recurringEventId,
+          start: start,
+          end: end,
+        );
 
   factory GCalEventEntryModel.fromJson(Map<String, dynamic> json) {
     return GCalEventEntryModel(
-      appointment: google_api.Event.fromJson(json),
+      id: json['id'] ?? '',
+      subject: json['summary'] ?? '',
+      colorId: json['colorId'],
+      notes: json['description'],
+      location: json['location'],
+      recurrence: json['recurrence'],
+      recurringEventId: json['recurringEventId'],
+      start: json.containsKey('start') ? json['start'] : null,
+      end: json.containsKey('end') ? json['end'] : null,
     );
   }
 
-  Map<String, dynamic> toJson() => appointment.toJson();
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'colorId': colorId,
+      'notes': notes,
+      'subject': subject,
+      'location': location,
+      'recurrence': recurrence,
+      'recurringEventId': recurringEventId,
+      'start': start,
+      'end': end,
+    };
+  }
 }
