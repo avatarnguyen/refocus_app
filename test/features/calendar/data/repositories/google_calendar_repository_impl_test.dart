@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -8,7 +10,10 @@ import 'package:refocus_app/features/calendar/data/datasources/gcal_local_data_s
 import 'package:refocus_app/features/calendar/data/datasources/gcal_remote_data_source.dart';
 import 'package:refocus_app/features/calendar/data/models/google_calendar_entry_model.dart';
 import 'package:refocus_app/features/calendar/data/repositories/google_calendar_repository_impl.dart';
-import 'package:refocus_app/features/calendar/domain/entities/google_calendar_entry.dart';
+import 'package:refocus_app/features/calendar/domain/entities/gcal_event_entry.dart';
+import 'package:googleapis/calendar/v3.dart' as google_api;
+
+import '../../../../fixtures/fixture_reader.dart';
 
 class MockRemoteDataSource extends Mock implements GCalRemoteDataSource {}
 
@@ -53,10 +58,11 @@ void main() {
   }
 
   group('getGoogleCalendarEntry', () {
-    final tGoogleCalendarEntryModel =
-        GoogleCalendarEntryModel(summary: 'Test Dev');
+    final event = google_api.Event.fromJson(
+        json.decode(fixture('google_calendar_entry.json')));
+    final tGoogleCalendarEntryModel = GCalEventEntryModel(appointment: event);
 
-    final GoogleCalendarEntry tGoogleCalendarEntry = tGoogleCalendarEntryModel;
+    final GCalEventEntry tGoogleCalendarEntry = tGoogleCalendarEntryModel;
     test(
       'should check if the device is online',
       () {
@@ -65,7 +71,7 @@ void main() {
         when(() => mockRemoteDataSource.getAllRemoteCalendarEntries())
             .thenAnswer((_) async => tGoogleCalendarEntryModel);
         // act
-        repository.getAllCalendarEntries();
+        repository.getGoogleEventsData();
         // assert
         verify(() => mockNetworkInfo.isConnected);
       },
@@ -79,7 +85,7 @@ void main() {
           when(() => mockRemoteDataSource.getAllRemoteCalendarEntries())
               .thenAnswer((_) async => tGoogleCalendarEntryModel);
           // act
-          final result = await repository.getAllCalendarEntries();
+          final result = await repository.getGoogleEventsData();
           // assert
           verify(() => mockRemoteDataSource.getAllRemoteCalendarEntries());
           expect(result, equals(Right(tGoogleCalendarEntry)));
@@ -93,7 +99,7 @@ void main() {
           when(() => mockRemoteDataSource.getAllRemoteCalendarEntries())
               .thenAnswer((_) async => tGoogleCalendarEntryModel);
           // act
-          await repository.getAllCalendarEntries();
+          await repository.getGoogleEventsData();
           // assert
           verify(() => mockRemoteDataSource.getAllRemoteCalendarEntries());
           verify(() => mockLocalDataSource
@@ -108,7 +114,7 @@ void main() {
           when(() => mockRemoteDataSource.getAllRemoteCalendarEntries())
               .thenThrow(ServerException());
           // act
-          final result = await repository.getAllCalendarEntries();
+          final result = await repository.getGoogleEventsData();
           // assert
           verify(() => mockRemoteDataSource.getAllRemoteCalendarEntries());
           verifyZeroInteractions(mockLocalDataSource);
@@ -126,7 +132,7 @@ void main() {
           when(() => mockLocalDataSource.getLastCalendarEntry())
               .thenAnswer((_) async => tGoogleCalendarEntryModel);
           // act
-          final result = await repository.getAllCalendarEntries();
+          final result = await repository.getGoogleEventsData();
           // assert
           verifyZeroInteractions(mockRemoteDataSource);
           verify(() => mockLocalDataSource.getLastCalendarEntry());
@@ -141,7 +147,7 @@ void main() {
           when(() => mockLocalDataSource.getLastCalendarEntry())
               .thenThrow(CacheException());
           // act
-          final result = await repository.getAllCalendarEntries();
+          final result = await repository.getGoogleEventsData();
           // assert
           verifyZeroInteractions(mockRemoteDataSource);
           verify(() => mockLocalDataSource.getLastCalendarEntry());

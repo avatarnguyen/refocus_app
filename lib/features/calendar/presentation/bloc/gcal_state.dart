@@ -16,7 +16,7 @@ class Loading extends GcalState {}
 class Loaded extends GcalState {
   const Loaded({required this.gCalEntry});
 
-  final GoogleCalendarEntry gCalEntry;
+  final GCalEventEntry gCalEntry;
 
   @override
   List<Object> get props => [gCalEntry];

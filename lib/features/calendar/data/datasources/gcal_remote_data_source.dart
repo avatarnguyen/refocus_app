@@ -9,7 +9,7 @@ abstract class GCalRemoteDataSource {
   /// Calls the google calendar api endpoint.
   ///
   /// Throws a [ServerException] for all error codes.
-  Future<GoogleCalendarEntryModel> getAllRemoteCalendarEntries();
+  Future<GCalEventEntryModel> getAllRemoteCalendarEntries();
 }
 
 class HttpGCalRemoteDataSoure implements GCalRemoteDataSource {
@@ -18,7 +18,7 @@ class HttpGCalRemoteDataSoure implements GCalRemoteDataSource {
   final http.Client client;
 
   @override
-  Future<GoogleCalendarEntryModel> getAllRemoteCalendarEntries() async {
+  Future<GCalEventEntryModel> getAllRemoteCalendarEntries() async {
     var url = Uri.parse(
         'https://www.googleapis.com/calendar/v3/calendars/in558pn22g34uj8j769poaddpk@group.calendar.google.com/events?key=AIzaSyC-JYOakQBzGvadMpr8ji3zE_AhvZ3bq7k');
     final response = await client.get(
@@ -27,7 +27,7 @@ class HttpGCalRemoteDataSoure implements GCalRemoteDataSource {
     );
 
     if (response.statusCode == 200) {
-      return GoogleCalendarEntryModel.fromJson(json.decode(response.body));
+      return GCalEventEntryModel.fromJson(json.decode(response.body));
     } else {
       throw ServerException();
     }

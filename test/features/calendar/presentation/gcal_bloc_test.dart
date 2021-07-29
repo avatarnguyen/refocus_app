@@ -1,13 +1,18 @@
+import 'dart:convert';
+
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/core/usecases/usecase.dart';
-import 'package:refocus_app/features/calendar/domain/entities/google_calendar_entry.dart';
-import 'package:refocus_app/features/calendar/domain/usecases/get_all_calendar_entry.dart';
+import 'package:refocus_app/features/calendar/domain/entities/gcal_event_entry.dart';
+import 'package:refocus_app/features/calendar/domain/usecases/get_google_events.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/gcal_bloc.dart';
+import 'package:googleapis/calendar/v3.dart' as google_api;
 
-class MockGetAllCalendarEntry extends Mock implements GetAllCalendarEntry {}
+import '../../../fixtures/fixture_reader.dart';
+
+class MockGetAllCalendarEntry extends Mock implements GetGoogleEvents {}
 
 void main() {
   late GcalBloc bloc;
@@ -20,7 +25,9 @@ void main() {
   });
 
   group('GetAllGCalEntries', () {
-    final tGoogleCalendarEntry = GoogleCalendarEntry(summary: 'Test Dev');
+    final event = google_api.Event.fromJson(
+        json.decode(fixture('google_calendar_entry.json')));
+    final tGoogleCalendarEntry = GCalEventEntry(appointment: event);
 
     test(
       'should get data from getAllCalendarEntry usecase',

@@ -21,7 +21,7 @@ void main() {
   });
 
   group('getGCalEntry', () {
-    final tGCalEntryModel = GoogleCalendarEntryModel.fromJson(
+    final tGCalEntryModel = GCalEventEntryModel.fromJson(
         json.decode(fixture('google_calendar_entry.json')));
 
     var url = Uri.parse(

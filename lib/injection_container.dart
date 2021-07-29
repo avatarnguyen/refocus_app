@@ -4,8 +4,8 @@ import 'package:refocus_app/core/network/network_info.dart';
 import 'package:refocus_app/features/calendar/data/datasources/gcal_local_data_source.dart';
 import 'package:refocus_app/features/calendar/data/datasources/gcal_remote_data_source.dart';
 import 'package:refocus_app/features/calendar/data/repositories/google_calendar_repository_impl.dart';
-import 'package:refocus_app/features/calendar/domain/repositories/google_calendar_repository.dart';
-import 'package:refocus_app/features/calendar/domain/usecases/get_all_calendar_entry.dart';
+import 'package:refocus_app/features/calendar/domain/repositories/gcal_repository.dart';
+import 'package:refocus_app/features/calendar/domain/usecases/get_google_events.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/gcal_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -21,16 +21,15 @@ Future<void> init() async {
 
   // Use cases
   // ignore: cascade_invocations
-  sl.registerLazySingleton(() => GetAllCalendarEntry(sl()));
+  sl.registerLazySingleton(() => GetGoogleEvents(sl()));
 
   // Repository
   // ignore: cascade_invocations
-  sl.registerLazySingleton<GoogleCalendarRepository>(
-      () => GoogleCalendarRepositoryImpl(
-            remoteCalDataSource: sl(),
-            localCalDataSource: sl(),
-            networkInfo: sl(),
-          ));
+  sl.registerLazySingleton<GCalRepository>(() => GoogleCalendarRepositoryImpl(
+        remoteCalDataSource: sl(),
+        localCalDataSource: sl(),
+        networkInfo: sl(),
+      ));
 
   // Data sources
   // ignore: cascade_invocations

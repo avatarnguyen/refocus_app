@@ -4,8 +4,8 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/core/usecases/usecase.dart';
-import 'package:refocus_app/features/calendar/domain/entities/google_calendar_entry.dart';
-import 'package:refocus_app/features/calendar/domain/usecases/get_all_calendar_entry.dart';
+import 'package:refocus_app/features/calendar/domain/entities/gcal_event_entry.dart';
+import 'package:refocus_app/features/calendar/domain/usecases/get_google_events.dart';
 
 part 'gcal_event.dart';
 part 'gcal_state.dart';
@@ -18,7 +18,7 @@ const String invalidInputFailureMessage =
 class GcalBloc extends Bloc<GcalEvent, GcalState> {
   GcalBloc({required this.getAllCalendarEntry}) : super(GcalInitial());
 
-  final GetAllCalendarEntry getAllCalendarEntry;
+  final GetGoogleEvents getAllCalendarEntry;
 
   @override
   Stream<GcalState> mapEventToState(

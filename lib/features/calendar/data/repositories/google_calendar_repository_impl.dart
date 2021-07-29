@@ -4,10 +4,10 @@ import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/core/network/network_info.dart';
 import 'package:refocus_app/features/calendar/data/datasources/gcal_local_data_source.dart';
 import 'package:refocus_app/features/calendar/data/datasources/gcal_remote_data_source.dart';
-import 'package:refocus_app/features/calendar/domain/entities/google_calendar_entry.dart';
-import 'package:refocus_app/features/calendar/domain/repositories/google_calendar_repository.dart';
+import 'package:refocus_app/features/calendar/domain/entities/gcal_event_entry.dart';
+import 'package:refocus_app/features/calendar/domain/repositories/gcal_repository.dart';
 
-class GoogleCalendarRepositoryImpl implements GoogleCalendarRepository {
+class GoogleCalendarRepositoryImpl implements GCalRepository {
   GoogleCalendarRepositoryImpl(
       {required this.remoteCalDataSource,
       required this.localCalDataSource,
@@ -18,7 +18,7 @@ class GoogleCalendarRepositoryImpl implements GoogleCalendarRepository {
   final NetworkInfo networkInfo;
 
   @override
-  Future<Either<Failure, GoogleCalendarEntry>> getAllCalendarEntries() async {
+  Future<Either<Failure, GCalEventEntry>> getGoogleEventsData() async {
     if (await networkInfo.isConnected) {
       try {
         final remoteGCalEntry =

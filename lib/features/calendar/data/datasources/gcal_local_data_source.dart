@@ -6,13 +6,13 @@ import '../../../../core/error/exceptions.dart';
 import '../models/google_calendar_entry_model.dart';
 
 abstract class GCalLocalDataSource {
-  /// Gets the cached [GoogleCalendarEntryModel] which was gotten the last time
+  /// Gets the cached [GCalEventEntryModel] which was gotten the last time
   /// the user had an internet connection.  ///
   /// Throws a [CacheException] for all error codes.
-  Future<GoogleCalendarEntryModel> getLastCalendarEntry();
+  Future<GCalEventEntryModel> getLastCalendarEntry();
 
   Future<void>? cacheGoogleCalendarEntry(
-      GoogleCalendarEntryModel calendarEntryToCache);
+      GCalEventEntryModel calendarEntryToCache);
 }
 
 const cachedGCalEntry = 'CACHED_GCAL_ENTRY';
@@ -23,12 +23,12 @@ class SharedPrefGCalLocalDataSource implements GCalLocalDataSource {
   final SharedPreferences sharedPreferences;
 
   @override
-  Future<GoogleCalendarEntryModel> getLastCalendarEntry() {
+  Future<GCalEventEntryModel> getLastCalendarEntry() {
     final jsonString = sharedPreferences.getString(cachedGCalEntry);
     if (jsonString != null) {
       // Future which is immediately completed
       return Future.value(
-          GoogleCalendarEntryModel.fromJson(json.decode(jsonString)));
+          GCalEventEntryModel.fromJson(json.decode(jsonString)));
     } else {
       throw CacheException();
     }
@@ -36,7 +36,7 @@ class SharedPrefGCalLocalDataSource implements GCalLocalDataSource {
 
   @override
   Future<void>? cacheGoogleCalendarEntry(
-      GoogleCalendarEntryModel calendarEntryToCache) {
+      GCalEventEntryModel calendarEntryToCache) {
     sharedPreferences.setString(
       cachedGCalEntry,
       json.encode(calendarEntryToCache.toJson()),

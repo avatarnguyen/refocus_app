@@ -6,6 +6,7 @@ import 'package:refocus_app/core/error/exceptions.dart';
 import 'package:refocus_app/features/calendar/data/datasources/gcal_local_data_source.dart';
 import 'package:refocus_app/features/calendar/data/models/google_calendar_entry_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:googleapis/calendar/v3.dart' as google_api;
 
 import '../../../../fixtures/fixture_reader.dart';
 
@@ -23,7 +24,7 @@ void main() {
   });
 
   group('getLastGCalEntry', () {
-    final tGCalEntryModel = GoogleCalendarEntryModel.fromJson(
+    final tGCalEntryModel = GCalEventEntryModel.fromJson(
         json.decode(fixture('google_calendar_entry_cached.json')));
     test(
       'should return calendar entry form SharedPreferences when there is one in cache',
@@ -53,7 +54,10 @@ void main() {
   });
 
   group('cacheGCalEntry', () {
-    final tGCalEntryModel = GoogleCalendarEntryModel(summary: 'Test Dev');
+    final event = google_api.Event.fromJson(
+        json.decode(fixture('google_calendar_entry.json')));
+    final tGoogleCalendarEntryModel = GCalEventEntryModel(appointment: event);
+
     test(
       'should call SharedPreferences to cache the data',
       () {
@@ -61,9 +65,9 @@ void main() {
         when(() => mockSharedPreferences.setString(any(), any()))
             .thenAnswer((_) async => true);
         // act
-        dataSource.cacheGoogleCalendarEntry(tGCalEntryModel);
+        dataSource.cacheGoogleCalendarEntry(tGoogleCalendarEntryModel);
         // assert
-        final expectedJsonString = json.encode(tGCalEntryModel);
+        final expectedJsonString = json.encode(tGoogleCalendarEntryModel);
         verify(() => mockSharedPreferences.setString(
             cachedGCalEntry, expectedJsonString));
       },

@@ -7,7 +7,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:refocus_app/features/google_calendar/presentation/pages/calendar_page.dart';
+import 'package:refocus_app/features/calendar/presentation/pages/calendar_page.dart';
 import 'package:refocus_app/l10n/l10n.dart';
 
 class App extends StatelessWidget {
