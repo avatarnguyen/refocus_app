@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:styled_widget/styled_widget.dart';
+import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 import '../../../../injection_container.dart';
 import '../bloc/gcal_bloc.dart';
@@ -43,8 +44,17 @@ class CalendarWidget extends StatelessWidget {
                 message: state.message,
               );
             } else if (state is Loaded) {
-              return MessageDisplay(
-                message: state.gCalEntry.subject,
+              print(state.calendarData);
+              return Container(
+                height: 700,
+                child: SfCalendar(
+                  view: CalendarView.month,
+                  dataSource: state.calendarData,
+                  monthViewSettings: const MonthViewSettings(
+                    appointmentDisplayMode:
+                        MonthAppointmentDisplayMode.appointment,
+                  ),
+                ).center(),
               );
             } else {
               return const MessageDisplay(

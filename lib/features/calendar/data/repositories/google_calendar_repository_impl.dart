@@ -4,7 +4,7 @@ import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/core/network/network_info.dart';
 import 'package:refocus_app/features/calendar/data/datasources/gcal_local_data_source.dart';
 import 'package:refocus_app/features/calendar/data/datasources/gcal_remote_data_source.dart';
-import 'package:refocus_app/features/calendar/domain/entities/gcal_event_entry.dart';
+import 'package:refocus_app/features/calendar/domain/entities/calendar_datasource.dart';
 import 'package:refocus_app/features/calendar/domain/repositories/gcal_repository.dart';
 
 class GoogleCalendarRepositoryImpl implements GCalRepository {
@@ -18,22 +18,24 @@ class GoogleCalendarRepositoryImpl implements GCalRepository {
   final NetworkInfo networkInfo;
 
   @override
-  Future<Either<Failure, GCalEventEntry>> getGoogleEventsData() async {
+  Future<Either<Failure, CalendarData>> getGoogleEventsData() async {
     if (await networkInfo.isConnected) {
       try {
-        final remoteGCalEntry =
-            await remoteCalDataSource.getAllRemoteCalendarEntries();
+        final remoteGCalEntries =
+            await remoteCalDataSource.getRemoteGoogleEventsData();
+        print('remoteGCalEntries ${remoteGCalEntries.length}');
+        await localCalDataSource.cacheGoogleCalendarEntry(remoteGCalEntries);
 
-        await localCalDataSource.cacheGoogleCalendarEntry(remoteGCalEntry);
-
-        return Right(remoteGCalEntry);
+        final calendarData = CalendarData(events: remoteGCalEntries);
+        print('Repository Impl: ${calendarData.appointments?.length}');
+        return Right(calendarData);
       } on ServerException {
         return Left(ServerFailure());
       }
     } else {
       try {
         final localGCalEntry = await localCalDataSource.getLastCalendarEntry();
-        return Right(localGCalEntry);
+        return Right(CalendarData(events: localGCalEntry));
       } on CacheException {
         return Left(CacheFailure());
       }

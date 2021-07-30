@@ -8,8 +8,9 @@ import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/core/network/network_info.dart';
 import 'package:refocus_app/features/calendar/data/datasources/gcal_local_data_source.dart';
 import 'package:refocus_app/features/calendar/data/datasources/gcal_remote_data_source.dart';
-import 'package:refocus_app/features/calendar/data/models/google_calendar_entry_model.dart';
+import 'package:refocus_app/features/calendar/data/models/gcal_event_entry_model.dart';
 import 'package:refocus_app/features/calendar/data/repositories/google_calendar_repository_impl.dart';
+import 'package:refocus_app/features/calendar/domain/entities/calendar_datasource.dart';
 import 'package:refocus_app/features/calendar/domain/entities/gcal_event_entry.dart';
 import 'package:googleapis/calendar/v3.dart' as google_api;
 
@@ -61,8 +62,9 @@ void main() {
     final tGoogleCalendarEntryModel = GCalEventEntryModel(
       subject: 'Event Refocus App',
       id: '4okqcu9vna2ak7jt7545ndlp9n',
-      start: {'dateTime': '2021-07-19T16:45:00+02:00'},
-      end: {'dateTime': '2021-07-19T18:30:00+02:00'},
+      start: DateTime.parse('2021-07-19T16:45:00+02:00'),
+      end: DateTime.parse('2021-07-19T18:30:00+02:00'),
+      organizer: 'Test Dev',
     );
 
     final GCalEventEntry tGoogleCalendarEntry = tGoogleCalendarEntryModel;
@@ -71,8 +73,8 @@ void main() {
       () {
         // arrange
         when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => true);
-        when(() => mockRemoteDataSource.getAllRemoteCalendarEntries())
-            .thenAnswer((_) async => tGoogleCalendarEntryModel);
+        when(() => mockRemoteDataSource.getRemoteGoogleEventsData())
+            .thenAnswer((_) async => [tGoogleCalendarEntryModel]);
         // act
         repository.getGoogleEventsData();
         // assert
@@ -85,13 +87,18 @@ void main() {
         'should return remote data when the call to remote data source is successful',
         () async {
           // arrange
-          when(() => mockRemoteDataSource.getAllRemoteCalendarEntries())
-              .thenAnswer((_) async => tGoogleCalendarEntryModel);
+          when(() => mockRemoteDataSource.getRemoteGoogleEventsData())
+              .thenAnswer((_) async => [tGoogleCalendarEntryModel]);
           // act
           final result = await repository.getGoogleEventsData();
           // assert
-          verify(() => mockRemoteDataSource.getAllRemoteCalendarEntries());
-          expect(result, equals(Right(tGoogleCalendarEntry)));
+          verify(() => mockRemoteDataSource.getRemoteGoogleEventsData());
+
+          expect(result, isA<Right<Failure, CalendarData>>());
+
+          final resultSubject = result.fold((l) => l, (r) => r);
+          expect((resultSubject as CalendarData).appointments,
+              equals([tGoogleCalendarEntry]));
         },
       );
 
@@ -99,14 +106,14 @@ void main() {
         'should cache the data locally when the call to remote data source is successful',
         () async {
           // arrange
-          when(() => mockRemoteDataSource.getAllRemoteCalendarEntries())
-              .thenAnswer((_) async => tGoogleCalendarEntryModel);
+          when(() => mockRemoteDataSource.getRemoteGoogleEventsData())
+              .thenAnswer((_) async => [tGoogleCalendarEntryModel]);
           // act
           await repository.getGoogleEventsData();
           // assert
-          verify(() => mockRemoteDataSource.getAllRemoteCalendarEntries());
+          verify(() => mockRemoteDataSource.getRemoteGoogleEventsData());
           verify(() => mockLocalDataSource
-              .cacheGoogleCalendarEntry(tGoogleCalendarEntryModel));
+              .cacheGoogleCalendarEntry([tGoogleCalendarEntryModel]));
         },
       );
 
@@ -114,12 +121,12 @@ void main() {
         'should return server failure when the call to remote data source is unsuccessful',
         () async {
           // arrange
-          when(() => mockRemoteDataSource.getAllRemoteCalendarEntries())
+          when(() => mockRemoteDataSource.getRemoteGoogleEventsData())
               .thenThrow(ServerException());
           // act
           final result = await repository.getGoogleEventsData();
           // assert
-          verify(() => mockRemoteDataSource.getAllRemoteCalendarEntries());
+          verify(() => mockRemoteDataSource.getRemoteGoogleEventsData());
           verifyZeroInteractions(mockLocalDataSource);
 
           expect(result, equals(Left(ServerFailure())));
@@ -133,13 +140,21 @@ void main() {
         () async {
           // arrange
           when(() => mockLocalDataSource.getLastCalendarEntry())
-              .thenAnswer((_) async => tGoogleCalendarEntryModel);
+              .thenAnswer((_) async => [tGoogleCalendarEntryModel]);
           // act
           final result = await repository.getGoogleEventsData();
           // assert
+
           verifyZeroInteractions(mockRemoteDataSource);
           verify(() => mockLocalDataSource.getLastCalendarEntry());
-          expect(result, equals(Right(tGoogleCalendarEntry)));
+
+          expect(result, isA<Right<Failure, CalendarData>>());
+
+          final resultSubject = result.fold((l) => l, (r) => r);
+          expect((resultSubject as CalendarData).appointments,
+              equals([tGoogleCalendarEntry]));
+          // expect(result,
+          //     equals(Right(CalendarData(events: [tGoogleCalendarEntry]))));
         },
       );
 

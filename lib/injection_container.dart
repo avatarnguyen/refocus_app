@@ -34,7 +34,7 @@ Future<void> init() async {
   // Data sources
   // ignore: cascade_invocations
   sl.registerLazySingleton<GCalRemoteDataSource>(
-      () => HttpGCalRemoteDataSoure(client: sl()));
+      () => GoogleAPIGCalRemoteDataSoure(client: sl()));
   // ignore: cascade_invocations
   sl.registerLazySingleton<GCalLocalDataSource>(
       () => SharedPrefGCalLocalDataSource(sharedPreferences: sl()));

@@ -1,5 +1,15 @@
 {
- "items": [
-  {"summary": "Event Refocus App"}
- ]
+ "id": "4okqcu9vna2ak7jt7545ndlp9n",
+ "summary": "Event Refocus App",
+ "organizer": {
+  "email": "in558pn22g34uj8j769poaddpk@group.calendar.google.com",
+  "displayName": "Test Dev",
+  "self": true
+ },
+ "start": {
+  "dateTime": "2021-07-19T16:45:00+02:00"
+ },
+ "end": {
+  "dateTime": "2021-07-19T18:30:00+02:00"
+ }
 }

@@ -3,16 +3,16 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../core/error/exceptions.dart';
-import '../models/google_calendar_entry_model.dart';
+import '../models/gcal_event_entry_model.dart';
 
 abstract class GCalLocalDataSource {
   /// Gets the cached [GCalEventEntryModel] which was gotten the last time
   /// the user had an internet connection.  ///
   /// Throws a [CacheException] for all error codes.
-  Future<GCalEventEntryModel> getLastCalendarEntry();
+  Future<List<GCalEventEntryModel>> getLastCalendarEntry();
 
   Future<void>? cacheGoogleCalendarEntry(
-      GCalEventEntryModel calendarEntryToCache);
+      List<GCalEventEntryModel> calendarEntryToCache);
 }
 
 const cachedGCalEntry = 'CACHED_GCAL_ENTRY';
@@ -23,12 +23,13 @@ class SharedPrefGCalLocalDataSource implements GCalLocalDataSource {
   final SharedPreferences sharedPreferences;
 
   @override
-  Future<GCalEventEntryModel> getLastCalendarEntry() {
-    final jsonString = sharedPreferences.getString(cachedGCalEntry);
-    if (jsonString != null) {
-      // Future which is immediately completed
-      return Future.value(
-          GCalEventEntryModel.fromJson(json.decode(jsonString)));
+  Future<List<GCalEventEntryModel>> getLastCalendarEntry() {
+    final jsonListString = sharedPreferences.getStringList(cachedGCalEntry);
+
+    if (jsonListString != null) {
+      return Future.value(jsonListString
+          .map((item) => GCalEventEntryModel.fromJson(json.decode(item)))
+          .toList());
     } else {
       throw CacheException();
     }
@@ -36,10 +37,10 @@ class SharedPrefGCalLocalDataSource implements GCalLocalDataSource {
 
   @override
   Future<void>? cacheGoogleCalendarEntry(
-      GCalEventEntryModel calendarEntryToCache) {
-    sharedPreferences.setString(
+      List<GCalEventEntryModel> calendarEntryToCache) {
+    sharedPreferences.setStringList(
       cachedGCalEntry,
-      json.encode(calendarEntryToCache.toJson()),
+      calendarEntryToCache.map((item) => json.encode(item.toJson())).toList(),
     );
   }
 }

@@ -14,12 +14,12 @@ class Empty extends GcalState {}
 class Loading extends GcalState {}
 
 class Loaded extends GcalState {
-  const Loaded({required this.gCalEntry});
+  const Loaded({required this.calendarData});
 
-  final GCalEventEntry gCalEntry;
+  final CalendarData calendarData;
 
   @override
-  List<Object> get props => [gCalEntry];
+  List<Object> get props => (calendarData.props.map((e) => e!).toList());
 }
 
 class Error extends GcalState {

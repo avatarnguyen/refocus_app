@@ -4,7 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/core/usecases/usecase.dart';
-import 'package:refocus_app/features/calendar/domain/entities/gcal_event_entry.dart';
+import 'package:refocus_app/features/calendar/domain/entities/calendar_datasource.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/get_google_events.dart';
 
 part 'gcal_event.dart';
@@ -25,12 +25,11 @@ class GcalBloc extends Bloc<GcalEvent, GcalState> {
     GcalEvent event,
   ) async* {
     if (event is GetAllCalendarEntries) {
-      print("Event is GetAllCalendarEntries");
       yield Loading();
       final failureOrEntry = await getAllCalendarEntry(NoParams());
       yield failureOrEntry.fold(
         (failure) => Error(message: _mapFailureToMessage(failure)),
-        (entry) => Loaded(gCalEntry: entry),
+        (entry) => Loaded(calendarData: entry),
       );
     }
   }

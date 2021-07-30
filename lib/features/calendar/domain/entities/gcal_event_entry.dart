@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:googleapis/calendar/v3.dart' as google_api;
 
 class GCalEventEntry extends Equatable {
   const GCalEventEntry({
@@ -12,6 +11,8 @@ class GCalEventEntry extends Equatable {
     this.recurringEventId,
     this.start,
     this.end,
+    this.organizer,
+    this.timeZone,
   });
 
   final String id;
@@ -21,8 +22,10 @@ class GCalEventEntry extends Equatable {
   final String? location;
   final List<String>? recurrence;
   final String? recurringEventId;
-  final Map<String, dynamic>? start;
-  final Map<String, dynamic>? end;
+  final DateTime? start;
+  final DateTime? end;
+  final String? organizer;
+  final String? timeZone;
 
   @override
   List<Object?> get props => [
@@ -34,6 +37,8 @@ class GCalEventEntry extends Equatable {
         recurrence,
         recurringEventId,
         start,
-        end
+        end,
+        organizer,
+        timeZone,
       ];
 }

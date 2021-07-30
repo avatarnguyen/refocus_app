@@ -1,16 +1,12 @@
-import 'dart:convert';
-
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/core/usecases/usecase.dart';
+import 'package:refocus_app/features/calendar/domain/entities/calendar_datasource.dart';
 import 'package:refocus_app/features/calendar/domain/entities/gcal_event_entry.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/get_google_events.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/gcal_bloc.dart';
-import 'package:googleapis/calendar/v3.dart' as google_api;
-
-import '../../../fixtures/fixture_reader.dart';
 
 class MockGetAllCalendarEntry extends Mock implements GetGoogleEvents {}
 
@@ -28,15 +24,16 @@ void main() {
     final tGoogleCalendarEntry = GCalEventEntry(
       subject: 'Event Refocus App',
       id: '4okqcu9vna2ak7jt7545ndlp9n',
-      start: {'dateTime': '2021-07-19T16:45:00+02:00'},
-      end: {'dateTime': '2021-07-19T18:30:00+02:00'},
+      start: DateTime.parse('2021-07-19T16:45:00+02:00'),
+      end: DateTime.parse('2021-07-19T18:30:00+02:00'),
+      organizer: 'Test Dev',
     );
     test(
       'should get data from getAllCalendarEntry usecase',
       () async {
         // arrange
-        when(() => mockGetAllCalendarEntry(NoParams()))
-            .thenAnswer((_) async => Right(tGoogleCalendarEntry));
+        when(() => mockGetAllCalendarEntry(NoParams())).thenAnswer(
+            (_) async => Right(CalendarData(events: [tGoogleCalendarEntry])));
         // act
         bloc.add(GetAllCalendarEntries());
         await untilCalled(() => mockGetAllCalendarEntry(NoParams()));
@@ -49,14 +46,14 @@ void main() {
       'should emit [Loading, Loaded] when data is gotten successful',
       () {
         // arrange
-        when(() => mockGetAllCalendarEntry(NoParams()))
-            .thenAnswer((_) async => Right(tGoogleCalendarEntry));
+        when(() => mockGetAllCalendarEntry(NoParams())).thenAnswer(
+            (_) async => Right(CalendarData(events: [tGoogleCalendarEntry])));
         // assert later
         final expected = [
-          // GcalInitial(),
           Loading(),
-          Loaded(gCalEntry: tGoogleCalendarEntry),
+          Loaded(calendarData: CalendarData(events: [tGoogleCalendarEntry])),
         ];
+        expectLater(bloc.stream.asBroadcastStream(), emitsThrough(Loading()));
         expectLater(bloc.stream.asBroadcastStream(), emitsInOrder(expected));
         // act
         bloc.add(GetAllCalendarEntries());
