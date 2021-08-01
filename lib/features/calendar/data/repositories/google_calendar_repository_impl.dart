@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:injectable/injectable.dart';
 import 'package:refocus_app/core/error/exceptions.dart';
 import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/core/network/network_info.dart';
@@ -7,6 +8,7 @@ import 'package:refocus_app/features/calendar/data/datasources/gcal_remote_data_
 import 'package:refocus_app/features/calendar/domain/entities/calendar_datasource.dart';
 import 'package:refocus_app/features/calendar/domain/repositories/gcal_repository.dart';
 
+@LazySingleton(as: GCalRepository)
 class GoogleCalendarRepositoryImpl implements GCalRepository {
   GoogleCalendarRepositoryImpl(
       {required this.remoteCalDataSource,

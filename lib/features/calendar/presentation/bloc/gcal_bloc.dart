@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:injectable/injectable.dart';
 import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/core/usecases/usecase.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_datasource.dart';
@@ -15,6 +16,7 @@ const String cacheFailureMessage = 'Cache Failure';
 const String invalidInputFailureMessage =
     'Invalid Input - The number must be a positive integer or zero.';
 
+@injectable
 class GcalBloc extends Bloc<GcalEvent, GcalState> {
   GcalBloc({required this.getAllCalendarEntry}) : super(GcalInitial());
 

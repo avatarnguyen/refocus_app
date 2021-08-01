@@ -13,8 +13,7 @@ import 'package:flutter/widgets.dart';
 
 import 'package:refocus_app/app/app.dart';
 import 'package:refocus_app/app/app_bloc_observer.dart';
-
-import 'injection_container.dart' as di;
+import 'package:refocus_app/injection.dart';
 
 void main() async {
   Bloc.observer = AppBlocObserver();
@@ -23,7 +22,7 @@ void main() async {
   };
 
   WidgetsFlutterBinding.ensureInitialized();
-  await di.init();
+  configureDependencies(Env.dev);
   runZonedGuarded(
     () => runApp(const App()),
     (error, stackTrace) => log(error.toString(), stackTrace: stackTrace),

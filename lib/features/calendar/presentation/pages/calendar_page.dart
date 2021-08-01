@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:refocus_app/injection.dart';
 import 'package:styled_widget/styled_widget.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
-import '../../../../injection_container.dart';
 import '../bloc/gcal_bloc.dart';
 import '../widgets/widgets.dart';
 
@@ -13,7 +13,7 @@ class CalendarPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<GcalBloc>(
-      create: (context) => sl<GcalBloc>(),
+      create: (context) => getIt<GcalBloc>(),
       child: const CalendarWidget(),
     );
   }
@@ -44,7 +44,6 @@ class CalendarWidget extends StatelessWidget {
                 message: state.message,
               );
             } else if (state is Loaded) {
-              print(state.calendarData);
               return Container(
                 height: 700,
                 child: SfCalendar(

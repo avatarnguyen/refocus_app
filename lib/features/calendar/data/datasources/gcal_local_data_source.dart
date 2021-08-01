@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../core/error/exceptions.dart';
@@ -17,6 +18,7 @@ abstract class GCalLocalDataSource {
 
 const cachedGCalEntry = 'CACHED_GCAL_ENTRY';
 
+@LazySingleton(as: GCalLocalDataSource)
 class SharedPrefGCalLocalDataSource implements GCalLocalDataSource {
   SharedPrefGCalLocalDataSource({required this.sharedPreferences});
 

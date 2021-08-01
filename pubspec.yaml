@@ -17,6 +17,7 @@ dependencies:
   equatable: ^2.0.3
   # Service locator
   get_it: ^7.2.0
+  injectable: ^1.4.1
   # Functional programming stuffs
   dartz: ^0.10.0-nullsafety.2
   # Remote API
@@ -43,7 +44,8 @@ dev_dependencies:
   mocktail: ^0.1.0
   #mockito: ^5.0.11
   very_good_analysis: ^2.1.0
-
+  injectable_generator: ^1.4.1
+  build_runner: ^2.0.6
 flutter:
   uses-material-design: true
   generate: true

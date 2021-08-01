@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/io_client.dart' as io;
 
 import 'package:googleapis/calendar/v3.dart' as google_api;
+import 'package:injectable/injectable.dart';
 
 import '../../../../core/error/exceptions.dart';
 import '../models/gcal_event_entry_model.dart';
@@ -15,26 +16,26 @@ abstract class GCalRemoteDataSource {
   Future<List<GCalEventEntryModel>> getRemoteGoogleEventsData();
 }
 
+@LazySingleton(as: GCalRemoteDataSource)
 class GoogleAPIGCalRemoteDataSoure implements GCalRemoteDataSource {
-  GoogleAPIGCalRemoteDataSoure({required this.client});
+  GoogleAPIGCalRemoteDataSoure({required this.gCalSignIn});
 
-  // TODO: Replace with Google Sign in and Write Unit Test
-  final http.Client client;
+  final GoogleSignIn gCalSignIn;
 
   @override
   Future<List<GCalEventEntryModel>> getRemoteGoogleEventsData() async {
     //* This could be separated and move to injection controller
-    final _googleSignIn = GoogleSignIn(
-      clientId:
-          '478862318784-jl05jk9ujotlfdk0v3a6dkg8jkdt8ecm.apps.googleusercontent.com',
-      scopes: <String>[
-        google_api.CalendarApi.calendarScope,
-      ],
-    );
+    // final _googleSignIn = GoogleSignIn(
+    //   clientId:
+    //       '478862318784-jl05jk9ujotlfdk0v3a6dkg8jkdt8ecm.apps.googleusercontent.com',
+    //   scopes: <String>[
+    //     google_api.CalendarApi.calendarScope,
+    //   ],
+    // );
 
     final appointments = <GCalEventEntryModel>[];
 
-    final googleUser = await _googleSignIn.signIn();
+    final googleUser = await gCalSignIn.signIn();
     final _authHeaders = await googleUser?.authHeaders;
 
     //* This could be separated and move to injection controller
