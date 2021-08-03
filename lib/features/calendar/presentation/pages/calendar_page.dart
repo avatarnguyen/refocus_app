@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:refocus_app/core/util/ui/widget_helpers.dart';
 import 'package:refocus_app/injection.dart';
 import 'package:styled_widget/styled_widget.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
@@ -47,12 +48,12 @@ class CalendarWidget extends StatelessWidget {
               return Container(
                 height: 700,
                 child: SfCalendar(
-                  view: CalendarView.month,
+                  view: CalendarView.day,
                   dataSource: state.calendarData,
-                  monthViewSettings: const MonthViewSettings(
-                    appointmentDisplayMode:
-                        MonthAppointmentDisplayMode.appointment,
-                  ),
+                  // monthViewSettings: const MonthViewSettings(
+                  //   appointmentDisplayMode:
+                  //       MonthAppointmentDisplayMode.appointment,
+                  // ),
                 ).center(),
               );
             } else {
@@ -72,11 +73,7 @@ class CalendarWidget extends StatelessWidget {
           },
           child: const Text('Get Events'),
         ).center(),
-      ].toColumn().parent((page)),
+      ].toColumn().parent((scrollablePage)),
     );
   }
-
-  Widget page({required Widget child}) => Styled.widget(child: child)
-      .padding(vertical: 30, horizontal: 20)
-      .scrollable();
 }

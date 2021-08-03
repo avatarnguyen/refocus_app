@@ -9,8 +9,10 @@ class GCalEventEntry extends Equatable {
     this.location,
     this.recurrence,
     this.recurringEventId,
-    this.start,
-    this.end,
+    this.startDateTime,
+    this.startDate,
+    this.endDateTime,
+    this.endDate,
     this.organizer,
     this.timeZone,
   });
@@ -22,8 +24,10 @@ class GCalEventEntry extends Equatable {
   final String? location;
   final List<String>? recurrence;
   final String? recurringEventId;
-  final DateTime? start;
-  final DateTime? end;
+  final DateTime? startDateTime;
+  final DateTime? startDate;
+  final DateTime? endDateTime;
+  final DateTime? endDate;
   final String? organizer;
   final String? timeZone;
 
@@ -36,8 +40,10 @@ class GCalEventEntry extends Equatable {
         location,
         recurrence,
         recurringEventId,
-        start,
-        end,
+        startDateTime,
+        startDate,
+        endDateTime,
+        endDate,
         organizer,
         timeZone,
       ];

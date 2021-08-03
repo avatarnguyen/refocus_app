@@ -1,3 +1,4 @@
+import 'package:googleapis/calendar/v3.dart';
 import 'package:refocus_app/features/calendar/domain/entities/gcal_event_entry.dart';
 
 class GCalEventEntryModel extends GCalEventEntry {
@@ -9,8 +10,10 @@ class GCalEventEntryModel extends GCalEventEntry {
     location,
     recurrence,
     recurringEventId,
-    start,
-    end,
+    startDateTime,
+    startDate,
+    endDateTime,
+    endDate,
     organizer,
     timeZone,
   }) : super(
@@ -21,8 +24,10 @@ class GCalEventEntryModel extends GCalEventEntry {
           location: location,
           recurrence: recurrence,
           recurringEventId: recurringEventId,
-          start: start,
-          end: end,
+          startDateTime: startDateTime,
+          startDate: startDate,
+          endDateTime: endDateTime,
+          endDate: endDate,
           organizer: organizer,
           timeZone: timeZone,
         );
@@ -45,14 +50,24 @@ class GCalEventEntryModel extends GCalEventEntry {
       location: json['location'],
       recurrence: json['recurrence'],
       recurringEventId: json['recurringEventId'],
-      start: startEvent != null
+      startDateTime: startEvent != null
           ? startEvent.containsKey('dateTime')
               ? DateTime.parse(startEvent['dateTime'] as String)
               : null
           : null,
-      end: endEvent != null
+      startDate: startEvent != null
+          ? startEvent.containsKey('date')
+              ? DateTime.parse(startEvent['date'] as String)
+              : null
+          : null,
+      endDateTime: endEvent != null
           ? endEvent.containsKey('dateTime')
               ? DateTime.parse(endEvent['dateTime'] as String)
+              : null
+          : null,
+      endDate: endEvent != null
+          ? endEvent.containsKey('date')
+              ? DateTime.parse(endEvent['date'] as String)
               : null
           : null,
       timeZone: startEvent != null
@@ -76,12 +91,16 @@ class GCalEventEntryModel extends GCalEventEntry {
         if (location != null) 'location': location,
         if (recurrence != null) 'recurrence': recurrence,
         if (recurringEventId != null) 'recurringEventId': recurringEventId,
-        if (start != null)
-          'start': {
-            'dateTime': start.toString(),
-            if (timeZone != null) 'timeZone': {'timeZone': timeZone.toString()},
+        'start': {
+          if (startDateTime != null) 'dateTime': startDateTime.toString(),
+          if (startDate != null) 'date': startDate.toString(),
+          if (timeZone != null) 'timeZone': {'timeZone': timeZone.toString()},
+        },
+        if (endDateTime != null || endDate != null)
+          'end': {
+            if (endDate != null) 'date': endDate.toString(),
+            if (endDateTime != null) 'dateTime': endDateTime.toString(),
           },
-        if (end != null) 'end': {'dateTime': end.toString()},
         if (organizer != null) 'organizer': {'displayName': organizer},
       };
 }

@@ -22,7 +22,7 @@ void main() async {
   };
 
   WidgetsFlutterBinding.ensureInitialized();
-  configureDependencies(Env.dev);
+  await configureDependencies(Env.dev);
   runZonedGuarded(
     () => runApp(const App()),
     (error, stackTrace) => log(error.toString(), stackTrace: stackTrace),

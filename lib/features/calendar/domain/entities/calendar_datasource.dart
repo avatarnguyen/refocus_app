@@ -11,17 +11,17 @@ class CalendarData extends CalendarDataSource implements EquatableMixin {
   @override
   DateTime getStartTime(int index) {
     final GCalEventEntry? event = appointments?[index];
-    return event?.start ?? event!.start!.toLocal();
+    return event?.startDate ?? event!.startDateTime!.toLocal();
   }
 
   @override
   DateTime getEndTime(int index) {
     final GCalEventEntry event = appointments![index];
-    return event.end != null
-        ? (event.end != null
-            ? event.end!.add(const Duration(days: -1))
-            : event.end!.toLocal())
-        : (event.start ?? event.start!.toLocal());
+    return (event.endDate == null && event.endDateTime == null)
+        ? (event.startDate ?? event.startDateTime!.toLocal())
+        : (event.endDate != null
+            ? event.endDate!.add(const Duration(days: -1))
+            : event.endDateTime!.toLocal());
   }
 
   @override

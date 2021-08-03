@@ -1,9 +1,9 @@
+import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/calendar/v3.dart';
+import 'package:googleapis/calendar/v3.dart' as google_api;
 import 'package:http/http.dart' as http;
 import 'package:http/io_client.dart' as io;
-
-import 'package:googleapis/calendar/v3.dart' as google_api;
 import 'package:injectable/injectable.dart';
 
 import '../../../../core/error/exceptions.dart';
@@ -24,45 +24,57 @@ class GoogleAPIGCalRemoteDataSoure implements GCalRemoteDataSource {
 
   @override
   Future<List<GCalEventEntryModel>> getRemoteGoogleEventsData() async {
-    //* This could be separated and move to injection controller
-    // final _googleSignIn = GoogleSignIn(
-    //   clientId:
-    //       '478862318784-jl05jk9ujotlfdk0v3a6dkg8jkdt8ecm.apps.googleusercontent.com',
-    //   scopes: <String>[
-    //     google_api.CalendarApi.calendarScope,
-    //   ],
-    // );
-
     final appointments = <GCalEventEntryModel>[];
 
-    final googleUser = await gCalSignIn.signIn();
-    final _authHeaders = await googleUser?.authHeaders;
+    GoogleSignInAccount? _currentUser;
 
-    //* This could be separated and move to injection controller
-    if (_authHeaders != null) {
-      final httpClient = GoogleAPIClient(_authHeaders);
-      final calendarApi = google_api.CalendarApi(httpClient);
-      // TODO: retrive dynamicly calendar ID
-      final calEvents = await calendarApi.events
-          .list('in558pn22g34uj8j769poaddpk@group.calendar.google.com');
+    // final googleUser = await gCalSignIn.signIn();
+    // final _authHeaders = await googleUser?.authHeaders;
 
-      if (calEvents.items != null && calEvents.items!.isNotEmpty) {
-        print('Items Total #: ${calEvents.items!.length}');
-        print('Items: ${calEvents.items!.first.start}');
+    if (gCalSignIn.currentUser == null) {
+      await gCalSignIn.signIn();
+    }
 
-        for (var i = 0; i < calEvents.items!.length; i++) {
-          print("Event: ${calEvents.items![i]}");
-          final event = calEvents.items![i] as Event;
-          if (event.start != null) {
-            appointments.add(GCalEventEntryModel.fromJson(event.toJson()));
-          }
+    var client = (await gCalSignIn.authenticatedClient())!;
+
+    final calendarApi = google_api.CalendarApi(client);
+
+    // TODO: retrive dynamicly calendar ID
+    final calEvents = await calendarApi.events
+        .list('in558pn22g34uj8j769poaddpk@group.calendar.google.com');
+
+    if (calEvents.items != null && calEvents.items!.isNotEmpty) {
+      print('Items Total #: ${calEvents.items!.length}');
+      print('Items: ${calEvents.items!.first.start}');
+
+      for (var i = 0; i < calEvents.items!.length; i++) {
+        print("Event: ${calEvents.items![i]}");
+        final event = calEvents.items![i] as Event;
+        if (event.start != null) {
+          appointments.add(GCalEventEntryModel.fromJson(event.toJson()));
         }
-      } else {
-        throw ServerException();
       }
     } else {
       throw ServerException();
     }
+
+    // gCalSignIn.onCurrentUserChanged
+    //     .listen((GoogleSignInAccount? account) async {
+    //   print('USER CHANGES');
+
+    //   _currentUser = account;
+
+    //   if (_currentUser != null) {
+    //     final _header = await _currentUser!.authHeaders;
+    //   }
+    //   // Sign In if user not exist
+    //   _currentUser = await gCalSignIn.signIn();
+    // });
+
+    // if (_authHeaders != null) {
+    // } else {
+    //   throw ServerException();
+    // }
 
     print('Appointments: ${appointments.length}');
 
