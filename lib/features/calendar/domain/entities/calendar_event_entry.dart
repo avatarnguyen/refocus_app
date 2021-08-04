@@ -13,6 +13,7 @@ class GCalEventEntry extends Equatable {
     this.startDate,
     this.endDateTime,
     this.endDate,
+    this.allDay,
     this.organizer,
     this.timeZone,
   });
@@ -28,6 +29,7 @@ class GCalEventEntry extends Equatable {
   final DateTime? startDate;
   final DateTime? endDateTime;
   final DateTime? endDate;
+  final bool? allDay;
   final String? organizer;
   final String? timeZone;
 
@@ -44,6 +46,7 @@ class GCalEventEntry extends Equatable {
         startDate,
         endDateTime,
         endDate,
+        allDay,
         organizer,
         timeZone,
       ];

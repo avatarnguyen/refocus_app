@@ -1,5 +1,4 @@
-import 'package:googleapis/calendar/v3.dart';
-import 'package:refocus_app/features/calendar/domain/entities/gcal_event_entry.dart';
+import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
 
 class GCalEventEntryModel extends GCalEventEntry {
   const GCalEventEntryModel({
@@ -14,6 +13,7 @@ class GCalEventEntryModel extends GCalEventEntry {
     startDate,
     endDateTime,
     endDate,
+    allDay,
     organizer,
     timeZone,
   }) : super(
@@ -28,6 +28,7 @@ class GCalEventEntryModel extends GCalEventEntry {
           startDate: startDate,
           endDateTime: endDateTime,
           endDate: endDate,
+          allDay: allDay,
           organizer: organizer,
           timeZone: timeZone,
         );
@@ -70,6 +71,11 @@ class GCalEventEntryModel extends GCalEventEntry {
               ? DateTime.parse(endEvent['date'] as String)
               : null
           : null,
+      allDay: startEvent != null
+          ? startEvent.containsKey('date')
+              ? true
+              : false
+          : null,
       timeZone: startEvent != null
           ? startEvent.containsKey('timeZone')
               ? startEvent['timeZone'] as String
@@ -91,6 +97,7 @@ class GCalEventEntryModel extends GCalEventEntry {
         if (location != null) 'location': location,
         if (recurrence != null) 'recurrence': recurrence,
         if (recurringEventId != null) 'recurringEventId': recurringEventId,
+        // if (allDay != null) 'allDay': allDay,
         'start': {
           if (startDateTime != null) 'dateTime': startDateTime.toString(),
           if (startDate != null) 'date': startDate.toString(),

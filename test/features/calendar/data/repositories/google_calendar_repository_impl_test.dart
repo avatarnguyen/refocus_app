@@ -11,7 +11,7 @@ import 'package:refocus_app/features/calendar/data/datasources/gcal_remote_data_
 import 'package:refocus_app/features/calendar/data/models/gcal_event_entry_model.dart';
 import 'package:refocus_app/features/calendar/data/repositories/google_calendar_repository_impl.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_datasource.dart';
-import 'package:refocus_app/features/calendar/domain/entities/gcal_event_entry.dart';
+import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
 import 'package:googleapis/calendar/v3.dart' as google_api;
 
 import '../../../../fixtures/fixture_reader.dart';
@@ -23,7 +23,7 @@ class MockLocalDataSource extends Mock implements GCalLocalDataSource {}
 class MockNetworkInfo extends Mock implements NetworkInfo {}
 
 void main() {
-  late GoogleCalendarRepositoryImpl repository;
+  late CalendarRepositoryImpl repository;
   late MockRemoteDataSource mockRemoteDataSource;
   late MockLocalDataSource mockLocalDataSource;
   late MockNetworkInfo mockNetworkInfo;
@@ -31,7 +31,7 @@ void main() {
     mockRemoteDataSource = MockRemoteDataSource();
     mockLocalDataSource = MockLocalDataSource();
     mockNetworkInfo = MockNetworkInfo();
-    repository = GoogleCalendarRepositoryImpl(
+    repository = CalendarRepositoryImpl(
       localCalDataSource: mockLocalDataSource,
       remoteCalDataSource: mockRemoteDataSource,
       networkInfo: mockNetworkInfo,
@@ -62,8 +62,8 @@ void main() {
     final tGoogleCalendarEntryModel = GCalEventEntryModel(
       subject: 'Event Refocus App',
       id: '4okqcu9vna2ak7jt7545ndlp9n',
-      start: DateTime.parse('2021-07-19T16:45:00+02:00'),
-      end: DateTime.parse('2021-07-19T18:30:00+02:00'),
+      startDateTime: DateTime.parse('2021-07-19T16:45:00+02:00'),
+      endDateTime: DateTime.parse('2021-07-19T18:30:00+02:00'),
       organizer: 'Test Dev',
     );
 

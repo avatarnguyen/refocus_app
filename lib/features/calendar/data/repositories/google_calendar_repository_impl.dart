@@ -6,11 +6,11 @@ import 'package:refocus_app/core/network/network_info.dart';
 import 'package:refocus_app/features/calendar/data/datasources/gcal_local_data_source.dart';
 import 'package:refocus_app/features/calendar/data/datasources/gcal_remote_data_source.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_datasource.dart';
-import 'package:refocus_app/features/calendar/domain/repositories/gcal_repository.dart';
+import 'package:refocus_app/features/calendar/domain/repositories/calendar_repository.dart';
 
-@LazySingleton(as: GCalRepository)
-class GoogleCalendarRepositoryImpl implements GCalRepository {
-  GoogleCalendarRepositoryImpl(
+@LazySingleton(as: CalendarRepository)
+class CalendarRepositoryImpl implements CalendarRepository {
+  CalendarRepositoryImpl(
       {required this.remoteCalDataSource,
       required this.localCalDataSource,
       required this.networkInfo});
@@ -42,5 +42,19 @@ class GoogleCalendarRepositoryImpl implements GCalRepository {
         return Left(CacheFailure());
       }
     }
+  }
+
+  @override
+  Future<Either<Failure, CalendarData>> getGoogleEventsDataOfDay(
+      String year, String month, String day) {
+    // TODO: implement getGoogleEventsDataOfDay
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Either<Failure, CalendarData>> getGoogleEventsDataOfMonth(
+      String year, String month) {
+    // TODO: implement getGoogleEventsDataOfMonth
+    throw UnimplementedError();
   }
 }

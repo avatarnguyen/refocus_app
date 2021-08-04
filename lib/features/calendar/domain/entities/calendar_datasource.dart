@@ -1,11 +1,17 @@
 import 'package:equatable/equatable.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
-import 'gcal_event_entry.dart';
+import 'calendar_event_entry.dart';
 
 class CalendarData extends CalendarDataSource implements EquatableMixin {
   CalendarData({List<GCalEventEntry>? events}) {
     appointments = events;
+  }
+
+  @override
+  bool isAllDay(int index) {
+    final GCalEventEntry? event = appointments?[index];
+    return event?.allDay ?? false;
   }
 
   @override

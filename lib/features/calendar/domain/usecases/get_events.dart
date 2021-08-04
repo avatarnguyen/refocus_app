@@ -4,13 +4,13 @@ import 'package:refocus_app/features/calendar/domain/entities/calendar_datasourc
 
 import '../../../../core/error/failures.dart';
 import '../../../../core/usecases/usecase.dart';
-import '../repositories/gcal_repository.dart';
+import '../repositories/calendar_repository.dart';
 
 @lazySingleton
-class GetGoogleEvents implements UseCase<CalendarData, NoParams> {
-  GetGoogleEvents(this.repository);
+class GetEvents implements UseCase<CalendarData, NoParams> {
+  GetEvents(this.repository);
 
-  final GCalRepository repository;
+  final CalendarRepository repository;
 
   @override
   Future<Either<Failure, CalendarData>> call(NoParams params) async {

@@ -4,11 +4,11 @@ import 'package:mocktail/mocktail.dart';
 import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/core/usecases/usecase.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_datasource.dart';
-import 'package:refocus_app/features/calendar/domain/entities/gcal_event_entry.dart';
-import 'package:refocus_app/features/calendar/domain/usecases/get_google_events.dart';
+import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
+import 'package:refocus_app/features/calendar/domain/usecases/get_events.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/gcal_bloc.dart';
 
-class MockGetAllCalendarEntry extends Mock implements GetGoogleEvents {}
+class MockGetAllCalendarEntry extends Mock implements GetEvents {}
 
 void main() {
   late GcalBloc bloc;
@@ -24,8 +24,8 @@ void main() {
     final tGoogleCalendarEntry = GCalEventEntry(
       subject: 'Event Refocus App',
       id: '4okqcu9vna2ak7jt7545ndlp9n',
-      start: DateTime.parse('2021-07-19T16:45:00+02:00'),
-      end: DateTime.parse('2021-07-19T18:30:00+02:00'),
+      startDateTime: DateTime.parse('2021-07-19T16:45:00+02:00'),
+      endDateTime: DateTime.parse('2021-07-19T18:30:00+02:00'),
       organizer: 'Test Dev',
     );
     test(

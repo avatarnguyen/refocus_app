@@ -17,8 +17,8 @@ import 'features/calendar/data/datasources/gcal_local_data_source.dart' as _i6;
 import 'features/calendar/data/datasources/gcal_remote_data_source.dart' as _i7;
 import 'features/calendar/data/repositories/google_calendar_repository_impl.dart'
     as _i10;
-import 'features/calendar/domain/repositories/gcal_repository.dart' as _i9;
-import 'features/calendar/domain/usecases/get_google_events.dart' as _i11;
+import 'features/calendar/domain/repositories/calendar_repository.dart' as _i9;
+import 'features/calendar/domain/usecases/get_events.dart' as _i11;
 import 'features/calendar/presentation/bloc/gcal_bloc.dart'
     as _i12; // ignore_for_file: unnecessary_lambdas
 
@@ -39,14 +39,14 @@ Future<_i1.GetIt> $initGetIt(_i1.GetIt get,
           sharedPreferences: get<_i5.SharedPreferences>()));
   gh.lazySingleton<_i7.GCalRemoteDataSource>(() =>
       _i7.GoogleAPIGCalRemoteDataSoure(gCalSignIn: get<_i8.GoogleSignIn>()));
-  gh.lazySingleton<_i9.GCalRepository>(() => _i10.GoogleCalendarRepositoryImpl(
+  gh.lazySingleton<_i9.CalendarRepository>(() => _i10.CalendarRepositoryImpl(
       remoteCalDataSource: get<_i7.GCalRemoteDataSource>(),
       localCalDataSource: get<_i6.GCalLocalDataSource>(),
       networkInfo: get<_i4.NetworkInfo>()));
-  gh.lazySingleton<_i11.GetGoogleEvents>(
-      () => _i11.GetGoogleEvents(get<_i9.GCalRepository>()));
+  gh.lazySingleton<_i11.GetEvents>(
+      () => _i11.GetEvents(get<_i9.CalendarRepository>()));
   gh.factory<_i12.GcalBloc>(
-      () => _i12.GcalBloc(getAllCalendarEntry: get<_i11.GetGoogleEvents>()));
+      () => _i12.GcalBloc(getAllCalendarEntry: get<_i11.GetEvents>()));
   gh.singleton<_i8.GoogleSignIn>(registerModule.gCalSignIn);
   return get;
 }

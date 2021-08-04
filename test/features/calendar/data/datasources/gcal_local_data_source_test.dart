@@ -56,8 +56,8 @@ void main() {
     final tGoogleCalendarEntryModel = GCalEventEntryModel(
       subject: 'Event Refocus App',
       id: '4okqcu9vna2ak7jt7545ndlp9n',
-      start: DateTime.parse('2021-07-19T16:45:00+02:00'),
-      end: DateTime.parse('2021-07-19T18:30:00+02:00'),
+      startDateTime: DateTime.parse('2021-07-19T16:45:00+02:00'),
+      endDateTime: DateTime.parse('2021-07-19T18:30:00+02:00'),
       organizer: 'Test Dev',
     );
 
