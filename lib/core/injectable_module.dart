@@ -12,7 +12,7 @@ abstract class RegisterModule {
   @lazySingleton
   InternetConnectionChecker get internetChecker => InternetConnectionChecker();
 
-  @lazySingleton
+  @singleton
   GoogleSignIn get gCalSignIn => GoogleSignIn(
         clientId:
             '478862318784-jl05jk9ujotlfdk0v3a6dkg8jkdt8ecm.apps.googleusercontent.com',

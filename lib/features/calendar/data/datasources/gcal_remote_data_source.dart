@@ -26,73 +26,37 @@ class GoogleAPIGCalRemoteDataSoure implements GCalRemoteDataSource {
   Future<List<GCalEventEntryModel>> getRemoteGoogleEventsData() async {
     final appointments = <GCalEventEntryModel>[];
 
-    GoogleSignInAccount? _currentUser;
+    var client = await gCalSignIn.authenticatedClient();
 
-    // final googleUser = await gCalSignIn.signIn();
-    // final _authHeaders = await googleUser?.authHeaders;
+    if (client != null) {
+      final calendarApi = google_api.CalendarApi(client);
 
-    if (gCalSignIn.currentUser == null) {
-      await gCalSignIn.signIn();
-    }
+      // TODO: retrive dynamicly calendar ID
+      final calEvents = await calendarApi.events
+          .list('in558pn22g34uj8j769poaddpk@group.calendar.google.com');
 
-    var client = (await gCalSignIn.authenticatedClient())!;
+      if (calEvents.items != null && calEvents.items!.isNotEmpty) {
+        print('Items Total #: ${calEvents.items!.length}');
+        print('Items: ${calEvents.items!.first.start}');
 
-    final calendarApi = google_api.CalendarApi(client);
-
-    // TODO: retrive dynamicly calendar ID
-    final calEvents = await calendarApi.events
-        .list('in558pn22g34uj8j769poaddpk@group.calendar.google.com');
-
-    if (calEvents.items != null && calEvents.items!.isNotEmpty) {
-      print('Items Total #: ${calEvents.items!.length}');
-      print('Items: ${calEvents.items!.first.start}');
-
-      for (var i = 0; i < calEvents.items!.length; i++) {
-        print("Event: ${calEvents.items![i]}");
-        final event = calEvents.items![i] as Event;
-        if (event.start != null) {
-          appointments.add(GCalEventEntryModel.fromJson(event.toJson()));
+        for (var i = 0; i < calEvents.items!.length; i++) {
+          print("Event: ${calEvents.items![i]}");
+          final event = calEvents.items![i] as Event;
+          if (event.start != null) {
+            appointments.add(GCalEventEntryModel.fromJson(event.toJson()));
+          }
         }
+      } else {
+        throw ServerException();
       }
     } else {
-      throw ServerException();
+      await gCalSignIn.signIn();
     }
-
-    // gCalSignIn.onCurrentUserChanged
-    //     .listen((GoogleSignInAccount? account) async {
-    //   print('USER CHANGES');
-
-    //   _currentUser = account;
-
-    //   if (_currentUser != null) {
-    //     final _header = await _currentUser!.authHeaders;
-    //   }
-    //   // Sign In if user not exist
-    //   _currentUser = await gCalSignIn.signIn();
-    // });
-
-    // if (_authHeaders != null) {
-    // } else {
-    //   throw ServerException();
-    // }
 
     print('Appointments: ${appointments.length}');
 
     //TODO: Write Test to check # of appointments return
     return appointments;
-
-    // var url = Uri.parse(
-    //     'https://www.googleapis.com/calendar/v3/calendars/in558pn22g34uj8j769poaddpk@group.calendar.google.com/events?key=AIzaSyC-JYOakQBzGvadMpr8ji3zE_AhvZ3bq7k');
-    // final response = await client.get(
-    //   url,
-    //   headers: {'Content-Type': 'application/json'},
-    // );
-
-    // if (response.statusCode == 200) {
-    //   return GCalEventEntryModel.fromJson(json.decode(response.body));
-    // } else {
-    //   throw ServerException();
-    // }
   }
 }
 
