@@ -31,6 +31,12 @@ class CalendarData extends CalendarDataSource implements EquatableMixin {
   }
 
   @override
+  Object? getId(int index) {
+    final GCalEventEntry event = appointments?[index];
+    return event.id;
+  }
+
+  @override
   List<Object?> get props => [appointments];
 
   @override

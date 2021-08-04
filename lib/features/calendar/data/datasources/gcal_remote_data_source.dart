@@ -31,22 +31,38 @@ class GoogleAPIGCalRemoteDataSoure implements GCalRemoteDataSource {
     if (client != null) {
       final calendarApi = google_api.CalendarApi(client);
 
-      // TODO: retrive dynamicly calendar ID
-      final calEvents = await calendarApi.events
-          .list('in558pn22g34uj8j769poaddpk@group.calendar.google.com');
+      // TODO: retrive dynamicly calendar ID & save ID locally
+      final calendarsList = await calendarApi.calendarList.list();
+      final calendarItems = calendarsList.items;
+      if (calendarItems != null) {
+        print('List of Calendar:');
+        calendarItems.forEach((element) {
+          final calendar = element.summary;
+          final calendarId = element.id;
+          print('$calendar - $calendarId');
+        });
+      }
 
-      if (calEvents.items != null && calEvents.items!.isNotEmpty) {
-        print('Items Total #: ${calEvents.items!.length}');
-        print('Items: ${calEvents.items!.first.start}');
+      //in558pn22g34uj8j769poaddpk@group.calendar.google.com
 
-        for (var i = 0; i < calEvents.items!.length; i++) {
-          print("Event: ${calEvents.items![i]}");
-          final event = calEvents.items![i] as Event;
-          if (event.start != null) {
-            appointments.add(GCalEventEntryModel.fromJson(event.toJson()));
+      try {
+        final calEvents = await calendarApi.events.list(
+          'nguyenanh12.vn@gmail.com',
+          timeMin: DateTime.parse('2021-08-01T01:00:00+02:00'),
+          timeMax: DateTime.parse('2021-08-30T23:55:00+02:00'),
+        );
+
+        if (calEvents.items != null && calEvents.items!.isNotEmpty) {
+          print('Items Total #: ${calEvents.items!.length}');
+          for (var i = 0; i < calEvents.items!.length; i++) {
+            final event = calEvents.items![i];
+            if (event.start != null) {
+              appointments.add(GCalEventEntryModel.fromJson(event.toJson()));
+            }
           }
         }
-      } else {
+      } catch (e) {
+        print(e);
         throw ServerException();
       }
     } else {

@@ -89,12 +89,12 @@ class _CalendarWidgetState extends State<CalendarWidget> {
               return SizedBox(
                 height: 700,
                 child: SfCalendar(
-                  view: CalendarView.day,
+                  view: CalendarView.month,
                   dataSource: state.calendarData,
-                  // monthViewSettings: const MonthViewSettings(
-                  //   appointmentDisplayMode:
-                  //       MonthAppointmentDisplayMode.appointment,
-                  // ),
+                  monthViewSettings: const MonthViewSettings(
+                    appointmentDisplayMode:
+                        MonthAppointmentDisplayMode.appointment,
+                  ),
                 ).center(),
               );
             } else {
