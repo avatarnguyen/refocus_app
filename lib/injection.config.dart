@@ -24,7 +24,7 @@ import 'features/calendar/domain/usecases/get_events.dart' as _i12;
 import 'features/calendar/domain/usecases/get_events_day.dart' as _i13;
 import 'features/calendar/domain/usecases/get_events_month.dart' as _i14;
 import 'features/calendar/domain/usecases/update_event.dart' as _i15;
-import 'features/calendar/presentation/bloc/gcal_bloc.dart'
+import 'features/calendar/presentation/bloc/calendar_bloc.dart'
     as _i17; // ignore_for_file: unnecessary_lambdas
 
 // ignore_for_file: lines_longer_than_80_chars
@@ -60,8 +60,11 @@ Future<_i1.GetIt> $initGetIt(_i1.GetIt get,
       () => _i15.UpdateEvent(repository: get<_i9.CalendarRepository>()));
   gh.lazySingleton<_i16.AddEvent>(
       () => _i16.AddEvent(repository: get<_i9.CalendarRepository>()));
-  gh.factory<_i17.GcalBloc>(() => _i17.GcalBloc(
-      getCalendarEntry: get<_i12.GetEvents>(), addEvent: get<_i16.AddEvent>()));
+  gh.factory<_i17.CalendarBloc>(() => _i17.CalendarBloc(
+      getCalendarEntry: get<_i12.GetEvents>(),
+      addEvent: get<_i16.AddEvent>(),
+      deleteEvent: get<_i11.DeleteEvent>(),
+      updateEvent: get<_i15.UpdateEvent>()));
   gh.singleton<_i8.GoogleSignIn>(registerModule.gCalSignIn);
   return get;
 }

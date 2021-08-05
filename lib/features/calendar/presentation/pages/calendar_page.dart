@@ -9,7 +9,7 @@ import 'package:styled_widget/styled_widget.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:uuid/uuid.dart';
 
-import '../bloc/gcal_bloc.dart';
+import '../bloc/calendar_bloc.dart';
 import '../widgets/widgets.dart';
 
 class CalendarPage extends StatelessWidget {
@@ -17,8 +17,8 @@ class CalendarPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<GcalBloc>(
-      create: (context) => getIt<GcalBloc>(),
+    return BlocProvider<CalendarBloc>(
+      create: (context) => getIt<CalendarBloc>(),
       child: const CalendarWidget(),
     );
   }
@@ -50,7 +50,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
         _currentUser = account;
       });
       if (_currentUser != null) {
-        BlocProvider.of<GcalBloc>(context, listen: false)
+        BlocProvider.of<CalendarBloc>(context, listen: false)
             .add(GetCalendarEntries());
       }
     });
@@ -67,25 +67,29 @@ class _CalendarWidgetState extends State<CalendarWidget> {
 
   @override
   Widget build(BuildContext context) {
+    var testEvent = EventParams(
+      calendarId: 'primary',
+      eventEntry: CalendarEventEntry(
+        id: 'jihijjs8ba46eqh4r53kfhbvds',
+        subject: 'Test Event from Momant',
+        startDateTime: DateTime.parse('2021-08-05T16:45:00+02:00'),
+        endDateTime: DateTime.parse('2021-08-05T18:30:00+02:00'),
+        organizer: 'Test Dev',
+      ),
+    );
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Calendar Page'),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      floatingActionButton: FloatingActionButton(
-          onPressed: () =>
-              BlocProvider.of<GcalBloc>(context, listen: false).add(
-                AddCalendarEvent(EventParams(
-                  eventEntry: CalendarEventEntry(
-                    subject: 'Test Event from Momant',
-                    startDateTime: DateTime.parse('2021-08-05T16:45:00+02:00'),
-                    endDateTime: DateTime.parse('2021-08-05T18:30:00+02:00'),
-                    organizer: 'Test Dev',
-                  ),
-                )),
-              )),
+      floatingActionButton: FloatingActionButton(onPressed: () {
+        return BlocProvider.of<CalendarBloc>(context, listen: false).add(
+          DeleteCalendarEvent(testEvent),
+        );
+      }),
       body: <Widget>[
-        BlocBuilder<GcalBloc, GcalState>(
+        BlocBuilder<CalendarBloc, CalendarState>(
           builder: (context, state) {
             if (state is GcalInitial) {
               return [

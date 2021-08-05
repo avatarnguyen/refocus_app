@@ -1,19 +1,19 @@
-part of 'gcal_bloc.dart';
+part of 'calendar_bloc.dart';
 
-abstract class GcalState extends Equatable {
-  const GcalState();
+abstract class CalendarState extends Equatable {
+  const CalendarState();
 
   @override
   List<Object> get props => [];
 }
 
-class GcalInitial extends GcalState {}
+class GcalInitial extends CalendarState {}
 
-class Empty extends GcalState {}
+class Empty extends CalendarState {}
 
-class Loading extends GcalState {}
+class Loading extends CalendarState {}
 
-class Loaded extends GcalState {
+class Loaded extends CalendarState {
   const Loaded({required this.calendarData});
 
   final CalendarData calendarData;
@@ -22,7 +22,7 @@ class Loaded extends GcalState {
   List<Object> get props => (calendarData.props.map((e) => e!).toList());
 }
 
-class Error extends GcalState {
+class Error extends CalendarState {
   const Error({required this.message});
 
   final String message;

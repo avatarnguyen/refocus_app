@@ -6,23 +6,37 @@ import 'package:refocus_app/core/usecases/usecase.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_datasource.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/add_event.dart';
+import 'package:refocus_app/features/calendar/domain/usecases/delete_event.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/get_events.dart';
-import 'package:refocus_app/features/calendar/presentation/bloc/gcal_bloc.dart';
+import 'package:refocus_app/features/calendar/domain/usecases/update_event.dart';
+import 'package:refocus_app/features/calendar/presentation/bloc/calendar_bloc.dart';
 
 class MockGetAllCalendarEntry extends Mock implements GetEvents {}
 
 class MockAddEvent extends Mock implements AddEvent {}
 
+class MockUpdateEvent extends Mock implements UpdateEvent {}
+
+class MockDeleteEvent extends Mock implements DeleteEvent {}
+
 void main() {
-  late GcalBloc bloc;
+  late CalendarBloc bloc;
   late MockGetAllCalendarEntry mockGetAllCalendarEntry;
   late MockAddEvent mockAddEvent;
+  late MockUpdateEvent mockUpdateEvent;
+  late MockDeleteEvent mockDeleteEvent;
 
   setUp(() {
     mockGetAllCalendarEntry = MockGetAllCalendarEntry();
     mockAddEvent = MockAddEvent();
-    bloc = GcalBloc(
-        getCalendarEntry: mockGetAllCalendarEntry, addEvent: mockAddEvent);
+    mockUpdateEvent = MockUpdateEvent();
+    mockDeleteEvent = MockDeleteEvent();
+    bloc = CalendarBloc(
+      getCalendarEntry: mockGetAllCalendarEntry,
+      addEvent: mockAddEvent,
+      deleteEvent: mockDeleteEvent,
+      updateEvent: mockUpdateEvent,
+    );
   });
 
   group('GetAllGCalEntries', () {
