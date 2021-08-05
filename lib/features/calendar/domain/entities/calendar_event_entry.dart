@@ -4,6 +4,7 @@ class CalendarEventEntry extends Equatable {
   const CalendarEventEntry({
     required this.subject,
     this.id,
+    this.calendarId,
     this.colorId,
     this.notes,
     this.location,
@@ -20,6 +21,7 @@ class CalendarEventEntry extends Equatable {
 
   final String subject; // Event summary
   final String? id;
+  final String? calendarId;
   final String? colorId;
   final String? notes; // Event description
   final String? location;
@@ -36,6 +38,7 @@ class CalendarEventEntry extends Equatable {
   @override
   List<Object?> get props => [
         id,
+        calendarId,
         colorId,
         notes,
         subject,

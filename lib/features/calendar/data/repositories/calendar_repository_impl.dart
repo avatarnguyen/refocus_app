@@ -95,15 +95,7 @@ class CalendarRepositoryImpl implements CalendarRepository {
   Future<Either<Failure, Unit>> addEventsData(CalendarEventEntry event,
       {String? calendarId}) async {
     try {
-      final model = GCalEventEntryModel(
-        id: event.id,
-        subject: event.subject,
-        startDateTime: event.startDateTime,
-        startDate: event.startDate,
-        endDate: event.endDate,
-        endDateTime: event.endDateTime,
-        organizer: event.organizer,
-      );
+      final model = _eventEntryConverter(event);
 
       await remoteCalDataSource.addRemoteGoogleEvent(
         calendarId: calendarId,
@@ -114,5 +106,53 @@ class CalendarRepositoryImpl implements CalendarRepository {
     } on ServerException {
       return Left(ServerFailure());
     }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> deleteEventsData(CalendarEventEntry event,
+      {required String calendarId}) async {
+    try {
+      final model = _eventEntryConverter(event);
+
+      await remoteCalDataSource.deleteRemoteGoogleEvent(
+        eventModel: model,
+        calendarId: calendarId,
+      );
+
+      return const Right(unit);
+    } on ServerException {
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> updateEventsData(CalendarEventEntry event,
+      {String? calendarId}) async {
+    try {
+      final model = _eventEntryConverter(event);
+
+      await remoteCalDataSource.updateRemoteGoogleEvent(
+        eventModel: model,
+        calendarId: calendarId,
+      );
+
+      return const Right(unit);
+    } on ServerException {
+      return Left(ServerFailure());
+    }
+  }
+
+  GCalEventEntryModel _eventEntryConverter(CalendarEventEntry event) {
+    final model = GCalEventEntryModel(
+      id: event.id,
+      subject: event.subject,
+      notes: event.notes,
+      startDateTime: event.startDateTime,
+      startDate: event.startDate,
+      endDate: event.endDate,
+      endDateTime: event.endDateTime,
+      organizer: event.organizer,
+    );
+    return model;
   }
 }

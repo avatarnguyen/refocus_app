@@ -22,4 +22,16 @@ abstract class CalendarRepository {
   /// Take [CalendarEventEntry] as argument
   Future<Either<Failure, Unit>> addEventsData(CalendarEventEntry event,
       {String? calendarId});
+
+  /// Update Calendar Event
+  ///
+  /// Take [CalendarEventEntry] as argument
+  Future<Either<Failure, Unit>> updateEventsData(CalendarEventEntry event,
+      {String? calendarId});
+
+  /// Delete Calendar Event
+  ///
+  /// Take [CalendarEventEntry] as argument
+  Future<Either<Failure, Unit>> deleteEventsData(CalendarEventEntry event,
+      {required String calendarId});
 }

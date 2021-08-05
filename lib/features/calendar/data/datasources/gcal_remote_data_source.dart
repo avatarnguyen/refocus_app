@@ -20,6 +20,14 @@ abstract class GCalRemoteDataSource {
   /// Add New Event to Google Calendar
   Future<void> addRemoteGoogleEvent(
       {String? calendarId, required GCalEventEntryModel eventModel});
+
+  /// Update Event in Google Calendar
+  Future<void> updateRemoteGoogleEvent(
+      {String? calendarId, required GCalEventEntryModel eventModel});
+
+  /// Delete Event in Google Calendar
+  Future<void> deleteRemoteGoogleEvent(
+      {required String calendarId, required GCalEventEntryModel eventModel});
 }
 
 @LazySingleton(as: GCalRemoteDataSource)
@@ -98,6 +106,56 @@ class GoogleAPIGCalRemoteDataSoure implements GCalRemoteDataSource {
       try {
         final request = google_api.Event.fromJson(eventModel.toJson());
         await calendarApi.events.insert(request, calendarId ?? 'primary');
+      } catch (e) {
+        print(e);
+        throw ServerException();
+      }
+    } else {
+      await gCalSignIn.signIn();
+    }
+  }
+
+  @override
+  Future<void> updateRemoteGoogleEvent(
+      {String? calendarId, required GCalEventEntryModel eventModel}) async {
+    var client = await gCalSignIn.authenticatedClient();
+    if (client != null) {
+      final calendarApi = google_api.CalendarApi(client);
+
+      try {
+        if (eventModel.id != null) {
+          final request = google_api.Event.fromJson(eventModel.toJson());
+          await calendarApi.events
+              .update(request, calendarId ?? 'primary', eventModel.id!);
+        } else {
+          print('Event ID is null');
+          throw ServerException();
+        }
+      } catch (e) {
+        print(e);
+        throw ServerException();
+      }
+    } else {
+      await gCalSignIn.signIn();
+    }
+  }
+
+  @override
+  Future<void> deleteRemoteGoogleEvent({
+    required String calendarId,
+    required GCalEventEntryModel eventModel,
+  }) async {
+    var client = await gCalSignIn.authenticatedClient();
+    if (client != null) {
+      final calendarApi = google_api.CalendarApi(client);
+
+      try {
+        if (eventModel.id != null) {
+          await calendarApi.events.delete(calendarId, eventModel.id!);
+        } else {
+          print('Event ID is null');
+          throw ServerException();
+        }
       } catch (e) {
         print(e);
         throw ServerException();

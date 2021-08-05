@@ -14,3 +14,15 @@ class AddCalendarEvent extends GcalEvent {
 
   final EventParams params;
 }
+
+class UpdateCalendarEvent extends GcalEvent {
+  const UpdateCalendarEvent(this.params);
+
+  final EventParams params;
+}
+
+class DeleteCalendarEvent extends GcalEvent {
+  const DeleteCalendarEvent(this.params);
+
+  final EventParams params;
+}

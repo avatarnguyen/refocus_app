@@ -8,7 +8,7 @@ import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/features/calendar/data/datasources/gcal_local_data_source.dart';
 import 'package:refocus_app/features/calendar/data/datasources/gcal_remote_data_source.dart';
 import 'package:refocus_app/features/calendar/data/models/gcal_event_entry_model.dart';
-import 'package:refocus_app/features/calendar/data/repositories/google_calendar_repository_impl.dart';
+import 'package:refocus_app/features/calendar/data/repositories/calendar_repository_impl.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_datasource.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
 import 'package:googleapis/calendar/v3.dart' as google_api;

@@ -2,8 +2,8 @@ import 'package:refocus_app/features/calendar/domain/entities/calendar_event_ent
 
 class GCalEventEntryModel extends CalendarEventEntry {
   const GCalEventEntryModel({
-    required id,
     required subject,
+    id,
     colorId,
     notes,
     location,
