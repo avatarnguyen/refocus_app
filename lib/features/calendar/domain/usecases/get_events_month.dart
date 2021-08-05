@@ -16,7 +16,6 @@ class GetEventsOfMonth implements UseCase<CalendarData, Params> {
 
   @override
   Future<Either<Failure, CalendarData>> call(Params params) async {
-    return await repository.getGoogleEventsDataOfMonth(
-        params.year, params.month);
+    return await repository.getEventsDataOfMonth(params.year, params.month);
   }
 }

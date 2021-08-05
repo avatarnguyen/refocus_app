@@ -32,7 +32,7 @@ void main() {
     'should get calendar data entry from the repository',
     () async {
       // arrange
-      when(() => mockGoogleCalendarRepository.getGoogleEventsData()).thenAnswer(
+      when(() => mockGoogleCalendarRepository.getEventsData()).thenAnswer(
           (_) async => Right<Failure, CalendarData>(
               CalendarData(events: [tGoogleCalendarEntry])));
       // act
@@ -40,7 +40,7 @@ void main() {
       // assert
       //! Can only compare Type bc CalendarData is not Equatable
       expect(result, isA<Right<Failure, CalendarData>>());
-      verify(mockGoogleCalendarRepository.getGoogleEventsData);
+      verify(mockGoogleCalendarRepository.getEventsData);
       verifyNoMoreInteractions(mockGoogleCalendarRepository);
     },
   );

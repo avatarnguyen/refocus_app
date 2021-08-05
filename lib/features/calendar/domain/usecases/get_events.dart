@@ -14,6 +14,6 @@ class GetEvents implements UseCase<CalendarData, NoParams> {
 
   @override
   Future<Either<Failure, CalendarData>> call(NoParams params) async {
-    return await repository.getGoogleEventsData();
+    return await repository.getEventsData();
   }
 }

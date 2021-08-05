@@ -8,8 +8,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:refocus_app/app/app.dart';
 import 'package:refocus_app/features/calendar/presentation/pages/calendar_page.dart';
+import 'package:refocus_app/injection.dart';
 
 //! Test not pass through, following message was thrown
+// TODO: Set up getit test environment:
+// https://resocoder.com/2020/02/04/injectable-flutter-dart-equivalent-to-dagger-angular-dependency-injection/#t-1628158171317
 /* 
 The following assertion was thrown building
 RawGestureDetector-[LabeledGlobalKey<RawGestureDetectorState>#2958e](state:

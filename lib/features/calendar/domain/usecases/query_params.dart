@@ -7,9 +7,9 @@ class Params extends Equatable {
     this.day,
   });
 
-  final String year;
-  final String month;
-  final String? day;
+  final int year;
+  final int month;
+  final int? day;
 
   @override
   List<Object?> get props => [year, month, day];

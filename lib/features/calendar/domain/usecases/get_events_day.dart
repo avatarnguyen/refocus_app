@@ -15,7 +15,7 @@ class GetEventsOfDay implements UseCase<CalendarData, Params> {
 
   @override
   Future<Either<Failure, CalendarData>> call(Params params) async {
-    return await repository.getGoogleEventsDataOfDay(
-        params.year, params.month, params.day ?? DateTime.now().day.toString());
+    return await repository.getEventsDataOfDay(
+        params.year, params.month, params.day ?? DateTime.now().day);
   }
 }
