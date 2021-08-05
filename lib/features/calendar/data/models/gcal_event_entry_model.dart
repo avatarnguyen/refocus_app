@@ -1,6 +1,6 @@
 import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
 
-class GCalEventEntryModel extends GCalEventEntry {
+class GCalEventEntryModel extends CalendarEventEntry {
   const GCalEventEntryModel({
     required id,
     required subject,
@@ -44,8 +44,8 @@ class GCalEventEntryModel extends GCalEventEntry {
         : null;
 
     return GCalEventEntryModel(
-      id: json['id'] ?? '',
       subject: json['summary'] ?? '',
+      id: json['id'],
       colorId: json['colorId'],
       notes: json['description'],
       location: json['location'],
@@ -90,10 +90,10 @@ class GCalEventEntryModel extends GCalEventEntry {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'subject': subject,
+        'summary': subject,
+        if (id != null) 'id': id,
         if (colorId != null) 'colorId': colorId,
-        if (notes != null) 'notes': notes,
+        if (notes != null) 'description': notes,
         if (location != null) 'location': location,
         if (recurrence != null) 'recurrence': recurrence,
         if (recurringEventId != null) 'recurringEventId': recurringEventId,

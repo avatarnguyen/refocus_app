@@ -16,6 +16,10 @@ abstract class GCalRemoteDataSource {
       {List<String>? calendarList,
       required DateTime timeMin,
       required DateTime timeMax});
+
+  /// Add New Event to Google Calendar
+  Future<void> addRemoteGoogleEvent(
+      {String? calendarId, required GCalEventEntryModel eventModel});
 }
 
 @LazySingleton(as: GCalRemoteDataSource)
@@ -38,12 +42,6 @@ class GoogleAPIGCalRemoteDataSoure implements GCalRemoteDataSource {
       final calendarApi = google_api.CalendarApi(client);
 
       try {
-        //Test Dev Calendar ID: in558pn22g34uj8j769poaddpk@group.calendar.google.com
-        // final calEvents = await calendarApi.events.list(
-        //   'nguyenanh12.vn@gmail.com',
-        //   timeMin: DateTime.parse('2021-08-01T01:00:00+02:00'),
-        //   timeMax: DateTime.parse('2021-08-30T23:55:00+02:00'),
-        // );
         if (calendarList != null) {
           for (var calendar in calendarList) {
             final calEvents = await calendarApi.events.list(
@@ -85,6 +83,27 @@ class GoogleAPIGCalRemoteDataSoure implements GCalRemoteDataSource {
           appointments.add(GCalEventEntryModel.fromJson(event.toJson()));
         }
       }
+    }
+  }
+
+  @override
+  Future<void> addRemoteGoogleEvent({
+    String? calendarId,
+    required GCalEventEntryModel eventModel,
+  }) async {
+    var client = await gCalSignIn.authenticatedClient();
+    if (client != null) {
+      final calendarApi = google_api.CalendarApi(client);
+
+      try {
+        final request = google_api.Event.fromJson(eventModel.toJson());
+        await calendarApi.events.insert(request, calendarId ?? 'primary');
+      } catch (e) {
+        print(e);
+        throw ServerException();
+      }
+    } else {
+      await gCalSignIn.signIn();
     }
   }
 }

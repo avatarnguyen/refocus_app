@@ -5,23 +5,28 @@ import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/core/usecases/usecase.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_datasource.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
+import 'package:refocus_app/features/calendar/domain/usecases/add_event.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/get_events.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/gcal_bloc.dart';
 
 class MockGetAllCalendarEntry extends Mock implements GetEvents {}
 
+class MockAddEvent extends Mock implements AddEvent {}
+
 void main() {
   late GcalBloc bloc;
   late MockGetAllCalendarEntry mockGetAllCalendarEntry;
+  late MockAddEvent mockAddEvent;
 
   setUp(() {
     mockGetAllCalendarEntry = MockGetAllCalendarEntry();
-
-    bloc = GcalBloc(getAllCalendarEntry: mockGetAllCalendarEntry);
+    mockAddEvent = MockAddEvent();
+    bloc = GcalBloc(
+        getCalendarEntry: mockGetAllCalendarEntry, addEvent: mockAddEvent);
   });
 
   group('GetAllGCalEntries', () {
-    final tGoogleCalendarEntry = GCalEventEntry(
+    final tGoogleCalendarEntry = CalendarEventEntry(
       subject: 'Event Refocus App',
       id: '4okqcu9vna2ak7jt7545ndlp9n',
       startDateTime: DateTime.parse('2021-07-19T16:45:00+02:00'),
@@ -35,7 +40,7 @@ void main() {
         when(() => mockGetAllCalendarEntry(NoParams())).thenAnswer(
             (_) async => Right(CalendarData(events: [tGoogleCalendarEntry])));
         // act
-        bloc.add(GetAllCalendarEntries());
+        bloc.add(GetCalendarEntries());
         await untilCalled(() => mockGetAllCalendarEntry(NoParams()));
         // assert
         verify(() => mockGetAllCalendarEntry(NoParams()));
@@ -56,7 +61,7 @@ void main() {
         expectLater(bloc.stream.asBroadcastStream(), emitsThrough(Loading()));
         expectLater(bloc.stream.asBroadcastStream(), emitsInOrder(expected));
         // act
-        bloc.add(GetAllCalendarEntries());
+        bloc.add(GetCalendarEntries());
       },
     );
 
@@ -73,7 +78,7 @@ void main() {
         ];
         expectLater(bloc.stream.asBroadcastStream(), emitsInOrder(expected));
         // act
-        bloc.add(GetAllCalendarEntries());
+        bloc.add(GetCalendarEntries());
       },
     );
 
@@ -90,7 +95,7 @@ void main() {
         ];
         expectLater(bloc.stream.asBroadcastStream(), emitsInOrder(expected));
         // act
-        bloc.add(GetAllCalendarEntries());
+        bloc.add(GetCalendarEntries());
       },
     );
   });

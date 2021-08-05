@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -14,8 +12,6 @@ import 'package:refocus_app/features/calendar/data/repositories/google_calendar_
 import 'package:refocus_app/features/calendar/domain/entities/calendar_datasource.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
 import 'package:googleapis/calendar/v3.dart' as google_api;
-
-import '../../../../fixtures/fixture_reader.dart';
 
 class MockRemoteDataSource extends Mock implements GCalRemoteDataSource {}
 
@@ -59,6 +55,33 @@ void main() {
     });
   }
 
+  group('addEventsData', () {
+    final tGoogleCalendarEntryModel = GCalEventEntryModel(
+      subject: 'Event Refocus App',
+      id: '4okqcu9vna2ak7jt7545ndlp9n',
+      startDateTime: DateTime.parse('2021-07-19T16:45:00+02:00'),
+      endDateTime: DateTime.parse('2021-07-19T18:30:00+02:00'),
+      organizer: 'Test Dev',
+    );
+    final tEvent = tGoogleCalendarEntryModel;
+    test(
+      'should add remote google event and return successful',
+      () async {
+        // arrange
+        when(() => mockRemoteDataSource.addRemoteGoogleEvent(
+                eventModel: tGoogleCalendarEntryModel))
+            .thenAnswer((_) async => const Right(unit));
+        // act
+        final result = await repository.addEventsData(tEvent);
+        // assert
+        verify(() => mockRemoteDataSource.addRemoteGoogleEvent(
+            eventModel: tGoogleCalendarEntryModel));
+
+        expect(result, isA<Right<Failure, Unit>>());
+      },
+    );
+  });
+
   group('getEventsData', () {
     final tGoogleCalendarEntryModel = GCalEventEntryModel(
       subject: 'Event Refocus App',
@@ -70,7 +93,7 @@ void main() {
     final timeMin = DateUtils.firstDayOfCurrentMonth();
     final timeMax = DateUtils.lastDayOfFutureMonthIn(2);
 
-    final GCalEventEntry tGoogleCalendarEntry = tGoogleCalendarEntryModel;
+    final CalendarEventEntry tGoogleCalendarEntry = tGoogleCalendarEntryModel;
     test(
       'should check if the device is online',
       () async {

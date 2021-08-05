@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:refocus_app/core/util/ui/widget_helpers.dart';
+import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
+import 'package:refocus_app/features/calendar/domain/usecases/add_event.dart';
 import 'package:refocus_app/injection.dart';
 import 'package:styled_widget/styled_widget.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+import 'package:uuid/uuid.dart';
 
 import '../bloc/gcal_bloc.dart';
 import '../widgets/widgets.dart';
@@ -34,6 +37,8 @@ class _CalendarWidgetState extends State<CalendarWidget> {
   final GoogleSignIn _googleSignIn = getIt<GoogleSignIn>();
   GoogleSignInAccount? _currentUser;
 
+  Uuid uuid = Uuid();
+
   @override
   void initState() {
     super.initState();
@@ -46,7 +51,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
       });
       if (_currentUser != null) {
         BlocProvider.of<GcalBloc>(context, listen: false)
-            .add(GetAllCalendarEntries());
+            .add(GetCalendarEntries());
       }
     });
     _googleSignIn.signInSilently();
@@ -66,6 +71,19 @@ class _CalendarWidgetState extends State<CalendarWidget> {
       appBar: AppBar(
         title: const Text('Calendar Page'),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+      floatingActionButton: FloatingActionButton(
+          onPressed: () =>
+              BlocProvider.of<GcalBloc>(context, listen: false).add(
+                AddCalendarEvent(EventParams(
+                  eventEntry: CalendarEventEntry(
+                    subject: 'Test Event from Momant',
+                    startDateTime: DateTime.parse('2021-08-05T16:45:00+02:00'),
+                    endDateTime: DateTime.parse('2021-08-05T18:30:00+02:00'),
+                    organizer: 'Test Dev',
+                  ),
+                )),
+              )),
       body: <Widget>[
         BlocBuilder<GcalBloc, GcalState>(
           builder: (context, state) {

@@ -1,11 +1,14 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:injectable/injectable.dart';
+
 import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/core/usecases/usecase.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_datasource.dart';
+import 'package:refocus_app/features/calendar/domain/usecases/add_event.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/get_events.dart';
 
 part 'gcal_event.dart';
@@ -18,20 +21,41 @@ const String invalidInputFailureMessage =
 
 @injectable
 class GcalBloc extends Bloc<GcalEvent, GcalState> {
-  GcalBloc({required this.getAllCalendarEntry}) : super(GcalInitial());
+  GcalBloc({
+    required this.getCalendarEntry,
+    required this.addEvent,
+  }) : super(GcalInitial());
 
-  final GetEvents getAllCalendarEntry;
+  final GetEvents getCalendarEntry;
+  final AddEvent addEvent;
 
   @override
   Stream<GcalState> mapEventToState(
     GcalEvent event,
   ) async* {
-    if (event is GetAllCalendarEntries) {
+    if (event is GetCalendarEntries) {
       yield Loading();
-      final failureOrEntry = await getAllCalendarEntry(NoParams());
+      final failureOrEntry = await getCalendarEntry(NoParams());
       yield failureOrEntry.fold(
         (failure) => Error(message: _mapFailureToMessage(failure)),
         (entry) => Loaded(calendarData: entry),
+      );
+    }
+    if (event is AddCalendarEvent) {
+      yield Loading();
+      final failureOrSuccess = await addEvent(event.params);
+      yield* failureOrSuccess.fold(
+        (failure) async* {
+          yield Error(message: _mapFailureToMessage(failure));
+        },
+        (unit) async* {
+          yield Loading();
+          final failureOrEntry = await getCalendarEntry(NoParams());
+          yield failureOrEntry.fold(
+            (failure) => Error(message: _mapFailureToMessage(failure)),
+            (entry) => Loaded(calendarData: entry),
+          );
+        },
       );
     }
   }

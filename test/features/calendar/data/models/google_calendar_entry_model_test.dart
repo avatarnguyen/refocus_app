@@ -19,7 +19,7 @@ void main() {
     'should be a subclass of GoogleCalendarEntry',
     () async {
       // arrange
-      expect(tGoogleCalendarEntryModel, isA<GCalEventEntry>());
+      expect(tGoogleCalendarEntryModel, isA<CalendarEventEntry>());
     },
   );
 

@@ -7,4 +7,10 @@ abstract class GcalEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class GetAllCalendarEntries extends GcalEvent {}
+class GetCalendarEntries extends GcalEvent {}
+
+class AddCalendarEvent extends GcalEvent {
+  const AddCalendarEvent(this.params);
+
+  final EventParams params;
+}

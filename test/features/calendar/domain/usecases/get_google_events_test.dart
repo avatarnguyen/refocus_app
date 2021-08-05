@@ -20,7 +20,7 @@ void main() {
     usecase = GetEvents(mockGoogleCalendarRepository);
   });
 
-  final tGoogleCalendarEntry = GCalEventEntry(
+  final tGoogleCalendarEntry = CalendarEventEntry(
     subject: 'Event Refocus App',
     id: '4okqcu9vna2ak7jt7545ndlp9n',
     startDateTime: DateTime.parse('2021-07-19T16:45:00+02:00'),

@@ -11,16 +11,19 @@ import 'package:internet_connection_checker/internet_connection_checker.dart'
     as _i3;
 import 'package:shared_preferences/shared_preferences.dart' as _i5;
 
-import 'core/injectable_module.dart' as _i13;
+import 'core/injectable_module.dart' as _i16;
 import 'core/network/network_info.dart' as _i4;
 import 'features/calendar/data/datasources/gcal_local_data_source.dart' as _i6;
 import 'features/calendar/data/datasources/gcal_remote_data_source.dart' as _i7;
 import 'features/calendar/data/repositories/google_calendar_repository_impl.dart'
     as _i10;
 import 'features/calendar/domain/repositories/calendar_repository.dart' as _i9;
+import 'features/calendar/domain/usecases/add_event.dart' as _i14;
 import 'features/calendar/domain/usecases/get_events.dart' as _i11;
+import 'features/calendar/domain/usecases/get_events_day.dart' as _i12;
+import 'features/calendar/domain/usecases/get_events_month.dart' as _i13;
 import 'features/calendar/presentation/bloc/gcal_bloc.dart'
-    as _i12; // ignore_for_file: unnecessary_lambdas
+    as _i15; // ignore_for_file: unnecessary_lambdas
 
 // ignore_for_file: lines_longer_than_80_chars
 /// initializes the registration of provided dependencies inside of [GetIt]
@@ -45,10 +48,16 @@ Future<_i1.GetIt> $initGetIt(_i1.GetIt get,
       networkInfo: get<_i4.NetworkInfo>()));
   gh.lazySingleton<_i11.GetEvents>(
       () => _i11.GetEvents(get<_i9.CalendarRepository>()));
-  gh.factory<_i12.GcalBloc>(
-      () => _i12.GcalBloc(getAllCalendarEntry: get<_i11.GetEvents>()));
+  gh.lazySingleton<_i12.GetEventsOfDay>(
+      () => _i12.GetEventsOfDay(get<_i9.CalendarRepository>()));
+  gh.lazySingleton<_i13.GetEventsOfMonth>(
+      () => _i13.GetEventsOfMonth(get<_i9.CalendarRepository>()));
+  gh.lazySingleton<_i14.AddEvent>(
+      () => _i14.AddEvent(repository: get<_i9.CalendarRepository>()));
+  gh.factory<_i15.GcalBloc>(() => _i15.GcalBloc(
+      getCalendarEntry: get<_i11.GetEvents>(), addEvent: get<_i14.AddEvent>()));
   gh.singleton<_i8.GoogleSignIn>(registerModule.gCalSignIn);
   return get;
 }
 
-class _$RegisterModule extends _i13.RegisterModule {}
+class _$RegisterModule extends _i16.RegisterModule {}

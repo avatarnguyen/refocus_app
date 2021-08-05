@@ -1,9 +1,9 @@
 import 'package:equatable/equatable.dart';
 
-class GCalEventEntry extends Equatable {
-  const GCalEventEntry({
-    required this.id,
+class CalendarEventEntry extends Equatable {
+  const CalendarEventEntry({
     required this.subject,
+    this.id,
     this.colorId,
     this.notes,
     this.location,
@@ -18,8 +18,8 @@ class GCalEventEntry extends Equatable {
     this.timeZone,
   });
 
-  final String id;
   final String subject; // Event summary
+  final String? id;
   final String? colorId;
   final String? notes; // Event description
   final String? location;
