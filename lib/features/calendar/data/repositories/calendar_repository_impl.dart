@@ -8,6 +8,7 @@ import 'package:refocus_app/features/calendar/data/datasources/gcal_local_data_s
 import 'package:refocus_app/features/calendar/data/datasources/gcal_remote_data_source.dart';
 import 'package:refocus_app/features/calendar/data/models/gcal_event_entry_model.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_datasource.dart';
+import 'package:refocus_app/features/calendar/domain/entities/calendar_entry.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
 import 'package:refocus_app/features/calendar/domain/repositories/calendar_repository.dart';
 
@@ -44,7 +45,8 @@ class CalendarRepositoryImpl implements CalendarRepository {
     } else {
       try {
         final localGCalEntry = await localCalDataSource.getLastCalendarEntry();
-        return Right(CalendarData(events: localGCalEntry));
+        var calendarData = CalendarData(events: localGCalEntry);
+        return Right(calendarData);
       } on CacheException {
         return Left(CacheFailure());
       }
@@ -154,5 +156,46 @@ class CalendarRepositoryImpl implements CalendarRepository {
       organizer: event.organizer,
     );
     return model;
+  }
+
+  @override
+  Future<Either<Failure, List<CalendarEntry>>> getCalendarList() async {
+    final calendars = <CalendarEntry>[];
+
+    if (await networkInfo.isConnected) {
+      try {
+        // Fetch Remote Calendars and update calendars in local storage
+        final remoteCalendars =
+            await remoteCalDataSource.getRemoteGoogleCalendar();
+
+        await localCalDataSource.cacheRemoteGoogleCalendar(remoteCalendars);
+
+        final localCalendars =
+            await localCalDataSource.getLastCachedGoogleCalendar();
+
+        for (var calendar in localCalendars) {
+          final calendarEntry = CalendarEntry.fromJson(calendar.toJson());
+          calendars.add(calendarEntry);
+        }
+
+        return Right(calendars);
+      } on ServerException {
+        return Left(ServerFailure());
+      }
+    } else {
+      try {
+        final localCalendar =
+            await localCalDataSource.getLastCachedGoogleCalendar();
+
+        for (var calendar in localCalendar) {
+          final calendarEntry = CalendarEntry.fromJson(calendar.toJson());
+          calendars.add(calendarEntry);
+        }
+
+        return Right(calendars);
+      } on CacheException {
+        return Left(CacheFailure());
+      }
+    }
   }
 }

@@ -15,6 +15,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 import 'package:refocus_app/app/app.dart';
 import 'package:refocus_app/app/app_bloc_observer.dart';
+import 'package:refocus_app/features/calendar/domain/entities/calendar_entry.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
 import 'package:refocus_app/injection.dart';
 
@@ -27,6 +28,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   Hive.registerAdapter(CalendarEventEntryAdapter());
+  Hive.registerAdapter(CalendarEntryAdapter());
   await configureDependencies(Env.dev);
 
   runZonedGuarded(

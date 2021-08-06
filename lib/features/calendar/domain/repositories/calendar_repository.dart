@@ -1,4 +1,6 @@
 import 'package:dartz/dartz.dart';
+import 'package:googleapis/calendar/v3.dart';
+import 'package:refocus_app/features/calendar/domain/entities/calendar_entry.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
 
 import '../../../../core/error/failures.dart';
@@ -16,6 +18,9 @@ abstract class CalendarRepository {
   // Update the day when user scroll to certain day
   Future<Either<Failure, CalendarData>> getEventsDataOfDay(
       int year, int month, int day);
+
+  /// Get List of available Calendars
+  Future<Either<Failure, List<CalendarEntry>>> getCalendarList();
 
   /// Insert New Event to Calendar
   ///

@@ -4,11 +4,15 @@ import 'package:googleapis/calendar/v3.dart' as google_api;
 import 'package:http/http.dart' as http;
 import 'package:http/io_client.dart' as io;
 import 'package:injectable/injectable.dart';
+import 'package:refocus_app/features/calendar/data/models/gcal_entry_model.dart';
 
 import '../../../../core/error/exceptions.dart';
 import '../models/gcal_event_entry_model.dart';
 
 abstract class GCalRemoteDataSource {
+  /// Get Google CalendarListEntries
+  Future<List<GCalEntryModel>> getRemoteGoogleCalendar();
+
   /// Calls the google calendar api endpoint.
   ///
   /// Throws a [ServerException] for all error codes.
@@ -164,19 +168,35 @@ class GoogleAPIGCalRemoteDataSoure implements GCalRemoteDataSource {
       await gCalSignIn.signIn();
     }
   }
-}
 
-// TODO: retrive dynamicly calendar ID & save ID locally
-// final calendarsList = await calendarApi.calendarList.list();
-// final calendarItems = calendarsList.items;
-// if (calendarItems != null) {
-//   print('List of Calendar:');
-//   calendarItems.forEach((element) {
-//     final calendar = element.summary;
-//     final calendarId = element.id;
-//     print('$calendar - $calendarId');
-//   });
-// }
+  @override
+  Future<List<GCalEntryModel>> getRemoteGoogleCalendar() async {
+    final calendars = <GCalEntryModel>[];
+
+    var client = await gCalSignIn.authenticatedClient();
+    if (client != null) {
+      final calendarApi = google_api.CalendarApi(client);
+
+      try {
+        final calendarsList = await calendarApi.calendarList.list();
+        final calendarItems = calendarsList.items;
+        if (calendarItems != null) {
+          for (var item in calendarItems) {
+            final calendar = GCalEntryModel.fromJson(item.toJson());
+            calendars.add(calendar);
+          }
+        }
+      } catch (e) {
+        print(e);
+        throw ServerException();
+      }
+    } else {
+      await gCalSignIn.signIn();
+    }
+
+    return calendars;
+  }
+}
 
 class GoogleAPIClient extends io.IOClient {
   GoogleAPIClient(this._headers) : super();

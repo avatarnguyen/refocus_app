@@ -15,7 +15,9 @@ dependencies:
   flutter_bloc: ^7.0.0
   intl: ^0.17.0
   uuid: ^3.0.4
+  # Class helpers
   equatable: ^2.0.3
+  # freezed_annotation: ^0.14.3
   # Service locator
   get_it: ^7.2.0
   injectable: ^1.4.1
@@ -49,8 +51,10 @@ dev_dependencies:
   #mockito: ^5.0.11
   very_good_analysis: ^2.1.0
   injectable_generator: ^1.4.1
-  hive_generator: ^1.1.0
   build_runner: ^2.0.6
+  # freezed: ^0.14.3
+  # json_serializable: ^5.0.0
+  hive_generator: ^1.1.0
 flutter:
   uses-material-design: true
   generate: true
