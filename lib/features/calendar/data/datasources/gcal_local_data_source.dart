@@ -11,7 +11,7 @@ abstract class GCalLocalDataSource {
   /// Gets the cached [GCalEventEntryModel] which was gotten the last time
   /// the user had an internet connection.  ///
   /// Throws a [CacheException] for all error codes.
-  Future<List<GCalEventEntryModel>> getLastCalendarEntry();
+  Future<List<GCalEventEntryModel>> getLastCalendarEventEntry();
 
   Future<void> cacheGoogleCalendarEntry(
       List<GCalEventEntryModel> calendarEntryToCache);
@@ -40,19 +40,40 @@ class HiveGCalLocalDataSource implements GCalLocalDataSource {
 
   @override
   Future<void> cacheGoogleCalendarEntry(
-      List<GCalEventEntryModel> calendarEntryToCache) {
-    return Future.forEach(calendarEntryToCache, (GCalEventEntryModel entry) {
-      final CalendarEventEntry calendarEntry = entry;
-      gcalEventsBox.put(
-        calendarEntry.id ?? calendarEntry.subject,
-        calendarEntry,
+      List<GCalEventEntryModel> calendarEntryToCache) async {
+    var calendarEntry = <String, GCalEventEntryModel>{};
+
+    try {
+      await Future.forEach(
+        calendarEntryToCache,
+        (GCalEventEntryModel entry) => calendarEntry.addAll({
+          entry.id ?? '': entry,
+        }),
       );
-    });
+
+      if (!gcalEventsBox.isOpen) {
+        throw CacheException();
+      }
+
+      return gcalEventsBox.putAll(calendarEntry);
+    } catch (e) {
+      print(e);
+      throw CacheException();
+    }
+
+    // await Future.forEach(calendarEntryToCache, (GCalEventEntryModel entry) {
+    //   final CalendarEventEntry calendarEntry = entry;
+    //   gcalEventsBox.put(
+    //     calendarEntry.id ?? calendarEntry.subject,
+    //     calendarEntry,
+    //   );
+    // });
   }
 
   @override
-  Future<List<GCalEventEntryModel>> getLastCalendarEntry() {
+  Future<List<GCalEventEntryModel>> getLastCalendarEventEntry() {
     final entryList = <GCalEventEntryModel>[];
+
     for (var i = 0; i < gcalEventsBox.length; i++) {
       final entry = gcalEventsBox.getAt(i) as CalendarEventEntry;
       entryList.add(_eventEntryConverter(entry));
@@ -76,22 +97,27 @@ class HiveGCalLocalDataSource implements GCalLocalDataSource {
 
   @override
   Future<void> cacheRemoteGoogleCalendar(List<GCalEntryModel> calendars) async {
-    await Future.forEach(calendars, (GCalEntryModel entry) {
-      // selected param should store locally and not sync with remote end point
-      final calendarEntry = CalendarEntry(
-        id: entry.id,
-        name: entry.name,
-        selected: calendarBox.get(entry.id)?.selected ?? entry.selected,
-        color: entry.color,
-        isDefault: entry.isDefault,
-        timeZone: entry.timeZone,
-      );
+    try {
+      await Future.forEach(calendars, (GCalEntryModel entry) {
+        // selected param should store locally and not sync with remote end point
+        final calendarEntry = CalendarEntry(
+          id: entry.id,
+          name: entry.name,
+          selected: calendarBox.get(entry.id)?.selected ?? entry.selected,
+          color: entry.color,
+          isDefault: entry.isDefault,
+          timeZone: entry.timeZone,
+        );
 
-      calendarBox.put(
-        calendarEntry.id,
-        calendarEntry,
-      );
-    });
+        calendarBox.put(
+          calendarEntry.id,
+          calendarEntry,
+        );
+      });
+    } catch (e) {
+      print(e);
+      throw CacheException();
+    }
   }
 
   @override

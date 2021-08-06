@@ -207,14 +207,14 @@ void main() {
         'should return last locally cached data when the cached data is present',
         () async {
           // arrange
-          when(() => mockLocalDataSource.getLastCalendarEntry())
+          when(() => mockLocalDataSource.getLastCalendarEventEntry())
               .thenAnswer((_) async => [tGoogleCalendarEntryModel]);
           // act
           final result = await repository.getEventsData();
           // assert
 
           verifyZeroInteractions(mockRemoteDataSource);
-          verify(() => mockLocalDataSource.getLastCalendarEntry());
+          verify(() => mockLocalDataSource.getLastCalendarEventEntry());
 
           expect(result, isA<Right<Failure, CalendarData>>());
 
@@ -230,13 +230,13 @@ void main() {
         'should return CacheFailure when there is no cached data present',
         () async {
           // arrange
-          when(() => mockLocalDataSource.getLastCalendarEntry())
+          when(() => mockLocalDataSource.getLastCalendarEventEntry())
               .thenThrow(CacheException());
           // act
           final result = await repository.getEventsData();
           // assert
           verifyZeroInteractions(mockRemoteDataSource);
-          verify(() => mockLocalDataSource.getLastCalendarEntry());
+          verify(() => mockLocalDataSource.getLastCalendarEventEntry());
           expect(result, equals(Left(CacheFailure())));
         },
       );

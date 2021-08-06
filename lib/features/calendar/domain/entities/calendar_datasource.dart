@@ -11,7 +11,7 @@ class CalendarData extends CalendarDataSource implements EquatableMixin {
   @override
   bool isAllDay(int index) {
     final CalendarEventEntry? event = appointments?[index];
-    return event?.allDay ?? false;
+    return event?.allDay != null;
   }
 
   @override

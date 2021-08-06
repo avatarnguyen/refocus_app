@@ -44,7 +44,8 @@ class CalendarRepositoryImpl implements CalendarRepository {
       }
     } else {
       try {
-        final localGCalEntry = await localCalDataSource.getLastCalendarEntry();
+        final localGCalEntry =
+            await localCalDataSource.getLastCalendarEventEntry();
         var calendarData = CalendarData(events: localGCalEntry);
         return Right(calendarData);
       } on CacheException {

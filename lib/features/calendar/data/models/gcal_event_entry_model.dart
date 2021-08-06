@@ -74,7 +74,7 @@ class GCalEventEntryModel extends CalendarEventEntry {
       allDay: startEvent != null
           ? startEvent.containsKey('date')
               ? true
-              : false
+              : null
           : null,
       timeZone: startEvent != null
           ? startEvent.containsKey('timeZone')
