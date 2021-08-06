@@ -10,6 +10,8 @@ import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:flutter/widgets.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import 'package:refocus_app/app/app.dart';
 import 'package:refocus_app/app/app_bloc_observer.dart';
@@ -23,6 +25,8 @@ void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
   await configureDependencies(Env.dev);
+  await Hive.initFlutter();
+
   runZonedGuarded(
     () => runApp(const App()),
     (error, stackTrace) => log(error.toString(), stackTrace: stackTrace),

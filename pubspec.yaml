@@ -26,6 +26,8 @@ dependencies:
   internet_connection_checker: ^0.0.1+2
   http: ^0.13.3
   # local cache
+  hive: ^2.0.4
+  hive_flutter: ^1.1.0
   shared_preferences: ^2.0.6
   # Google Calendar
   google_sign_in: ^5.0.5
@@ -46,6 +48,7 @@ dev_dependencies:
   #mockito: ^5.0.11
   very_good_analysis: ^2.1.0
   injectable_generator: ^1.4.1
+  hive_generator: ^1.1.0
   build_runner: ^2.0.6
 flutter:
   uses-material-design: true
