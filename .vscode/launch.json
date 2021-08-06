@@ -5,12 +5,6 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Dart Run All Tests",
-      "request": "launch",
-      "type": "dart",
-      "program": "./test/",
-    },
-    {
       "name": "Launch development",
       "request": "launch",
       "type": "dart",
@@ -21,6 +15,12 @@
         "--target",
         "lib/main_development.dart"
       ]
+    },
+    {
+      "name": "Dart Run All Tests",
+      "request": "launch",
+      "type": "dart",
+      "program": "./test/",
     },
     {
       "name": "Launch staging",

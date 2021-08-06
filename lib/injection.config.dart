@@ -6,14 +6,14 @@
 
 import 'package:get_it/get_it.dart' as _i1;
 import 'package:google_sign_in/google_sign_in.dart' as _i8;
+import 'package:hive_flutter/hive_flutter.dart' as _i3;
 import 'package:injectable/injectable.dart' as _i2;
 import 'package:internet_connection_checker/internet_connection_checker.dart'
-    as _i3;
-import 'package:shared_preferences/shared_preferences.dart' as _i5;
+    as _i5;
 
 import 'core/injectable_module.dart' as _i18;
-import 'core/network/network_info.dart' as _i4;
-import 'features/calendar/data/datasources/gcal_local_data_source.dart' as _i6;
+import 'core/network/network_info.dart' as _i6;
+import 'features/calendar/data/datasources/gcal_local_data_source.dart' as _i4;
 import 'features/calendar/data/datasources/gcal_remote_data_source.dart' as _i7;
 import 'features/calendar/data/repositories/calendar_repository_impl.dart'
     as _i10;
@@ -33,21 +33,20 @@ Future<_i1.GetIt> $initGetIt(_i1.GetIt get,
     {String? environment, _i2.EnvironmentFilter? environmentFilter}) async {
   final gh = _i2.GetItHelper(get, environment, environmentFilter);
   final registerModule = _$RegisterModule();
-  gh.lazySingleton<_i3.InternetConnectionChecker>(
-      () => registerModule.internetChecker);
-  gh.lazySingleton<_i4.NetworkInfo>(
-      () => _i4.NetworkInfoImpl(get<_i3.InternetConnectionChecker>()));
-  await gh.factoryAsync<_i5.SharedPreferences>(() => registerModule.prefs,
+  await gh.factoryAsync<_i3.Box<dynamic>>(() => registerModule.gCalBox,
       preResolve: true);
-  gh.lazySingleton<_i6.GCalLocalDataSource>(() =>
-      _i6.SharedPrefGCalLocalDataSource(
-          sharedPreferences: get<_i5.SharedPreferences>()));
+  gh.lazySingleton<_i4.GCalLocalDataSource>(
+      () => _i4.HiveGCalLocalDataSource(gcalBox: get<_i3.Box<dynamic>>()));
+  gh.lazySingleton<_i5.InternetConnectionChecker>(
+      () => registerModule.internetChecker);
+  gh.lazySingleton<_i6.NetworkInfo>(
+      () => _i6.NetworkInfoImpl(get<_i5.InternetConnectionChecker>()));
   gh.lazySingleton<_i7.GCalRemoteDataSource>(() =>
       _i7.GoogleAPIGCalRemoteDataSoure(gCalSignIn: get<_i8.GoogleSignIn>()));
   gh.lazySingleton<_i9.CalendarRepository>(() => _i10.CalendarRepositoryImpl(
       remoteCalDataSource: get<_i7.GCalRemoteDataSource>(),
-      localCalDataSource: get<_i6.GCalLocalDataSource>(),
-      networkInfo: get<_i4.NetworkInfo>()));
+      localCalDataSource: get<_i4.GCalLocalDataSource>(),
+      networkInfo: get<_i6.NetworkInfo>()));
   gh.lazySingleton<_i11.DeleteEvent>(
       () => _i11.DeleteEvent(repository: get<_i9.CalendarRepository>()));
   gh.lazySingleton<_i12.GetEvents>(
