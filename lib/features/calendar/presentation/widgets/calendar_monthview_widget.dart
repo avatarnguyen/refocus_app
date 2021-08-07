@@ -19,6 +19,11 @@ class CalendarMonthViewWidget extends StatelessWidget {
       child: SfCalendar(
         view: CalendarView.month,
         dataSource: state is Loaded ? (state as Loaded).calendarData : null,
+        // allowViewNavigation: true,
+        // allowedViews: [
+        //   CalendarView.month,
+        //   CalendarView.week,
+        // ],
         headerHeight: 48,
         headerStyle: CalendarHeaderStyle(
           textStyle: kBodyStyleBold.copyWith(
