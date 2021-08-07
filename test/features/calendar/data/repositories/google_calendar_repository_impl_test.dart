@@ -94,6 +94,10 @@ void main() {
     final timeMax = DateUtils.lastDayOfFutureMonthIn(2);
 
     final CalendarEventEntry tGoogleCalendarEntry = tGoogleCalendarEntryModel;
+
+    var calendarEntry = <String, GCalEventEntryModel>{
+      tGoogleCalendarEntryModel.id!: tGoogleCalendarEntryModel
+    };
     test(
       'should check if the device is online',
       () async {
@@ -106,6 +110,9 @@ void main() {
                 ))
             .thenAnswer(
                 (_) async => <GCalEventEntryModel>[tGoogleCalendarEntryModel]);
+        when(() => mockLocalDataSource
+                .cacheGoogleCalendarEntry([tGoogleCalendarEntryModel]))
+            .thenAnswer((_) async => calendarEntry);
         // act
         await repository.getEventsData();
         // assert
@@ -123,6 +130,9 @@ void main() {
                 timeMin: timeMin,
                 timeMax: timeMax,
               )).thenAnswer((_) async => [tGoogleCalendarEntryModel]);
+          when(() => mockLocalDataSource
+                  .cacheGoogleCalendarEntry([tGoogleCalendarEntryModel]))
+              .thenAnswer((_) async => calendarEntry);
           // act
           final result = await repository.getEventsData();
           // assert
@@ -171,6 +181,9 @@ void main() {
                 timeMin: timeMin,
                 timeMax: timeMax,
               )).thenAnswer((_) async => [tGoogleCalendarEntryModel]);
+          when(() => mockLocalDataSource
+                  .cacheGoogleCalendarEntry([tGoogleCalendarEntryModel]))
+              .thenAnswer((_) async => calendarEntry);
           // act
           await repository.getEventsData();
           // assert

@@ -1,10 +1,8 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:refocus_app/core/error/exceptions.dart';
 import 'package:refocus_app/features/calendar/data/datasources/gcal_local_data_source.dart';
 import 'package:refocus_app/features/calendar/data/models/gcal_event_entry_model.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_entry.dart';
@@ -16,39 +14,26 @@ class MockHiveEventBox extends Mock implements Box<CalendarEventEntry> {}
 
 class MockHiveCalendarBox extends Mock implements Box<CalendarEntry> {}
 
-class MockHiveInterface extends Mock implements HiveInterface {}
-
-void initialiseHive() async {
-  var path = Directory.current.path;
-  Hive
-    ..init(path)
-    ..registerAdapter(CalendarEventEntryAdapter());
-}
-
 void main() async {
-  // initialiseHive();
-
   late HiveGCalLocalDataSource dataSource;
   late MockHiveEventBox mockHiveEventBox;
   late MockHiveCalendarBox mockHiveCalendarBox;
-  late MockHiveInterface mockHiveInterface;
 
   setUp(() async {
-    mockHiveInterface = MockHiveInterface();
+    // await setUpTestHive();
+
     mockHiveEventBox = MockHiveEventBox();
     mockHiveCalendarBox = MockHiveCalendarBox();
-
-    // var path = Directory.current.path;
-    // mockHiveInterface
-    //   ..init(path)
-    //   ..openBox(cachedGCalEntry)
-    //   ..registerAdapter(CalendarEventEntryAdapter());
 
     dataSource = HiveGCalLocalDataSource(
       gcalEventsBox: mockHiveEventBox,
       calendarBox: mockHiveCalendarBox,
     );
   });
+
+  // tearDown(() async {
+  //   await tearDownTestHive();
+  // });
 
   group('getLastGCalEntry', () {
     final tGCalEntryModel = GCalEventEntryModel.fromJson(
@@ -99,23 +84,18 @@ void main() async {
       tGoogleCalendarEntryModel.id!: tGoogleCalendarEntryModel
     };
 
-// ! Don't know yet how to mock a Hive Box to put in data
     test(
       'should call Hive to cache the data',
       () async {
         // arrange
-        when(() => mockHiveInterface.openBox(cachedGCalEntry))
-            .thenAnswer((_) async => mockHiveEventBox);
-        // when(() => mockHiveEventBox.putAll(any()))
-        //     .thenAnswer((_) async => calendarEntry);
+        when(() => mockHiveEventBox.isOpen).thenReturn(true);
+        when(() => mockHiveEventBox.putAll(any()))
+            .thenAnswer((_) async => calendarEntry);
         // act
         await dataSource.cacheGoogleCalendarEntry([tGoogleCalendarEntryModel]);
         // assert
-        // final expectedCalendarEvent =
-        //     tGoogleCalendarEntryModel as CalendarEventEntry;
 
         verify(() => mockHiveEventBox.putAll(calendarEntry));
-        // verify(() => mockHiveEventBox);
       },
     );
   });

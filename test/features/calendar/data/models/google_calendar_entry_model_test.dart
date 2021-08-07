@@ -13,7 +13,7 @@ void main() {
     startDateTime: DateTime.parse('2021-07-19T16:45:00+02:00'),
     endDateTime: DateTime.parse('2021-07-19T18:30:00+02:00'),
     organizer: 'Test Dev',
-    allDay: false,
+    // allDay: false,
   );
   test(
     'should be a subclass of GoogleCalendarEntry',
