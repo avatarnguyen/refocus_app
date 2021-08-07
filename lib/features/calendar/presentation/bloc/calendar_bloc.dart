@@ -10,7 +10,7 @@ import 'package:refocus_app/core/usecases/usecase.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_datasource.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/add_event.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/delete_event.dart';
-import 'package:refocus_app/features/calendar/domain/usecases/event_params.dart';
+import 'package:refocus_app/features/calendar/domain/usecases/helpers/event_params.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/get_events.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/update_event.dart';
 

@@ -4,7 +4,7 @@ import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/core/usecases/usecase.dart';
 import 'package:refocus_app/features/calendar/domain/repositories/calendar_repository.dart';
 
-import 'event_params.dart';
+import 'helpers/event_params.dart';
 
 @lazySingleton
 class DeleteEvent implements UseCase<Unit, EventParams> {

@@ -6,7 +6,7 @@ import 'package:refocus_app/features/calendar/domain/entities/calendar_datasourc
 import '../../../../core/error/failures.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../repositories/calendar_repository.dart';
-import 'query_params.dart';
+import 'helpers/query_params.dart';
 
 @lazySingleton
 class GetEventsOfMonth implements UseCase<CalendarData, Params> {

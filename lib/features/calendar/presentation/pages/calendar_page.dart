@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:refocus_app/core/util/ui/widget_helpers.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
-import 'package:refocus_app/features/calendar/domain/usecases/event_params.dart';
+import 'package:refocus_app/features/calendar/domain/usecases/helpers/event_params.dart';
 import 'package:refocus_app/injection.dart';
 import 'package:styled_widget/styled_widget.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
