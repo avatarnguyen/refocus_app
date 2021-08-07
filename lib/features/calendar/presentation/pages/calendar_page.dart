@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:intl/intl.dart';
 import 'package:refocus_app/core/util/ui/style_helpers.dart';
 import 'package:refocus_app/core/util/ui/ui_helpers.dart';
 import 'package:refocus_app/core/util/ui/widget_helpers.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/helpers/event_params.dart';
+import 'package:refocus_app/features/calendar/presentation/widgets/calendar_monthview_widget.dart';
 import 'package:refocus_app/features/calendar/presentation/widgets/calendarview_widget.dart';
 import 'package:refocus_app/features/calendar/presentation/widgets/datepicker_widget.dart';
 import 'package:refocus_app/injection.dart';
@@ -52,7 +54,9 @@ class _CalendarWidgetState extends State<CalendarWidget> {
   final GoogleSignIn _googleSignIn = getIt<GoogleSignIn>();
   GoogleSignInAccount? _currentUser;
 
-  Uuid uuid = Uuid();
+  Uuid uuid = const Uuid();
+
+  bool showMonthView = false;
 
   @override
   void initState() {
@@ -90,6 +94,10 @@ class _CalendarWidgetState extends State<CalendarWidget> {
     }
   }
 
+  String returnMonth(DateTime date) {
+    return DateFormat.MMMM().format(date);
+  }
+
   @override
   Widget build(BuildContext context) {
     var testEvent = EventParams(
@@ -102,6 +110,8 @@ class _CalendarWidgetState extends State<CalendarWidget> {
         organizer: 'Test Dev',
       ),
     );
+
+    final today = DateTime.now();
 
     return Scaffold(
       backgroundColor: kcLightBackground,
@@ -118,25 +128,41 @@ class _CalendarWidgetState extends State<CalendarWidget> {
         [
           verticalSpaceMedium,
           Text(
-            'November',
+            returnMonth(today),
             style: kHeadline2StyleBold,
           ),
           [
             Text(
-              '2021',
+              today.year.toString(),
               style: kHeadline5StyleRegular,
             ),
-            Icon(
-              Icons.calendar_today,
-              color: kcPrimary500,
+            InkWell(
+              onTap: () {
+                setState(() {
+                  showMonthView = !showMonthView;
+                });
+              },
+              child: Icon(
+                Icons.calendar_today_rounded,
+                size: 24,
+                color: showMonthView ? kcPrimary800 : kcPrimary500,
+              )
+                  .decorated(
+                    color: showMonthView ? kcPrimary300 : Colors.transparent,
+                    borderRadius: BorderRadius.circular(16),
+                  )
+                  .constrained(height: 40, width: 40),
             )
-          ].toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween)
+          ].toRow(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+          )
         ]
             .toColumn(crossAxisAlignment: CrossAxisAlignment.start)
             .parent(headerContainer),
         // verticalSpaceSmall,
-        const DatePickerWidget(),
-        verticalSpaceMedium,
+        if (!showMonthView) const DatePickerWidget(),
+        if (!showMonthView) verticalSpaceMedium,
         // Calendar View
         BlocBuilder<CalendarBloc, CalendarState>(
           builder: (context, state) {
@@ -157,7 +183,9 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                 message: state.message,
               );
             } else if (state is Loaded) {
-              return CalendarViewWidget(state: state);
+              return showMonthView
+                  ? CalendarMonthViewWidget(state: state)
+                  : CalendarViewWidget(state: state);
             } else {
               return const MessageDisplay(
                 message: 'Unexpected State',
