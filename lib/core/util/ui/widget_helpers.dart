@@ -1,6 +1,12 @@
 import 'package:flutter/widgets.dart';
+import 'package:refocus_app/core/util/ui/ui_helpers.dart';
 import 'package:styled_widget/styled_widget.dart';
 
-Widget scrollablePage({required Widget child}) => Styled.widget(child: child)
-    .padding(vertical: 30, horizontal: 20)
-    .scrollable();
+Widget page({required Widget child}) =>
+    Container(child: Styled.widget(child: child));
+
+Widget headerContainer({required Widget child}) => SafeArea(
+      child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Styled.widget(child: child)),
+    );

@@ -7,7 +7,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:refocus_app/features/calendar/presentation/pages/calendar_page.dart';
+import 'package:refocus_app/core/presentation/pages/home_page.dart';
+import 'package:refocus_app/core/util/ui/style_helpers.dart';
+import 'package:refocus_app/core/util/ui/ui_helpers.dart';
 import 'package:refocus_app/l10n/l10n.dart';
 
 class App extends StatelessWidget {
@@ -17,15 +19,18 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-        accentColor: const Color(0xFF13B9FF),
-        appBarTheme: const AppBarTheme(color: Color(0xFF13B9FF)),
+        accentColor: kcTertiary500,
+        appBarTheme: const AppBarTheme(color: kcPrimary500),
+        // textTheme: TextTheme(
+        //   headline1: khea
+        // )
       ),
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
       ],
       supportedLocales: AppLocalizations.supportedLocales,
-      home: const CalendarPage(),
+      home: const HomePage(),
     );
   }
 }

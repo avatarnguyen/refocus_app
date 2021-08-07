@@ -1,4 +1,7 @@
+import 'dart:ui';
+
 import 'package:equatable/equatable.dart';
+import 'package:googleapis/calendar/v3.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 import 'calendar_event_entry.dart';
@@ -40,6 +43,16 @@ class CalendarData extends CalendarDataSource implements EquatableMixin {
   Object? getId(int index) {
     final CalendarEventEntry event = appointments?[index];
     return event.id;
+  }
+
+  @override
+  Color getColor(int index) {
+    final CalendarEventEntry event = appointments?[index];
+    //! Should replace with real Color String
+    print("Color: ${event.colorId}");
+    String color = "#115FFB".replaceAll('#', '0xff');
+
+    return Color(int.parse(color));
   }
 
   @override

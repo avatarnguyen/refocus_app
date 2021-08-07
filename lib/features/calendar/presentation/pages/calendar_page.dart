@@ -1,27 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:refocus_app/core/util/ui/style_helpers.dart';
+import 'package:refocus_app/core/util/ui/ui_helpers.dart';
 import 'package:refocus_app/core/util/ui/widget_helpers.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/helpers/event_params.dart';
+import 'package:refocus_app/features/calendar/presentation/widgets/calendarview_widget.dart';
+import 'package:refocus_app/features/calendar/presentation/widgets/datepicker_widget.dart';
 import 'package:refocus_app/injection.dart';
 import 'package:styled_widget/styled_widget.dart';
-import 'package:syncfusion_flutter_calendar/calendar.dart';
+
 import 'package:uuid/uuid.dart';
 
 import '../bloc/calendar_bloc.dart';
 import '../widgets/widgets.dart';
 
-class CalendarPage extends StatelessWidget {
+class CalendarPage extends StatefulWidget {
   const CalendarPage({Key? key}) : super(key: key);
 
   @override
+  _CalendarPageState createState() => _CalendarPageState();
+}
+
+class _CalendarPageState extends State<CalendarPage>
+    with AutomaticKeepAliveClientMixin {
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     return BlocProvider<CalendarBloc>(
       create: (context) => getIt<CalendarBloc>(),
       child: const CalendarWidget(),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
 
 class CalendarWidget extends StatefulWidget {
@@ -43,6 +58,16 @@ class _CalendarWidgetState extends State<CalendarWidget> {
   void initState() {
     super.initState();
 
+    // _getCurrentUser();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _getCurrentUser();
+  }
+
+  void _getCurrentUser() {
     _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) {
       print('Init Google Sign In');
 
@@ -79,9 +104,10 @@ class _CalendarWidgetState extends State<CalendarWidget> {
     );
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Calendar Page'),
-      ),
+      backgroundColor: kcLightBackground,
+      // appBar: AppBar(
+      //   title: const Text('Calendar Page'),
+      // ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: FloatingActionButton(onPressed: () {
         return BlocProvider.of<CalendarBloc>(context, listen: false).add(
@@ -89,6 +115,29 @@ class _CalendarWidgetState extends State<CalendarWidget> {
         );
       }),
       body: <Widget>[
+        [
+          verticalSpaceMedium,
+          Text(
+            'November',
+            style: kHeadline2StyleBold,
+          ),
+          [
+            Text(
+              '2021',
+              style: kHeadline5StyleRegular,
+            ),
+            Icon(
+              Icons.calendar_today,
+              color: kcPrimary500,
+            )
+          ].toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween)
+        ]
+            .toColumn(crossAxisAlignment: CrossAxisAlignment.start)
+            .parent(headerContainer),
+        // verticalSpaceSmall,
+        const DatePickerWidget(),
+        verticalSpaceMedium,
+        // Calendar View
         BlocBuilder<CalendarBloc, CalendarState>(
           builder: (context, state) {
             if (state is GcalInitial) {
@@ -108,17 +157,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                 message: state.message,
               );
             } else if (state is Loaded) {
-              return SizedBox(
-                height: 700,
-                child: SfCalendar(
-                  view: CalendarView.month,
-                  dataSource: state.calendarData,
-                  monthViewSettings: const MonthViewSettings(
-                    appointmentDisplayMode:
-                        MonthAppointmentDisplayMode.appointment,
-                  ),
-                ).center(),
-              );
+              return CalendarViewWidget(state: state);
             } else {
               return const MessageDisplay(
                 message: 'Unexpected State',
@@ -126,8 +165,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
             }
           },
         ),
-        const SizedBox(height: 15),
-      ].toColumn().parent((scrollablePage)),
+      ].toColumn(crossAxisAlignment: CrossAxisAlignment.start).parent((page)),
     );
   }
 }
