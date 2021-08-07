@@ -115,9 +115,6 @@ class _CalendarWidgetState extends State<CalendarWidget> {
 
     return Scaffold(
       backgroundColor: kcLightBackground,
-      // appBar: AppBar(
-      //   title: const Text('Calendar Page'),
-      // ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: FloatingActionButton(onPressed: () {
         return BlocProvider.of<CalendarBloc>(context, listen: false).add(
@@ -160,7 +157,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
         ]
             .toColumn(crossAxisAlignment: CrossAxisAlignment.start)
             .parent(headerContainer),
-        // verticalSpaceSmall,
+        verticalSpaceMedium,
         if (!showMonthView) const DatePickerWidget(),
         if (!showMonthView) verticalSpaceMedium,
         // Calendar View

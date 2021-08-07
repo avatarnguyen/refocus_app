@@ -20,7 +20,6 @@ class CalendarViewWidget extends StatelessWidget {
         headerHeight: 0,
         // viewHeaderHeight: 0,
         backgroundColor: kcLightBackground,
-        // cellBorderColor: kcPrimary200,
         todayHighlightColor: kcPrimary400,
         // appointmentTextStyle: kBodyStyleRegular,
         timeSlotViewSettings: const TimeSlotViewSettings(
