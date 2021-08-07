@@ -13,12 +13,26 @@ class CalendarMonthViewWidget extends StatelessWidget {
 
   final CalendarState state;
 
+  Widget loadMoreWidget(
+      BuildContext context, LoadMoreCallback loadMoreAppointments) {
+    return FutureBuilder<void>(
+      initialData: 'loading',
+      future: loadMoreAppointments(),
+      builder: (context, snapShot) {
+        return Container(
+            alignment: Alignment.center,
+            child: const CircularProgressIndicator.adaptive());
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: SfCalendar(
         view: CalendarView.month,
         dataSource: state is Loaded ? (state as Loaded).calendarData : null,
+        loadMoreWidgetBuilder: loadMoreWidget,
         // allowViewNavigation: true,
         // allowedViews: [
         //   CalendarView.month,

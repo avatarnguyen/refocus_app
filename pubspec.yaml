@@ -45,6 +45,9 @@ dependencies:
   styled_widget: ^0.3.1+2
   # Extension
   dartx: ^0.7.1
+  # Dev helpers
+  loggy: ^2.0.0+1
+  flutter_loggy: ^2.0.0
 
 dev_dependencies:
   flutter_test:
