@@ -44,19 +44,19 @@ class DateUtils {
         '${year.toString()}-$monthStr-${lastDay.toString()}T23:59:59+02:00');
   }
 
-  static DateTime beginningOfDay(int year, int month, int day) {
-    final monthStr = month.toString().padLeft(2, '0');
-    final dayStr = day.toString().padLeft(2, '0');
-    return DateTime.parse(
-        '${year.toString()}-$monthStr-${dayStr}T00:00:00+02:00');
-  }
+  // static DateTime beginningOfDay(int year, int month, int day) {
+  //   final monthStr = month.toString().padLeft(2, '0');
+  //   final dayStr = day.toString().padLeft(2, '0');
+  //   return DateTime.parse(
+  //       '${year.toString()}-$monthStr-${dayStr}T00:00:00+02:00');
+  // }
 
-  static DateTime endOfDay(int year, int month, int day) {
-    final monthStr = month.toString().padLeft(2, '0');
-    final dayStr = day.toString().padLeft(2, '0');
-    return DateTime.parse(
-        '${year.toString()}-$monthStr-${dayStr}T23:59:59+02:00');
-  }
+  // static DateTime endOfDay(int year, int month, int day) {
+  //   final monthStr = month.toString().padLeft(2, '0');
+  //   final dayStr = day.toString().padLeft(2, '0');
+  //   return DateTime.parse(
+  //       '${year.toString()}-$monthStr-${dayStr}T23:59:59+02:00');
+  // }
 
   static DateTime toGoogleRFCDateTime(DateTime dateTime) {
     final yearStr = dateTime.year.toString();

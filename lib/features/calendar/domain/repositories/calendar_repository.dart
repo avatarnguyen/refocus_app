@@ -14,9 +14,6 @@ abstract class CalendarRepository {
   // Update the month when user scroll to certain month
   Future<Either<Failure, List<CalendarEventEntry>>> getEventsDataBetween(
       DateTime startDate, DateTime endDate);
-  // Update the day when user scroll to certain day
-  Future<Either<Failure, List<CalendarEventEntry>>> getEventsDataOfDay(
-      int year, int month, int day);
 
   /// Get List of available Calendars
   Future<Either<Failure, List<CalendarEntry>>> getCalendarList();

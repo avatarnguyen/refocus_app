@@ -9,9 +9,9 @@ import '../../../../core/usecases/usecase.dart';
 import '../repositories/calendar_repository.dart';
 
 @lazySingleton
-class GetEventsOfMonth
+class GetEventsBetween
     implements UseCase<List<CalendarEventEntry>, DateRangeParams> {
-  GetEventsOfMonth(this.repository);
+  GetEventsBetween(this.repository);
 
   final CalendarRepository repository;
 

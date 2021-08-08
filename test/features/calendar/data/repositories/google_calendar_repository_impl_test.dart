@@ -93,6 +93,9 @@ void main() {
     final timeMin = DateUtils.firstDayOfCurrentMonth();
     final timeMax = DateUtils.lastDayOfFutureMonthIn(2);
 
+    final startDate = DateTime(2021, 7, 19);
+    final endDate = DateTime(2021, 7, 19, 23, 59, 59);
+
     final CalendarEventEntry tGoogleCalendarEntry = tGoogleCalendarEntryModel;
 
     var calendarEntry = <String, GCalEventEntryModel>{
@@ -153,22 +156,22 @@ void main() {
           // arrange
           when(() => mockRemoteDataSource.getRemoteGoogleEventsData(
                 calendarList: any(named: 'calendarList'),
-                timeMin: DateUtils.beginningOfDay(2021, 7, 19),
-                timeMax: DateUtils.endOfDay(2021, 7, 19),
+                timeMin: DateUtils.toGoogleRFCDateTime(startDate),
+                timeMax: DateUtils.toGoogleRFCDateTime(endDate),
               )).thenAnswer((_) async => [tGoogleCalendarEntryModel]);
           // act
-          final result = await repository.getEventsDataOfDay(2021, 7, 19);
+          final result =
+              await repository.getEventsDataBetween(startDate, endDate);
           // assert
           verify(() => mockRemoteDataSource.getRemoteGoogleEventsData(
-                timeMin: DateUtils.beginningOfDay(2021, 7, 19),
-                timeMax: DateUtils.endOfDay(2021, 7, 19),
+                timeMin: DateUtils.toGoogleRFCDateTime(startDate),
+                timeMax: DateUtils.toGoogleRFCDateTime(endDate),
               ));
 
-          expect(result, isA<Right<Failure, CalendarData>>());
+          expect(result, isA<Right<Failure, List<CalendarEventEntry>>>());
 
           final resultSubject = result.fold((l) => l, (r) => r);
-          expect((resultSubject as CalendarData).appointments,
-              equals([tGoogleCalendarEntry]));
+          expect(resultSubject, equals([tGoogleCalendarEntry]));
         },
       );
 

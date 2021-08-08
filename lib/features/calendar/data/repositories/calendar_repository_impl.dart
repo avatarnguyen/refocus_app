@@ -58,24 +58,24 @@ class CalendarRepositoryImpl implements CalendarRepository {
 
   // DateTime.parse('2021-08-01T01:00:00+02:00')
 
-  @override
-  Future<Either<Failure, List<CalendarEventEntry>>> getEventsDataOfDay(
-      int year, int month, int day) async {
-    final log = logger(CalendarRepositoryImpl);
+  // @override
+  // Future<Either<Failure, List<CalendarEventEntry>>> getEventsDataOfDay(
+  //     int year, int month, int day) async {
+  //   final log = logger(CalendarRepositoryImpl);
 
-    try {
-      final timeMin = DateUtils.beginningOfDay(year, month, day);
-      final timeMax = DateUtils.endOfDay(year, month, day);
+  //   try {
+  //     final timeMin = DateUtils.beginningOfDay(year, month, day);
+  //     final timeMax = DateUtils.endOfDay(year, month, day);
 
-      final remoteGCalEntries = await remoteCalDataSource
-          .getRemoteGoogleEventsData(timeMin: timeMin, timeMax: timeMax);
+  //     final remoteGCalEntries = await remoteCalDataSource
+  //         .getRemoteGoogleEventsData(timeMin: timeMin, timeMax: timeMax);
 
-      log.i('[getEventsDataOfDay] Appointments: ${remoteGCalEntries.length}');
-      return Right(remoteGCalEntries);
-    } on ServerException {
-      return Left(ServerFailure());
-    }
-  }
+  //     log.i('[getEventsDataOfDay] Appointments: ${remoteGCalEntries.length}');
+  //     return Right(remoteGCalEntries);
+  //   } on ServerException {
+  //     return Left(ServerFailure());
+  //   }
+  // }
 
   @override
   Future<Either<Failure, List<CalendarEventEntry>>> getEventsDataBetween(

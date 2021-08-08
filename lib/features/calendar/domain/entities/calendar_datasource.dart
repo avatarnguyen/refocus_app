@@ -4,10 +4,8 @@ import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart';
-import 'package:refocus_app/features/calendar/domain/usecases/get_events_day.dart';
-import 'package:refocus_app/features/calendar/domain/usecases/get_events_month.dart';
+import 'package:refocus_app/features/calendar/domain/usecases/get_events_between.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/helpers/date_range_query_params.dart';
-import 'package:refocus_app/features/calendar/domain/usecases/helpers/query_params.dart';
 import 'package:refocus_app/injection.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:dartx/dartx.dart';
@@ -67,23 +65,28 @@ class CalendarData extends CalendarDataSource implements EquatableMixin {
 
   @override
   Future<void> handleLoadMore(DateTime startDate, DateTime endDate) async {
+    final getEventsBetween = getIt<GetEventsBetween>();
     var newEvents = [];
 
     log.i('Load More: $startDate - $endDate');
     if (startDate.isAtSameDayAs(endDate) &&
         startDate.isAtSameMonthAs(endDate)) {
       //* Update Daily
-      final getEventsDay = getIt<GetEventsOfDay>();
-      final result = await getEventsDay(Params(
-          year: startDate.year, month: startDate.month, day: startDate.day));
+      // 2021-10-03 00:00:00.000 - 2021-10-30 00:00:00.000
+
+      final _endDay = endDate.copyWith(hour: 23, minute: 59, second: 59);
+
+      // final getEventsDay = getIt<GetEventsOfDay>();
+      // final result = await getEventsDay(Params(
+      //     year: startDate.year, month: startDate.month, day: startDate.day));
+      final result = await getEventsBetween(
+          DateRangeParams(startDate: startDate, endDate: _endDay));
       log.d('Result: $result');
 
       newEvents = _eitherFailureOrSuccess(result);
     } else {
       //* UPDATE MONTHLY
-      log.i('UPDATE IN RANGE');
-      final getEventsMonth = getIt<GetEventsOfMonth>();
-      final result = await getEventsMonth(
+      final result = await getEventsBetween(
           DateRangeParams(startDate: startDate, endDate: endDate));
       log.d('Result: $result');
 
