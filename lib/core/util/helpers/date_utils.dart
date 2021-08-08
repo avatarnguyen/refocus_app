@@ -33,28 +33,44 @@ class DateUtils {
   }
 
   static DateTime firstDateOfSpecificMonth(int year, int month) {
-    final monthStr = month < 10 ? '0${month.toString()}' : month.toString();
+    final monthStr = month.toString().padLeft(2, '0');
     return DateTime.parse('${year.toString()}-$monthStr-01T00:00:00+02:00');
   }
 
   static DateTime lastDateOfSpecificMonth(int year, int month) {
-    final monthStr = month < 10 ? '0${month.toString()}' : month.toString();
+    final monthStr = month.toString().padLeft(2, '0');
     final lastDay = lastDayOfMonth(DateTime(year, month)).day;
     return DateTime.parse(
         '${year.toString()}-$monthStr-${lastDay.toString()}T23:59:59+02:00');
   }
 
   static DateTime beginningOfDay(int year, int month, int day) {
-    final monthStr = month < 10 ? '0${month.toString()}' : month.toString();
-    final dayStr = day < 10 ? '0${day.toString()}' : day.toString();
+    final monthStr = month.toString().padLeft(2, '0');
+    final dayStr = day.toString().padLeft(2, '0');
     return DateTime.parse(
         '${year.toString()}-$monthStr-${dayStr}T00:00:00+02:00');
   }
 
   static DateTime endOfDay(int year, int month, int day) {
-    final monthStr = month < 10 ? '0${month.toString()}' : month.toString();
-    final dayStr = day < 10 ? '0${day.toString()}' : day.toString();
+    final monthStr = month.toString().padLeft(2, '0');
+    final dayStr = day.toString().padLeft(2, '0');
     return DateTime.parse(
         '${year.toString()}-$monthStr-${dayStr}T23:59:59+02:00');
+  }
+
+  static DateTime toGoogleRFCDateTime(DateTime dateTime) {
+    final yearStr = dateTime.year.toString();
+    final monthStr = dateTime.month.toString().padLeft(2, '0');
+    final dayStr = dateTime.day.toString().padLeft(2, '0');
+    final hourStr = dateTime.hour.toString().padLeft(2, '0');
+    final minuteStr = dateTime.minute.toString().padLeft(2, '0');
+    final secondStr = dateTime.second.toString().padLeft(2, '0');
+    final timeZoneStr =
+        '${dateTime.timeZoneOffset.isNegative ? '-' : '+'}${dateTime.timeZoneOffset.inHours.toString().padLeft(2, '0')}:00';
+    final result =
+        '$yearStr-$monthStr-${dayStr}T$hourStr:$minuteStr:$secondStr$timeZoneStr';
+
+    // print('Resulted String: $result');
+    return DateTime.parse(result); //+02:00
   }
 }

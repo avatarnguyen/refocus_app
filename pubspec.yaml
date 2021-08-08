@@ -46,8 +46,7 @@ dependencies:
   # Extension
   dartx: ^0.7.1
   # Dev helpers
-  loggy: ^2.0.0+1
-  flutter_loggy: ^2.0.0
+  logger: ^1.0.0
 
 dev_dependencies:
   flutter_test:

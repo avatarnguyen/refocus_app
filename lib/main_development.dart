@@ -13,7 +13,6 @@ import 'package:flutter/widgets.dart';
 // import 'package:flutter_loggy/flutter_loggy.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:loggy/loggy.dart' as lg;
 
 import 'package:refocus_app/app/app.dart';
 import 'package:refocus_app/app/app_bloc_observer.dart';
@@ -32,9 +31,6 @@ void main() async {
   Hive.registerAdapter(CalendarEventEntryAdapter());
   Hive.registerAdapter(CalendarEntryAdapter());
   await configureDependencies(Env.dev);
-  lg.Loggy.initLoggy(
-    logPrinter: const lg.PrettyPrinter(),
-  );
 
   runZonedGuarded(
     () => runApp(const App()),

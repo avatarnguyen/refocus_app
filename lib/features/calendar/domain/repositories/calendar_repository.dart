@@ -1,5 +1,4 @@
 import 'package:dartz/dartz.dart';
-import 'package:googleapis/calendar/v3.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_entry.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
 
@@ -13,10 +12,10 @@ abstract class CalendarRepository {
   /// And cache locally. If no internet connection, data will be retrive from local cache
   Future<Either<Failure, CalendarData>> getEventsData();
   // Update the month when user scroll to certain month
-  Future<Either<Failure, CalendarData>> getEventsDataOfMonth(
-      int year, int month);
+  Future<Either<Failure, List<CalendarEventEntry>>> getEventsDataBetween(
+      DateTime startDate, DateTime endDate);
   // Update the day when user scroll to certain day
-  Future<Either<Failure, CalendarData>> getEventsDataOfDay(
+  Future<Either<Failure, List<CalendarEventEntry>>> getEventsDataOfDay(
       int year, int month, int day);
 
   /// Get List of available Calendars
