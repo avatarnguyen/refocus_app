@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:refocus_app/core/util/ui/ui_helpers.dart';
 import 'package:styled_widget/styled_widget.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
@@ -16,12 +17,13 @@ class CalendarViewWidget extends StatelessWidget {
   Widget loadMoreWidget(
       BuildContext context, LoadMoreCallback loadMoreAppointments) {
     return FutureBuilder<void>(
-      initialData: 'loading',
       future: loadMoreAppointments(),
       builder: (context, snapShot) {
         return Container(
-            alignment: Alignment.center,
-            child: const CircularProgressIndicator.adaptive());
+          padding: const EdgeInsets.only(left: 24, bottom: 32),
+          alignment: Alignment.bottomLeft,
+          child: progressIndicator,
+        );
       },
     );
   }

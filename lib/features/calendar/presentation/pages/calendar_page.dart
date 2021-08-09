@@ -164,13 +164,13 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                 });
               },
               child: Icon(
-                Icons.calendar_today_rounded,
+                Icons.calendar_view_month_rounded,
                 size: 24,
-                color: showMonthView ? kcPrimary800 : kcPrimary500,
+                color: showMonthView ? kcPrimary600 : kcPrimary500,
               )
                   .decorated(
                     color: showMonthView ? kcPrimary200 : Colors.transparent,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(10),
                   )
                   .constrained(height: 32, width: 32),
             ).padding(right: 4),

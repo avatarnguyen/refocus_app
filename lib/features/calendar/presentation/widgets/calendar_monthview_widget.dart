@@ -17,12 +17,13 @@ class CalendarMonthViewWidget extends StatelessWidget {
   Widget loadMoreWidget(
       BuildContext context, LoadMoreCallback loadMoreAppointments) {
     return FutureBuilder<void>(
-      initialData: 'loading',
       future: loadMoreAppointments(),
       builder: (context, snapShot) {
         return Container(
-            alignment: Alignment.center,
-            child: const CircularProgressIndicator.adaptive());
+          padding: const EdgeInsets.only(left: 24, bottom: 32),
+          alignment: Alignment.bottomLeft,
+          child: progressIndicator,
+        );
       },
     );
   }
@@ -32,13 +33,9 @@ class CalendarMonthViewWidget extends StatelessWidget {
     return Expanded(
       child: SfCalendar(
         view: CalendarView.month,
+        initialSelectedDate: DateTime.now(),
         dataSource: state is Loaded ? (state as Loaded).calendarData : null,
         loadMoreWidgetBuilder: loadMoreWidget,
-        // allowViewNavigation: true,
-        // allowedViews: [
-        //   CalendarView.month,
-        //   CalendarView.week,
-        // ],
         headerHeight: 48,
         headerStyle: CalendarHeaderStyle(
           textStyle: kBodyStyleBold.copyWith(

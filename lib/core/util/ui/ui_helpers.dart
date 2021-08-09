@@ -1,4 +1,5 @@
 // Horizontal Spacing
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 const Widget horizontalSpaceTiny = SizedBox(width: 4.0);
@@ -14,6 +15,12 @@ const Widget verticalSpaceRegular = SizedBox(height: 16.0);
 const Widget verticalSpaceMedium = SizedBox(height: 24);
 const Widget verticalSpaceLarge = SizedBox(height: 48.0);
 const Widget verticalSpaceMassive = SizedBox(height: 120.0);
+
+const Widget progressIndicator = SizedBox(
+  height: 40,
+  width: 40,
+  child: CircularProgressIndicator.adaptive(),
+);
 
 // Screen Size Helpers
 double screenWidth(BuildContext context) => MediaQuery.of(context).size.width;
