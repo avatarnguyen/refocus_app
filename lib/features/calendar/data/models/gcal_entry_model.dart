@@ -4,14 +4,14 @@ class GCalEntryModel extends CalendarEntry {
   const GCalEntryModel({
     required id,
     required summary,
-    colorId,
+    color,
     primary,
     selected,
     timeZone,
   }) : super(
           id: id,
           name: summary,
-          color: colorId,
+          color: color,
           isDefault: primary,
           selected: selected,
           timeZone: timeZone,
@@ -21,7 +21,7 @@ class GCalEntryModel extends CalendarEntry {
     return GCalEntryModel(
       id: json['id'],
       summary: json['summary'] ?? '',
-      colorId: json['backgroundColor'],
+      color: json['backgroundColor'],
       primary: json['primary'],
       selected: json['selected'] ?? true,
       timeZone: json['timeZone'],
@@ -31,7 +31,7 @@ class GCalEntryModel extends CalendarEntry {
   Map<String, dynamic> toJson() => {
         'id': id,
         'summary': name,
-        if (color != null) 'colorId': color,
+        if (color != null) 'color': color,
         if (isDefault != null) 'primary': isDefault,
         'selected': selected ?? true,
         if (timeZone != null) 'timeZone': timeZone,

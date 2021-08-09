@@ -70,7 +70,7 @@ class CalendarEntry extends Equatable {
   Map<String, dynamic> toGCalJson() => {
         'id': id,
         'summary': name,
-        if (color != null) 'colorId': color,
+        if (color != null) 'color': color,
         if (isDefault != null) 'primary': isDefault,
         if (selected != null) 'selected': selected,
         if (timeZone != null) 'timeZone': timeZone,

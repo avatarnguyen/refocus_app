@@ -6,6 +6,7 @@ import 'package:googleapis/calendar/v3.dart' as google_api;
 import 'package:http/http.dart' as http;
 import 'package:http/io_client.dart' as io;
 import 'package:injectable/injectable.dart';
+import 'package:refocus_app/core/util/helpers/logging.dart';
 import 'package:refocus_app/features/calendar/data/models/gcal_entry_model.dart';
 
 import '../../../../core/error/exceptions.dart';
@@ -100,6 +101,7 @@ class GoogleAPIGCalRemoteDataSoure implements GCalRemoteDataSource {
         final event = calEvents.items![i];
         if (event.start != null) {
           final eventJson = event.toJson();
+          log('Calendar Color: $color');
           eventJson['colorId'] = color ?? '#3B2DB0';
           appointments.add(GCalEventEntryModel.fromJson(eventJson));
         }
@@ -181,6 +183,7 @@ class GoogleAPIGCalRemoteDataSoure implements GCalRemoteDataSource {
   @override
   Future<List<GCalEntryModel>> getRemoteGoogleCalendar() async {
     final calendars = <GCalEntryModel>[];
+    final log = logger(GCalRemoteDataSource);
 
     var client = await gCalSignIn.authenticatedClient();
     if (client != null) {
@@ -191,12 +194,13 @@ class GoogleAPIGCalRemoteDataSoure implements GCalRemoteDataSource {
         final calendarItems = calendarsList.items;
         if (calendarItems != null) {
           for (var item in calendarItems) {
+            // log.d('Calendar Items: ${item.toJson()}');
             final calendar = GCalEntryModel.fromJson(item.toJson());
             calendars.add(calendar);
           }
         }
       } catch (e) {
-        log('Catched: ${e.toString()}');
+        log.e('Catched: ${e.toString()}');
         throw ServerException();
       }
     } else {

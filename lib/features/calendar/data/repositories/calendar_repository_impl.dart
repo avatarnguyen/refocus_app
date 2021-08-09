@@ -1,6 +1,5 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
-import 'package:logger/src/logger.dart';
 import 'package:refocus_app/core/error/exceptions.dart';
 import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/core/network/network_info.dart';

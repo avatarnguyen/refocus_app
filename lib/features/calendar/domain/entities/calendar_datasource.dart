@@ -111,13 +111,13 @@ class CalendarData extends CalendarDataSource implements EquatableMixin {
     final newEvents = [];
 
     result.fold(log.e, (events) {
-      log.i('Success: $events');
+      // log.i('Success: $events');
       if (events.isNotEmpty) {
         for (var event in events) {
           if (appointments!.contains(event)) {
             continue;
           } else {
-            log.i('New Event: $event');
+            log.v('New Event: $event');
             newEvents.add(event);
           }
         }
