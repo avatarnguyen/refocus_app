@@ -7,6 +7,7 @@ import 'package:refocus_app/core/network/network_info.dart';
 import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/features/calendar/data/datasources/gcal_local_data_source.dart';
 import 'package:refocus_app/features/calendar/data/datasources/gcal_remote_data_source.dart';
+import 'package:refocus_app/features/calendar/data/models/gcal_entry_model.dart';
 import 'package:refocus_app/features/calendar/data/models/gcal_event_entry_model.dart';
 import 'package:refocus_app/features/calendar/data/repositories/calendar_repository_impl.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_datasource.dart';
@@ -64,6 +65,7 @@ void main() {
       organizer: 'Test Dev',
     );
     final tEvent = tGoogleCalendarEntryModel;
+
     test(
       'should add remote google event and return successful',
       () async {
@@ -98,6 +100,7 @@ void main() {
 
     final CalendarEventEntry tGoogleCalendarEntry = tGoogleCalendarEntryModel;
 
+    // Hive Database: using id as key
     var calendarEntry = <String, GCalEventEntryModel>{
       tGoogleCalendarEntryModel.id!: tGoogleCalendarEntryModel
     };
@@ -116,6 +119,8 @@ void main() {
         when(() => mockLocalDataSource
                 .cacheGoogleCalendarEntry([tGoogleCalendarEntryModel]))
             .thenAnswer((_) async => calendarEntry);
+        when(() => mockLocalDataSource.getLastCachedGoogleCalendar())
+            .thenAnswer((_) async => <GCalEntryModel>[]);
         // act
         await repository.getEventsData();
         // assert
@@ -136,6 +141,8 @@ void main() {
           when(() => mockLocalDataSource
                   .cacheGoogleCalendarEntry([tGoogleCalendarEntryModel]))
               .thenAnswer((_) async => calendarEntry);
+          when(() => mockLocalDataSource.getLastCachedGoogleCalendar())
+              .thenAnswer((_) async => <GCalEntryModel>[]);
           // act
           final result = await repository.getEventsData();
           // assert

@@ -57,17 +57,10 @@ class HiveGCalLocalDataSource implements GCalLocalDataSource {
 
       return gcalEventsBox.putAll(calendarEntry);
     } catch (e) {
+      // ignore: avoid_print
       print(e);
       throw CacheException();
     }
-
-    // await Future.forEach(calendarEntryToCache, (GCalEventEntryModel entry) {
-    //   final CalendarEventEntry calendarEntry = entry;
-    //   gcalEventsBox.put(
-    //     calendarEntry.id ?? calendarEntry.subject,
-    //     calendarEntry,
-    //   );
-    // });
   }
 
   @override
@@ -109,12 +102,16 @@ class HiveGCalLocalDataSource implements GCalLocalDataSource {
           timeZone: entry.timeZone,
         );
 
+        // logger(GCalLocalDataSource).d(calendarEntry.toGCalJson());
+        // {id: e_2_de#weeknum@group.v.calendar.google.com, summary: Kalenderwochen, color: #9fc6e7, selected: true, timeZone: Europe/Berlin}
+
         calendarBox.put(
           calendarEntry.id,
           calendarEntry,
         );
       });
     } catch (e) {
+      // ignore: avoid_print
       print(e);
       throw CacheException();
     }

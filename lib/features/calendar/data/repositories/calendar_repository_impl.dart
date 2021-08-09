@@ -73,9 +73,9 @@ class CalendarRepositoryImpl implements CalendarRepository {
         await localCalDataSource.getLastCachedGoogleCalendar();
     log.i('Calendar List: ${_storedCalendars.length}');
     for (var _calendar in _storedCalendars) {
-      // log.d('Selected: ${_calendar.selected}');
+      // log.v('Color: ${_calendar.color}');
       if (_calendar.selected != null && _calendar.selected == true) {
-        log.d(_calendar.name);
+        // log.d(_calendar.name);
         _calendarList.add(_calendar);
       }
     }
@@ -188,10 +188,14 @@ class CalendarRepositoryImpl implements CalendarRepository {
         final remoteCalendars =
             await remoteCalDataSource.getRemoteGoogleCalendar();
 
+        // log.d(remoteCalendars.first.toJson());
+// {id: e_2_de#weeknum@group.v.calendar.google.com, summary: Kalenderwochen, color: #9fc6e7, selected: true, timeZone: Europe/Berlin}
         await localCalDataSource.cacheRemoteGoogleCalendar(remoteCalendars);
 
+        // Get Calendar from Local Storage
         final localCalendars =
             await localCalDataSource.getLastCachedGoogleCalendar();
+        // log.i(localCalendars.first.toJson());
 
         for (var calendar in localCalendars) {
           final calendarEntry = CalendarEntry.fromJson(calendar.toJson());

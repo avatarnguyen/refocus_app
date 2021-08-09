@@ -81,14 +81,14 @@ class CalendarData extends CalendarDataSource implements EquatableMixin {
       //     year: startDate.year, month: startDate.month, day: startDate.day));
       final result = await getEventsBetween(
           DateRangeParams(startDate: startDate, endDate: _endDay));
-      log.d('Result: $result');
+      // log.d('Result: $result');
 
       newEvents = _eitherFailureOrSuccess(result);
     } else {
       //* UPDATE MONTHLY
       final result = await getEventsBetween(
           DateRangeParams(startDate: startDate, endDate: endDate));
-      log.d('Result: $result');
+      // log.d('Result: $result');
 
       newEvents = _eitherFailureOrSuccess(result);
     }

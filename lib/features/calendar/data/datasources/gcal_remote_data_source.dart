@@ -49,6 +49,8 @@ class GoogleAPIGCalRemoteDataSoure implements GCalRemoteDataSource {
     required DateTime timeMin,
     required DateTime timeMax,
   }) async {
+    final log = logger(GCalRemoteDataSource);
+
     final appointments = <GCalEventEntryModel>[];
 
     var client = await gCalSignIn.authenticatedClient();
@@ -59,6 +61,7 @@ class GoogleAPIGCalRemoteDataSoure implements GCalRemoteDataSource {
       try {
         if (calendarList != null && calendarList.isNotEmpty) {
           for (var calendar in calendarList) {
+            // log.d('(GCalEntryModel --> ${calendar.toGCalJson()}');
             final calEvents = await calendarApi.events.list(
               calendar.id,
               timeMin: timeMin,
@@ -79,7 +82,7 @@ class GoogleAPIGCalRemoteDataSoure implements GCalRemoteDataSource {
           _addEventsToAppointments(calEvents, appointments);
         }
       } catch (e) {
-        log('Catched: ${e.toString()}');
+        log.e('Catched: ${e.toString()}');
         throw ServerException();
       }
     } else {
