@@ -23,7 +23,7 @@ class GCalEntryModel extends CalendarEntry {
       summary: json['summary'] ?? '',
       colorId: json['backgroundColor'],
       primary: json['primary'],
-      selected: json['selected'],
+      selected: json['selected'] ?? true,
       timeZone: json['timeZone'],
     );
   }

@@ -10,7 +10,7 @@ import 'package:refocus_app/features/calendar/domain/usecases/delete_event.dart'
 import 'package:refocus_app/features/calendar/domain/usecases/get_calendar_list.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/get_events.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/update_event.dart';
-import 'package:refocus_app/features/calendar/presentation/bloc/calendar_bloc.dart';
+import 'package:refocus_app/features/calendar/presentation/bloc/calendar/calendar_bloc.dart';
 
 class MockGetAllCalendar extends Mock implements GetCalendarList {}
 

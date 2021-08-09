@@ -5,23 +5,19 @@ import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:injectable/injectable.dart';
 
-import 'package:refocus_app/core/error/failures.dart';
-import 'package:refocus_app/core/usecases/usecase.dart';
-import 'package:refocus_app/features/calendar/domain/entities/calendar_datasource.dart';
-import 'package:refocus_app/features/calendar/domain/usecases/add_event.dart';
-import 'package:refocus_app/features/calendar/domain/usecases/delete_event.dart';
-import 'package:refocus_app/features/calendar/domain/usecases/get_calendar_list.dart';
-import 'package:refocus_app/features/calendar/domain/usecases/get_events.dart';
-import 'package:refocus_app/features/calendar/domain/usecases/helpers/event_params.dart';
-import 'package:refocus_app/features/calendar/domain/usecases/update_event.dart';
+import '../../../../../constants/failure_message.dart';
+import '../../../../../core/error/failures.dart';
+import '../../../../../core/usecases/usecase.dart';
+import '../../../domain/entities/calendar_datasource.dart';
+import '../../../domain/usecases/add_event.dart';
+import '../../../domain/usecases/delete_event.dart';
+import '../../../domain/usecases/get_calendar_list.dart';
+import '../../../domain/usecases/get_events.dart';
+import '../../../domain/usecases/helpers/event_params.dart';
+import '../../../domain/usecases/update_event.dart';
 
 part 'calendar_event.dart';
 part 'calendar_state.dart';
-
-const String serverFailureMessage = 'Server Failure';
-const String cacheFailureMessage = 'Cache Failure';
-const String invalidInputFailureMessage =
-    'Invalid Input - The number must be a positive integer or zero.';
 
 @injectable
 class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {

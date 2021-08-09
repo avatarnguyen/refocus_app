@@ -11,7 +11,7 @@ import 'package:injectable/injectable.dart' as _i2;
 import 'package:internet_connection_checker/internet_connection_checker.dart'
     as _i7;
 
-import 'core/injectable_module.dart' as _i20;
+import 'core/injectable_module.dart' as _i21;
 import 'core/network/network_info.dart' as _i8;
 import 'features/calendar/data/datasources/gcal_local_data_source.dart' as _i6;
 import 'features/calendar/data/datasources/gcal_remote_data_source.dart' as _i9;
@@ -26,8 +26,10 @@ import 'features/calendar/domain/usecases/get_calendar_list.dart' as _i14;
 import 'features/calendar/domain/usecases/get_events.dart' as _i15;
 import 'features/calendar/domain/usecases/get_events_between.dart' as _i16;
 import 'features/calendar/domain/usecases/update_event.dart' as _i17;
-import 'features/calendar/presentation/bloc/calendar_bloc.dart'
-    as _i19; // ignore_for_file: unnecessary_lambdas
+import 'features/calendar/presentation/bloc/calendar/calendar_bloc.dart'
+    as _i19;
+import 'features/calendar/presentation/bloc/calendar_list/bloc/calendar_list_bloc.dart'
+    as _i20; // ignore_for_file: unnecessary_lambdas
 
 // ignore_for_file: lines_longer_than_80_chars
 /// initializes the registration of provided dependencies inside of [GetIt]
@@ -72,8 +74,10 @@ Future<_i1.GetIt> $initGetIt(_i1.GetIt get,
       deleteEvent: get<_i13.DeleteEvent>(),
       updateEvent: get<_i17.UpdateEvent>(),
       getCalendarList: get<_i14.GetCalendarList>()));
+  gh.factory<_i20.CalendarListBloc>(() =>
+      _i20.CalendarListBloc(getCalendarList: get<_i14.GetCalendarList>()));
   gh.singleton<_i10.GoogleSignIn>(registerModule.gCalSignIn);
   return get;
 }
 
-class _$RegisterModule extends _i20.RegisterModule {}
+class _$RegisterModule extends _i21.RegisterModule {}

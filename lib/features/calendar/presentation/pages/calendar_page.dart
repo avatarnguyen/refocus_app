@@ -10,7 +10,6 @@ import 'package:refocus_app/core/util/ui/ui_helpers.dart';
 import 'package:refocus_app/core/util/ui/widget_helpers.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/helpers/event_params.dart';
-import 'package:refocus_app/features/calendar/presentation/pages/calendar_list_page.dart';
 import 'package:refocus_app/features/calendar/presentation/widgets/calendar_monthview_widget.dart';
 import 'package:refocus_app/features/calendar/presentation/widgets/calendarview_widget.dart';
 import 'package:refocus_app/features/calendar/presentation/widgets/datepicker_widget.dart';
@@ -19,7 +18,7 @@ import 'package:styled_widget/styled_widget.dart';
 
 import 'package:uuid/uuid.dart';
 
-import '../bloc/calendar_bloc.dart';
+import '../bloc/calendar/calendar_bloc.dart';
 import '../widgets/widgets.dart';
 
 class CalendarPage extends StatefulWidget {
@@ -91,6 +90,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
     _googleSignIn.signInSilently();
   }
 
+  //! Should put sign in other page
   Future<void> _handleSignIn() async {
     try {
       await _googleSignIn.signIn();
