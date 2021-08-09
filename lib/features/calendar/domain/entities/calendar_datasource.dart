@@ -56,9 +56,9 @@ class CalendarData extends CalendarDataSource implements EquatableMixin {
   @override
   Color getColor(int index) {
     final CalendarEventEntry event = appointments?[index];
-    //! Should replace with real Color String
-    // log.d('Color: ${event.colorId}');
-    var color = '#115FFB'.replaceAll('#', '0xff');
+    final colorStr = event.colorId ?? '#115FFB';
+    log.d('Color: $colorStr');
+    var color = colorStr.replaceAll('#', '0xff');
 
     return Color(int.parse(color));
   }

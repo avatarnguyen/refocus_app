@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/route_manager.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/intl.dart';
+import 'package:refocus_app/constants/routes_name.dart';
+import 'package:refocus_app/core/util/helpers/logging.dart' as custom_log;
 import 'package:refocus_app/core/util/ui/style_helpers.dart';
 import 'package:refocus_app/core/util/ui/ui_helpers.dart';
 import 'package:refocus_app/core/util/ui/widget_helpers.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/helpers/event_params.dart';
+import 'package:refocus_app/features/calendar/presentation/pages/calendar_list_page.dart';
 import 'package:refocus_app/features/calendar/presentation/widgets/calendar_monthview_widget.dart';
 import 'package:refocus_app/features/calendar/presentation/widgets/calendarview_widget.dart';
 import 'package:refocus_app/features/calendar/presentation/widgets/datepicker_widget.dart';
@@ -53,6 +57,7 @@ class CalendarWidget extends StatefulWidget {
 class _CalendarWidgetState extends State<CalendarWidget> {
   final GoogleSignIn _googleSignIn = getIt<GoogleSignIn>();
   GoogleSignInAccount? _currentUser;
+  final log = custom_log.logger(CalendarWidget);
 
   Uuid uuid = const Uuid();
 
@@ -73,7 +78,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
 
   void _getCurrentUser() {
     _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) {
-      print('Init Google Sign In');
+      log.v('Init Google Sign In');
 
       setState(() {
         _currentUser = account;
@@ -90,7 +95,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
     try {
       await _googleSignIn.signIn();
     } catch (error) {
-      print(error);
+      log.e(error);
     }
   }
 
@@ -127,16 +132,31 @@ class _CalendarWidgetState extends State<CalendarWidget> {
       ),
       body: <Widget>[
         [
-          verticalSpaceMedium,
-          Text(
-            returnMonth(today),
-            style: kHeadline2StyleBold,
-          ),
+          verticalSpaceRegular,
           [
-            Text(
-              today.year.toString(),
-              style: kHeadline5StyleRegular,
-            ),
+            InkWell(
+              onTap: () => Get.toNamed(rCalendarListPage),
+              child: const Icon(
+                Icons.calendar_view_day,
+                size: 26,
+                color: kcPrimary500,
+              ),
+            )
+          ]
+              .toRow(mainAxisAlignment: MainAxisAlignment.end)
+              .padding(horizontal: 8),
+          verticalSpaceTiny,
+          [
+            [
+              Text(
+                returnMonth(today),
+                style: kHeadline2StyleBold,
+              ),
+              Text(
+                today.year.toString(),
+                style: kHeadline5StyleRegular,
+              ),
+            ].toColumn(crossAxisAlignment: CrossAxisAlignment.start),
             InkWell(
               onTap: () {
                 setState(() {
@@ -149,19 +169,19 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                 color: showMonthView ? kcPrimary800 : kcPrimary500,
               )
                   .decorated(
-                    color: showMonthView ? kcPrimary300 : Colors.transparent,
-                    borderRadius: BorderRadius.circular(16),
+                    color: showMonthView ? kcPrimary200 : Colors.transparent,
+                    borderRadius: BorderRadius.circular(12),
                   )
-                  .constrained(height: 40, width: 40),
-            )
+                  .constrained(height: 32, width: 32),
+            ).padding(right: 4),
           ].toRow(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
           )
         ]
             .toColumn(crossAxisAlignment: CrossAxisAlignment.start)
             .parent(headerContainer),
-        verticalSpaceMedium,
+        verticalSpaceRegular,
         if (!showMonthView) const DatePickerWidget(),
         if (!showMonthView) verticalSpaceMedium,
         // Calendar View

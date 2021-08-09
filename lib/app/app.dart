@@ -7,9 +7,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:get/get.dart';
+import 'package:get/get_navigation/src/routes/get_route.dart';
+import 'package:refocus_app/constants/routes_name.dart';
 import 'package:refocus_app/core/presentation/pages/home_page.dart';
 import 'package:refocus_app/core/util/ui/style_helpers.dart';
-import 'package:refocus_app/core/util/ui/ui_helpers.dart';
+import 'package:refocus_app/features/calendar/presentation/pages/calendar_list_page.dart';
 import 'package:refocus_app/l10n/l10n.dart';
 
 class App extends StatelessWidget {
@@ -17,20 +20,54 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
+      initialRoute: '/',
+      getPages: [
+        GetPage(name: '/', page: () => const HomePage()),
+        GetPage(
+          name: rCalendarListPage,
+          page: () => const CalendarListPage(),
+          fullscreenDialog: true,
+          transition: Transition.cupertinoDialog,
+        ),
+      ],
       theme: ThemeData(
-        accentColor: kcTertiary500,
-        appBarTheme: const AppBarTheme(color: kcPrimary500),
-        // textTheme: TextTheme(
-        //   headline1: khea
-        // )
-      ),
+          accentColor: kcTertiary500,
+          appBarTheme: const AppBarTheme(color: kcPrimary500),
+          colorScheme: const ColorScheme(
+            primary: kcPrimary500,
+            primaryVariant: kcPrimary200,
+            secondary: kcSecondary500,
+            secondaryVariant: kcSecondary200,
+            surface: Colors.white70,
+            background: kcLightBackground,
+            error: kcError500,
+            onPrimary: Colors.white,
+            onSecondary: Colors.white,
+            onSurface: Colors.black87,
+            onBackground: Colors.black87,
+            onError: Colors.white,
+            brightness: Brightness.light,
+          ),
+          textTheme: const TextTheme(
+            headline1: kHeadline1StyleBold,
+            headline2: kHeadline2StyleBold,
+            headline3: kHeadline3StyleRegular,
+            headline4: kHeadline4StyleRegular,
+            headline5: kHeadline5StyleBold,
+            headline6: kHeadline5StyleRegular,
+            bodyText1: kBodyStyleBold,
+            bodyText2: kBodyStyleRegular,
+            caption: kCaptionStyleRegular,
+            subtitle1: kSmallStyleRegular,
+            subtitle2: kXSmallStyleRegular,
+          )),
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
       ],
       supportedLocales: AppLocalizations.supportedLocales,
-      home: const HomePage(),
+      // home: const HomePage(),
     );
   }
 }

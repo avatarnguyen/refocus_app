@@ -10,8 +10,9 @@ import 'package:refocus_app/core/usecases/usecase.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_datasource.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/add_event.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/delete_event.dart';
-import 'package:refocus_app/features/calendar/domain/usecases/helpers/event_params.dart';
+import 'package:refocus_app/features/calendar/domain/usecases/get_calendar_list.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/get_events.dart';
+import 'package:refocus_app/features/calendar/domain/usecases/helpers/event_params.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/update_event.dart';
 
 part 'calendar_event.dart';
@@ -29,12 +30,14 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
     required this.addEvent,
     required this.deleteEvent,
     required this.updateEvent,
+    required this.getCalendarList,
   }) : super(GcalInitial());
 
   final GetEvents getCalendarEntry;
   final AddEvent addEvent;
   final DeleteEvent deleteEvent;
   final UpdateEvent updateEvent;
+  final GetCalendarList getCalendarList;
 
   @override
   Stream<CalendarState> mapEventToState(
@@ -42,6 +45,7 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
   ) async* {
     if (event is GetCalendarEntries) {
       yield Loading();
+      await getCalendarList(NoParams());
       final failureOrEntry = await getCalendarEntry(NoParams());
       yield* _eitherLoadedOrErrorState(failureOrEntry);
     }

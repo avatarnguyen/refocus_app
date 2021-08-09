@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/calendar/v3.dart' as google_api;
@@ -17,7 +19,7 @@ abstract class GCalRemoteDataSource {
   ///
   /// Throws a [ServerException] for all error codes.
   Future<List<GCalEventEntryModel>> getRemoteGoogleEventsData(
-      {List<String>? calendarList,
+      {List<GCalEntryModel>? calendarList,
       required DateTime timeMin,
       required DateTime timeMax});
 
@@ -42,7 +44,7 @@ class GoogleAPIGCalRemoteDataSoure implements GCalRemoteDataSource {
 
   @override
   Future<List<GCalEventEntryModel>> getRemoteGoogleEventsData({
-    List<String>? calendarList,
+    List<GCalEntryModel>? calendarList,
     required DateTime timeMin,
     required DateTime timeMax,
   }) async {
@@ -54,14 +56,18 @@ class GoogleAPIGCalRemoteDataSoure implements GCalRemoteDataSource {
       final calendarApi = google_api.CalendarApi(client);
 
       try {
-        if (calendarList != null) {
+        if (calendarList != null && calendarList.isNotEmpty) {
           for (var calendar in calendarList) {
             final calEvents = await calendarApi.events.list(
-              calendar,
+              calendar.id,
               timeMin: timeMin,
               timeMax: timeMax,
             );
-            _addEventsToAppointments(calEvents, appointments);
+            _addEventsToAppointments(
+              calEvents,
+              appointments,
+              color: calendar.color,
+            );
           }
         } else {
           final calEvents = await calendarApi.events.list(
@@ -72,7 +78,7 @@ class GoogleAPIGCalRemoteDataSoure implements GCalRemoteDataSource {
           _addEventsToAppointments(calEvents, appointments);
         }
       } catch (e) {
-        print(e);
+        log('Catched: ${e.toString()}');
         throw ServerException();
       }
     } else {
@@ -86,13 +92,16 @@ class GoogleAPIGCalRemoteDataSoure implements GCalRemoteDataSource {
   }
 
   void _addEventsToAppointments(
-      google_api.Events calEvents, List<GCalEventEntryModel> appointments) {
+      google_api.Events calEvents, List<GCalEventEntryModel> appointments,
+      {String? color}) {
     if (calEvents.items != null && calEvents.items!.isNotEmpty) {
-      print('Items Total #: ${calEvents.items!.length}');
+      log('Items Total #: ${calEvents.items!.length}');
       for (var i = 0; i < calEvents.items!.length; i++) {
         final event = calEvents.items![i];
         if (event.start != null) {
-          appointments.add(GCalEventEntryModel.fromJson(event.toJson()));
+          final eventJson = event.toJson();
+          eventJson['colorId'] = color ?? '#3B2DB0';
+          appointments.add(GCalEventEntryModel.fromJson(eventJson));
         }
       }
     }
@@ -111,7 +120,7 @@ class GoogleAPIGCalRemoteDataSoure implements GCalRemoteDataSource {
         final request = google_api.Event.fromJson(eventModel.toJson());
         await calendarApi.events.insert(request, calendarId ?? 'primary');
       } catch (e) {
-        print(e);
+        log('Catched: ${e.toString()}');
         throw ServerException();
       }
     } else {
@@ -132,11 +141,11 @@ class GoogleAPIGCalRemoteDataSoure implements GCalRemoteDataSource {
           await calendarApi.events
               .update(request, calendarId ?? 'primary', eventModel.id!);
         } else {
-          print('Event ID is null');
+          log('Event ID is null');
           throw ServerException();
         }
       } catch (e) {
-        print(e);
+        log('Catched: ${e.toString()}');
         throw ServerException();
       }
     } else {
@@ -157,11 +166,11 @@ class GoogleAPIGCalRemoteDataSoure implements GCalRemoteDataSource {
         if (eventModel.id != null) {
           await calendarApi.events.delete(calendarId, eventModel.id!);
         } else {
-          print('Event ID is null');
+          log('Event ID is null');
           throw ServerException();
         }
       } catch (e) {
-        print(e);
+        log('Catched: ${e.toString()}');
         throw ServerException();
       }
     } else {
@@ -187,7 +196,7 @@ class GoogleAPIGCalRemoteDataSoure implements GCalRemoteDataSource {
           }
         }
       } catch (e) {
-        print(e);
+        log('Catched: ${e.toString()}');
         throw ServerException();
       }
     } else {

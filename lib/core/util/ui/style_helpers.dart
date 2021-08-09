@@ -110,6 +110,8 @@ const Color kcError400 = Color(0xffE95C7B);
 const Color kcError500 = Color(0xffDF1642);
 const Color kcError600 = Color(0xff9C0F2E);
 
+const Color kTextColor = Colors.black87;
+
 // Font Sizing
 const double kHeadline1TextSize = 48;
 const double kHeadline2TextSize = 37;
@@ -128,109 +130,131 @@ const TextStyle kHeadline1StyleBold = TextStyle(
   fontSize: kHeadline1TextSize,
   fontFamily: FontFamily.inter,
   fontWeight: FontWeight.w700,
+  color: kTextColor,
 );
 const TextStyle kHeadline1StyleRegular = TextStyle(
   fontSize: kHeadline1TextSize,
   fontFamily: FontFamily.inter,
   fontWeight: FontWeight.w400,
+  color: kTextColor,
 );
 const TextStyle kHeadline2StyleBold = TextStyle(
   fontSize: kHeadline2TextSize,
   fontFamily: FontFamily.inter,
   fontWeight: FontWeight.w700,
+  color: kTextColor,
 );
 const TextStyle kHeadline2StyleRegular = TextStyle(
   fontSize: kHeadline2TextSize,
   fontFamily: FontFamily.inter,
   fontWeight: FontWeight.w400,
+  color: kTextColor,
 );
 const TextStyle kHeadline3StyleBold = TextStyle(
   fontSize: kHeadline3TextSize,
   fontFamily: FontFamily.inter,
   fontWeight: FontWeight.w700,
+  color: kTextColor,
 );
 const TextStyle kHeadline3StyleRegular = TextStyle(
   fontSize: kHeadline3TextSize,
   fontFamily: FontFamily.inter,
   fontWeight: FontWeight.w400,
+  color: kTextColor,
 );
 const TextStyle kHeadline4StyleBold = TextStyle(
   fontSize: kHeadline4TextSize,
   fontFamily: FontFamily.inter,
   fontWeight: FontWeight.w700,
+  color: kTextColor,
 );
 const TextStyle kHeadline4StyleRegular = TextStyle(
   fontSize: kHeadline4TextSize,
   fontFamily: FontFamily.inter,
   fontWeight: FontWeight.w400,
+  color: kTextColor,
 );
 const TextStyle kHeadline5StyleBold = TextStyle(
   fontSize: kHeadline5TextSize,
   fontFamily: FontFamily.inter,
   fontWeight: FontWeight.w700,
+  color: kTextColor,
 );
 const TextStyle kHeadline5StyleRegular = TextStyle(
   fontSize: kHeadline5TextSize,
   fontFamily: FontFamily.inter,
   fontWeight: FontWeight.w400,
+  color: kTextColor,
 );
 const TextStyle kLeadStyleBold = TextStyle(
   fontSize: kLeadTextSize,
   fontFamily: FontFamily.inter,
   fontWeight: FontWeight.w700,
+  color: kTextColor,
 );
 const TextStyle kLeadStyleRegular = TextStyle(
   fontSize: kLeadTextSize,
   fontFamily: FontFamily.inter,
   fontWeight: FontWeight.w400,
+  color: kTextColor,
 );
 const TextStyle kBodyStyleBold = TextStyle(
   fontSize: kBodyTextSize,
   fontFamily: FontFamily.inter,
   fontWeight: FontWeight.w700,
+  color: kTextColor,
 );
 const TextStyle kBodyStyleRegular = TextStyle(
   fontSize: kBodyTextSize,
   fontFamily: FontFamily.inter,
   fontWeight: FontWeight.w400,
+  color: kTextColor,
 );
 const TextStyle kSmallStyleBold = TextStyle(
   fontSize: kSmallTextSize,
   fontFamily: FontFamily.inter,
   fontWeight: FontWeight.w700,
+  color: kTextColor,
 );
 const TextStyle kSmallStyleRegular = TextStyle(
   fontSize: kSmallTextSize,
   fontFamily: FontFamily.inter,
   fontWeight: FontWeight.w400,
+  color: kTextColor,
 );
 const TextStyle kCaptionStyleBold = TextStyle(
   fontSize: kCaptionTextSize,
   fontFamily: FontFamily.inter,
   fontWeight: FontWeight.w700,
+  color: kTextColor,
 );
 const TextStyle kCaptionStyleRegular = TextStyle(
   fontSize: kCaptionTextSize,
   fontFamily: FontFamily.inter,
   fontWeight: FontWeight.w400,
+  color: kTextColor,
 );
 const TextStyle kXSmallStyleBold = TextStyle(
   fontSize: kXSmallTextSize,
   fontFamily: FontFamily.inter,
   fontWeight: FontWeight.w700,
+  color: kTextColor,
 );
 const TextStyle kXSmallStyleRegular = TextStyle(
   fontSize: kXSmallTextSize,
   fontFamily: FontFamily.inter,
   fontWeight: FontWeight.w400,
+  color: kTextColor,
 );
 const TextStyle kTinyStyleBold = TextStyle(
   fontSize: kTinyTextSize,
   fontFamily: FontFamily.inter,
   fontWeight: FontWeight.w700,
+  color: kTextColor,
 );
 const TextStyle kTinyStyleRegular = TextStyle(
   fontSize: kTinyTextSize,
   fontFamily: FontFamily.inter,
   fontWeight: FontWeight.w400,
+  color: kTextColor,
 );

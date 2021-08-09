@@ -7,9 +7,12 @@ import 'package:refocus_app/features/calendar/domain/entities/calendar_datasourc
 import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/add_event.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/delete_event.dart';
+import 'package:refocus_app/features/calendar/domain/usecases/get_calendar_list.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/get_events.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/update_event.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar_bloc.dart';
+
+class MockGetAllCalendar extends Mock implements GetCalendarList {}
 
 class MockGetAllCalendarEntry extends Mock implements GetEvents {}
 
@@ -21,12 +24,14 @@ class MockDeleteEvent extends Mock implements DeleteEvent {}
 
 void main() {
   late CalendarBloc bloc;
+  late MockGetAllCalendar mockGetAllCalendar;
   late MockGetAllCalendarEntry mockGetAllCalendarEntry;
   late MockAddEvent mockAddEvent;
   late MockUpdateEvent mockUpdateEvent;
   late MockDeleteEvent mockDeleteEvent;
 
   setUp(() {
+    mockGetAllCalendar = MockGetAllCalendar();
     mockGetAllCalendarEntry = MockGetAllCalendarEntry();
     mockAddEvent = MockAddEvent();
     mockUpdateEvent = MockUpdateEvent();
@@ -36,6 +41,7 @@ void main() {
       addEvent: mockAddEvent,
       deleteEvent: mockDeleteEvent,
       updateEvent: mockUpdateEvent,
+      getCalendarList: mockGetAllCalendar,
     );
   });
 

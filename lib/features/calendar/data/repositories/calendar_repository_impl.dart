@@ -7,6 +7,7 @@ import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart';
 import 'package:refocus_app/features/calendar/data/datasources/gcal_local_data_source.dart';
 import 'package:refocus_app/features/calendar/data/datasources/gcal_remote_data_source.dart';
+import 'package:refocus_app/features/calendar/data/models/gcal_entry_model.dart';
 import 'package:refocus_app/features/calendar/data/models/gcal_event_entry_model.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_datasource.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_entry.dart';
@@ -33,8 +34,24 @@ class CalendarRepositoryImpl implements CalendarRepository {
         final timeMin = DateUtils.firstDayOfCurrentMonth();
         final timeMax = DateUtils.lastDayOfFutureMonthIn(2);
 
-        final remoteGCalEntries = await remoteCalDataSource
-            .getRemoteGoogleEventsData(timeMin: timeMin, timeMax: timeMax);
+        //* Fetch Calendar List from Local Database
+        // Filter selected calendars
+        final _calendarList = <GCalEntryModel>[];
+        final _storedCalendars =
+            await localCalDataSource.getLastCachedGoogleCalendar();
+        log.i('Calendar List: ${_storedCalendars.length}');
+        for (var _calendar in _storedCalendars) {
+          if (_calendar.selected != null && _calendar.selected == true) {
+            log.d(_calendar.name);
+            _calendarList.add(_calendar);
+          }
+        }
+        final remoteGCalEntries =
+            await remoteCalDataSource.getRemoteGoogleEventsData(
+          calendarList: _calendarList,
+          timeMin: timeMin,
+          timeMax: timeMax,
+        );
 
         await localCalDataSource.cacheGoogleCalendarEntry(remoteGCalEntries);
 
@@ -58,25 +75,6 @@ class CalendarRepositoryImpl implements CalendarRepository {
 
   // DateTime.parse('2021-08-01T01:00:00+02:00')
 
-  // @override
-  // Future<Either<Failure, List<CalendarEventEntry>>> getEventsDataOfDay(
-  //     int year, int month, int day) async {
-  //   final log = logger(CalendarRepositoryImpl);
-
-  //   try {
-  //     final timeMin = DateUtils.beginningOfDay(year, month, day);
-  //     final timeMax = DateUtils.endOfDay(year, month, day);
-
-  //     final remoteGCalEntries = await remoteCalDataSource
-  //         .getRemoteGoogleEventsData(timeMin: timeMin, timeMax: timeMax);
-
-  //     log.i('[getEventsDataOfDay] Appointments: ${remoteGCalEntries.length}');
-  //     return Right(remoteGCalEntries);
-  //   } on ServerException {
-  //     return Left(ServerFailure());
-  //   }
-  // }
-
   @override
   Future<Either<Failure, List<CalendarEventEntry>>> getEventsDataBetween(
       DateTime startDate, DateTime endDate) async {
@@ -96,7 +94,7 @@ class CalendarRepositoryImpl implements CalendarRepository {
       log.i('[getEventsDataBetween] Appointments: ${remoteGCalEntries.length}');
       return Right(remoteGCalEntries);
     } on ServerException {
-      log.e("ServerException");
+      log.e('ServerException');
       return Left(ServerFailure());
     }
   }

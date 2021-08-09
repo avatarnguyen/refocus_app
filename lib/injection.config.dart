@@ -70,7 +70,8 @@ Future<_i1.GetIt> $initGetIt(_i1.GetIt get,
       getCalendarEntry: get<_i15.GetEvents>(),
       addEvent: get<_i18.AddEvent>(),
       deleteEvent: get<_i13.DeleteEvent>(),
-      updateEvent: get<_i17.UpdateEvent>()));
+      updateEvent: get<_i17.UpdateEvent>(),
+      getCalendarList: get<_i14.GetCalendarList>()));
   gh.singleton<_i10.GoogleSignIn>(registerModule.gCalSignIn);
   return get;
 }

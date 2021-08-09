@@ -21,7 +21,7 @@ class GCalEntryModel extends CalendarEntry {
     return GCalEntryModel(
       id: json['id'],
       summary: json['summary'] ?? '',
-      colorId: json['colorId'],
+      colorId: json['backgroundColor'],
       primary: json['primary'],
       selected: json['selected'],
       timeZone: json['timeZone'],
@@ -33,7 +33,7 @@ class GCalEntryModel extends CalendarEntry {
         'summary': name,
         if (color != null) 'colorId': color,
         if (isDefault != null) 'primary': isDefault,
-        if (selected != null) 'selected': selected,
+        'selected': selected ?? true,
         if (timeZone != null) 'timeZone': timeZone,
       };
 }

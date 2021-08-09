@@ -62,7 +62,7 @@ class CalendarEntry extends Equatable {
                   : null
               : null
           : null,
-      selected: json.containsKey('selected') ? json['selected'] : null,
+      selected: json.containsKey('selected') ? json['selected'] : true,
       timeZone: json.containsKey('timeZone') ? json['timeZone'] : null,
     );
   }

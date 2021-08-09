@@ -7,6 +7,8 @@ class TodayPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.amber,
+      child:
+          Center(child: ElevatedButton(onPressed: () {}, child: Text('TEST'))),
     );
   }
 }
