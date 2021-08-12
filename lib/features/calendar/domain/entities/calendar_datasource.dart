@@ -18,6 +18,7 @@ class CalendarData extends CalendarDataSource implements EquatableMixin {
   }
 
   final log = logger(CalendarData);
+  bool _isOnStart = true;
 
   @override
   bool isAllDay(int index) {
@@ -68,36 +69,43 @@ class CalendarData extends CalendarDataSource implements EquatableMixin {
     final getEventsBetween = getIt<GetEventsBetween>();
     var newEvents = [];
 
-    log.i('Load More: $startDate - $endDate');
-    if (startDate.isAtSameDayAs(endDate) &&
-        startDate.isAtSameMonthAs(endDate)) {
-      //* Update Daily
-      // 2021-10-03 00:00:00.000 - 2021-10-30 00:00:00.000
+    // log.d('On Start -> $_isOnStart');
 
-      final _endDay = endDate.copyWith(hour: 23, minute: 59, second: 59);
-      final result = await getEventsBetween(
-          DateRangeParams(startDate: startDate, endDate: _endDay));
-
-      newEvents = _eitherFailureOrSuccess(result);
+    if (_isOnStart) {
+      _isOnStart = false;
+      notifyListeners(CalendarDataSourceAction.add, []);
     } else {
-      //* UPDATE MONTHLY
-      final result = await getEventsBetween(
-          DateRangeParams(startDate: startDate, endDate: endDate));
-      // log.d('Result: $result');
+      log.i('Load More: $startDate - $endDate');
+      if (startDate.isAtSameDayAs(endDate) &&
+          startDate.isAtSameMonthAs(endDate)) {
+        //* Update Daily
+        // 2021-10-03 00:00:00.000 - 2021-10-30 00:00:00.000
 
-      newEvents = _eitherFailureOrSuccess(result);
-    }
+        final _endDay = endDate.copyWith(hour: 23, minute: 59, second: 59);
+        final result = await getEventsBetween(
+            DateRangeParams(startDate: startDate, endDate: _endDay));
 
-    //* Add New Events to Calendar (appointments)
-    if (appointments != null && newEvents.isNotEmpty) {
-      log.i('Add ${newEvents.length} New Event');
-      try {
-        await Future.forEach(newEvents, (event) => appointments!.add(event));
-      } catch (e) {
-        log.e(e);
+        newEvents = _eitherFailureOrSuccess(result);
+      } else {
+        //* UPDATE MONTHLY
+        final result = await getEventsBetween(
+            DateRangeParams(startDate: startDate, endDate: endDate));
+        // log.d('Result: $result');
+
+        newEvents = _eitherFailureOrSuccess(result);
       }
+
+      //* Add New Events to Calendar (appointments)
+      if (appointments != null && newEvents.isNotEmpty) {
+        log.i('Add ${newEvents.length} New Event');
+        try {
+          await Future.forEach(newEvents, (event) => appointments!.add(event));
+        } catch (e) {
+          log.e(e);
+        }
+      }
+      notifyListeners(CalendarDataSourceAction.add, newEvents);
     }
-    notifyListeners(CalendarDataSourceAction.add, newEvents);
   }
 
   List<dynamic> _eitherFailureOrSuccess(
