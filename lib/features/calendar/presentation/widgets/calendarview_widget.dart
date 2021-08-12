@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:refocus_app/core/util/ui/ui_helpers.dart';
 import 'package:styled_widget/styled_widget.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+import 'package:get/get.dart';
 
 import '../../../../core/util/ui/style_helpers.dart';
 import '../bloc/calendar/calendar_bloc.dart';
@@ -20,8 +21,7 @@ class CalendarViewWidget extends StatelessWidget {
       future: loadMoreAppointments(),
       builder: (context, snapShot) {
         return Container(
-          padding: const EdgeInsets.only(left: 24, bottom: 32),
-          alignment: Alignment.bottomLeft,
+          margin: EdgeInsets.only(top: context.height * 0.55, left: 8),
           child: progressIndicator,
         );
       },
