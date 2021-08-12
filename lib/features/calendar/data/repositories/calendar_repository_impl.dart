@@ -71,10 +71,10 @@ class CalendarRepositoryImpl implements CalendarRepository {
     final _calendarList = <GCalEntryModel>[];
     final _storedCalendars =
         await localCalDataSource.getLastCachedGoogleCalendar();
-    log.i('Calendar List: ${_storedCalendars.length}');
+    log.i('Stored Calendar List: ${_storedCalendars.length}');
     for (var _calendar in _storedCalendars) {
-      log.v('Calendar --> ${_calendar.toJson()}');
       if (_calendar.selected != null && _calendar.selected == true) {
+        log.v('Calendar --> ${_calendar.toJson()}');
         _calendarList.add(_calendar);
       }
     }

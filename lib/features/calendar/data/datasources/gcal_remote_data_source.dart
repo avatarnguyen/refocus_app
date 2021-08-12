@@ -59,19 +59,21 @@ class GoogleAPIGCalRemoteDataSoure implements GCalRemoteDataSource {
       final calendarApi = google_api.CalendarApi(client);
 
       try {
-        if (calendarList != null && calendarList.isNotEmpty) {
-          for (var calendar in calendarList) {
-            // log.d('(GCalEntryModel --> ${calendar.toGCalJson()}');
-            final calEvents = await calendarApi.events.list(
-              calendar.id,
-              timeMin: timeMin,
-              timeMax: timeMax,
-            );
-            _addEventsToAppointments(
-              calEvents,
-              appointments,
-              color: calendar.color,
-            );
+        if (calendarList != null) {
+          if (calendarList.isNotEmpty) {
+            for (var calendar in calendarList) {
+              // log.d('(GCalEntryModel --> ${calendar.toGCalJson()}');
+              final calEvents = await calendarApi.events.list(
+                calendar.id,
+                timeMin: timeMin,
+                timeMax: timeMax,
+              );
+              _addEventsToAppointments(
+                calEvents,
+                appointments,
+                color: calendar.color,
+              );
+            }
           }
         } else {
           final calEvents = await calendarApi.events.list(

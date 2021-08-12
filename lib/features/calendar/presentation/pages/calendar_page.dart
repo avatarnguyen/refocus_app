@@ -123,7 +123,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          return BlocProvider.of<CalendarBloc>(context, listen: false).add(
+          return BlocProvider.of<CalendarBloc>(context).add(
             DeleteCalendarEvent(testEvent),
           );
         },
@@ -135,7 +135,12 @@ class _CalendarWidgetState extends State<CalendarWidget> {
           verticalSpaceRegular,
           [
             InkWell(
-              onTap: () => Get.toNamed(rCalendarListPage),
+              onTap: () async {
+                await Get.toNamed(rCalendarListPage);
+                BlocProvider.of<CalendarBloc>(context).add(
+                  GetCalendarEntries(),
+                );
+              },
               child: const Icon(
                 Icons.calendar_view_day,
                 size: 26,
