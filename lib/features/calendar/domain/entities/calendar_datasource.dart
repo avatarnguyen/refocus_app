@@ -75,13 +75,8 @@ class CalendarData extends CalendarDataSource implements EquatableMixin {
       // 2021-10-03 00:00:00.000 - 2021-10-30 00:00:00.000
 
       final _endDay = endDate.copyWith(hour: 23, minute: 59, second: 59);
-
-      // final getEventsDay = getIt<GetEventsOfDay>();
-      // final result = await getEventsDay(Params(
-      //     year: startDate.year, month: startDate.month, day: startDate.day));
       final result = await getEventsBetween(
           DateRangeParams(startDate: startDate, endDate: _endDay));
-      // log.d('Result: $result');
 
       newEvents = _eitherFailureOrSuccess(result);
     } else {
@@ -109,7 +104,7 @@ class CalendarData extends CalendarDataSource implements EquatableMixin {
     Either<Failure, List<CalendarEventEntry>> result,
   ) {
     final newEvents = [];
-
+    //! What if entry in appointments does not exist any more?
     result.fold(log.e, (events) {
       // log.i('Success: $events');
       if (events.isNotEmpty) {
@@ -122,6 +117,7 @@ class CalendarData extends CalendarDataSource implements EquatableMixin {
           }
         }
       }
+      // appointments.map((CalendarEventEntry entry) => entry.startDateTime!.isAtSameDayAs(start));
     });
     return newEvents;
   }
