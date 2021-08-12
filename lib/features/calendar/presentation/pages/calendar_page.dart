@@ -87,7 +87,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
             .add(GetCalendarEntries());
       }
     });
-    _googleSignIn.signInSilently();
+    // _googleSignIn.signInSilently();
   }
 
   //! Should put sign in other page
