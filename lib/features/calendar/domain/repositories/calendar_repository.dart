@@ -15,9 +15,6 @@ abstract class CalendarRepository {
   Future<Either<Failure, List<CalendarEventEntry>>> getEventsDataBetween(
       DateTime startDate, DateTime endDate);
 
-  /// Get List of available Calendars
-  Future<Either<Failure, List<CalendarEntry>>> getCalendarList();
-
   /// Insert New Event to Calendar
   ///
   /// Take [CalendarEventEntry] as argument
@@ -35,4 +32,11 @@ abstract class CalendarRepository {
   /// Take [CalendarEventEntry] as argument
   Future<Either<Failure, Unit>> deleteEventsData(CalendarEventEntry event,
       {required String calendarId});
+
+  //* Methods for Calendar List
+  /// Get List of available Calendars
+  Future<Either<Failure, List<CalendarEntry>>> getCalendarList();
+
+  Future<Either<Failure, CalendarEntry>> updateCalendarList(
+      CalendarEntry calendar);
 }

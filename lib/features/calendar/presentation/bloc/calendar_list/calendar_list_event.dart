@@ -8,3 +8,9 @@ abstract class CalendarListEvent extends Equatable {
 }
 
 class GetCalendarListEvent extends CalendarListEvent {}
+
+class UpdateCalendarEvent extends CalendarListEvent {
+  const UpdateCalendarEvent(this.params);
+
+  final CalendarParams params;
+}

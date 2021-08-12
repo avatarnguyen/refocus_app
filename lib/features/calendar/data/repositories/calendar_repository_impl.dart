@@ -195,8 +195,8 @@ class CalendarRepositoryImpl implements CalendarRepository {
             await localCalDataSource.getLastCachedGoogleCalendar();
 
         for (var calendar in localCalendars) {
-          final calendarEntry = CalendarEntry.fromJson(calendar.toJson());
-          calendars.add(calendarEntry);
+          // final calendarEntry = CalendarEntry.fromJson(calendar.toJson());
+          calendars.add(calendar);
         }
 
         return Right(calendars);
@@ -209,14 +209,29 @@ class CalendarRepositoryImpl implements CalendarRepository {
             await localCalDataSource.getLastCachedGoogleCalendar();
 
         for (var calendar in localCalendar) {
-          final calendarEntry = CalendarEntry.fromJson(calendar.toJson());
-          calendars.add(calendarEntry);
+          // final calendarEntry = CalendarEntry.fromJson(calendar.toJson());
+          calendars.add(calendar);
         }
 
         return Right(calendars);
       } on CacheException {
         return Left(CacheFailure());
       }
+    }
+  }
+
+  @override
+  Future<Either<Failure, CalendarEntry>> updateCalendarList(
+      CalendarEntry calendar) async {
+    try {
+      final gCalEntry = GCalEntryModel.fromJson(calendar.toGCalJson());
+
+      final result =
+          await localCalDataSource.updateCachedCalendarEntry(gCalEntry);
+
+      return Right(result);
+    } on CacheException {
+      return Left(CacheFailure());
     }
   }
 }

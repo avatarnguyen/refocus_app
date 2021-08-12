@@ -21,6 +21,9 @@ abstract class GCalLocalDataSource {
   /// And return the same list of calendars [GCalEntryModel] back.
   Future<void> cacheRemoteGoogleCalendar(List<GCalEntryModel> calendars);
 
+  /// Update Local Calendar Entry
+  Future<CalendarEntry> updateCachedCalendarEntry(GCalEntryModel calendar);
+
   /// Get Cached Google CalendarList Entries
   Future<List<GCalEntryModel>> getLastCachedGoogleCalendar();
 }
@@ -110,6 +113,21 @@ class HiveGCalLocalDataSource implements GCalLocalDataSource {
           calendarEntry,
         );
       });
+    } catch (e) {
+      // ignore: avoid_print
+      print(e);
+      throw CacheException();
+    }
+  }
+
+  @override
+  Future<CalendarEntry> updateCachedCalendarEntry(GCalEntryModel calendar) {
+    try {
+      calendarBox.put(
+        calendar.id,
+        calendar,
+      );
+      return Future.value(calendarBox.get(calendar.id));
     } catch (e) {
       // ignore: avoid_print
       print(e);

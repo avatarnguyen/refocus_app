@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-
 import 'package:hive/hive.dart';
 
 part 'calendar_entry.g.dart';
@@ -42,30 +41,26 @@ class CalendarEntry extends Equatable {
         timeZone,
       ];
 
-  // ignore: sort_constructors_first
-  factory CalendarEntry.fromJson(Map<String, dynamic> json) {
-    return CalendarEntry(
-      id: json['id'],
-      name: json['summary'] ?? '',
-      accountName: json.containsKey('accountName') ? json['accountName'] : null,
-      color: json.containsKey('colorId')
-          ? json['colorId']
-              ? json.containsKey('color')
-                  ? (json['color'] as int).toString()
-                  : null
-              : null
-          : null,
-      isDefault: json.containsKey('primary')
-          ? json['primary']
-              ? json.containsKey('isDefault')
-                  ? json['isDefault']
-                  : null
-              : null
-          : null,
-      selected: json.containsKey('selected') ? json['selected'] : true,
-      timeZone: json.containsKey('timeZone') ? json['timeZone'] : null,
-    );
-  }
+  // // ignore: sort_constructors_first
+  // factory CalendarEntry.fromJson(Map<String, dynamic> json) {
+  //   return CalendarEntry(
+  //     id: json['id'],
+  //     name: json['summary'] ?? '',
+  //     accountName: json.containsKey('accountName') ? json['accountName'] : null,
+  //     color: json.containsKey('colorId')
+  //         ? json['colorId']
+  //         : json.containsKey('color')
+  //             ? json['color']
+  //             : null,
+  //     isDefault: json.containsKey('primary')
+  //         ? json['primary']
+  //         : json.containsKey('isDefault')
+  //             ? json['isDefault']
+  //             : null,
+  //     selected: json.containsKey('selected') ? json['selected'] : true,
+  //     timeZone: json.containsKey('timeZone') ? json['timeZone'] : null,
+  //   );
+  // }
 
   Map<String, dynamic> toGCalJson() => {
         'id': id,
@@ -75,4 +70,24 @@ class CalendarEntry extends Equatable {
         if (selected != null) 'selected': selected,
         if (timeZone != null) 'timeZone': timeZone,
       };
+
+  CalendarEntry copyWith({
+    String? id,
+    String? name,
+    String? color,
+    bool? isDefault,
+    String? accountName,
+    bool? selected,
+    String? timeZone,
+  }) {
+    return CalendarEntry(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      color: color ?? this.color,
+      isDefault: isDefault ?? this.isDefault,
+      accountName: accountName ?? this.accountName,
+      selected: selected ?? this.selected,
+      timeZone: timeZone ?? this.timeZone,
+    );
+  }
 }
