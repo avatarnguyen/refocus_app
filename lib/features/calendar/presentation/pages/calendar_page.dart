@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/route_manager.dart';
@@ -54,20 +56,14 @@ class CalendarWidget extends StatefulWidget {
 }
 
 class _CalendarWidgetState extends State<CalendarWidget> {
+  final log = custom_log.logger(CalendarWidget);
+
   final GoogleSignIn _googleSignIn = getIt<GoogleSignIn>();
   GoogleSignInAccount? _currentUser;
-  final log = custom_log.logger(CalendarWidget);
 
   Uuid uuid = const Uuid();
 
   bool showMonthView = false;
-
-  @override
-  void initState() {
-    super.initState();
-
-    // _getCurrentUser();
-  }
 
   @override
   void didChangeDependencies() {

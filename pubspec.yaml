@@ -46,6 +46,8 @@ dependencies:
   styled_widget: ^0.3.1+2
   # Extension
   dartx: ^0.7.1
+  # Stream Extension
+  rxdart: ^0.27.1
   # Dev helpers
   logger: ^1.0.0
 
