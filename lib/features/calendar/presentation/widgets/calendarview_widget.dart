@@ -70,16 +70,25 @@ class _CalendarViewWidgetState extends State<CalendarViewWidget> {
   Color darken(Color color, [double amount = .1]) {
     assert(amount >= 0 && amount <= 1);
     final hsl = HSLColor.fromColor(color);
-    final hslDark = hsl.withLightness((hsl.lightness - amount).clamp(0.0, 1.0));
-    return hslDark.toColor();
+    if (hsl.lightness - amount > 0.1) {
+      final hslDark =
+          hsl.withLightness((hsl.lightness - amount).clamp(0.0, 1.0));
+      return hslDark.toColor();
+    } else {
+      return hsl.withLightness((0.1).clamp(0.0, 1.0)).toColor();
+    }
   }
 
   Color lighten(Color color, [double amount = .1]) {
     assert(amount >= 0 && amount <= 1);
     final hsl = HSLColor.fromColor(color);
-    final hslLight =
-        hsl.withLightness((hsl.lightness + amount).clamp(0.0, 1.0));
-    return hslLight.toColor();
+    if (hsl.lightness + amount < 1.0) {
+      final hslLight =
+          hsl.withLightness((hsl.lightness + amount).clamp(0.0, 1.0));
+      return hslLight.toColor();
+    } else {
+      return hsl.withLightness((0.92).clamp(0.0, 1.0)).toColor();
+    }
   }
 
   Widget appointmentBuilder(BuildContext context,
@@ -91,7 +100,7 @@ class _CalendarViewWidgetState extends State<CalendarViewWidget> {
     final _color = Color(int.parse(_colorValue));
     final _backgroudColor = lighten(_color, 0.25);
 
-    final _textColor = darken(_color, 0.35);
+    final _textColor = darken(_color, 0.32);
 
     final _height = calendarAppointmentDetails.bounds.height;
     final _width = calendarAppointmentDetails.bounds.width;
