@@ -852,6 +852,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "19.2.49"
+  tale_drawer:
+    dependency: "direct main"
+    description:
+      name: tale_drawer
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.1"
   term_glyph:
     dependency: transitive
     description:
@@ -901,6 +908,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
+  tools_tkmonkey:
+    dependency: transitive
+    description:
+      name: tools_tkmonkey
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.2"
   typed_data:
     dependency: transitive
     description:

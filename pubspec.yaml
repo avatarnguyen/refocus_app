@@ -48,9 +48,9 @@ dependencies:
   # Dev helpers
   logger: ^1.0.0
   # UI Packages:
-  sliding_sheet:
-    ^0.5.0
-    # Calendar
+  sliding_sheet: ^0.5.0
+  tale_drawer: ^0.0.1
+  ## Calendar
   syncfusion_flutter_calendar: ^19.2.49
   date_picker_timeline: ^1.2.3
 

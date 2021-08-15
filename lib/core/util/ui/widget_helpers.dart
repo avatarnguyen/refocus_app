@@ -9,3 +9,7 @@ Widget page({required Widget child}) => SafeArea(
 Widget headerContainer({required Widget child}) => Container(
     padding: const EdgeInsets.symmetric(horizontal: 16),
     child: Styled.widget(child: child));
+
+Widget headerTodayContainer({required Widget child}) => Container(
+    padding: const EdgeInsets.only(left: 16, right: 8),
+    child: Styled.widget(child: child));

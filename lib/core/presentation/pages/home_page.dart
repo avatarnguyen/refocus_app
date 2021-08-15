@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:refocus_app/core/presentation/pages/today_page.dart';
+import 'package:refocus_app/core/util/ui/style_helpers.dart';
 import 'package:refocus_app/features/calendar/presentation/pages/calendar_page.dart';
+import 'package:tale_drawer/tale_drawer.dart';
+import 'package:sliding_sheet/sliding_sheet.dart';
+
+import 'package:get/get.dart';
 
 import '../../../injection.dart';
+
+const rightPaddingSize = 8.0;
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -17,6 +24,8 @@ class _HomePageState extends State<HomePage> {
     initialPage: 1,
   );
   final GoogleSignIn _googleSignIn = getIt<GoogleSignIn>();
+  final drawerController = TaleController();
+  double rightPadding = rightPaddingSize;
 
   @override
   void initState() {
@@ -30,15 +39,92 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
+  void onDrawerPressed() {
+    drawerController.isDrawerOpen
+        ? drawerController.close()
+        : drawerController.open();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return PageView(
-      physics: const ClampingScrollPhysics(),
-      controller: _pageController,
-      children: const [
-        CalendarPage(),
-        TodayPage(),
-      ],
+    return TaleDrawer(
+      controller: drawerController,
+      type: TaleType.Flip,
+      drawerState: DrawerState.CLOSED,
+      sideState: SideState.RIGHT,
+      listener: TaleListener(
+        onOpen: () {
+          print('OnOpen');
+        },
+        onClose: () {
+          print('OnClose');
+        },
+      ),
+      settings: FlipSettings(
+        type: DrawerAnimation.FLIP,
+        drawerWidth: context.width - 20.0,
+      ),
+      drawer: Container(
+        color: const Color(0xff2E2C3C),
+      ),
+      body: Scaffold(
+        body: SlidingSheet(
+          isBackdropInteractable: true,
+          elevation: 16,
+          cornerRadius: 24,
+          shadowColor: Colors.black26,
+          snapSpec: const SnapSpec(
+            snap: true,
+            // Set custom snapping points.
+            initialSnap: 0.06,
+            snappings: [0.06, 0.5, 1.0],
+            positioning: SnapPositioning.relativeToAvailableSpace,
+          ),
+          headerBuilder: (context, state) => Container(
+            height: 48.0,
+            color: kcWarning300,
+          ),
+          builder: (context, state) => ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: 40,
+            itemBuilder: (BuildContext context, int index) {
+              return const ListTile(
+                title: Text('Test Cell'),
+              );
+            },
+          ),
+          body: Container(
+            color: context.theme.backgroundColor,
+            height: context.height,
+            width: context.width,
+            padding: EdgeInsets.only(right: rightPadding),
+            child: PageView(
+              allowImplicitScrolling: true,
+              physics: const ClampingScrollPhysics(),
+              controller: _pageController,
+              onPageChanged: (int index) {
+                if (index == 0) {
+                  //* Maybe change to Valuelistener Builder to make this faster
+                  setState(() {
+                    rightPadding = 0.0;
+                  });
+                } else {
+                  setState(() {
+                    rightPadding = rightPaddingSize;
+                  });
+                }
+              },
+              children: [
+                const CalendarPage(),
+                TodayPage(
+                  onDrawerSelected: onDrawerPressed,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

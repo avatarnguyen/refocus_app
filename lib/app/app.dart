@@ -34,6 +34,7 @@ class App extends StatelessWidget {
       theme: ThemeData(
           accentColor: kcTertiary500,
           appBarTheme: const AppBarTheme(color: kcPrimary500),
+          backgroundColor: kcLightBackground,
           colorScheme: const ColorScheme(
             primary: kcPrimary500,
             primaryVariant: kcPrimary200,
