@@ -3,15 +3,17 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:refocus_app/core/util/ui/ui_helpers.dart';
+import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar/datetime_stream.dart';
 import 'package:styled_widget/styled_widget.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:get/get.dart';
-import 'package:dartx/dartx.dart';
 
 import '../../../../core/util/ui/style_helpers.dart';
 import '../../../../injection.dart';
 import '../bloc/calendar/calendar_bloc.dart';
+import 'appointment_widget.dart';
+import 'day_event_widget.dart';
 
 class CalendarViewWidget extends StatefulWidget {
   const CalendarViewWidget({
@@ -65,6 +67,66 @@ class _CalendarViewWidgetState extends State<CalendarViewWidget> {
     );
   }
 
+  Color darken(Color color, [double amount = .1]) {
+    assert(amount >= 0 && amount <= 1);
+    final hsl = HSLColor.fromColor(color);
+    final hslDark = hsl.withLightness((hsl.lightness - amount).clamp(0.0, 1.0));
+    return hslDark.toColor();
+  }
+
+  Color lighten(Color color, [double amount = .1]) {
+    assert(amount >= 0 && amount <= 1);
+    final hsl = HSLColor.fromColor(color);
+    final hslLight =
+        hsl.withLightness((hsl.lightness + amount).clamp(0.0, 1.0));
+    return hslLight.toColor();
+  }
+
+  Widget appointmentBuilder(BuildContext context,
+      CalendarAppointmentDetails calendarAppointmentDetails) {
+    final CalendarEventEntry event =
+        calendarAppointmentDetails.appointments.first;
+
+    var _colorValue = event.colorId!.replaceAll('#', '0xff');
+    final _color = Color(int.parse(_colorValue));
+    final _backgroudColor = lighten(_color, 0.25);
+
+    final _textColor = darken(_color, 0.35);
+
+    final _height = calendarAppointmentDetails.bounds.height;
+    final _width = calendarAppointmentDetails.bounds.width;
+
+    if (event.allDay != null && event.allDay!) {
+      return DayEventCellWidget(
+        backgroudColor: _backgroudColor,
+        event: event,
+        textColor: _textColor,
+        height: _height,
+        width: _width,
+      );
+    } else {
+      final _diff =
+          event.endDateTime!.difference(event.startDateTime!).inMinutes;
+
+      return Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Positioned(
+            top: 0,
+            child: AppointmentEventCellWidget(
+              width: _width,
+              diff: _diff,
+              height: _height,
+              backgroudColor: _backgroudColor,
+              event: event,
+              textColor: _textColor,
+            ),
+          ),
+        ],
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -81,6 +143,7 @@ class _CalendarViewWidgetState extends State<CalendarViewWidget> {
         // viewHeaderHeight: 0,
         backgroundColor: kcLightBackground,
         todayHighlightColor: kcPrimary400,
+        appointmentBuilder: appointmentBuilder,
         // appointmentTextStyle: kBodyStyleRegular,
         timeSlotViewSettings: const TimeSlotViewSettings(
           timeIntervalHeight: 56,
