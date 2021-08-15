@@ -14,7 +14,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final PageController _pageController = PageController(
-    initialPage: 0,
+    initialPage: 1,
   );
   final GoogleSignIn _googleSignIn = getIt<GoogleSignIn>();
 
