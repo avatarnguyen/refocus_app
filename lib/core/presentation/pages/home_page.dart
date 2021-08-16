@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:refocus_app/core/presentation/pages/today_page.dart';
 import 'package:refocus_app/core/util/ui/style_helpers.dart';
+import 'package:refocus_app/core/util/ui/ui_helpers.dart';
 import 'package:refocus_app/features/calendar/presentation/pages/calendar_page.dart';
 import 'package:tale_drawer/tale_drawer.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
@@ -13,7 +14,9 @@ import '../../../injection.dart';
 const rightPaddingSize = 8.0;
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({Key? key, required this.amplifyConfigured}) : super(key: key);
+
+  final bool amplifyConfigured;
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -118,9 +121,11 @@ class _HomePageState extends State<HomePage> {
               },
               children: [
                 const CalendarPage(),
-                TodayPage(
-                  onDrawerSelected: onDrawerPressed,
-                ),
+                widget.amplifyConfigured
+                    ? TodayPage(
+                        onDrawerSelected: onDrawerPressed,
+                      )
+                    : progressIndicator,
               ],
             ),
           ),

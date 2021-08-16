@@ -15,15 +15,55 @@ import 'package:refocus_app/core/util/ui/style_helpers.dart';
 import 'package:refocus_app/features/calendar/presentation/pages/calendar_list_page.dart';
 import 'package:refocus_app/l10n/l10n.dart';
 
-class App extends StatelessWidget {
+// Amplify Flutter Packages
+import 'package:amplify_flutter/amplify.dart';
+import 'package:amplify_datastore/amplify_datastore.dart';
+// import 'package:amplify_api/amplify_api.dart'; // UNCOMMENT this line after backend is deployed
+
+// Generated in previous step
+import '../models/ModelProvider.dart';
+import '../amplifyconfiguration.dart';
+
+class App extends StatefulWidget {
   const App({Key? key}) : super(key: key);
+
+  @override
+  _AppState createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+  bool _amplifyConfigured = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _configureAmplify();
+  }
+
+  void _configureAmplify() async {
+    // await Amplify.addPlugin(AmplifyAPI()); // UNCOMMENT this line after backend is deployed
+    await Amplify.addPlugin(
+        AmplifyDataStore(modelProvider: ModelProvider.instance));
+
+    // Once Plugins are added, configure Amplify
+    await Amplify.configure(amplifyconfig);
+    try {
+      setState(() {
+        _amplifyConfigured = true;
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
       initialRoute: '/',
       getPages: [
-        GetPage(name: '/', page: () => const HomePage()),
+        GetPage(
+            name: '/',
+            page: () => HomePage(amplifyConfigured: _amplifyConfigured)),
         GetPage(
           name: rCalendarListPage,
           page: () => const CalendarListPage(),
