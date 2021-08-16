@@ -45,7 +45,7 @@ class _TodayPageState extends State<TodayPage> {
             InkWell(
               onTap: () async {},
               child: const Icon(
-                Icons.calendar_view_day,
+                Icons.inbox,
                 size: 26,
                 color: kcPrimary500,
               ),
@@ -99,25 +99,37 @@ class _TodayPageState extends State<TodayPage> {
             .toColumn(crossAxisAlignment: CrossAxisAlignment.start)
             .parent(headerTodayContainer),
         verticalSpaceRegular,
-        SfCalendar(
-          view: CalendarView.timelineDay,
-          initialSelectedDate: DateTime.now(),
-          headerHeight: 0.0,
-          viewHeaderHeight: 0,
-        ).parent(({required child}) => Container(
-              margin: const EdgeInsets.symmetric(horizontal: 8),
-              padding: const EdgeInsets.all(2),
-              height: 112,
-              decoration: BoxDecoration(
-                boxShadow: const [
-                  kShadowLightBase,
-                  kShadowLight60,
-                ],
-                borderRadius: BorderRadius.circular(8),
-                color: Colors.white,
+        [
+          const LinearProgressIndicator(
+            value: 0.3,
+            minHeight: 8.0,
+          ).clipRRect(all: 16.0).parent(
+                ({required child}) => Flexible(child: child),
               ),
-              child: child,
-            )),
+          horizontalSpaceSmall,
+          Text(
+            '30 %',
+            style: context.textTheme.subtitle1!.copyWith(color: Colors.black54),
+          )
+        ].toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween).parent(
+              ({required child}) => Container(
+                margin: const EdgeInsets.symmetric(horizontal: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8.0,
+                ),
+                height: 32,
+                decoration: BoxDecoration(
+                  boxShadow: const [
+                    kShadowLightBase,
+                    kShadowLight60,
+                  ],
+                  borderRadius: BorderRadius.circular(8),
+                  color: Colors.white,
+                ),
+                child: child,
+              ),
+            ),
+        verticalSpaceSmall,
         //* Body: List View
         Expanded(
           child: ListView.builder(

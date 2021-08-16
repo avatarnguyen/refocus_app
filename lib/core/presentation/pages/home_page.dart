@@ -62,10 +62,11 @@ class _HomePageState extends State<HomePage> {
       ),
       settings: FlipSettings(
         type: DrawerAnimation.FLIP,
-        drawerWidth: context.width - 20.0,
+        drawerWidth: context.width - 24.0,
+        flipPercent: 80,
       ),
       drawer: Container(
-        color: const Color(0xff2E2C3C),
+        color: kcPrimary600,
       ),
       body: Scaffold(
         body: SlidingSheet(
