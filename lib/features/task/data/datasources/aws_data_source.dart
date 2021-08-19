@@ -9,7 +9,8 @@ abstract class TaskRemoteDataSource {
 
   Future<void> createOrUpdateRemoteTask(Todo task);
   Future<void> deleteRemoteTask(Todo task);
-  Future<List<Todo>> getRemoteTask(Project project);
+  Future<List<Todo>> getRemoteTask(
+      {Project? project, DateTime? startTime, DateTime? endTime});
 }
 
 class AWSRemoteDataSource implements TaskRemoteDataSource {
@@ -25,7 +26,9 @@ class AWSRemoteDataSource implements TaskRemoteDataSource {
 
   @override
   Future<void> createOrUpdateRemoteTask(Todo task) async {
-    try {} catch (e) {
+    try {
+      await Amplify.DataStore.save(task);
+    } catch (e) {
       print(e);
       throw ServerException();
     }
@@ -33,7 +36,17 @@ class AWSRemoteDataSource implements TaskRemoteDataSource {
 
   @override
   Future<void> deleteRemoteProject(Project project) async {
-    try {} catch (e) {
+    try {
+      (await Amplify.DataStore.query(Todo.classType,
+              where: Todo.PROJECTID.eq(project.id)))
+          // ignore: avoid_function_literals_in_foreach_calls
+          .forEach((todo) async => await Amplify.DataStore.delete(todo));
+
+      (await Amplify.DataStore.query(Project.classType,
+              where: Project.ID.eq(project.id)))
+          // ignore: avoid_function_literals_in_foreach_calls
+          .forEach((project) async => await Amplify.DataStore.delete(project));
+    } catch (e) {
       print(e);
       throw ServerException();
     }
@@ -41,7 +54,9 @@ class AWSRemoteDataSource implements TaskRemoteDataSource {
 
   @override
   Future<void> deleteRemoteTask(Todo task) async {
-    try {} catch (e) {
+    try {
+      await Amplify.DataStore.delete(task);
+    } catch (e) {
       print(e);
       throw ServerException();
     }
@@ -59,13 +74,22 @@ class AWSRemoteDataSource implements TaskRemoteDataSource {
   }
 
   @override
-  Future<List<Todo>> getRemoteTask(Project project) async {
+  Future<List<Todo>> getRemoteTask(
+      {Project? project, DateTime? startTime, DateTime? endTime}) async {
+    var _todos = <Todo>[];
     try {
-      final todos = await Amplify.DataStore.query(
-        Todo.classType,
-        where: Todo.PROJECTID.eq(project.id),
-      );
-      return todos;
+      if (project != null) {
+        _todos = await Amplify.DataStore.query(
+          Todo.classType,
+          where: Todo.PROJECTID.eq(project.id),
+        );
+      } else {
+        // _todos = await Amplify.DataStore.query(
+        //   Todo.classType,
+        //   where: Todo
+        // );
+      }
+      return _todos;
     } catch (e) {
       print(e);
       throw ServerException();

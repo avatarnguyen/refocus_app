@@ -8,20 +8,20 @@ class ProjectEntry extends Equatable {
   const ProjectEntry({
     required this.id,
     this.title,
-    this.tasks,
+    // this.tasks,
   });
   final String id;
   final String? title;
-  final List<TaskEntry>? tasks;
+  // final List<TaskEntry>? tasks;
 
   @override
-  List<Object?> get props => [id, title, tasks];
+  List<Object?> get props => [id, title];
 
   Map<String, dynamic> toMap() {
     return {
       'id': id,
       'title': title,
-      'tasks': tasks?.map((x) => x.toMap()).toList(),
+      // 'tasks': tasks?.map((x) => x.toMap()).toList(),
     };
   }
 
@@ -29,8 +29,8 @@ class ProjectEntry extends Equatable {
     return ProjectEntry(
       id: map['id'],
       title: map['title'],
-      tasks:
-          List<TaskEntry>.from(map['tasks']?.map((x) => TaskEntry.fromMap(x))),
+      // tasks:
+      //     List<TaskEntry>.from(map['tasks']?.map((x) => TaskEntry.fromMap(x))),
     );
   }
 

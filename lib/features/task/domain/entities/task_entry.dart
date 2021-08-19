@@ -8,14 +8,14 @@ class TaskEntry extends Equatable {
     this.title,
     this.description,
     required this.isCompleted,
-    this.projectID,
+    required this.projectID,
   });
 
   final String id;
   final String? title;
   final String? description;
   final bool isCompleted;
-  final String? projectID;
+  final String projectID;
 
   @override
   List<Object?> get props => [id, title, description, isCompleted, projectID];

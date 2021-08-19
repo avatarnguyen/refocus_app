@@ -18,8 +18,7 @@ abstract class TaskRepository {
   Future<Either<Failure, List<ProjectEntry>>> getAllProjects();
 
   /// Create Task
-  Future<Either<Failure, TaskEntry>> createTask(
-      ProjectEntry project, TaskEntry task);
+  Future<Either<Failure, TaskEntry>> createTask(TaskEntry task);
 
   /// Update Task
   Future<Either<Failure, TaskEntry>> updateTask(TaskEntry task);
