@@ -13,7 +13,7 @@ abstract class TaskRemoteDataSource {
       {Project? project, DateTime? startTime, DateTime? endTime});
 }
 
-class AWSRemoteDataSource implements TaskRemoteDataSource {
+class AWSTaskRemoteDataSource implements TaskRemoteDataSource {
   @override
   Future<void> createOrUpdateRemoteProject(Project project) async {
     try {
