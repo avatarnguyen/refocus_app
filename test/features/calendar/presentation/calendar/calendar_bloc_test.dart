@@ -4,7 +4,10 @@ import 'package:mocktail/mocktail.dart';
 import 'package:refocus_app/constants/failure_message.dart';
 import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/core/usecases/usecase.dart';
+import 'package:refocus_app/features/calendar/data/datasources/gcal_local_data_source.dart';
+import 'package:refocus_app/features/calendar/data/models/gcal_entry_model.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_datasource.dart';
+import 'package:refocus_app/features/calendar/domain/entities/calendar_entry.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/add_event.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/delete_event.dart';
@@ -23,6 +26,8 @@ class MockUpdateEvent extends Mock implements UpdateEvent {}
 
 class MockDeleteEvent extends Mock implements DeleteEvent {}
 
+// class MockLocalDataSource extends Mock implements GCalLocalDataSource {}
+
 void main() {
   late CalendarBloc bloc;
   late MockGetAllCalendar mockGetAllCalendar;
@@ -31,12 +36,16 @@ void main() {
   late MockUpdateEvent mockUpdateEvent;
   late MockDeleteEvent mockDeleteEvent;
 
+  // late MockLocalDataSource mockLocalDataSource;
+
   setUp(() {
     mockGetAllCalendar = MockGetAllCalendar();
     mockGetAllCalendarEntry = MockGetAllCalendarEntry();
     mockAddEvent = MockAddEvent();
     mockUpdateEvent = MockUpdateEvent();
     mockDeleteEvent = MockDeleteEvent();
+    // mockLocalDataSource = MockLocalDataSource();
+
     bloc = CalendarBloc(
       getCalendarEntry: mockGetAllCalendarEntry,
       addEvent: mockAddEvent,
@@ -46,7 +55,7 @@ void main() {
     );
   });
 
-  group('GetAllGCalEntries', () {
+  group('Get All GCalEntries', () {
     final tGoogleCalendarEntry = CalendarEventEntry(
       subject: 'Event Refocus App',
       id: '4okqcu9vna2ak7jt7545ndlp9n',
@@ -60,6 +69,8 @@ void main() {
         // arrange
         when(() => mockGetAllCalendarEntry(NoParams())).thenAnswer(
             (_) async => Right(CalendarData(events: [tGoogleCalendarEntry])));
+        when(() => mockGetAllCalendar(NoParams()))
+            .thenAnswer((_) async => const Right(<CalendarEntry>[]));
         // act
         bloc.add(GetCalendarEntries());
         await untilCalled(() => mockGetAllCalendarEntry(NoParams()));
@@ -74,6 +85,8 @@ void main() {
         // arrange
         when(() => mockGetAllCalendarEntry(NoParams())).thenAnswer(
             (_) async => Right(CalendarData(events: [tGoogleCalendarEntry])));
+        when(() => mockGetAllCalendar(NoParams()))
+            .thenAnswer((_) async => const Right(<CalendarEntry>[]));
         // assert later
         final expected = [
           Loading(),
@@ -92,6 +105,8 @@ void main() {
         // arrange
         when(() => mockGetAllCalendarEntry(NoParams()))
             .thenAnswer((_) async => Left(ServerFailure()));
+        when(() => mockGetAllCalendar(NoParams()))
+            .thenAnswer((_) async => const Right(<CalendarEntry>[]));
         // assert later
         final expected = [
           Loading(),
@@ -109,6 +124,8 @@ void main() {
         // arrange
         when(() => mockGetAllCalendarEntry(NoParams()))
             .thenAnswer((_) async => Left(CacheFailure()));
+        when(() => mockGetAllCalendar(NoParams()))
+            .thenAnswer((_) async => const Right(<CalendarEntry>[]));
         // assert later
         final expected = [
           Loading(),

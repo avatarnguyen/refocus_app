@@ -147,7 +147,7 @@ void main() {
           final result = await repository.getEventsData();
           // assert
           verify(() => mockRemoteDataSource.getRemoteGoogleEventsData(
-              timeMin: timeMin, timeMax: timeMax));
+              calendarList: [], timeMin: timeMin, timeMax: timeMax));
 
           expect(result, isA<Right<Failure, CalendarData>>());
 
@@ -166,11 +166,14 @@ void main() {
                 timeMin: DateUtils.toGoogleRFCDateTime(startDate),
                 timeMax: DateUtils.toGoogleRFCDateTime(endDate),
               )).thenAnswer((_) async => [tGoogleCalendarEntryModel]);
+          when(() => mockLocalDataSource.getLastCachedGoogleCalendar())
+              .thenAnswer((_) async => <GCalEntryModel>[]);
           // act
           final result =
               await repository.getEventsDataBetween(startDate, endDate);
           // assert
           verify(() => mockRemoteDataSource.getRemoteGoogleEventsData(
+                calendarList: [],
                 timeMin: DateUtils.toGoogleRFCDateTime(startDate),
                 timeMax: DateUtils.toGoogleRFCDateTime(endDate),
               ));
@@ -194,11 +197,13 @@ void main() {
           when(() => mockLocalDataSource
                   .cacheGoogleCalendarEntry([tGoogleCalendarEntryModel]))
               .thenAnswer((_) async => calendarEntry);
+          when(() => mockLocalDataSource.getLastCachedGoogleCalendar())
+              .thenAnswer((_) async => <GCalEntryModel>[]);
           // act
           await repository.getEventsData();
           // assert
           verify(() => mockRemoteDataSource.getRemoteGoogleEventsData(
-              timeMin: timeMin, timeMax: timeMax));
+              calendarList: [], timeMin: timeMin, timeMax: timeMax));
           verify(() => mockLocalDataSource
               .cacheGoogleCalendarEntry([tGoogleCalendarEntryModel]));
         },
@@ -213,12 +218,14 @@ void main() {
                 timeMin: timeMin,
                 timeMax: timeMax,
               )).thenThrow(ServerException());
+          when(() => mockLocalDataSource.getLastCachedGoogleCalendar())
+              .thenAnswer((_) async => <GCalEntryModel>[]);
           // act
           final result = await repository.getEventsData();
           // assert
           verify(() => mockRemoteDataSource.getRemoteGoogleEventsData(
-              timeMin: timeMin, timeMax: timeMax));
-          verifyZeroInteractions(mockLocalDataSource);
+              calendarList: [], timeMin: timeMin, timeMax: timeMax));
+          // verifyZeroInteractions(mockLocalDataSource);
 
           expect(result, equals(Left(ServerFailure())));
         },

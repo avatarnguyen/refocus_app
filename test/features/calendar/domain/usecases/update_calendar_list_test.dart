@@ -4,7 +4,6 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:refocus_app/features/calendar/data/models/gcal_entry_model.dart';
-import 'package:refocus_app/features/calendar/domain/entities/calendar_entry.dart';
 import 'package:refocus_app/features/calendar/domain/repositories/calendar_repository.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/helpers/calendar_params.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/update_calendar_list.dart';
