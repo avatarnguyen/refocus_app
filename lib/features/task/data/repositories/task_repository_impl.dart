@@ -33,16 +33,18 @@ class TaskRepositoryImpl implements TaskRepository {
   }
 
   @override
-  Future<Either<Failure, TaskEntry>> createTask(TaskEntry task) async {
+  Future<Either<Failure, Unit>> createTasks(List<TaskEntry> tasks) async {
     final log = logger(TaskRepositoryImpl);
 
     try {
-      final _todo = Todo.fromJson(task.toMap());
+      for (var task in tasks) {
+        final _todo = Todo.fromJson(task.toMap());
+        log.i('Created Task: ${_todo.toJson()}');
 
-      log.i('Create Task: ${_todo.toJson()}');
+        await remoteDataSource.createOrUpdateRemoteTask(_todo);
+      }
 
-      await remoteDataSource.createOrUpdateRemoteTask(_todo);
-      return Right(TaskEntry.fromMap(_todo.toJson()));
+      return const Right(unit);
     } on ServerException {
       return Left(ServerFailure());
     }
