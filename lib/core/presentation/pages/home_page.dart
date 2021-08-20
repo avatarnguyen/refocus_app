@@ -4,6 +4,7 @@ import 'package:refocus_app/core/presentation/pages/today_page.dart';
 import 'package:refocus_app/core/util/ui/style_helpers.dart';
 import 'package:refocus_app/core/util/ui/ui_helpers.dart';
 import 'package:refocus_app/features/calendar/presentation/pages/calendar_page.dart';
+import 'package:refocus_app/features/task/presentation/pages/project_page.dart';
 import 'package:tale_drawer/tale_drawer.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
 
@@ -88,16 +89,7 @@ class _HomePageState extends State<HomePage> {
             height: 48.0,
             color: kcWarning300,
           ),
-          builder: (context, state) => ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: 40,
-            itemBuilder: (BuildContext context, int index) {
-              return const ListTile(
-                title: Text('Test Cell'),
-              );
-            },
-          ),
+          builder: (context, state) => const ProjectPage(),
           body: Container(
             color: context.theme.backgroundColor,
             height: context.height,

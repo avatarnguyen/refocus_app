@@ -1,4 +1,5 @@
 import 'package:amplify_flutter/amplify.dart';
+import 'package:injectable/injectable.dart';
 import 'package:refocus_app/core/error/exceptions.dart';
 import 'package:refocus_app/models/ModelProvider.dart';
 
@@ -13,6 +14,7 @@ abstract class TaskRemoteDataSource {
       {Project? project, DateTime? startTime, DateTime? endTime});
 }
 
+@LazySingleton(as: TaskRemoteDataSource)
 class AWSTaskRemoteDataSource implements TaskRemoteDataSource {
   @override
   Future<void> createOrUpdateRemoteProject(Project project) async {

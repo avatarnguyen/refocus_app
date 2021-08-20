@@ -6,7 +6,6 @@ import 'package:refocus_app/core/util/ui/style_helpers.dart';
 import 'package:refocus_app/core/util/ui/ui_helpers.dart';
 import 'package:refocus_app/core/util/ui/widget_helpers.dart';
 import 'package:styled_widget/styled_widget.dart';
-import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 class TodayPage extends StatefulWidget {
   const TodayPage({Key? key, required this.onDrawerSelected}) : super(key: key);

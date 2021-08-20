@@ -1,14 +1,63 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
+import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
+import 'package:injectable/injectable.dart';
+import 'package:refocus_app/constants/failure_message.dart';
+import 'package:refocus_app/core/error/failures.dart';
+import 'package:refocus_app/core/usecases/usecase.dart';
+import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
+import 'package:refocus_app/features/task/domain/entities/task_entry.dart';
+import 'package:refocus_app/features/task/domain/usecases/project/create_project.dart';
+import 'package:refocus_app/features/task/domain/usecases/project/delete_project.dart';
+import 'package:refocus_app/features/task/domain/usecases/project/get_projects.dart';
+import 'package:refocus_app/features/task/domain/usecases/project/update_project.dart';
 part 'task_event.dart';
 part 'task_state.dart';
+
+@injectable
 class TaskBloc extends Bloc<TaskEvent, TaskState> {
-  TaskBloc() : super(TaskInitial());
+  TaskBloc({
+    required this.getProjects,
+    required this.updateProject,
+    required this.deleteProject,
+    required this.createProject,
+  }) : super(TaskInitial());
+
+  final GetProjects getProjects;
+  final UpdateProject updateProject;
+  final DeleteProject deleteProject;
+  final CreateProject createProject;
+
   @override
   Stream<TaskState> mapEventToState(
     TaskEvent event,
   ) async* {
-    // TODO: implement mapEventToState
+    if (event is GetProjectEntriesEvent) {
+      print('Get Project Event');
+
+      yield TaskLoading();
+      final failureOrEntry = await getProjects(NoParams());
+      yield* _eitherPrejectLoadedOrErrorState(failureOrEntry);
+    }
+  }
+
+  Stream<TaskState> _eitherPrejectLoadedOrErrorState(
+      Either<Failure, List<ProjectEntry>> failureOrEntry) async* {
+    yield failureOrEntry.fold(
+      (failure) => TaskError(_mapFailureToMessage(failure)),
+      (entry) => ProjectLoaded(project: entry),
+    );
+  }
+
+  String _mapFailureToMessage(Failure failure) {
+    switch (failure.runtimeType) {
+      case ServerFailure:
+        return serverFailureMessage;
+      case CacheFailure:
+        return cacheFailureMessage;
+      default:
+        return 'Unexpected error';
+    }
   }
 }
