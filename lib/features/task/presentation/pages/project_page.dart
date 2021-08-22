@@ -12,7 +12,7 @@ class ProjectPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<TaskBloc>(
-      create: (context) => getIt<TaskBloc>()..getProjects,
+      create: (context) => getIt<TaskBloc>()..add(GetProjectEntriesEvent()),
       child: const ProjectListWidget(),
     );
   }
@@ -31,7 +31,6 @@ class _ProjectListWidgetState extends State<ProjectListWidget> {
   @override
   void initState() {
     super.initState();
-    // BlocProvider.of<TaskBloc>(context).add(GetProjectEntriesEvent());
   }
 
   @override

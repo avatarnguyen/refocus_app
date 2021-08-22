@@ -1,13 +1,15 @@
 import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:refocus_app/constants/routes_name.dart';
+import 'package:refocus_app/core/presentation/pages/quickadd_page.dart';
 import 'package:refocus_app/core/presentation/pages/today_page.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart';
 import 'package:refocus_app/core/util/ui/style_helpers.dart';
 import 'package:refocus_app/core/util/ui/ui_helpers.dart';
 import 'package:refocus_app/features/calendar/presentation/pages/calendar_page.dart';
+import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
 import 'package:refocus_app/features/task/presentation/pages/project_page.dart';
 import 'package:refocus_app/models/ModelProvider.dart';
 import 'package:tale_drawer/tale_drawer.dart';
@@ -23,8 +25,6 @@ const rightPaddingSize = 8.0;
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
-
-  // final bool amplifyConfigured;
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -103,7 +103,16 @@ class _HomePageState extends State<HomePage> {
       body: Scaffold(
         floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
         floatingActionButton: FloatingActionButton(
-          onPressed: () => Get.toNamed(rAddNewPage),
+          onPressed: () => Get.bottomSheet(
+            BlocProvider<TaskBloc>(
+              create: (context) => getIt<TaskBloc>(),
+              child: const QuickAddPage(),
+            ),
+            isScrollControlled: true,
+            isDismissible: false,
+            elevation: 8,
+            backgroundColor: Colors.black54,
+          ),
           backgroundColor: kcPrimary500,
           child: const Icon(Icons.add),
         ),

@@ -100,9 +100,9 @@ class _TodayPageState extends State<TodayPage> {
             minHeight: 8.0,
             color: kcPrimary500,
             backgroundColor: kcPrimary200,
-          ).clipRRect(all: 4.0).parent(
-                ({required child}) => Flexible(child: child),
-              ),
+          )
+              .clipRRect(all: 4.0)
+              .parent(({required child}) => Flexible(child: child)),
           horizontalSpaceSmall,
           Text(
             '30 %',

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:refocus_app/core/presentation/widgets/action_panel_widget.dart';
+import 'package:refocus_app/core/presentation/widgets/add_textfield_widget.dart';
+import 'package:refocus_app/core/presentation/widgets/option_widget.dart';
 import 'package:refocus_app/core/util/ui/style_helpers.dart';
 import 'package:styled_widget/styled_widget.dart';
 import 'package:get/get.dart';
@@ -9,54 +11,30 @@ class QuickAddPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PlatformScaffold(
-      backgroundColor: context.theme.backgroundColor,
-      body: const AddTextFieldWidget().parent(textContainer).safeArea(),
-    );
+    return SizedBox.expand(
+      child: [
+        TextButton(
+            onPressed: Get.back,
+            child: Text(
+              'Abbrechen',
+              style: context.textTheme.button!.copyWith(
+                color: kcSecondary400,
+              ),
+            )).paddingOnly(top: 48).alignment(Alignment.topRight),
+        // verticalSpaceSmall,
+        [
+          const AddTextFieldWidget(),
+          const OptionRowWidget().paddingOnly(top: 24)
+        ].toColumn().parent(textContainer),
+        const ActionPanelWidget()
+      ].toColumn(mainAxisAlignment: MainAxisAlignment.spaceBetween),
+    ).safeArea();
   }
 
   Widget textContainer({required Widget child}) => Container(
-        height: 120,
+        // color: Colors.amber,
+        height: 192,
         margin: const EdgeInsets.symmetric(horizontal: 8.0),
         child: Styled.widget(child: child),
       );
-}
-
-class AddTextFieldWidget extends StatefulWidget {
-  const AddTextFieldWidget({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  _AddTextFieldWidgetState createState() => _AddTextFieldWidgetState();
-}
-
-class _AddTextFieldWidgetState extends State<AddTextFieldWidget> {
-  final _textController = TextEditingController();
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox.expand(
-      child: PlatformTextField(
-        controller: _textController,
-        autofocus: true,
-        minLines: 4,
-        maxLines: 8,
-        material: (context, platform) => MaterialTextFieldData(
-          decoration: InputDecoration(
-            border: OutlineInputBorder(),
-            fillColor: Colors.grey[300],
-          ),
-        ),
-        cupertino: (context, platform) => CupertinoTextFieldData(
-            decoration: BoxDecoration(
-          border: Border.all(
-            color: kcSecondary500,
-            width: 2.0,
-          ),
-          borderRadius: const BorderRadius.all(Radius.circular(8)),
-          color: Colors.grey[300],
-        )),
-      ),
-    );
-  }
 }

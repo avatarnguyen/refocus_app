@@ -5,13 +5,10 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import 'package:amplify_datastore/amplify_datastore.dart';
 // Amplify Flutter Packages
-import 'package:amplify_flutter/amplify.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:get/get.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:refocus_app/constants/routes_name.dart';
@@ -22,9 +19,7 @@ import 'package:refocus_app/core/util/ui/style_helpers.dart';
 import 'package:refocus_app/features/calendar/presentation/pages/calendar_list_page.dart';
 import 'package:refocus_app/l10n/l10n.dart';
 
-import '../amplifyconfiguration.dart';
 // Generated in previous step
-import '../models/ModelProvider.dart';
 
 class App extends StatefulWidget {
   const App({Key? key}) : super(key: key);
@@ -78,24 +73,24 @@ class _AppState extends State<App> {
       textTheme: _materialTextTheme,
     );
 
-    // const _cupertinoThemeData = CupertinoThemeData(
-    //   primaryColor: kcPrimary500,
-    //   primaryContrastingColor: CupertinoColors.black,
-    //   scaffoldBackgroundColor: kcLightBackground,
-    //   barBackgroundColor: kcSecondary500,
-    //   textTheme: CupertinoTextThemeData(
-    //     primaryColor: kcPrimary500,
-    //     navLargeTitleTextStyle: kHeadline2StyleBold,
-    //     navTitleTextStyle: kHeadline1StyleRegular,
-    //     navActionTextStyle: kCaptionStyleRegular,
-    //     textStyle: kBodyStyleRegular,
-    //   ),
-    // );
+    const _cupertinoThemeData = CupertinoThemeData(
+      primaryColor: kcPrimary500,
+      primaryContrastingColor: CupertinoColors.black,
+      scaffoldBackgroundColor: kcLightBackground,
+      barBackgroundColor: kcSecondary500,
+      textTheme: CupertinoTextThemeData(
+        primaryColor: kcPrimary500,
+        navLargeTitleTextStyle: kHeadline2StyleBold,
+        navTitleTextStyle: kHeadline1StyleRegular,
+        navActionTextStyle: kCaptionStyleRegular,
+        textStyle: kBodyStyleRegular,
+      ),
+    );
 
     return GetMaterialApp(
       initialRoute: '/',
       getPages: [
-        GetPage(name: '/', page: () => HomePage()),
+        GetPage(name: '/', page: () => const HomePage()),
         GetPage(
           name: rCalendarListPage,
           page: () => const CalendarListPage(),

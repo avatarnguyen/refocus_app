@@ -8,6 +8,8 @@ import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/core/usecases/usecase.dart';
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
 import 'package:refocus_app/features/task/domain/entities/task_entry.dart';
+import 'package:refocus_app/features/task/domain/usecases/helpers/project_params.dart';
+import 'package:refocus_app/features/task/domain/usecases/helpers/task_params.dart';
 import 'package:refocus_app/features/task/domain/usecases/project/create_project.dart';
 import 'package:refocus_app/features/task/domain/usecases/project/delete_project.dart';
 import 'package:refocus_app/features/task/domain/usecases/project/get_projects.dart';
@@ -39,6 +41,18 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       yield TaskLoading();
       final failureOrEntry = await getProjects(NoParams());
       yield* _eitherPrejectLoadedOrErrorState(failureOrEntry);
+    }
+    if (event is CreateProjectEntriesEvent) {
+      print('Create New Project');
+
+      yield TaskLoading();
+      final failureOrSuccess = await createProject(event.params);
+      yield* failureOrSuccess.fold((failure) async* {
+        yield TaskError(_mapFailureToMessage(failure));
+      }, (_) async* {
+        final failureOrEntry = await getProjects(NoParams());
+        yield* _eitherPrejectLoadedOrErrorState(failureOrEntry);
+      });
     }
   }
 
