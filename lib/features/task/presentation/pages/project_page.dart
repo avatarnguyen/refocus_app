@@ -12,7 +12,7 @@ class ProjectPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<TaskBloc>(
-      create: (context) => getIt<TaskBloc>(),
+      create: (context) => getIt<TaskBloc>()..getProjects,
       child: const ProjectListWidget(),
     );
   }
@@ -31,7 +31,7 @@ class _ProjectListWidgetState extends State<ProjectListWidget> {
   @override
   void initState() {
     super.initState();
-    BlocProvider.of<TaskBloc>(context).add(GetProjectEntriesEvent());
+    // BlocProvider.of<TaskBloc>(context).add(GetProjectEntriesEvent());
   }
 
   @override
@@ -59,7 +59,7 @@ class _ProjectListWidgetState extends State<ProjectListWidget> {
           return ElevatedButton(
             onPressed: () => BlocProvider.of<TaskBloc>(context)
                 .add(GetProjectEntriesEvent()),
-            child: const Text('Sign In Google'),
+            child: const Text('Load All Projects'),
           ).center();
         } else {
           return const MessageDisplay(

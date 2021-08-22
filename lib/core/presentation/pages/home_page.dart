@@ -1,23 +1,30 @@
+import 'package:amplify_datastore/amplify_datastore.dart';
+import 'package:amplify_flutter/amplify.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:refocus_app/constants/routes_name.dart';
 import 'package:refocus_app/core/presentation/pages/today_page.dart';
+import 'package:refocus_app/core/util/helpers/logging.dart';
 import 'package:refocus_app/core/util/ui/style_helpers.dart';
 import 'package:refocus_app/core/util/ui/ui_helpers.dart';
 import 'package:refocus_app/features/calendar/presentation/pages/calendar_page.dart';
 import 'package:refocus_app/features/task/presentation/pages/project_page.dart';
+import 'package:refocus_app/models/ModelProvider.dart';
 import 'package:tale_drawer/tale_drawer.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
+import 'package:styled_widget/styled_widget.dart';
 
 import 'package:get/get.dart';
 
+import '../../../amplifyconfiguration.dart';
 import '../../../injection.dart';
 
 const rightPaddingSize = 8.0;
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key, required this.amplifyConfigured}) : super(key: key);
+  const HomePage({Key? key}) : super(key: key);
 
-  final bool amplifyConfigured;
+  // final bool amplifyConfigured;
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -31,10 +38,31 @@ class _HomePageState extends State<HomePage> {
   final drawerController = TaleController();
   double rightPadding = rightPaddingSize;
 
+  final log = logger(HomePage);
+  bool amplifyConfigured = false;
+
   @override
   void initState() {
     super.initState();
+    _configureAmplify();
+
     _googleSignIn.signInSilently();
+  }
+
+  void _configureAmplify() async {
+    // await Amplify.addPlugin(AmplifyAPI()); // UNCOMMENT this line after backend is deployed
+    await Amplify.addPlugin(
+        AmplifyDataStore(modelProvider: ModelProvider.instance));
+
+    try {
+      // Once Plugins are added, configure Amplify
+      await Amplify.configure(amplifyconfig);
+    } catch (e) {
+      log.e(e);
+    }
+    setState(() {
+      amplifyConfigured = true;
+    });
   }
 
   @override
@@ -73,7 +101,14 @@ class _HomePageState extends State<HomePage> {
         color: kcPrimary600,
       ),
       body: Scaffold(
+        floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => Get.toNamed(rAddNewPage),
+          backgroundColor: kcPrimary500,
+          child: const Icon(Icons.add),
+        ),
         body: SlidingSheet(
+          color: kcLightBackground,
           isBackdropInteractable: true,
           elevation: 16,
           cornerRadius: 24,
@@ -86,12 +121,27 @@ class _HomePageState extends State<HomePage> {
             positioning: SnapPositioning.relativeToAvailableSpace,
           ),
           headerBuilder: (context, state) => Container(
-            height: 48.0,
-            color: kcWarning300,
+            padding: const EdgeInsets.only(top: 8.0),
+            height: 32.0,
+            // color: Colors.transparent,
+            child: [
+              Container(
+                height: 8.0,
+                width: 72.0,
+                decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.all(Radius.circular(8)),
+                  color: Colors.grey[300],
+                ),
+              )
+            ].toRow(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+            ),
           ),
-          builder: (context, state) => const ProjectPage(),
+          builder: (context, state) =>
+              amplifyConfigured ? const ProjectPage() : Container(),
           body: Container(
-            color: context.theme.backgroundColor,
+            color: kcLightBackground,
             height: context.height,
             width: context.width,
             padding: EdgeInsets.only(right: rightPadding),
@@ -113,7 +163,7 @@ class _HomePageState extends State<HomePage> {
               },
               children: [
                 const CalendarPage(),
-                widget.amplifyConfigured
+                amplifyConfigured
                     ? TodayPage(
                         onDrawerSelected: onDrawerPressed,
                       )

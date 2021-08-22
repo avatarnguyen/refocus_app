@@ -116,16 +116,16 @@ class _CalendarWidgetState extends State<CalendarWidget> {
 
     return Scaffold(
       backgroundColor: kcLightBackground,
-      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          return BlocProvider.of<CalendarBloc>(context).add(
-            DeleteCalendarEvent(testEvent),
-          );
-        },
-        backgroundColor: kcPrimary500,
-        child: const Icon(Icons.add),
-      ),
+      // floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     return BlocProvider.of<CalendarBloc>(context).add(
+      //       DeleteCalendarEvent(testEvent),
+      //     );
+      //   },
+      //   backgroundColor: kcPrimary500,
+      //   child: const Icon(Icons.add),
+      // ),
       body: <Widget>[
         [
           verticalSpaceRegular,

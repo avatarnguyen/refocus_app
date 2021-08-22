@@ -382,6 +382,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_platform_widgets:
+    dependency: "direct main"
+    description:
+      name: flutter_platform_widgets
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.9.5"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -405,7 +412,7 @@ packages:
       name: get
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.3.4"
+    version: "4.3.8"
   get_it:
     dependency: "direct main"
     description:
@@ -900,21 +907,21 @@ packages:
       name: syncfusion_flutter_calendar
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "19.2.49"
+    version: "19.2.56"
   syncfusion_flutter_core:
     dependency: transitive
     description:
       name: syncfusion_flutter_core
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "19.2.49"
+    version: "19.2.56"
   syncfusion_flutter_datepicker:
     dependency: transitive
     description:
       name: syncfusion_flutter_datepicker
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "19.2.49"
+    version: "19.2.56"
   tale_drawer:
     dependency: "direct main"
     description:

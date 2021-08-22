@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart' as custom_log;
@@ -29,14 +30,10 @@ class _TodayPageState extends State<TodayPage> {
   Widget build(BuildContext context) {
     final today = DateTime.now();
 
-    return Scaffold(
+    return PlatformScaffold(
+      // iosContentBottomPadding: true,
+      // iosContentPadding: true,
       backgroundColor: kcLightBackground,
-      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        backgroundColor: kcPrimary500,
-        child: const Icon(Icons.add),
-      ),
       body: [
         [
           verticalSpaceRegular,
@@ -57,20 +54,19 @@ class _TodayPageState extends State<TodayPage> {
                 color: kcPrimary500,
               ),
             ),
-          ]
-              .toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween)
-              .padding(left: 8, right: 4),
+          ].toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween),
           verticalSpaceRegular,
           [
             [
-              Text(
+              PlatformText(
                 'Good Morning!',
+                overflow: TextOverflow.fade,
                 style: context.textTheme.headline3!.copyWith(
                   fontWeight: FontWeight.w800,
                 ),
               ),
               verticalSpaceSmall,
-              Text(
+              PlatformText(
                 returnDate(today),
                 style: context.textTheme.headline6!.copyWith(
                   color: Colors.grey[600],
@@ -102,7 +98,9 @@ class _TodayPageState extends State<TodayPage> {
           const LinearProgressIndicator(
             value: 0.3,
             minHeight: 8.0,
-          ).clipRRect(all: 16.0).parent(
+            color: kcPrimary500,
+            backgroundColor: kcPrimary200,
+          ).clipRRect(all: 4.0).parent(
                 ({required child}) => Flexible(child: child),
               ),
           horizontalSpaceSmall,
