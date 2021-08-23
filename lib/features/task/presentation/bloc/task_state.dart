@@ -4,10 +4,10 @@ abstract class TaskState extends Equatable {
   const TaskState();
 }
 
-class TaskInitial extends TaskState {
-  @override
-  List<Object> get props => [];
-}
+// class TaskInitial extends TaskState {
+//   @override
+//   List<Object> get props => [];
+// }
 
 class TaskLoading extends TaskState {
   @override
@@ -29,7 +29,7 @@ class ProjectLoaded extends TaskState {
   final List<ProjectEntry> project;
 
   @override
-  List<Object?> get props => [project];
+  List<Object?> get props => project;
 }
 
 class TasksLoaded extends TaskState {

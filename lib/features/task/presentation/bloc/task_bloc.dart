@@ -9,7 +9,6 @@ import 'package:refocus_app/core/usecases/usecase.dart';
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
 import 'package:refocus_app/features/task/domain/entities/task_entry.dart';
 import 'package:refocus_app/features/task/domain/usecases/helpers/project_params.dart';
-import 'package:refocus_app/features/task/domain/usecases/helpers/task_params.dart';
 import 'package:refocus_app/features/task/domain/usecases/project/create_project.dart';
 import 'package:refocus_app/features/task/domain/usecases/project/delete_project.dart';
 import 'package:refocus_app/features/task/domain/usecases/project/get_projects.dart';
@@ -24,7 +23,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     required this.updateProject,
     required this.deleteProject,
     required this.createProject,
-  }) : super(TaskInitial());
+  }) : super(TaskLoading());
 
   final GetProjects getProjects;
   final UpdateProject updateProject;
@@ -35,23 +34,43 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   Stream<TaskState> mapEventToState(
     TaskEvent event,
   ) async* {
+    print('Current TaskState: $state');
+
     if (event is GetProjectEntriesEvent) {
       print('Get Project Event');
 
       yield TaskLoading();
       final failureOrEntry = await getProjects(NoParams());
       yield* _eitherPrejectLoadedOrErrorState(failureOrEntry);
-    }
-    if (event is CreateProjectEntriesEvent) {
+    } else if (event is CreateProjectEntriesEvent) {
       print('Create New Project');
 
-      yield TaskLoading();
+      yield* _mapProjectCreatedToState(event);
+    }
+  }
+
+  Stream<TaskState> _mapProjectCreatedToState(
+      CreateProjectEntriesEvent event) async* {
+    print(state);
+    if (state is ProjectLoaded) {
       final failureOrSuccess = await createProject(event.params);
       yield* failureOrSuccess.fold((failure) async* {
         yield TaskError(_mapFailureToMessage(failure));
-      }, (_) async* {
-        final failureOrEntry = await getProjects(NoParams());
-        yield* _eitherPrejectLoadedOrErrorState(failureOrEntry);
+      }, (entry) async* {
+        final updatedProjects =
+            List<ProjectEntry>.from((state as ProjectLoaded).project)
+              ..add(entry);
+        print(updatedProjects.toString());
+        yield ProjectLoaded(project: updatedProjects);
+        // final failureOrEntry = await getProjects(NoParams());
+        // yield* failureOrEntry.fold((failure) async* {
+        //   yield TaskError(_mapFailureToMessage(failure));
+        // }, (entry) async* {
+        //   final updatedProjects =
+        //       List<ProjectEntry>.from((state as ProjectLoaded).project)
+        //         ..addAll(entry);
+        //   yield ProjectLoaded(project: updatedProjects);
+        // });
       });
     }
   }

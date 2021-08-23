@@ -23,14 +23,26 @@ import '../../../injection.dart';
 
 const rightPaddingSize = 8.0;
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
 
   @override
-  _HomePageState createState() => _HomePageState();
+  Widget build(BuildContext context) {
+    return BlocProvider<TaskBloc>(
+        create: (context) =>
+            getIt<TaskBloc>(), //..add(GetProjectEntriesEvent()),
+        child: const HomePageWidget());
+  }
 }
 
-class _HomePageState extends State<HomePage> {
+class HomePageWidget extends StatefulWidget {
+  const HomePageWidget({Key? key}) : super(key: key);
+
+  @override
+  _HomePageWidgetState createState() => _HomePageWidgetState();
+}
+
+class _HomePageWidgetState extends State<HomePageWidget> {
   final PageController _pageController = PageController(
     initialPage: 1,
   );
@@ -104,8 +116,8 @@ class _HomePageState extends State<HomePage> {
         floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
         floatingActionButton: FloatingActionButton(
           onPressed: () => Get.bottomSheet(
-            BlocProvider<TaskBloc>(
-              create: (context) => getIt<TaskBloc>(),
+            BlocProvider<TaskBloc>.value(
+              value: BlocProvider.of<TaskBloc>(context),
               child: const QuickAddPage(),
             ),
             isScrollControlled: true,
@@ -147,8 +159,12 @@ class _HomePageState extends State<HomePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
             ),
           ),
-          builder: (context, state) =>
-              amplifyConfigured ? const ProjectPage() : Container(),
+          builder: (context, state) => amplifyConfigured
+              ? BlocProvider<TaskBloc>.value(
+                  value: BlocProvider.of<TaskBloc>(context),
+                  child: const ProjectPage(),
+                )
+              : Container(),
           body: Container(
             color: kcLightBackground,
             height: context.height,
