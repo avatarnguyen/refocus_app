@@ -23,12 +23,13 @@ class ActionPanelWidget extends StatefulWidget {
 
 class _ActionPanelWidgetState extends State<ActionPanelWidget> {
   Widget iconContainer({required Widget child}) => Container(
+        color: Colors.transparent,
         alignment: Alignment.center,
-        width: 32,
+        width: 44,
         child: Styled.widget(child: child),
       );
 
-  Uuid uuid = Uuid();
+  Uuid uuid = const Uuid();
 
   final _textStream = getIt<TextStream>();
 
@@ -49,23 +50,28 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
                 size: 32,
                 color: Colors.white70,
               ).gestures(onTap: () {}),
-              horizontalSpaceSmall,
-              Text('!', style: _iconTextStyle)
-                  .parent(iconContainer)
-                  .gestures(onTap: () {}),
-              Text('?', style: _iconTextStyle)
-                  .parent(iconContainer)
-                  .gestures(onTap: () {}),
-              Text('/', style: _iconTextStyle)
-                  .parent(iconContainer)
-                  .gestures(onTap: () {}),
-              Text('#', style: _iconTextStyle)
-                  .parent(iconContainer)
-                  .gestures(onTap: () {}),
-              Text('@', style: _iconTextStyle)
-                  .parent(iconContainer)
-                  .gestures(onTap: () {}),
-              horizontalSpaceSmall,
+              // horizontalSpaceSmall,
+              [
+                Text('!', style: _iconTextStyle).parent(iconContainer).gestures(
+                    onTap: () =>
+                        _textStream.updateText('${textStream.data ?? ''}!')),
+                Text('?', style: _iconTextStyle).parent(iconContainer).gestures(
+                    onTap: () =>
+                        _textStream.updateText('${textStream.data ?? ''}?')),
+                Text('/', style: _iconTextStyle).parent(iconContainer).gestures(
+                    onTap: () =>
+                        _textStream.updateText('${textStream.data ?? ''}/')),
+                Text('#', style: _iconTextStyle).parent(iconContainer).gestures(
+                    onTap: () =>
+                        _textStream.updateText('${textStream.data ?? ''}#')),
+                Text('@', style: _iconTextStyle).parent(iconContainer).gestures(
+                    onTap: () =>
+                        _textStream.updateText('${textStream.data ?? ''}@')),
+              ].toRow(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                mainAxisSize: MainAxisSize.min,
+              ),
+              // horizontalSpaceSmall,
               Icon(
                 Icons.send,
                 size: 28,

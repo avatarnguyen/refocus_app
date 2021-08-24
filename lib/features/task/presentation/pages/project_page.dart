@@ -36,32 +36,17 @@ class _ProjectPageState extends State<ProjectPage> {
         if (state is ProjectLoaded) {
           final _projects = state.project;
           return ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: _projects.length + 1,
-            itemBuilder: (context, index) {
-              if (index == 0) {
-                return SizedBox(
-                  height: 120,
-                  child: const Icon(Icons.add).gestures(
-                    onTap: () => context.read<TaskBloc>().add(
-                          CreateProjectEntriesEvent(
-                            ProjectParams(ProjectEntry(
-                                id: uuid.v1(), title: 'Test Project')),
-                          ),
-                        ),
-                  ),
-                );
-              } else {
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: _projects.length,
+              itemBuilder: (context, index) {
                 return Container(
                   margin: const EdgeInsets.all(4.0),
                   child: Text(
-                    _projects[index - 1].title!,
+                    _projects[index].title!,
                   ),
                 );
-              }
-            },
-          );
+              });
         } else if (state is TaskLoading) {
           return progressIndicator;
           // }

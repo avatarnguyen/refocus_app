@@ -57,6 +57,10 @@ dependencies:
   flutter_platform_widgets: ^1.9.5
   sliding_sheet: ^0.5.0
   tale_drawer: ^0.0.1
+  rich_text_controller:
+    git:
+      url: https://github.com/micazi/rich_text_controller
+
   ## Calendar
   syncfusion_flutter_calendar: ^19.2.56
   date_picker_timeline: ^1.2.3
