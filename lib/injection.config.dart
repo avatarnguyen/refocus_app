@@ -11,9 +11,10 @@ import 'package:injectable/injectable.dart' as _i2;
 import 'package:internet_connection_checker/internet_connection_checker.dart'
     as _i7;
 
-import 'core/injectable_module.dart' as _i36;
+import 'core/injectable_module.dart' as _i37;
 import 'core/network/network_info.dart' as _i8;
 import 'core/presentation/text_stream.dart' as _i12;
+import 'core/presentation/widgets/page_stream.dart' as _i36;
 import 'features/calendar/data/datasources/gcal_local_data_source.dart' as _i6;
 import 'features/calendar/data/datasources/gcal_remote_data_source.dart'
     as _i19;
@@ -125,7 +126,8 @@ Future<_i1.GetIt> $initGetIt(_i1.GetIt get,
       updateCalendarList: get<_i30.UpdateCalendarList>()));
   gh.singleton<_i35.DateTimeStream>(_i35.DateTimeStream());
   gh.singleton<_i20.GoogleSignIn>(registerModule.gCalSignIn);
+  gh.singleton<_i36.PageStream>(_i36.PageStream());
   return get;
 }
 
-class _$RegisterModule extends _i36.RegisterModule {}
+class _$RegisterModule extends _i37.RegisterModule {}

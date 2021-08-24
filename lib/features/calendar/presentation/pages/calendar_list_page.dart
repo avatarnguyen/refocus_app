@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:refocus_app/features/calendar/domain/entities/calendar_entry.dart';
-import 'package:refocus_app/features/calendar/domain/usecases/helpers/calendar_params.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar_list/calendar_list_bloc.dart';
 import 'package:refocus_app/features/calendar/presentation/widgets/checkboxlistitem_widget.dart';
 import 'package:refocus_app/features/calendar/presentation/widgets/widgets.dart';

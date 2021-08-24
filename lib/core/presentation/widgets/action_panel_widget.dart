@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:refocus_app/core/util/ui/style_helpers.dart';
-import 'package:refocus_app/core/util/ui/ui_helpers.dart';
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
 import 'package:refocus_app/features/task/domain/usecases/helpers/project_params.dart';
 import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
-import 'package:styled_widget/styled_widget.dart';
+import 'package:refocus_app/core/util/ui/ui_helper.dart';
+
 import 'package:uuid/uuid.dart';
 import 'package:get/get.dart';
 
@@ -36,7 +35,7 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
   @override
   Widget build(BuildContext context) {
     final _iconTextStyle = context.textTheme.headline5!.copyWith(
-      color: Colors.white70,
+      color: kcSecondary100,
     );
     return StreamBuilder(
         stream: _textStream.getTextStream,
@@ -48,7 +47,7 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
               const Icon(
                 Icons.add,
                 size: 32,
-                color: Colors.white70,
+                color: kcSecondary100,
               ).gestures(onTap: () {}),
               // horizontalSpaceSmall,
               [

@@ -3,18 +3,17 @@ import 'package:amplify_flutter/amplify.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:refocus_app/core/presentation/pages/quickadd_page.dart';
 import 'package:refocus_app/core/presentation/pages/today_page.dart';
+import 'package:refocus_app/core/presentation/widgets/page_stream.dart';
+import 'package:refocus_app/core/presentation/widgets/slider_header_widget.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart';
-import 'package:refocus_app/core/util/ui/style_helpers.dart';
-import 'package:refocus_app/core/util/ui/ui_helpers.dart';
 import 'package:refocus_app/features/calendar/presentation/pages/calendar_page.dart';
 import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
 import 'package:refocus_app/features/task/presentation/pages/project_page.dart';
 import 'package:refocus_app/models/ModelProvider.dart';
 import 'package:tale_drawer/tale_drawer.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
-import 'package:styled_widget/styled_widget.dart';
+import 'package:refocus_app/core/util/ui/ui_helper.dart';
 
 import 'package:get/get.dart';
 
@@ -46,9 +45,12 @@ class _HomePageWidgetState extends State<HomePageWidget> {
   final PageController _pageController = PageController(
     initialPage: 1,
   );
+  final PageStream _pageStream = getIt<PageStream>();
   final GoogleSignIn _googleSignIn = getIt<GoogleSignIn>();
   final drawerController = TaleController();
   double rightPadding = rightPaddingSize;
+
+  int _currentPage = 1;
 
   final log = logger(HomePage);
   bool amplifyConfigured = false;
@@ -89,6 +91,11 @@ class _HomePageWidgetState extends State<HomePageWidget> {
         : drawerController.open();
   }
 
+  void switchToPageView() {
+    _pageController.animateToPage(_currentPage == 0 ? 1 : 0,
+        duration: 400.milliseconds, curve: Curves.easeInOut);
+  }
+
   @override
   Widget build(BuildContext context) {
     return TaleDrawer(
@@ -113,51 +120,21 @@ class _HomePageWidgetState extends State<HomePageWidget> {
         color: kcPrimary600,
       ),
       body: Scaffold(
-        floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-        floatingActionButton: FloatingActionButton(
-          onPressed: () => Get.bottomSheet(
-            BlocProvider<TaskBloc>.value(
-              value: BlocProvider.of<TaskBloc>(context),
-              child: const QuickAddPage(),
-            ),
-            isScrollControlled: true,
-            isDismissible: false,
-            elevation: 8,
-            backgroundColor: Colors.black54,
-          ),
-          backgroundColor: kcPrimary500,
-          child: const Icon(Icons.add),
-        ),
         body: SlidingSheet(
-          color: kcLightBackground,
+          color: kcDarkBackground,
           isBackdropInteractable: true,
           elevation: 16,
-          cornerRadius: 24,
+          cornerRadius: 16,
           shadowColor: Colors.black26,
+          addTopViewPaddingOnFullscreen: true,
           snapSpec: const SnapSpec(
             snap: true,
-            // Set custom snapping points.
-            initialSnap: 0.06,
-            snappings: [0.06, 0.5, 1.0],
+            initialSnap: 0.09,
+            snappings: [0.09, 0.5, 1.0],
             positioning: SnapPositioning.relativeToAvailableSpace,
           ),
-          headerBuilder: (context, state) => Container(
-            padding: const EdgeInsets.only(top: 8.0),
-            height: 32.0,
-            // color: Colors.transparent,
-            child: [
-              Container(
-                height: 8.0,
-                width: 72.0,
-                decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.all(Radius.circular(8)),
-                  color: Colors.grey[300],
-                ),
-              )
-            ].toRow(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-            ),
+          headerBuilder: (context, state) => SlidingHeaderWidget(
+            changePage: switchToPageView,
           ),
           builder: (context, state) => amplifyConfigured
               ? BlocProvider<TaskBloc>.value(
@@ -175,6 +152,8 @@ class _HomePageWidgetState extends State<HomePageWidget> {
               physics: const ClampingScrollPhysics(),
               controller: _pageController,
               onPageChanged: (int index) {
+                _pageStream.broadCastCurrentPage(index);
+                _currentPage = index;
                 if (index == 0) {
                   //* Maybe change to Valuelistener Builder to make this faster
                   setState(() {

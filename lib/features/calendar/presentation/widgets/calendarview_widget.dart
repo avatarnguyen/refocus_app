@@ -2,10 +2,9 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:refocus_app/core/util/ui/ui_helpers.dart';
+import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar/datetime_stream.dart';
-import 'package:styled_widget/styled_widget.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:get/get.dart';
 

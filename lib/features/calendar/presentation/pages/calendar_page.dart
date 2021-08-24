@@ -7,16 +7,14 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/intl.dart';
 import 'package:refocus_app/constants/routes_name.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart' as custom_log;
-import 'package:refocus_app/core/util/ui/style_helpers.dart';
-import 'package:refocus_app/core/util/ui/ui_helpers.dart';
-import 'package:refocus_app/core/util/ui/widget_helpers.dart';
+import 'package:refocus_app/core/util/ui/ui_helper.dart';
+
 import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/helpers/event_params.dart';
 import 'package:refocus_app/features/calendar/presentation/widgets/calendar_monthview_widget.dart';
 import 'package:refocus_app/features/calendar/presentation/widgets/calendarview_widget.dart';
 import 'package:refocus_app/features/calendar/presentation/widgets/datepicker_widget.dart';
 import 'package:refocus_app/injection.dart';
-import 'package:styled_widget/styled_widget.dart';
 
 import 'package:uuid/uuid.dart';
 
@@ -116,16 +114,6 @@ class _CalendarWidgetState extends State<CalendarWidget> {
 
     return Scaffold(
       backgroundColor: kcLightBackground,
-      // floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {
-      //     return BlocProvider.of<CalendarBloc>(context).add(
-      //       DeleteCalendarEvent(testEvent),
-      //     );
-      //   },
-      //   backgroundColor: kcPrimary500,
-      //   child: const Icon(Icons.add),
-      // ),
       body: <Widget>[
         [
           verticalSpaceRegular,
@@ -190,7 +178,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
           builder: (context, state) {
             if (state is GcalInitial) {
               return [
-                MessageDisplay(message: 'Sign In'),
+                const MessageDisplay(message: 'Sign In'),
                 ElevatedButton(
                   onPressed: () async {
                     await _handleSignIn();

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:styled_widget/styled_widget.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:get/get.dart';
 
-import '../../../../core/util/ui/style_helpers.dart';
-import '../../../../core/util/ui/ui_helpers.dart';
+import 'package:refocus_app/core/util/ui/ui_helper.dart';
+
 import '../bloc/calendar/calendar_bloc.dart';
 
 class CalendarMonthViewWidget extends StatelessWidget {
