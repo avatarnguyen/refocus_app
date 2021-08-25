@@ -6,6 +6,7 @@ import 'package:injectable/injectable.dart';
 import 'package:refocus_app/constants/failure_message.dart';
 import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/core/usecases/usecase.dart';
+import 'package:refocus_app/features/task/data/datasources/aws_stream.dart';
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
 import 'package:refocus_app/features/task/domain/entities/task_entry.dart';
 import 'package:refocus_app/features/task/domain/usecases/helpers/project_params.dart';
@@ -13,6 +14,7 @@ import 'package:refocus_app/features/task/domain/usecases/project/create_project
 import 'package:refocus_app/features/task/domain/usecases/project/delete_project.dart';
 import 'package:refocus_app/features/task/domain/usecases/project/get_projects.dart';
 import 'package:refocus_app/features/task/domain/usecases/project/update_project.dart';
+import 'package:refocus_app/injection.dart';
 part 'task_event.dart';
 part 'task_state.dart';
 
@@ -30,6 +32,8 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   final DeleteProject deleteProject;
   final CreateProject createProject;
 
+  StreamSubscription? _awsSubscription;
+
   @override
   Stream<TaskState> mapEventToState(
     TaskEvent event,
@@ -42,6 +46,11 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       yield TaskLoading();
       final failureOrEntry = await getProjects(NoParams());
       yield* _eitherPrejectLoadedOrErrorState(failureOrEntry);
+
+      await _awsSubscription?.cancel();
+      _awsSubscription = getIt<AwsStream>()
+          .getProjectStream
+          .listen((_) => add(GetProjectEntriesEvent()));
     } else if (event is CreateProjectEntriesEvent) {
       print('Create New Project');
 
@@ -81,5 +90,11 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       default:
         return 'Unexpected error';
     }
+  }
+
+  @override
+  Future<void> close() {
+    _awsSubscription?.cancel();
+    return super.close();
   }
 }

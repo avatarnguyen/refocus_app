@@ -1,3 +1,5 @@
+import 'package:amplify_api/amplify_api.dart';
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify.dart';
 import 'package:flutter/material.dart';
@@ -65,19 +67,21 @@ class _HomePageWidgetState extends State<HomePageWidget> {
   }
 
   void _configureAmplify() async {
-    // await Amplify.addPlugin(AmplifyAPI()); // UNCOMMENT this line after backend is deployed
-    await Amplify.addPlugin(
-        AmplifyDataStore(modelProvider: ModelProvider.instance));
-
     try {
+      await Future.wait([
+        Amplify.addPlugin(AmplifyAPI()),
+        Amplify.addPlugin(
+            AmplifyDataStore(modelProvider: ModelProvider.instance)),
+        Amplify.addPlugin(AmplifyAuthCognito()),
+      ]);
       // Once Plugins are added, configure Amplify
       await Amplify.configure(amplifyconfig);
+      setState(() {
+        amplifyConfigured = true;
+      });
     } catch (e) {
       log.e(e);
     }
-    setState(() {
-      amplifyConfigured = true;
-    });
   }
 
   @override

@@ -30,6 +30,7 @@ class TaskEntry extends Equatable {
     };
   }
 
+  // ignore: sort_constructors_first
   factory TaskEntry.fromMap(Map<String, dynamic> map) {
     return TaskEntry(
       id: map['id'],
@@ -42,6 +43,7 @@ class TaskEntry extends Equatable {
 
   String toJson() => json.encode(toMap());
 
+  // ignore: sort_constructors_first
   factory TaskEntry.fromJson(String source) =>
       TaskEntry.fromMap(json.decode(source));
 }

@@ -1,0 +1,20 @@
+{
+  "staging": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-suparday-staging-182426-authRole",
+      "UnauthRoleArn": "arn:aws:iam::916616256386:role/amplify-suparday-staging-182426-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::916616256386:role/amplify-suparday-staging-182426-authRole",
+      "Region": "eu-central-1",
+      "DeploymentBucketName": "amplify-suparday-staging-182426-deployment",
+      "UnauthRoleName": "amplify-suparday-staging-182426-unauthRole",
+      "StackName": "amplify-suparday-staging-182426",
+      "StackId": "arn:aws:cloudformation:eu-central-1:916616256386:stack/amplify-suparday-staging-182426/ae25cf60-05d1-11ec-8b56-0682f8691b4a",
+      "AmplifyAppId": "d1iugv2k2zpti5"
+    },
+    "categories": {
+      "auth": {
+        "suparday0539abf2": {}
+      }
+    }
+  }
+}

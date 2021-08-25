@@ -33,10 +33,11 @@ dependencies:
   hive_flutter: ^1.1.0
   shared_preferences: ^2.0.6
 
-  # cloud storage
+  # aws cloud
   amplify_flutter: ^0.2.2
   amplify_datastore: ^0.2.2
-  # amplify_api: ^0.2.0 // UNCOMMENT this line after backend is deployed
+  amplify_api: ^0.2.0
+  amplify_auth_cognito: ^0.2.2
 
   path_provider: ^2.0.2
   # Google Calendar

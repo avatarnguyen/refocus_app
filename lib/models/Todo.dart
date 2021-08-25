@@ -16,6 +16,7 @@
 // ignore_for_file: public_member_api_docs
 
 import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 
 
@@ -27,6 +28,9 @@ class Todo extends Model {
   final String? _title;
   final String? _description;
   final bool? _isCompleted;
+  final TemporalDate? _dueDate;
+  final List<TemporalDateTime>? _plannedDate;
+  final List<String>? _recurrentDays;
   final String? _projectID;
 
   @override
@@ -57,18 +61,33 @@ class Todo extends Model {
     }
   }
   
+  TemporalDate? get dueDate {
+    return _dueDate;
+  }
+  
+  List<TemporalDateTime>? get plannedDate {
+    return _plannedDate;
+  }
+  
+  List<String>? get recurrentDays {
+    return _recurrentDays;
+  }
+  
   String? get projectID {
     return _projectID;
   }
   
-  const Todo._internal({required this.id, required title, description, required isCompleted, projectID}): _title = title, _description = description, _isCompleted = isCompleted, _projectID = projectID;
+  const Todo._internal({required this.id, required title, description, required isCompleted, dueDate, plannedDate, recurrentDays, projectID}): _title = title, _description = description, _isCompleted = isCompleted, _dueDate = dueDate, _plannedDate = plannedDate, _recurrentDays = recurrentDays, _projectID = projectID;
   
-  factory Todo({String? id, required String title, String? description, required bool isCompleted, String? projectID}) {
+  factory Todo({String? id, required String title, String? description, required bool isCompleted, TemporalDate? dueDate, List<TemporalDateTime>? plannedDate, List<String>? recurrentDays, String? projectID}) {
     return Todo._internal(
       id: id == null ? UUID.getUUID() : id,
       title: title,
       description: description,
       isCompleted: isCompleted,
+      dueDate: dueDate,
+      plannedDate: plannedDate != null ? List<TemporalDateTime>.unmodifiable(plannedDate) : plannedDate,
+      recurrentDays: recurrentDays != null ? List<String>.unmodifiable(recurrentDays) : recurrentDays,
       projectID: projectID);
   }
   
@@ -84,6 +103,9 @@ class Todo extends Model {
       _title == other._title &&
       _description == other._description &&
       _isCompleted == other._isCompleted &&
+      _dueDate == other._dueDate &&
+      DeepCollectionEquality().equals(_plannedDate, other._plannedDate) &&
+      DeepCollectionEquality().equals(_recurrentDays, other._recurrentDays) &&
       _projectID == other._projectID;
   }
   
@@ -99,18 +121,24 @@ class Todo extends Model {
     buffer.write("title=" + "$_title" + ", ");
     buffer.write("description=" + "$_description" + ", ");
     buffer.write("isCompleted=" + (_isCompleted != null ? _isCompleted!.toString() : "null") + ", ");
+    buffer.write("dueDate=" + (_dueDate != null ? _dueDate!.format() : "null") + ", ");
+    buffer.write("plannedDate=" + (_plannedDate != null ? _plannedDate!.toString() : "null") + ", ");
+    buffer.write("recurrentDays=" + (_recurrentDays != null ? _recurrentDays!.toString() : "null") + ", ");
     buffer.write("projectID=" + "$_projectID");
     buffer.write("}");
     
     return buffer.toString();
   }
   
-  Todo copyWith({String? id, String? title, String? description, bool? isCompleted, String? projectID}) {
+  Todo copyWith({String? id, String? title, String? description, bool? isCompleted, TemporalDate? dueDate, List<TemporalDateTime>? plannedDate, List<String>? recurrentDays, String? projectID}) {
     return Todo(
       id: id ?? this.id,
       title: title ?? this.title,
       description: description ?? this.description,
       isCompleted: isCompleted ?? this.isCompleted,
+      dueDate: dueDate ?? this.dueDate,
+      plannedDate: plannedDate ?? this.plannedDate,
+      recurrentDays: recurrentDays ?? this.recurrentDays,
       projectID: projectID ?? this.projectID);
   }
   
@@ -119,16 +147,22 @@ class Todo extends Model {
       _title = json['title'],
       _description = json['description'],
       _isCompleted = json['isCompleted'],
+      _dueDate = json['dueDate'] != null ? TemporalDate.fromString(json['dueDate']) : null,
+      _plannedDate = (json['plannedDate'] as List)?.map((e) => TemporalDateTime.fromString(e))?.toList(),
+      _recurrentDays = json['recurrentDays']?.cast<String>(),
       _projectID = json['projectID'];
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'title': _title, 'description': _description, 'isCompleted': _isCompleted, 'projectID': _projectID
+    'id': id, 'title': _title, 'description': _description, 'isCompleted': _isCompleted, 'dueDate': _dueDate?.format(), 'plannedDate': _plannedDate?.map((e) => e.format()).toList(), 'recurrentDays': _recurrentDays, 'projectID': _projectID
   };
 
   static final QueryField ID = QueryField(fieldName: "todo.id");
   static final QueryField TITLE = QueryField(fieldName: "title");
   static final QueryField DESCRIPTION = QueryField(fieldName: "description");
   static final QueryField ISCOMPLETED = QueryField(fieldName: "isCompleted");
+  static final QueryField DUEDATE = QueryField(fieldName: "dueDate");
+  static final QueryField PLANNEDDATE = QueryField(fieldName: "plannedDate");
+  static final QueryField RECURRENTDAYS = QueryField(fieldName: "recurrentDays");
   static final QueryField PROJECTID = QueryField(fieldName: "projectID");
   static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "Todo";
@@ -163,6 +197,26 @@ class Todo extends Model {
       key: Todo.ISCOMPLETED,
       isRequired: true,
       ofType: ModelFieldType(ModelFieldTypeEnum.bool)
+    ));
+    
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
+      key: Todo.DUEDATE,
+      isRequired: false,
+      ofType: ModelFieldType(ModelFieldTypeEnum.date)
+    ));
+    
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
+      key: Todo.PLANNEDDATE,
+      isRequired: false,
+      isArray: true,
+      ofType: ModelFieldType(ModelFieldTypeEnum.collection, ofModelName: describeEnum(ModelFieldTypeEnum.dateTime))
+    ));
+    
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
+      key: Todo.RECURRENTDAYS,
+      isRequired: false,
+      isArray: true,
+      ofType: ModelFieldType(ModelFieldTypeEnum.collection, ofModelName: describeEnum(ModelFieldTypeEnum.string))
     ));
     
     modelSchemaDefinition.addField(ModelFieldDefinition.field(

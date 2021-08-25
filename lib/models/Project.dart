@@ -27,6 +27,8 @@ class Project extends Model {
   static const classType = const _ProjectModelType();
   final String id;
   final String? _title;
+  final String? _color;
+  final String? _emoji;
   final List<Todo>? _Todos;
 
   @override
@@ -41,16 +43,26 @@ class Project extends Model {
     return _title;
   }
   
+  String? get color {
+    return _color;
+  }
+  
+  String? get emoji {
+    return _emoji;
+  }
+  
   List<Todo>? get Todos {
     return _Todos;
   }
   
-  const Project._internal({required this.id, title, Todos}): _title = title, _Todos = Todos;
+  const Project._internal({required this.id, title, color, emoji, Todos}): _title = title, _color = color, _emoji = emoji, _Todos = Todos;
   
-  factory Project({String? id, String? title, List<Todo>? Todos}) {
+  factory Project({String? id, String? title, String? color, String? emoji, List<Todo>? Todos}) {
     return Project._internal(
       id: id == null ? UUID.getUUID() : id,
       title: title,
+      color: color,
+      emoji: emoji,
       Todos: Todos != null ? List<Todo>.unmodifiable(Todos) : Todos);
   }
   
@@ -64,6 +76,8 @@ class Project extends Model {
     return other is Project &&
       id == other.id &&
       _title == other._title &&
+      _color == other._color &&
+      _emoji == other._emoji &&
       DeepCollectionEquality().equals(_Todos, other._Todos);
   }
   
@@ -76,22 +90,28 @@ class Project extends Model {
     
     buffer.write("Project {");
     buffer.write("id=" + "$id" + ", ");
-    buffer.write("title=" + "$_title");
+    buffer.write("title=" + "$_title" + ", ");
+    buffer.write("color=" + "$_color" + ", ");
+    buffer.write("emoji=" + "$_emoji");
     buffer.write("}");
     
     return buffer.toString();
   }
   
-  Project copyWith({String? id, String? title, List<Todo>? Todos}) {
+  Project copyWith({String? id, String? title, String? color, String? emoji, List<Todo>? Todos}) {
     return Project(
       id: id ?? this.id,
       title: title ?? this.title,
+      color: color ?? this.color,
+      emoji: emoji ?? this.emoji,
       Todos: Todos ?? this.Todos);
   }
   
   Project.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
       _title = json['title'],
+      _color = json['color'],
+      _emoji = json['emoji'],
       _Todos = json['Todos'] is List
         ? (json['Todos'] as List)
           .where((e) => e?['serializedData'] != null)
@@ -100,11 +120,13 @@ class Project extends Model {
         : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'title': _title, 'Todos': _Todos?.map((e) => e?.toJson())?.toList()
+    'id': id, 'title': _title, 'color': _color, 'emoji': _emoji, 'Todos': _Todos?.map((e) => e?.toJson())?.toList()
   };
 
   static final QueryField ID = QueryField(fieldName: "project.id");
   static final QueryField TITLE = QueryField(fieldName: "title");
+  static final QueryField COLOR = QueryField(fieldName: "color");
+  static final QueryField EMOJI = QueryField(fieldName: "emoji");
   static final QueryField TODOS = QueryField(
     fieldName: "Todos",
     fieldType: ModelFieldType(ModelFieldTypeEnum.model, ofModelName: (Todo).toString()));
@@ -127,6 +149,18 @@ class Project extends Model {
     
     modelSchemaDefinition.addField(ModelFieldDefinition.field(
       key: Project.TITLE,
+      isRequired: false,
+      ofType: ModelFieldType(ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
+      key: Project.COLOR,
+      isRequired: false,
+      ofType: ModelFieldType(ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
+      key: Project.EMOJI,
       isRequired: false,
       ofType: ModelFieldType(ModelFieldTypeEnum.string)
     ));
