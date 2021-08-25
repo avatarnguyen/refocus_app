@@ -100,9 +100,9 @@ class _HomePageWidgetState extends State<HomePageWidget> {
   Widget build(BuildContext context) {
     return TaleDrawer(
       controller: drawerController,
-      type: TaleType.Flip,
+      type: TaleType.Zoom,
       drawerState: DrawerState.CLOSED,
-      sideState: SideState.RIGHT,
+      sideState: SideState.LEFT,
       listener: TaleListener(
         onOpen: () {
           print('OnOpen');
@@ -111,10 +111,9 @@ class _HomePageWidgetState extends State<HomePageWidget> {
           print('OnClose');
         },
       ),
-      settings: FlipSettings(
-        type: DrawerAnimation.FLIP,
-        drawerWidth: context.width - 24.0,
-        flipPercent: 90,
+      settings: ZoomSettings(
+        maxSlide: context.width - 48,
+        addHeightScale: 0.1,
       ),
       drawer: Container(
         color: kcPrimary600,

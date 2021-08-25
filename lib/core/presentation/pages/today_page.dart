@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart' as custom_log;
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
-import 'package:refocus_app/features/calendar/presentation/widgets/checkboxlistitem_widget.dart';
 
 class TodayPage extends StatefulWidget {
   const TodayPage({Key? key, required this.onDrawerSelected}) : super(key: key);
@@ -29,8 +28,6 @@ class _TodayPageState extends State<TodayPage> {
     final today = DateTime.now();
 
     return PlatformScaffold(
-      // iosContentBottomPadding: true,
-      // iosContentPadding: true,
       backgroundColor: kcLightBackground,
       body: [
         [
