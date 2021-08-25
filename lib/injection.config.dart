@@ -11,10 +11,11 @@ import 'package:injectable/injectable.dart' as _i2;
 import 'package:internet_connection_checker/internet_connection_checker.dart'
     as _i7;
 
-import 'core/injectable_module.dart' as _i37;
+import 'core/injectable_module.dart' as _i38;
 import 'core/network/network_info.dart' as _i8;
+import 'core/presentation/bloc/today_bloc.dart' as _i30;
 import 'core/presentation/text_stream.dart' as _i12;
-import 'core/presentation/widgets/page_stream.dart' as _i36;
+import 'core/presentation/widgets/page_stream.dart' as _i37;
 import 'features/calendar/data/datasources/gcal_local_data_source.dart' as _i6;
 import 'features/calendar/data/datasources/gcal_remote_data_source.dart'
     as _i19;
@@ -23,19 +24,19 @@ import 'features/calendar/data/repositories/calendar_repository_impl.dart'
 import 'features/calendar/domain/entities/calendar_entry.dart' as _i5;
 import 'features/calendar/domain/entities/calendar_event_entry.dart' as _i4;
 import 'features/calendar/domain/repositories/calendar_repository.dart' as _i24;
-import 'features/calendar/domain/usecases/add_event.dart' as _i32;
+import 'features/calendar/domain/usecases/add_event.dart' as _i33;
 import 'features/calendar/domain/usecases/delete_event.dart' as _i26;
 import 'features/calendar/domain/usecases/get_calendar_list.dart' as _i27;
 import 'features/calendar/domain/usecases/get_events.dart' as _i28;
 import 'features/calendar/domain/usecases/get_events_between.dart' as _i29;
-import 'features/calendar/domain/usecases/update_calendar_list.dart' as _i30;
-import 'features/calendar/domain/usecases/update_event.dart' as _i31;
+import 'features/calendar/domain/usecases/update_calendar_list.dart' as _i31;
+import 'features/calendar/domain/usecases/update_event.dart' as _i32;
 import 'features/calendar/presentation/bloc/calendar/calendar_bloc.dart'
-    as _i33;
-import 'features/calendar/presentation/bloc/calendar/datetime_stream.dart'
-    as _i35;
-import 'features/calendar/presentation/bloc/calendar_list/calendar_list_bloc.dart'
     as _i34;
+import 'features/calendar/presentation/bloc/calendar/datetime_stream.dart'
+    as _i36;
+import 'features/calendar/presentation/bloc/calendar_list/calendar_list_bloc.dart'
+    as _i35;
 import 'features/task/data/datasources/aws_data_source.dart' as _i9;
 import 'features/task/data/repositories/task_repository_impl.dart' as _i11;
 import 'features/task/domain/repositories/task_repository.dart' as _i10;
@@ -109,25 +110,28 @@ Future<_i1.GetIt> $initGetIt(_i1.GetIt get,
       () => _i28.GetEvents(get<_i24.CalendarRepository>()));
   gh.lazySingleton<_i29.GetEventsBetween>(
       () => _i29.GetEventsBetween(get<_i24.CalendarRepository>()));
-  gh.lazySingleton<_i30.UpdateCalendarList>(() =>
-      _i30.UpdateCalendarList(repository: get<_i24.CalendarRepository>()));
-  gh.lazySingleton<_i31.UpdateEvent>(
-      () => _i31.UpdateEvent(repository: get<_i24.CalendarRepository>()));
-  gh.lazySingleton<_i32.AddEvent>(
-      () => _i32.AddEvent(repository: get<_i24.CalendarRepository>()));
-  gh.factory<_i33.CalendarBloc>(() => _i33.CalendarBloc(
+  gh.factory<_i30.TodayBloc>(() => _i30.TodayBloc(
+      getEventEntry: get<_i29.GetEventsBetween>(),
+      getTasks: get<_i22.GetTasks>()));
+  gh.lazySingleton<_i31.UpdateCalendarList>(() =>
+      _i31.UpdateCalendarList(repository: get<_i24.CalendarRepository>()));
+  gh.lazySingleton<_i32.UpdateEvent>(
+      () => _i32.UpdateEvent(repository: get<_i24.CalendarRepository>()));
+  gh.lazySingleton<_i33.AddEvent>(
+      () => _i33.AddEvent(repository: get<_i24.CalendarRepository>()));
+  gh.factory<_i34.CalendarBloc>(() => _i34.CalendarBloc(
       getCalendarEntry: get<_i28.GetEvents>(),
-      addEvent: get<_i32.AddEvent>(),
+      addEvent: get<_i33.AddEvent>(),
       deleteEvent: get<_i26.DeleteEvent>(),
-      updateEvent: get<_i31.UpdateEvent>(),
+      updateEvent: get<_i32.UpdateEvent>(),
       getCalendarList: get<_i27.GetCalendarList>()));
-  gh.factory<_i34.CalendarListBloc>(() => _i34.CalendarListBloc(
+  gh.factory<_i35.CalendarListBloc>(() => _i35.CalendarListBloc(
       getCalendarList: get<_i27.GetCalendarList>(),
-      updateCalendarList: get<_i30.UpdateCalendarList>()));
-  gh.singleton<_i35.DateTimeStream>(_i35.DateTimeStream());
+      updateCalendarList: get<_i31.UpdateCalendarList>()));
+  gh.singleton<_i36.DateTimeStream>(_i36.DateTimeStream());
   gh.singleton<_i20.GoogleSignIn>(registerModule.gCalSignIn);
-  gh.singleton<_i36.PageStream>(_i36.PageStream());
+  gh.singleton<_i37.PageStream>(_i37.PageStream());
   return get;
 }
 
-class _$RegisterModule extends _i37.RegisterModule {}
+class _$RegisterModule extends _i38.RegisterModule {}

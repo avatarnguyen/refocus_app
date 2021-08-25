@@ -51,7 +51,6 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
 
   Stream<TaskState> _mapProjectCreatedToState(
       CreateProjectEntriesEvent event) async* {
-    print(state);
     if (state is ProjectLoaded) {
       final failureOrSuccess = await createProject(event.params);
       yield* failureOrSuccess.fold((failure) async* {
@@ -60,17 +59,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
         final updatedProjects =
             List<ProjectEntry>.from((state as ProjectLoaded).project)
               ..add(entry);
-        print(updatedProjects.toString());
         yield ProjectLoaded(project: updatedProjects);
-        // final failureOrEntry = await getProjects(NoParams());
-        // yield* failureOrEntry.fold((failure) async* {
-        //   yield TaskError(_mapFailureToMessage(failure));
-        // }, (entry) async* {
-        //   final updatedProjects =
-        //       List<ProjectEntry>.from((state as ProjectLoaded).project)
-        //         ..addAll(entry);
-        //   yield ProjectLoaded(project: updatedProjects);
-        // });
       });
     }
   }

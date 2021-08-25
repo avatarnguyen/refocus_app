@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:dartx/dartx.dart';
+
+import 'package:refocus_app/core/presentation/bloc/today_bloc.dart';
+import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart' as custom_log;
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
+import 'package:refocus_app/enum/today_entry_type.dart';
+import 'package:refocus_app/features/calendar/presentation/widgets/widgets.dart';
+import 'package:refocus_app/injection.dart';
 
 class TodayPage extends StatefulWidget {
   const TodayPage({Key? key, required this.onDrawerSelected}) : super(key: key);
@@ -123,14 +131,66 @@ class _TodayPageState extends State<TodayPage> {
             ),
         verticalSpaceSmall,
         //* Body: List View
-        Expanded(
-          child: ListView.builder(
-              itemCount: 20,
-              itemBuilder: (BuildContext context, int index) {
-                return const ListItemWidget();
-              }),
+        BlocProvider<TodayBloc>(
+          create: (context) => getIt<TodayBloc>()
+            ..add(
+              GetTodayEntries(DateTime.now()),
+            ),
+          child: const Expanded(
+            child: TodayListWidget(),
+          ),
         ),
       ].toColumn(crossAxisAlignment: CrossAxisAlignment.start).parent((page)),
+    );
+  }
+}
+
+class TodayListWidget extends StatelessWidget {
+  const TodayListWidget({
+    Key? key,
+  }) : super(key: key);
+
+  Future<void> _pullToRefresh(BuildContext context) async {
+    context.read<TodayBloc>().add(GetTodayEntries(DateTime.now()));
+    await Future.delayed(1000.milliseconds);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<TodayBloc, TodayState>(
+      builder: (context, state) {
+        if (state is TodayLoaded) {
+          final _entries =
+              state.todayEntries.sortedBy((entry) => entry.startDateTime!);
+          return RefreshIndicator(
+            onRefresh: () async => await _pullToRefresh(context),
+            child: ListView.builder(
+              itemCount: _entries.length,
+              itemBuilder: (BuildContext context, int index) {
+                final _entry = _entries[index];
+                return ListItemWidget(
+                  title: _entry.title,
+                  color: _entry.color,
+                  type: _entry.type,
+                  startDateTime: _entry.startDateTime,
+                  endDateTime: _entry.endDateTime,
+                  eventID: _entry.calendarEventID,
+                );
+              },
+            ),
+          );
+        } else if (state is TodayLoading) {
+          return const LoadingWidget();
+        } else if (state is TodayError) {
+          return MessageDisplay(
+            message: state.message,
+          );
+        } else {
+          return const MessageDisplay(
+            message: 'Unexpected State',
+          );
+        }
+      },
     );
   }
 }
@@ -138,29 +198,58 @@ class _TodayPageState extends State<TodayPage> {
 class ListItemWidget extends StatelessWidget {
   const ListItemWidget({
     Key? key,
+    this.title,
+    required this.type,
+    this.startDateTime,
+    this.endDateTime,
+    this.color,
+    this.eventID,
+    this.taskID,
   }) : super(key: key);
+
+  final String? title;
+  final TodayEntryType type;
+  final DateTime? startDateTime;
+  final DateTime? endDateTime;
+  final String? color;
+  final String? eventID;
+  final String? taskID;
 
   @override
   Widget build(BuildContext context) {
+    final _color = StyleUtils.getColorFromString(color ?? '#115FFB');
+    final _backgroudColor = StyleUtils.lighten(_color, 0.32).withOpacity(0.4);
+    final _chipColor = StyleUtils.lighten(_color, 0.32);
+    final _textColor = StyleUtils.darken(_color, 0.32);
+
+    final _isEvent = type == TodayEntryType.event;
+
+    print('[Today Page] $startDateTime');
+
     return Container(
       width: context.width - 32,
       margin: const EdgeInsets.all(8),
       child: [
         SizedBox(
-            width: 48,
-            child: [
-              verticalSpaceSmall,
-              Text(
-                '10 AM',
-                style: context.textTheme.subtitle2!.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+          width: 48,
+          child: [
+            verticalSpaceSmall,
+            Text(
+              CustomDateUtils.returnTime(startDateTime!.toLocal()),
+              textAlign: TextAlign.end,
+              style: context.textTheme.subtitle2!.copyWith(
+                fontWeight: FontWeight.bold,
               ),
-              Text(
-                '11 AM',
-                style: context.textTheme.subtitle2,
-              ),
-            ].toColumn()),
+            ),
+            Text(
+              CustomDateUtils.returnTime(endDateTime!.toLocal()),
+              textAlign: TextAlign.end,
+              style: context.textTheme.subtitle2,
+            ),
+          ]
+              .toColumn(crossAxisAlignment: CrossAxisAlignment.end)
+              .paddingOnly(right: 8),
+        ),
         horizontalSpaceTiny,
         Container(
           width: context.width - 84,
@@ -169,39 +258,50 @@ class ListItemWidget extends StatelessWidget {
             horizontal: 12,
           ),
           decoration: BoxDecoration(
-              color: Colors.teal[300],
+              color: _backgroudColor,
               borderRadius: const BorderRadius.all(Radius.circular(8))),
           child: [
             [
-              [
-                const Icon(
-                  Icons.done_all,
-                  color: kcSecondary100,
-                ).paddingOnly(right: 10).gestures(onTap: () {
-                  print('More Option');
-                }),
-                Text(
-                  'Project A',
-                  style: context.textTheme.headline5!.copyWith(
-                    color: kcSecondary100,
-                  ),
+              _isEvent
+                  ? Icon(Icons.calendar_today, color: _textColor)
+                      .paddingOnly(right: 10)
+                      .gestures(onTap: () {
+                      print('Select Item');
+                    })
+                  : Icon(Icons.done_all, color: _textColor)
+                      .paddingOnly(right: 10)
+                      .gestures(onTap: () {
+                      print('Select Item');
+                    }),
+              Text(
+                title ?? '',
+                overflow: TextOverflow.fade,
+                maxLines: 2,
+                textScaleFactor: context.textScaleFactor,
+                style: context.textTheme.headline5!.copyWith(
+                  color: _textColor,
                 ),
-              ].toRow(),
-              const Icon(
+              ).expanded(),
+              Icon(
                 Icons.more_horiz,
-                color: kcSecondary100,
+                color: _textColor,
               ).gestures(onTap: () {
                 print('More Option');
               }),
             ].toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween),
             verticalSpaceSmall,
-            const InsideTaskItem(),
-            const InsideTaskItem(),
+            if (!_isEvent) const InsideTaskItem(),
+            if (!_isEvent) const InsideTaskItem(),
             verticalSpaceTiny,
             [
-              const Icon(Icons.arrow_drop_down),
+              horizontalSpaceLarge,
+              if (!_isEvent)
+                Icon(
+                  Icons.arrow_drop_down,
+                  color: _textColor,
+                ),
               Chip(
-                backgroundColor: Colors.grey[50],
+                backgroundColor: _chipColor,
                 visualDensity: const VisualDensity(
                   horizontal: 0.0,
                   vertical: VisualDensity.minimumDensity,
@@ -213,7 +313,7 @@ class ListItemWidget extends StatelessWidget {
                 ),
                 labelPadding: EdgeInsets.zero,
                 labelStyle: context.textTheme.caption!.copyWith(
-                  color: kcPrimary600,
+                  color: _textColor,
                 ),
                 label: const Text('Work'),
               )

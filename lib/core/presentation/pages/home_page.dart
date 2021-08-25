@@ -54,6 +54,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
 
   final log = logger(HomePage);
   bool amplifyConfigured = false;
+  bool _drawerClosed = true;
 
   @override
   void initState() {
@@ -106,13 +107,19 @@ class _HomePageWidgetState extends State<HomePageWidget> {
       listener: TaleListener(
         onOpen: () {
           print('OnOpen');
+          setState(() {
+            _drawerClosed = false;
+          });
         },
         onClose: () {
           print('OnClose');
+          setState(() {
+            _drawerClosed = true;
+          });
         },
       ),
       settings: ZoomSettings(
-        maxSlide: context.width - 48,
+        maxSlide: context.width - 64,
         addHeightScale: 0.1,
       ),
       drawer: Container(
@@ -148,7 +155,9 @@ class _HomePageWidgetState extends State<HomePageWidget> {
             padding: EdgeInsets.only(right: rightPadding),
             child: PageView(
               allowImplicitScrolling: true,
-              physics: const ClampingScrollPhysics(),
+              physics: _drawerClosed
+                  ? const ClampingScrollPhysics()
+                  : const NeverScrollableScrollPhysics(),
               controller: _pageController,
               onPageChanged: (int index) {
                 _pageStream.broadCastCurrentPage(index);
@@ -172,7 +181,9 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                       )
                     : progressIndicator,
               ],
-            ),
+            )
+                .opacity(_drawerClosed ? 1.0 : 0.32, animate: true)
+                .animate(400.milliseconds, Curves.fastOutSlowIn),
           ),
         ),
       ),

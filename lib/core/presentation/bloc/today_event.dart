@@ -6,3 +6,13 @@ abstract class TodayEvent extends Equatable {
   @override
   List<Object> get props => [];
 }
+
+/// BLoC Event: Fetch Calendar and Timeblock Entries for a specific day
+class GetTodayEntries extends TodayEvent {
+  const GetTodayEntries(this.date);
+
+  final DateTime date;
+
+  @override
+  List<Object> get props => [date];
+}

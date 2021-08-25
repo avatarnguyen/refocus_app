@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/route_manager.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:intl/intl.dart';
 import 'package:refocus_app/constants/routes_name.dart';
+import 'package:refocus_app/core/util/helpers/date_utils.dart'
+    as custom_date_tils;
 import 'package:refocus_app/core/util/helpers/logging.dart' as custom_log;
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 
@@ -93,10 +94,6 @@ class _CalendarWidgetState extends State<CalendarWidget> {
     }
   }
 
-  String returnMonth(DateTime date) {
-    return DateFormat.MMMM().format(date);
-  }
-
   @override
   Widget build(BuildContext context) {
     var testEvent = EventParams(
@@ -138,7 +135,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
           [
             [
               Text(
-                returnMonth(today),
+                custom_date_tils.CustomDateUtils.returnMonth(today),
                 style: kHeadline2StyleBold,
               ),
               Text(

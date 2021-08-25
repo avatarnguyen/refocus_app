@@ -1,8 +1,18 @@
-class DateUtils {
+import 'package:intl/intl.dart';
+
+class CustomDateUtils {
   // TODO: Change TimeZone
   static String getTimeZone() {
     final today = DateTime.now();
     return today.timeZoneOffset.toString();
+  }
+
+  static String returnMonth(DateTime date) {
+    return DateFormat.MMMM().format(date);
+  }
+
+  static String returnTime(DateTime date) {
+    return DateFormat.Hm().format(date);
   }
 
   /// The last day of a given month

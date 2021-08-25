@@ -8,6 +8,7 @@ import '../../../../core/error/failures.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../repositories/calendar_repository.dart';
 
+/// required [DateRangeParams] for start and end dates
 @lazySingleton
 class GetEventsBetween
     implements UseCase<List<CalendarEventEntry>, DateRangeParams> {

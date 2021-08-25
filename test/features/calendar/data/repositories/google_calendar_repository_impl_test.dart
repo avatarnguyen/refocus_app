@@ -91,8 +91,8 @@ void main() {
       endDateTime: DateTime.parse('2021-07-19T18:30:00+02:00'),
       organizer: 'Test Dev',
     );
-    final timeMin = DateUtils.firstDayOfCurrentMonth();
-    final timeMax = DateUtils.lastDayOfFutureMonthIn(2);
+    final timeMin = CustomDateUtils.firstDayOfCurrentMonth();
+    final timeMax = CustomDateUtils.lastDayOfFutureMonthIn(2);
 
     final startDate = DateTime(2021, 7, 19);
     final endDate = DateTime(2021, 7, 19, 23, 59, 59);
@@ -162,8 +162,8 @@ void main() {
           // arrange
           when(() => mockRemoteDataSource.getRemoteGoogleEventsData(
                 calendarList: any(named: 'calendarList'),
-                timeMin: DateUtils.toGoogleRFCDateTime(startDate),
-                timeMax: DateUtils.toGoogleRFCDateTime(endDate),
+                timeMin: CustomDateUtils.toGoogleRFCDateTime(startDate),
+                timeMax: CustomDateUtils.toGoogleRFCDateTime(endDate),
               )).thenAnswer((_) async => [tGoogleCalendarEntryModel]);
           when(() => mockLocalDataSource.getLastCachedGoogleCalendar())
               .thenAnswer((_) async => <GCalEntryModel>[]);
@@ -173,8 +173,8 @@ void main() {
           // assert
           verify(() => mockRemoteDataSource.getRemoteGoogleEventsData(
                 calendarList: [],
-                timeMin: DateUtils.toGoogleRFCDateTime(startDate),
-                timeMax: DateUtils.toGoogleRFCDateTime(endDate),
+                timeMin: CustomDateUtils.toGoogleRFCDateTime(startDate),
+                timeMax: CustomDateUtils.toGoogleRFCDateTime(endDate),
               ));
 
           expect(result, isA<Right<Failure, List<CalendarEventEntry>>>());

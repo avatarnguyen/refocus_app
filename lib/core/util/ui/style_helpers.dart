@@ -2,6 +2,39 @@
 import 'package:flutter/material.dart';
 import 'package:refocus_app/gen/fonts.gen.dart';
 
+class StyleUtils {
+  static Color darken(Color color, [double amount = .1]) {
+    assert(amount >= 0 && amount <= 1);
+    final hsl = HSLColor.fromColor(color);
+    if (hsl.lightness - amount > 0.2) {
+      final hslDark =
+          hsl.withLightness((hsl.lightness - amount).clamp(0.0, 1.0));
+      return hslDark.toColor();
+    } else {
+      return hsl.withLightness((0.2).clamp(0.0, 1.0)).toColor();
+    }
+  }
+
+  static Color lighten(Color color, [double amount = .1]) {
+    assert(amount >= 0 && amount <= 1);
+    final hsl = HSLColor.fromColor(color);
+
+    if (hsl.lightness + amount < 0.98) {
+      final hslLight =
+          hsl.withLightness((hsl.lightness + amount).clamp(0.0, 1.0));
+      return hslLight.toColor();
+    } else {
+      return hsl.withLightness((0.97).clamp(0.0, 1.0)).toColor();
+    }
+  }
+
+  /// Turn Hash String Color to Color
+  static Color getColorFromString(String colorString) {
+    var color = colorString.replaceAll('#', '0xff');
+    return Color(int.parse(color));
+  }
+}
+
 const Color kcLightShadow = Color(0x19303133);
 const BoxShadow kShadowLightBase = BoxShadow(
   color: Color(0x0c303133),

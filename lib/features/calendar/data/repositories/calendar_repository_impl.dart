@@ -31,8 +31,8 @@ class CalendarRepositoryImpl implements CalendarRepository {
 
     if (await networkInfo.isConnected) {
       try {
-        final timeMin = DateUtils.firstDayOfCurrentMonth();
-        final timeMax = DateUtils.lastDayOfFutureMonthIn(2);
+        final timeMin = CustomDateUtils.firstDayOfCurrentMonth();
+        final timeMax = CustomDateUtils.lastDayOfFutureMonthIn(2);
 
         var _calendarList = await _filterSelectedCalendars();
 
@@ -83,13 +83,14 @@ class CalendarRepositoryImpl implements CalendarRepository {
 
   // DateTime.parse('2021-08-01T01:00:00+02:00')
 
+// TODO: Look Up local storage in case there is no internet connection
   @override
   Future<Either<Failure, List<CalendarEventEntry>>> getEventsDataBetween(
       DateTime startDate, DateTime endDate) async {
     final log = logger(CalendarRepositoryImpl);
 
-    final timeMin = DateUtils.toGoogleRFCDateTime(startDate);
-    final timeMax = DateUtils.toGoogleRFCDateTime(endDate);
+    final timeMin = CustomDateUtils.toGoogleRFCDateTime(startDate);
+    final timeMax = CustomDateUtils.toGoogleRFCDateTime(endDate);
 
     log.v('TimeMin: $timeMin - TimeMax: $timeMax');
 

@@ -4,6 +4,7 @@ import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart';
+import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/get_events_between.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/helpers/date_range_query_params.dart';
 import 'package:refocus_app/injection.dart';
@@ -58,10 +59,7 @@ class CalendarData extends CalendarDataSource implements EquatableMixin {
   Color getColor(int index) {
     final CalendarEventEntry event = appointments?[index];
     final colorStr = event.colorId ?? '#115FFB';
-    log.d('Color: $colorStr');
-    var color = colorStr.replaceAll('#', '0xff');
-
-    return Color(int.parse(color));
+    return StyleUtils.getColorFromString(colorStr);
   }
 
   @override

@@ -68,9 +68,11 @@ class AppointmentEventCellWidget extends StatelessWidget {
               Text(
                 "${DateFormat('hh:mm a').format(event.startDateTime!)} - ${DateFormat('hh:mm a').format(event.endDateTime!)}",
                 textScaleFactor: diff > 45 ? 1.0 : 0.7,
-                style: context.textTheme.subtitle2!
-                    .copyWith(color: textColor.withOpacity(0.9)),
-              )
+                style: context.textTheme.subtitle2!.copyWith(
+                  color: textColor.withOpacity(0.9),
+                ),
+                overflow: TextOverflow.fade,
+              ).flexible(),
             ]
                 .toRow()
                 .parent(({required child}) => SizedBox(
@@ -82,7 +84,7 @@ class AppointmentEventCellWidget extends StatelessWidget {
             .parent(({required child}) => SizedBox(
                   child: child,
                 ))
-            .expanded(flex: 10),
+            .expanded(flex: 6),
         Icon(
           Icons.more_horiz,
           color: textColor,

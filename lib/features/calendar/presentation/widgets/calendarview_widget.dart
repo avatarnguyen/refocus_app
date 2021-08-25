@@ -8,7 +8,6 @@ import 'package:refocus_app/features/calendar/presentation/bloc/calendar/datetim
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:get/get.dart';
 
-import '../../../../core/util/ui/style_helpers.dart';
 import '../../../../injection.dart';
 import '../bloc/calendar/calendar_bloc.dart';
 import 'appointment_widget.dart';
@@ -66,30 +65,6 @@ class _CalendarViewWidgetState extends State<CalendarViewWidget> {
     );
   }
 
-  Color darken(Color color, [double amount = .1]) {
-    assert(amount >= 0 && amount <= 1);
-    final hsl = HSLColor.fromColor(color);
-    if (hsl.lightness - amount > 0.1) {
-      final hslDark =
-          hsl.withLightness((hsl.lightness - amount).clamp(0.0, 1.0));
-      return hslDark.toColor();
-    } else {
-      return hsl.withLightness((0.1).clamp(0.0, 1.0)).toColor();
-    }
-  }
-
-  Color lighten(Color color, [double amount = .1]) {
-    assert(amount >= 0 && amount <= 1);
-    final hsl = HSLColor.fromColor(color);
-    if (hsl.lightness + amount < 1.0) {
-      final hslLight =
-          hsl.withLightness((hsl.lightness + amount).clamp(0.0, 1.0));
-      return hslLight.toColor();
-    } else {
-      return hsl.withLightness((0.92).clamp(0.0, 1.0)).toColor();
-    }
-  }
-
   Widget appointmentBuilder(BuildContext context,
       CalendarAppointmentDetails calendarAppointmentDetails) {
     final CalendarEventEntry event =
@@ -97,9 +72,9 @@ class _CalendarViewWidgetState extends State<CalendarViewWidget> {
 
     var _colorValue = event.colorId!.replaceAll('#', '0xff');
     final _color = Color(int.parse(_colorValue));
-    final _backgroudColor = lighten(_color, 0.25);
+    final _backgroudColor = StyleUtils.lighten(_color, 0.25);
 
-    final _textColor = darken(_color, 0.32);
+    final _textColor = StyleUtils.darken(_color, 0.32);
 
     final _height = calendarAppointmentDetails.bounds.height;
     final _width = calendarAppointmentDetails.bounds.width;
