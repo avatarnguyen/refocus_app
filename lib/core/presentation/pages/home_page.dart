@@ -123,7 +123,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
         addHeightScale: 0.1,
       ),
       drawer: Container(
-        color: kcPrimary600,
+        color: kcPrimary700,
       ),
       body: Scaffold(
         body: SlidingSheet(

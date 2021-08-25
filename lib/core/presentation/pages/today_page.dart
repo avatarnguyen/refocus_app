@@ -217,14 +217,15 @@ class ListItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _color = StyleUtils.getColorFromString(color ?? '#115FFB');
+    final _isEvent = type == TodayEntryType.event;
+    final _isPassed = endDateTime!.compareTo(DateTime.now()) <= 0;
+
+    final _color = _isPassed
+        ? Colors.grey.shade600
+        : StyleUtils.getColorFromString(color ?? '#115FFB');
     final _backgroudColor = StyleUtils.lighten(_color, 0.32).withOpacity(0.4);
     final _chipColor = StyleUtils.lighten(_color, 0.32);
     final _textColor = StyleUtils.darken(_color, 0.32);
-
-    final _isEvent = type == TodayEntryType.event;
-
-    print('[Today Page] $startDateTime');
 
     return Container(
       width: context.width - 32,
