@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart' as custom_log;
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
+import 'package:refocus_app/features/calendar/presentation/widgets/checkboxlistitem_widget.dart';
 
 class TodayPage extends StatefulWidget {
   const TodayPage({Key? key, required this.onDrawerSelected}) : super(key: key);
@@ -129,12 +130,124 @@ class _TodayPageState extends State<TodayPage> {
           child: ListView.builder(
               itemCount: 20,
               itemBuilder: (BuildContext context, int index) {
-                return const ListTile(
-                  title: Text('Test Cell'),
-                );
+                return const ListItemWidget();
               }),
         ),
       ].toColumn(crossAxisAlignment: CrossAxisAlignment.start).parent((page)),
     );
+  }
+}
+
+class ListItemWidget extends StatelessWidget {
+  const ListItemWidget({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: context.width - 32,
+      margin: const EdgeInsets.all(8),
+      child: [
+        SizedBox(
+            width: 48,
+            child: [
+              verticalSpaceSmall,
+              Text(
+                '10 AM',
+                style: context.textTheme.subtitle2!.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                '11 AM',
+                style: context.textTheme.subtitle2,
+              ),
+            ].toColumn()),
+        horizontalSpaceTiny,
+        Container(
+          width: context.width - 84,
+          padding: const EdgeInsets.symmetric(
+            vertical: 8,
+            horizontal: 12,
+          ),
+          decoration: BoxDecoration(
+              color: Colors.teal[300],
+              borderRadius: const BorderRadius.all(Radius.circular(8))),
+          child: [
+            [
+              [
+                const Icon(
+                  Icons.done_all,
+                  color: kcSecondary100,
+                ).paddingOnly(right: 10).gestures(onTap: () {
+                  print('More Option');
+                }),
+                Text(
+                  'Project A',
+                  style: context.textTheme.headline5!.copyWith(
+                    color: kcSecondary100,
+                  ),
+                ),
+              ].toRow(),
+              const Icon(
+                Icons.more_horiz,
+                color: kcSecondary100,
+              ).gestures(onTap: () {
+                print('More Option');
+              }),
+            ].toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween),
+            verticalSpaceSmall,
+            const InsideTaskItem(),
+            const InsideTaskItem(),
+            verticalSpaceTiny,
+            [
+              const Icon(Icons.arrow_drop_down),
+              Chip(
+                backgroundColor: Colors.grey[50],
+                visualDensity: const VisualDensity(
+                  horizontal: 0.0,
+                  vertical: VisualDensity.minimumDensity,
+                ),
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 0,
+                ),
+                labelPadding: EdgeInsets.zero,
+                labelStyle: context.textTheme.caption!.copyWith(
+                  color: kcPrimary600,
+                ),
+                label: const Text('Work'),
+              )
+            ].toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween)
+          ].toColumn(mainAxisSize: MainAxisSize.min),
+        ),
+      ].toRow(crossAxisAlignment: CrossAxisAlignment.start),
+    );
+  }
+}
+
+class InsideTaskItem extends StatelessWidget {
+  const InsideTaskItem({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return [
+      const Icon(
+        Icons.check_box_outline_blank,
+        color: kcPrimary700,
+      ),
+      horizontalSpaceTiny,
+      Text(
+        'Task A Ajhdu lkjasdofj kjasdföljasoiejr jköldska jf',
+        overflow: TextOverflow.ellipsis,
+        style: context.textTheme.subtitle1!.copyWith(
+          color: kcPrimary700,
+        ),
+      ).expanded(),
+    ].toRow().paddingOnly(left: 34, right: 16).gestures(onTap: () {
+      print('Check');
+    });
   }
 }

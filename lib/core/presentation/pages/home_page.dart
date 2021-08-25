@@ -114,7 +114,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
       settings: FlipSettings(
         type: DrawerAnimation.FLIP,
         drawerWidth: context.width - 24.0,
-        flipPercent: 80,
+        flipPercent: 90,
       ),
       drawer: Container(
         color: kcPrimary600,
