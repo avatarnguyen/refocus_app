@@ -79,17 +79,17 @@ class TaskEntry extends Equatable {
 
   factory TaskEntry.fromMap(Map<String, dynamic> map) {
     return TaskEntry(
-      id: map['id'],
+      id: map['id'] ?? '',
       title: map['title'],
       description: map['description'],
-      isCompleted: map['isCompleted'],
-      dueDate: DateTime.fromMillisecondsSinceEpoch(map['dueDate']),
+      isCompleted: map['isCompleted'] ?? false,
+      dueDate: DateTime.parse(map['dueDate']),
       startDateTime: List<DateTime>.from(
           map['startDateTime']?.map((x) => DateTime.parse(x))),
       endDateTime: List<DateTime>.from(
           (map['endDateTime'])?.map((x) => DateTime.parse(x))),
       recurrentDays: List<String>.from(map['recurrentDays']),
-      projectID: map['projectID'],
+      projectID: map['projectID'] ?? '',
     );
   }
 

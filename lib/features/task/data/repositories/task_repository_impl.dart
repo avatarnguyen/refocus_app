@@ -116,12 +116,14 @@ class TaskRepositoryImpl implements TaskRepository {
       final _todos = await remoteDataSource.getRemoteTask(
         project: _project,
       );
+      log.v('Todo: $_todos');
+
       final _tasks = _todos
           .map((todo) => TaskEntry.fromMap(
                 todo.toJson(),
               ))
           .toList();
-
+      // log.d('Tasks: $_tasks');
       return Right(_tasks);
     } on ServerException catch (e) {
       log.e(e);

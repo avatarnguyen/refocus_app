@@ -7,7 +7,9 @@ import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
 import 'package:refocus_app/features/task/presentation/bloc/project_bloc.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:get/get.dart';
+import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
 import 'package:refocus_app/features/task/presentation/pages/task_page.dart';
+import 'package:refocus_app/injection.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
 import 'package:uuid/uuid.dart';
 
@@ -128,8 +130,11 @@ class _ProjectPageState extends State<ProjectPage> {
             );
           },
           builder: (context, state) {
-            return BlocProvider<ProjectBloc>.value(
-              value: BlocProvider.of<ProjectBloc>(parentContext),
+            return BlocProvider<TaskBloc>(
+              create: (_) => getIt<TaskBloc>()
+                ..add(
+                  GetTaskEntriesEvent(project: project),
+                ),
               child: TaskPage(
                 project: project,
               ),

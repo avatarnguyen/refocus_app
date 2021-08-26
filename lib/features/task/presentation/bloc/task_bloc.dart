@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
+import 'package:injectable/injectable.dart';
 import 'package:refocus_app/constants/failure_message.dart';
 import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
@@ -17,6 +18,7 @@ import 'package:refocus_app/features/task/domain/usecases/task/update_task.dart'
 part 'task_event.dart';
 part 'task_state.dart';
 
+@injectable
 class TaskBloc extends Bloc<TaskEvent, TaskState> {
   TaskBloc({
     required this.getTasks,

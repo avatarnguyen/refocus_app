@@ -1,6 +1,7 @@
 import 'package:amplify_flutter/amplify.dart';
 import 'package:injectable/injectable.dart';
 import 'package:refocus_app/core/error/exceptions.dart';
+import 'package:refocus_app/core/util/helpers/logging.dart';
 import 'package:refocus_app/models/ModelProvider.dart';
 
 abstract class TaskRemoteDataSource {
@@ -78,12 +79,17 @@ class AWSTaskRemoteDataSource implements TaskRemoteDataSource {
   @override
   Future<List<Todo>> getRemoteTask(
       {Project? project, DateTime? startTime, DateTime? endTime}) async {
+    final log = logger(AWSTaskRemoteDataSource);
     var _todos = <Todo>[];
+
     try {
       if (project != null) {
+        log.d(project);
+        log.v('Project ID: ${project.getId()}');
+
         _todos = await Amplify.DataStore.query(
           Todo.classType,
-          where: Todo.PROJECTID.eq(project.id),
+          // where: Todo.PROJECTID.eq(project.getId()),
         );
       } else {
         // _todos = await Amplify.DataStore.query(
@@ -93,7 +99,7 @@ class AWSTaskRemoteDataSource implements TaskRemoteDataSource {
       }
       return _todos;
     } catch (e) {
-      print(e);
+      log.e(e);
       throw ServerException();
     }
   }

@@ -22,15 +22,16 @@ class _TaskPageState extends State<TaskPage> {
   @override
   void initState() {
     super.initState();
-    context.read<TaskBloc>().add(
-          GetTaskEntriesEvent(project: widget.project),
-        );
+    // context.read<TaskBloc>().add(
+    //       GetTaskEntriesEvent(project: widget.project),
+    //     );
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<TaskBloc, TaskState>(
       builder: (context, state) {
+        print(state);
         if (state is TasksLoaded) {
           final _tasks = state.tasks;
           print(_tasks);
@@ -42,35 +43,55 @@ class _TaskPageState extends State<TaskPage> {
               itemCount: _tasks.length,
               itemBuilder: (context, index) {
                 final _task = _tasks[index];
-                print(_task.title);
+                // print(_task.title);
                 return ListTile(
                   title: Text(_task.title ?? 'Empty'),
                 );
               },
             ),
           );
-        } else if (state is TaskLoading) {
-          return progressIndicator;
-        } else {
+        } else if (state is TaskLoading || state is TaskInitial) {
           return SizedBox(
-            height: 400,
-            child: Center(
-              child: Material(
-                child: InkWell(
-                  onTap: () => Navigator.pop(context, 'This is the result.'),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Text(
-                      'This is the content of the sheet',
-                      style: context.textTheme.bodyText1,
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            height: context.height - 56,
+            width: context.width,
+            child: progressIndicator.center(),
           );
+        } else if (state is TaskError) {
+          return BottomSheetMessageWidget(message: state.message);
+        } else {
+          return const BottomSheetMessageWidget(message: 'Unexpected State');
         }
       },
+    );
+  }
+}
+
+class BottomSheetMessageWidget extends StatelessWidget {
+  const BottomSheetMessageWidget({
+    Key? key,
+    required this.message,
+  }) : super(key: key);
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 400,
+      child: Center(
+        child: Material(
+          child: InkWell(
+            onTap: () => Navigator.pop(context, 'This is the result.'),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(
+                message,
+                style: context.textTheme.bodyText1,
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
