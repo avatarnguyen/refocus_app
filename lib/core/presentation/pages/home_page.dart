@@ -104,14 +104,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
   }
 
   void onDrawerPressed() {
-    print('Drawer');
-    (_advancedDrawerController.value == AdvancedDrawerValue.visible())
-        ? _advancedDrawerController.showDrawer()
-        : _advancedDrawerController.showDrawer();
-
-    // drawerController.isDrawerOpen
-    //     ? drawerController.close()
-    //     : drawerController.open();
+    _advancedDrawerController.showDrawer();
   }
 
   void switchToPageView() {
@@ -126,7 +119,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
       controller: _advancedDrawerController,
       animationCurve: Curves.easeInOut,
       animationDuration: const Duration(milliseconds: 300),
-      animateChildDecoration: true,
+      animateChildDecoration: false,
       rtlOpening: true,
       childDecoration: const BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(16)),
@@ -180,35 +173,6 @@ class _HomePageWidgetState extends State<HomePageWidget> {
       ),
       child: _drawerBody(context),
     );
-
-    // TaleDrawer(
-    //   controller: drawerController,
-    //   type: TaleType.Zoom,
-    //   drawerState: DrawerState.CLOSED,
-    //   sideState: SideState.LEFT,
-    //   listener: TaleListener(
-    //     onOpen: () {
-    //       print('OnOpen');
-    //       setState(() {
-    //         _drawerClosed = false;
-    //       });
-    //     },
-    //     onClose: () {
-    //       print('OnClose');
-    //       setState(() {
-    //         _drawerClosed = true;
-    //       });
-    //     },
-    //   ),
-    //   settings: ZoomSettings(
-    //     maxSlide: context.width - 64,
-    //     addHeightScale: 0.1,
-    //   ),
-    //   drawer: Container(
-    //     color: kcPrimary700,
-    //   ),
-    //   body: _drawerBody(context),
-    // );
   }
 
   Scaffold _drawerBody(BuildContext context) {

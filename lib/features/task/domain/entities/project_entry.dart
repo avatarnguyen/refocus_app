@@ -2,26 +2,28 @@ import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
 
-import 'package:refocus_app/features/task/domain/entities/task_entry.dart';
-
+// ignore_for_file: sort_constructors_first
 class ProjectEntry extends Equatable {
   const ProjectEntry({
     required this.id,
     this.title,
-    // this.tasks,
+    this.color,
+    this.emoji,
   });
   final String id;
   final String? title;
-  // final List<TaskEntry>? tasks;
+  final String? color;
+  final String? emoji;
 
   @override
-  List<Object?> get props => [id, title];
+  List<Object?> get props => [id, title, color, emoji];
 
   Map<String, dynamic> toMap() {
     return {
       'id': id,
       'title': title,
-      // 'tasks': tasks?.map((x) => x.toMap()).toList(),
+      'color': color,
+      'emoji': emoji,
     };
   }
 
@@ -29,8 +31,8 @@ class ProjectEntry extends Equatable {
     return ProjectEntry(
       id: map['id'],
       title: map['title'],
-      // tasks:
-      //     List<TaskEntry>.from(map['tasks']?.map((x) => TaskEntry.fromMap(x))),
+      color: map['color'],
+      emoji: map['emoji'],
     );
   }
 
