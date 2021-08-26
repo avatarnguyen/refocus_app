@@ -2,18 +2,17 @@ part of 'task_bloc.dart';
 
 abstract class TaskEvent extends Equatable {
   const TaskEvent();
-}
 
-class GetProjectEntriesEvent extends TaskEvent {
   @override
   List<Object?> get props => [];
 }
 
-class CreateProjectEntriesEvent extends TaskEvent {
-  const CreateProjectEntriesEvent(this.params);
+class GetTaskEntriesEvent extends TaskEvent {
+  const GetTaskEntriesEvent({
+    required this.project,
+  });
 
-  final ProjectParams params;
-
+  final ProjectEntry project;
   @override
-  List<Object?> get props => [params];
+  List<Object?> get props => [project];
 }

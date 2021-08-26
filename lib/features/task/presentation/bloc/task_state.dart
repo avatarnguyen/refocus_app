@@ -2,12 +2,12 @@ part of 'task_bloc.dart';
 
 abstract class TaskState extends Equatable {
   const TaskState();
+
+  @override
+  List<Object?> get props => [];
 }
 
-// class TaskInitial extends TaskState {
-//   @override
-//   List<Object> get props => [];
-// }
+class TaskInitial extends TaskState {}
 
 class TaskLoading extends TaskState {
   @override
@@ -21,15 +21,6 @@ class TaskError extends TaskState {
 
   @override
   List<Object?> get props => [message];
-}
-
-class ProjectLoaded extends TaskState {
-  const ProjectLoaded({required this.project});
-
-  final List<ProjectEntry> project;
-
-  @override
-  List<Object?> get props => project;
 }
 
 class TasksLoaded extends TaskState {

@@ -11,7 +11,7 @@ import 'package:refocus_app/core/presentation/widgets/page_stream.dart';
 import 'package:refocus_app/core/presentation/widgets/slider_header_widget.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart';
 import 'package:refocus_app/features/calendar/presentation/pages/calendar_page.dart';
-import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
+import 'package:refocus_app/features/task/presentation/bloc/project_bloc.dart';
 import 'package:refocus_app/features/task/presentation/pages/project_page.dart';
 import 'package:refocus_app/models/ModelProvider.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
@@ -29,9 +29,9 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<TaskBloc>(
+    return BlocProvider<ProjectBloc>(
         create: (context) =>
-            getIt<TaskBloc>(), //..add(GetProjectEntriesEvent()),
+            getIt<ProjectBloc>(), //..add(GetProjectEntriesEvent()),
         child: const HomePageWidget());
   }
 }
@@ -194,8 +194,8 @@ class _HomePageWidgetState extends State<HomePageWidget> {
           changePage: switchToPageView,
         ),
         builder: (context, state) => amplifyConfigured
-            ? BlocProvider<TaskBloc>.value(
-                value: BlocProvider.of<TaskBloc>(context),
+            ? BlocProvider<ProjectBloc>.value(
+                value: BlocProvider.of<ProjectBloc>(context),
                 child: const ProjectPage(),
               )
             : Container(),

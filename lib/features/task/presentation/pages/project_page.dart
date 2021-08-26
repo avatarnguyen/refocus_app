@@ -3,7 +3,8 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:refocus_app/features/calendar/presentation/widgets/widgets.dart';
-import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
+import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
+import 'package:refocus_app/features/task/presentation/bloc/project_bloc.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:get/get.dart';
 import 'package:refocus_app/features/task/presentation/pages/task_page.dart';
@@ -25,12 +26,12 @@ class _ProjectPageState extends State<ProjectPage> {
   @override
   void initState() {
     super.initState();
-    context.read<TaskBloc>().add(GetProjectEntriesEvent());
+    context.read<ProjectBloc>().add(GetProjectEntriesEvent());
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<TaskBloc, TaskState>(
+    return BlocBuilder<ProjectBloc, ProjectState>(
       builder: (context, state) {
         log('Task Bloc Rebuild');
         if (state is ProjectLoaded) {
@@ -76,9 +77,10 @@ class _ProjectPageState extends State<ProjectPage> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     )
-                    .gestures(onTap: () => showTaskBottomSheet(context));
+                    .gestures(
+                        onTap: () => showTaskBottomSheet(context, _project));
               });
-        } else if (state is TaskLoading) {
+        } else if (state is ProjectLoading) {
           return progressIndicator;
         } else {
           return const MessageDisplay(
@@ -89,7 +91,10 @@ class _ProjectPageState extends State<ProjectPage> {
     );
   }
 
-  void showTaskBottomSheet(BuildContext parentContext) async {
+  void showTaskBottomSheet(
+    BuildContext parentContext,
+    ProjectEntry project,
+  ) async {
     final result = await showSlidingBottomSheet(
       context,
       builder: (context) {
@@ -123,9 +128,11 @@ class _ProjectPageState extends State<ProjectPage> {
             );
           },
           builder: (context, state) {
-            return BlocProvider<TaskBloc>.value(
-              value: BlocProvider.of<TaskBloc>(parentContext),
-              child: const TaskPage(),
+            return BlocProvider<ProjectBloc>.value(
+              value: BlocProvider.of<ProjectBloc>(parentContext),
+              child: TaskPage(
+                project: project,
+              ),
             );
           },
         );

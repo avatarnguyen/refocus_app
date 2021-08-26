@@ -13,6 +13,6 @@ class DeleteTask implements UseCase<Unit, TaskParams> {
 
   @override
   Future<Either<Failure, Unit>> call(TaskParams params) async {
-    return await repository.deleteTask(params.task);
+    return await repository.deleteTask(params.task!);
   }
 }

@@ -29,7 +29,8 @@ class Todo extends Model {
   final String? _description;
   final bool? _isCompleted;
   final TemporalDate? _dueDate;
-  final List<TemporalDateTime>? _plannedDate;
+  final List<TemporalDateTime>? _startDateTime;
+  final List<TemporalDateTime>? _endDateTime;
   final List<String>? _recurrentDays;
   final String? _projectID;
 
@@ -65,8 +66,12 @@ class Todo extends Model {
     return _dueDate;
   }
   
-  List<TemporalDateTime>? get plannedDate {
-    return _plannedDate;
+  List<TemporalDateTime>? get startDateTime {
+    return _startDateTime;
+  }
+  
+  List<TemporalDateTime>? get endDateTime {
+    return _endDateTime;
   }
   
   List<String>? get recurrentDays {
@@ -77,16 +82,17 @@ class Todo extends Model {
     return _projectID;
   }
   
-  const Todo._internal({required this.id, required title, description, required isCompleted, dueDate, plannedDate, recurrentDays, projectID}): _title = title, _description = description, _isCompleted = isCompleted, _dueDate = dueDate, _plannedDate = plannedDate, _recurrentDays = recurrentDays, _projectID = projectID;
+  const Todo._internal({required this.id, required title, description, required isCompleted, dueDate, startDateTime, endDateTime, recurrentDays, projectID}): _title = title, _description = description, _isCompleted = isCompleted, _dueDate = dueDate, _startDateTime = startDateTime, _endDateTime = endDateTime, _recurrentDays = recurrentDays, _projectID = projectID;
   
-  factory Todo({String? id, required String title, String? description, required bool isCompleted, TemporalDate? dueDate, List<TemporalDateTime>? plannedDate, List<String>? recurrentDays, String? projectID}) {
+  factory Todo({String? id, required String title, String? description, required bool isCompleted, TemporalDate? dueDate, List<TemporalDateTime>? startDateTime, List<TemporalDateTime>? endDateTime, List<String>? recurrentDays, String? projectID}) {
     return Todo._internal(
       id: id == null ? UUID.getUUID() : id,
       title: title,
       description: description,
       isCompleted: isCompleted,
       dueDate: dueDate,
-      plannedDate: plannedDate != null ? List<TemporalDateTime>.unmodifiable(plannedDate) : plannedDate,
+      startDateTime: startDateTime != null ? List<TemporalDateTime>.unmodifiable(startDateTime) : startDateTime,
+      endDateTime: endDateTime != null ? List<TemporalDateTime>.unmodifiable(endDateTime) : endDateTime,
       recurrentDays: recurrentDays != null ? List<String>.unmodifiable(recurrentDays) : recurrentDays,
       projectID: projectID);
   }
@@ -104,7 +110,8 @@ class Todo extends Model {
       _description == other._description &&
       _isCompleted == other._isCompleted &&
       _dueDate == other._dueDate &&
-      DeepCollectionEquality().equals(_plannedDate, other._plannedDate) &&
+      DeepCollectionEquality().equals(_startDateTime, other._startDateTime) &&
+      DeepCollectionEquality().equals(_endDateTime, other._endDateTime) &&
       DeepCollectionEquality().equals(_recurrentDays, other._recurrentDays) &&
       _projectID == other._projectID;
   }
@@ -122,7 +129,8 @@ class Todo extends Model {
     buffer.write("description=" + "$_description" + ", ");
     buffer.write("isCompleted=" + (_isCompleted != null ? _isCompleted!.toString() : "null") + ", ");
     buffer.write("dueDate=" + (_dueDate != null ? _dueDate!.format() : "null") + ", ");
-    buffer.write("plannedDate=" + (_plannedDate != null ? _plannedDate!.toString() : "null") + ", ");
+    buffer.write("startDateTime=" + (_startDateTime != null ? _startDateTime!.toString() : "null") + ", ");
+    buffer.write("endDateTime=" + (_endDateTime != null ? _endDateTime!.toString() : "null") + ", ");
     buffer.write("recurrentDays=" + (_recurrentDays != null ? _recurrentDays!.toString() : "null") + ", ");
     buffer.write("projectID=" + "$_projectID");
     buffer.write("}");
@@ -130,14 +138,15 @@ class Todo extends Model {
     return buffer.toString();
   }
   
-  Todo copyWith({String? id, String? title, String? description, bool? isCompleted, TemporalDate? dueDate, List<TemporalDateTime>? plannedDate, List<String>? recurrentDays, String? projectID}) {
+  Todo copyWith({String? id, String? title, String? description, bool? isCompleted, TemporalDate? dueDate, List<TemporalDateTime>? startDateTime, List<TemporalDateTime>? endDateTime, List<String>? recurrentDays, String? projectID}) {
     return Todo(
       id: id ?? this.id,
       title: title ?? this.title,
       description: description ?? this.description,
       isCompleted: isCompleted ?? this.isCompleted,
       dueDate: dueDate ?? this.dueDate,
-      plannedDate: plannedDate ?? this.plannedDate,
+      startDateTime: startDateTime ?? this.startDateTime,
+      endDateTime: endDateTime ?? this.endDateTime,
       recurrentDays: recurrentDays ?? this.recurrentDays,
       projectID: projectID ?? this.projectID);
   }
@@ -148,12 +157,13 @@ class Todo extends Model {
       _description = json['description'],
       _isCompleted = json['isCompleted'],
       _dueDate = json['dueDate'] != null ? TemporalDate.fromString(json['dueDate']) : null,
-      _plannedDate = (json['plannedDate'] as List)?.map((e) => TemporalDateTime.fromString(e))?.toList(),
+      _startDateTime = (json['startDateTime'] as List)?.map((e) => TemporalDateTime.fromString(e))?.toList(),
+      _endDateTime = (json['endDateTime'] as List)?.map((e) => TemporalDateTime.fromString(e))?.toList(),
       _recurrentDays = json['recurrentDays']?.cast<String>(),
       _projectID = json['projectID'];
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'title': _title, 'description': _description, 'isCompleted': _isCompleted, 'dueDate': _dueDate?.format(), 'plannedDate': _plannedDate?.map((e) => e.format()).toList(), 'recurrentDays': _recurrentDays, 'projectID': _projectID
+    'id': id, 'title': _title, 'description': _description, 'isCompleted': _isCompleted, 'dueDate': _dueDate?.format(), 'startDateTime': _startDateTime?.map((e) => e.format()).toList(), 'endDateTime': _endDateTime?.map((e) => e.format()).toList(), 'recurrentDays': _recurrentDays, 'projectID': _projectID
   };
 
   static final QueryField ID = QueryField(fieldName: "todo.id");
@@ -161,7 +171,8 @@ class Todo extends Model {
   static final QueryField DESCRIPTION = QueryField(fieldName: "description");
   static final QueryField ISCOMPLETED = QueryField(fieldName: "isCompleted");
   static final QueryField DUEDATE = QueryField(fieldName: "dueDate");
-  static final QueryField PLANNEDDATE = QueryField(fieldName: "plannedDate");
+  static final QueryField STARTDATETIME = QueryField(fieldName: "startDateTime");
+  static final QueryField ENDDATETIME = QueryField(fieldName: "endDateTime");
   static final QueryField RECURRENTDAYS = QueryField(fieldName: "recurrentDays");
   static final QueryField PROJECTID = QueryField(fieldName: "projectID");
   static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
@@ -206,7 +217,14 @@ class Todo extends Model {
     ));
     
     modelSchemaDefinition.addField(ModelFieldDefinition.field(
-      key: Todo.PLANNEDDATE,
+      key: Todo.STARTDATETIME,
+      isRequired: false,
+      isArray: true,
+      ofType: ModelFieldType(ModelFieldTypeEnum.collection, ofModelName: describeEnum(ModelFieldTypeEnum.dateTime))
+    ));
+    
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
+      key: Todo.ENDDATETIME,
       isRequired: false,
       isArray: true,
       ofType: ModelFieldType(ModelFieldTypeEnum.collection, ofModelName: describeEnum(ModelFieldTypeEnum.dateTime))

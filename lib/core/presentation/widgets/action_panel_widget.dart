@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
 import 'package:refocus_app/features/task/domain/usecases/helpers/project_params.dart';
-import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
+import 'package:refocus_app/features/task/presentation/bloc/project_bloc.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 
 import 'package:uuid/uuid.dart';
@@ -76,7 +76,7 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
                 size: 28,
                 color: context.theme.primaryColor,
               ).gestures(onTap: () {
-                BlocProvider.of<TaskBloc>(context).add(
+                BlocProvider.of<ProjectBloc>(context).add(
                   CreateProjectEntriesEvent(ProjectParams(
                       ProjectEntry(id: uuid.v1(), title: textStream.data))),
                 );

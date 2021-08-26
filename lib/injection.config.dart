@@ -49,7 +49,7 @@ import 'features/task/domain/usecases/task/create_tasks.dart' as _i17;
 import 'features/task/domain/usecases/task/delete_task.dart' as _i19;
 import 'features/task/domain/usecases/task/get_task.dart' as _i23;
 import 'features/task/domain/usecases/task/update_task.dart' as _i15;
-import 'features/task/presentation/bloc/task_bloc.dart'
+import 'features/task/presentation/bloc/project_bloc.dart'
     as _i24; // ignore_for_file: unnecessary_lambdas
 
 // ignore_for_file: lines_longer_than_80_chars
@@ -95,11 +95,15 @@ Future<_i1.GetIt> $initGetIt(_i1.GetIt get,
       () => _i22.GetProjects(get<_i11.TaskRepository>()));
   gh.lazySingleton<_i23.GetTasks>(
       () => _i23.GetTasks(get<_i11.TaskRepository>()));
-  gh.factory<_i24.TaskBloc>(() => _i24.TaskBloc(
+  gh.factory<_i24.ProjectBloc>(() => _i24.ProjectBloc(
       getProjects: get<_i22.GetProjects>(),
       updateProject: get<_i14.UpdateProject>(),
       deleteProject: get<_i18.DeleteProject>(),
-      createProject: get<_i16.CreateProject>()));
+      createProject: get<_i16.CreateProject>(),
+      getTasks: get<_i23.GetTasks>(),
+      updateTask: get<_i15.UpdateTask>(),
+      deleteTask: get<_i19.DeleteTask>(),
+      createTasks: get<_i17.CreateTasks>()));
   gh.lazySingleton<_i25.CalendarRepository>(() => _i26.CalendarRepositoryImpl(
       remoteCalDataSource: get<_i20.GCalRemoteDataSource>(),
       localCalDataSource: get<_i7.GCalLocalDataSource>(),

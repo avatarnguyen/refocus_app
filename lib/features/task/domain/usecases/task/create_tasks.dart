@@ -19,7 +19,7 @@ class CreateTasks implements UseCase<Unit, List<TaskParams>> {
     //   _taskEntries.add(params.task);
     // }
     await Future.forEach(
-        paramsList, (TaskParams params) => _taskEntries.add(params.task));
+        paramsList, (TaskParams params) => _taskEntries.add(params.task!));
     return await repository.createTasks(_taskEntries);
   }
 }
