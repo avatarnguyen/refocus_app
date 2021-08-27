@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:intl/intl.dart';
 import 'package:refocus_app/core/util/ui/style_helpers.dart';
 import 'package:refocus_app/enum/today_entry_type.dart';
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
@@ -27,6 +28,9 @@ class _OptionRowWidgetState extends State<OptionRowWidget> {
   final _settingsOption = getIt<SettingOption>();
   TodayEntryType entryType = TodayEntryType.task;
   ProjectEntry? _currentProject;
+  DateTime selectedDate = DateTime.now();
+  DateTime? _plannedDate;
+  int _groupValue = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -42,78 +46,90 @@ class _OptionRowWidgetState extends State<OptionRowWidget> {
     };
 
     return SizedBox(
-      height: 64,
-      child: [
-        _buildOptionItem(
-                context, _entryMapIcon[entryType], _entryMapString[entryType])
-            .ripple()
-            .gestures(
-          onTap: () async {
-            final result = await showPlatformModalSheet(
-              context: context,
-              builder: (context) => PlatformWidget(
-                material: (_, __) => _materialPopupContent(context),
-                cupertino: (_, __) => _cupertinoSheetContent(context),
-              ),
-            );
-            print(result);
-            if (result != null) {
-              _settingsOption.type = result;
-              setState(() {
-                entryType = result;
-              });
-            }
-          },
-        ),
-        _buildOptionItem(
-                context, Icons.folder, _currentProject?.title ?? 'Inbox')
-            .ripple()
-            .gestures(
-          onTap: () async {
-            final result = await showPlatformModalSheet(
-              context: context,
-              builder: (_) => BlocProvider<ProjectBloc>.value(
-                value: BlocProvider.of<ProjectBloc>(context),
-                child: PlatformWidget(
-                  material: (_, __) => _materialPopupProjectContent(context),
-                  cupertino: (_, __) => _cupertinoSheetProjectContent(context),
+        height: 64,
+        width: context.width,
+        child: [
+          _buildOptionItem(
+                  context, _entryMapIcon[entryType], _entryMapString[entryType])
+              .ripple()
+              .gestures(
+            onTap: () async {
+              final result = await showPlatformModalSheet(
+                context: context,
+                builder: (context) => PlatformWidget(
+                  material: (_, __) => _materialPopupContent(context),
+                  cupertino: (_, __) => _cupertinoSheetContent(context),
                 ),
-              ),
-            );
-            print(result);
-            if (result != null) {
-              _settingsOption.projectEntry = result;
-              setState(() {
-                _currentProject = result;
-              });
-            }
-          },
-        ).flexible(),
-        _buildOptionItem(context, Icons.alarm, 'Planning')
-            .ripple()
-            .gestures(onTap: () {}),
-        _buildOptionItem(context, Icons.notes, 'Notes')
-            .ripple()
-            .gestures(onTap: () {}),
-      ].toRow(mainAxisAlignment: MainAxisAlignment.spaceAround),
-    );
+              );
+              print(result);
+              if (result != null) {
+                _settingsOption.type = result;
+                setState(() {
+                  entryType = result;
+                });
+              }
+            },
+          ),
+          _buildOptionItem(
+                  context, Icons.folder, _currentProject?.title ?? 'Inbox')
+              .ripple()
+              .gestures(
+            onTap: () async {
+              final result = await showPlatformModalSheet(
+                context: context,
+                builder: (_) => BlocProvider<ProjectBloc>.value(
+                  value: BlocProvider.of<ProjectBloc>(context),
+                  child: PlatformWidget(
+                    material: (_, __) => _materialPopupProjectContent(context),
+                    cupertino: (_, __) =>
+                        _cupertinoSheetProjectContent(context),
+                  ),
+                ),
+              );
+              print(result);
+              if (result != null) {
+                _settingsOption.projectEntry = result;
+                setState(() {
+                  _currentProject = result;
+                });
+              }
+            },
+          ),
+          _buildOptionItem(
+                  context,
+                  Icons.alarm,
+                  _plannedDate != null
+                      ? '${DateFormat.yMMMd().format(_plannedDate!)} ${DateFormat.Hm().format(_plannedDate!)}'
+                      : 'Planning')
+              .ripple()
+              .gestures(
+            onTap: () {
+              context.isPhone
+                  ? _cupertinoDateTimePicker(context)
+                  : _materialDateTimePicker(context);
+            },
+          ),
+          _buildOptionItem(context, Icons.notes, 'Notes')
+              .ripple()
+              .gestures(onTap: () {}),
+        ].toRow(mainAxisAlignment: MainAxisAlignment.spaceAround));
   }
 
   Widget _buildOptionItem(BuildContext context, IconData? icon, String? text) {
     return [
       Icon(
         icon,
-        size: 28,
+        size: 24,
         color: kcSecondary200,
-      ).paddingOnly(bottom: 4),
+      ).paddingOnly(bottom: 8),
       Text(
         text ?? '',
         maxLines: 2,
         overflow: TextOverflow.fade,
-        style: context.textTheme.subtitle1!.copyWith(
+        style: context.textTheme.subtitle2!.copyWith(
           color: kcSecondary200,
         ),
-      ),
+      ).padding(horizontal: 2).flexible(),
     ].toColumn(mainAxisAlignment: MainAxisAlignment.start);
   }
 
@@ -222,5 +238,85 @@ class _OptionRowWidgetState extends State<OptionRowWidget> {
         child: const Text('Cancel'),
       ),
     );
+  }
+
+  void _materialDateTimePicker(BuildContext context) async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2025),
+      builder: (context, child) => child ?? Container(),
+    );
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+      });
+    }
+  }
+
+  void _changeDateTimePicker(int? index) {
+    if (index != null) {
+      setState(() {
+        _groupValue = index;
+      });
+    }
+  }
+
+  Widget _buildSegment(String text) => Container(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 40),
+        child: Text(
+          text,
+          style: kCaptionStyleRegular,
+        ),
+      );
+
+  void _cupertinoDateTimePicker(BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        backgroundColor: context.theme.backgroundColor,
+        builder: (BuildContext builder) {
+          return [
+            Container(
+              height: context.height / 3,
+              color: Colors.white,
+              child: CupertinoDatePicker(
+                mode: CupertinoDatePickerMode.dateAndTime,
+                onDateTimeChanged: (picked) {
+                  if (picked != selectedDate) {
+                    setState(() {
+                      selectedDate = picked;
+                    });
+                  }
+                },
+                initialDateTime: selectedDate,
+                use24hFormat: true,
+                minimumYear: 2000,
+                maximumYear: 2025,
+              ),
+            ),
+            // CupertinoSlidingSegmentedControl(
+            //   padding: const EdgeInsets.all(8),
+            //   thumbColor: context.theme.primaryColor,
+            //   backgroundColor: context.theme.backgroundColor,
+            //   groupValue: _groupValue,
+            //   children: {
+            //     0: _buildSegment('Date'),
+            //     1: _buildSegment('Time'),
+            //   },
+            //   onValueChanged: _changeDateTimePicker,
+            // ).paddingOnly(top: 8),
+            PlatformButton(
+              onPressed: () {
+                _settingsOption.dateTime = selectedDate;
+                setState(() {
+                  _plannedDate = selectedDate;
+                });
+                Get.back();
+              },
+              child: const Text('Speichern'),
+            ),
+          ].toColumn(mainAxisSize: MainAxisSize.min).safeArea();
+        });
   }
 }

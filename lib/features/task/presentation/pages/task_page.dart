@@ -23,9 +23,9 @@ class _TaskPageState extends State<TaskPage> {
   @override
   void initState() {
     super.initState();
-    // context.read<TaskBloc>().add(
-    //       GetTaskEntriesEvent(project: widget.project),
-    //     );
+    context.read<TaskBloc>().add(
+          GetTaskEntriesEvent(project: widget.project),
+        );
   }
 
   Color getColor(Set<MaterialState> states) {
@@ -38,7 +38,7 @@ class _TaskPageState extends State<TaskPage> {
     if (states.any(interactiveStates.contains)) {
       return kcPrimary500;
     }
-    return kcPrimary300;
+    return Colors.grey;
   }
 
   @override
@@ -59,8 +59,6 @@ class _TaskPageState extends State<TaskPage> {
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: _tasks.length,
-              padding:
-                  _tasks.length < 5 ? const EdgeInsets.only(bottom: 400) : null,
               itemBuilder: (context, index) {
                 final _task = _tasks[index];
                 // print(_task.title);
@@ -80,7 +78,9 @@ class _TaskPageState extends State<TaskPage> {
                       _task.title ?? '',
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: context.textTheme.bodyText2,
+                      style: context.textTheme.caption!.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                     if (_task.dueDate != null)
                       Text(
@@ -96,13 +96,20 @@ class _TaskPageState extends State<TaskPage> {
                 ]
                     .toRow()
                     .card(
-                        shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ))
+                      elevation: 1.6,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    )
                     .padding(horizontal: 16, vertical: 2);
               },
             ),
           );
+          // .parent(({required child}) => SizedBox(
+          //       height: context.height,
+          //       width: context.width,
+          //       child: child,
+          //     ));
         } else if (state is TaskLoading || state is TaskInitial) {
           return SizedBox(
             height: context.height - 56,

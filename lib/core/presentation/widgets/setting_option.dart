@@ -11,4 +11,8 @@ class SettingOption {
   ProjectEntry? _projectEntry;
   ProjectEntry? get projectEntry => _projectEntry;
   set projectEntry(ProjectEntry? entry) => _projectEntry = entry;
+
+  DateTime? _dateTime;
+  DateTime? get dateTime => _dateTime;
+  set dateTime(DateTime? entry) => _dateTime = entry;
 }

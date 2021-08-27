@@ -97,10 +97,13 @@ class _ProjectPageState extends State<ProjectPage> {
     BuildContext parentContext,
     ProjectEntry project,
   ) async {
+    SlidingSheetDialog? _taskSheetDialog;
+    Widget? _taskSheetHeader;
+    Widget? _taskPageContent;
     final result = await showSlidingBottomSheet(
       context,
       builder: (context) {
-        return SlidingSheetDialog(
+        return _taskSheetDialog ??= SlidingSheetDialog(
           elevation: 8,
           cornerRadius: 16,
           duration: 500.milliseconds,
@@ -111,8 +114,9 @@ class _ProjectPageState extends State<ProjectPage> {
             snappings: [0.4, 0.86],
             positioning: SnapPositioning.relativeToSheetHeight,
           ),
+          minHeight: context.height - 56,
           headerBuilder: (context, state) {
-            return Container(
+            return _taskSheetHeader ??= Container(
               color: context.theme.backgroundColor,
               height: 56,
               width: double.infinity,
@@ -134,11 +138,8 @@ class _ProjectPageState extends State<ProjectPage> {
           },
           builder: (context, state) {
             return BlocProvider<TaskBloc>.value(
-              value: BlocProvider.of<TaskBloc>(parentContext)
-                ..add(
-                  GetTaskEntriesEvent(project: project),
-                ),
-              child: TaskPage(
+              value: BlocProvider.of<TaskBloc>(parentContext),
+              child: _taskPageContent ??= TaskPage(
                 project: project,
               ),
             );
