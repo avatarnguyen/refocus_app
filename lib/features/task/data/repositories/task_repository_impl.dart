@@ -37,7 +37,6 @@ class TaskRepositoryImpl implements TaskRepository {
   @override
   Future<Either<Failure, Unit>> createTasks(List<TaskEntry> tasks) async {
     final log = logger(TaskRepositoryImpl);
-
     try {
       for (var task in tasks) {
         final _todo = Todo.fromJson(task.toMap());

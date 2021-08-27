@@ -14,6 +14,7 @@ import 'package:refocus_app/features/task/domain/usecases/task/create_tasks.dart
 import 'package:refocus_app/features/task/domain/usecases/task/delete_task.dart';
 import 'package:refocus_app/features/task/domain/usecases/task/get_task.dart';
 import 'package:refocus_app/features/task/domain/usecases/task/update_task.dart';
+import 'package:refocus_app/features/task/presentation/bloc/project_bloc.dart';
 
 part 'task_event.dart';
 part 'task_state.dart';
@@ -45,6 +46,22 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       );
       yield* _eitherTaskLoadedOrErrorState(failureOrEntry);
       //TODO: What Stream here
+    } else if (event is CreateTaskEntriesEvent) {
+      log('Create New Task');
+
+      yield* _mapTaskCreatedToState(event);
+    }
+  }
+
+  Stream<TaskState> _mapTaskCreatedToState(
+      CreateTaskEntriesEvent event) async* {
+    if (state is TasksLoaded) {
+      final failureOrSuccess = await createTasks(event.params);
+      yield* failureOrSuccess.fold((failure) async* {
+        yield TaskError(_mapFailureToMessage(failure));
+      }, (entry) async* {
+        print(entry);
+      });
     }
   }
 

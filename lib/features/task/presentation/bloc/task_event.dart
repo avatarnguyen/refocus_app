@@ -16,3 +16,13 @@ class GetTaskEntriesEvent extends TaskEvent {
   @override
   List<Object?> get props => [project];
 }
+
+class CreateTaskEntriesEvent extends TaskEvent {
+  const CreateTaskEntriesEvent({
+    required this.params,
+  });
+
+  final List<TaskParams> params;
+  @override
+  List<Object?> get props => [params];
+}

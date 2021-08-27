@@ -35,12 +35,18 @@ class _TaskPageState extends State<TaskPage> {
         if (state is TasksLoaded) {
           final _tasks = state.tasks;
           print(_tasks);
+          if (_tasks.isEmpty) {
+            return const BottomSheetMessageWidget(
+                message: 'Nothing todo here :)');
+          }
           return Material(
             color: context.theme.backgroundColor,
             child: ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: _tasks.length,
+              padding:
+                  _tasks.length < 5 ? const EdgeInsets.only(bottom: 400) : null,
               itemBuilder: (context, index) {
                 final _task = _tasks[index];
                 // print(_task.title);
@@ -78,19 +84,17 @@ class BottomSheetMessageWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       height: 400,
-      child: Center(
-        child: Material(
-          child: InkWell(
-            onTap: () => Navigator.pop(context, 'This is the result.'),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Text(
-                message,
-                style: context.textTheme.bodyText1,
-              ),
+      child: Material(
+        child: InkWell(
+          onTap: () => Navigator.pop(context, 'This is the result.'),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Text(
+              message,
+              style: context.textTheme.bodyText1,
             ),
           ),
-        ),
+        ).alignment(Alignment.topCenter),
       ),
     );
   }

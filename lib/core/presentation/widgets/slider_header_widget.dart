@@ -7,6 +7,7 @@ import 'package:refocus_app/core/presentation/pages/quickadd_page.dart';
 import 'package:refocus_app/core/presentation/widgets/page_stream.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/features/task/presentation/bloc/project_bloc.dart';
+import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
 import 'package:refocus_app/injection.dart';
 
 class SlidingHeaderWidget extends StatefulWidget {
@@ -90,13 +91,22 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
           size: 33,
         ).gestures(
           onTap: () => Get.bottomSheet(
-            BlocProvider<ProjectBloc>.value(
-              value: BlocProvider.of<ProjectBloc>(context),
+            MultiBlocProvider(
+              providers: [
+                BlocProvider<ProjectBloc>.value(
+                  value: BlocProvider.of<ProjectBloc>(context),
+                ),
+                BlocProvider<TaskBloc>.value(
+                  value: BlocProvider.of<TaskBloc>(context),
+                ),
+              ],
               child: const QuickAddPage(),
             ),
             isScrollControlled: true,
             isDismissible: false,
             elevation: 8,
+            enterBottomSheetDuration: 200.milliseconds,
+            exitBottomSheetDuration: 150.milliseconds,
             backgroundColor: Colors.black54,
           ),
         ),

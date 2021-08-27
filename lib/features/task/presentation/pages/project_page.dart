@@ -116,10 +116,13 @@ class _ProjectPageState extends State<ProjectPage> {
               color: context.theme.backgroundColor,
               height: 56,
               width: double.infinity,
-              child: const Icon(Icons.clear)
+              child: const Icon(
+                Icons.clear,
+                color: kcPrimary500,
+              )
                   .paddingAll(4)
                   .decorated(
-                      color: Colors.grey.shade200,
+                      color: kcPrimary100,
                       borderRadius: BorderRadius.circular(12.0))
                   .ripple()
                   .paddingOnly(left: 16)
@@ -130,8 +133,8 @@ class _ProjectPageState extends State<ProjectPage> {
             );
           },
           builder: (context, state) {
-            return BlocProvider<TaskBloc>(
-              create: (_) => getIt<TaskBloc>()
+            return BlocProvider<TaskBloc>.value(
+              value: BlocProvider.of<TaskBloc>(parentContext)
                 ..add(
                   GetTaskEntriesEvent(project: project),
                 ),

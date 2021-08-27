@@ -12,6 +12,7 @@ import 'package:refocus_app/core/presentation/widgets/slider_header_widget.dart'
 import 'package:refocus_app/core/util/helpers/logging.dart';
 import 'package:refocus_app/features/calendar/presentation/pages/calendar_page.dart';
 import 'package:refocus_app/features/task/presentation/bloc/project_bloc.dart';
+import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
 import 'package:refocus_app/features/task/presentation/pages/project_page.dart';
 import 'package:refocus_app/models/ModelProvider.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
@@ -29,10 +30,17 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<ProjectBloc>(
-        create: (context) =>
-            getIt<ProjectBloc>(), //..add(GetProjectEntriesEvent()),
-        child: const HomePageWidget());
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<ProjectBloc>(
+          create: (context) => getIt<ProjectBloc>(),
+        ),
+        BlocProvider<TaskBloc>(
+          create: (context) => getIt<TaskBloc>(),
+        ),
+      ],
+      child: const HomePageWidget(),
+    );
   }
 }
 

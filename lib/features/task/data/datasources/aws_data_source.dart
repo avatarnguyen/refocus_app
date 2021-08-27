@@ -89,13 +89,13 @@ class AWSTaskRemoteDataSource implements TaskRemoteDataSource {
 
         _todos = await Amplify.DataStore.query(
           Todo.classType,
-          // where: Todo.PROJECTID.eq(project.getId()),
+          where: Todo.PROJECTID.eq(project.getId()),
         );
       } else {
-        // _todos = await Amplify.DataStore.query(
-        //   Todo.classType,
-        //   where: Todo
-        // );
+        _todos = await Amplify.DataStore.query(
+          Todo.classType,
+          where: Todo.STARTDATETIME.eq(startTime),
+        );
       }
       return _todos;
     } catch (e) {

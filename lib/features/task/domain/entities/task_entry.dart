@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
+import 'package:intl/intl.dart';
 
 // ignore_for_file: sort_constructors_first
 class TaskEntry extends Equatable {
@@ -69,10 +70,13 @@ class TaskEntry extends Equatable {
       'title': title,
       'description': description,
       'isCompleted': isCompleted,
-      'dueDate': dueDate,
-      'startDateTime': startDateTime?.map((x) => x).toList(),
-      'endDateTime': endDateTime?.map((x) => x).toList(),
-      'recurrentDays': recurrentDays,
+      'dueDate':
+          dueDate != null ? DateFormat('yyyy-MM-dd').format(dueDate!) : null,
+      'startDateTime':
+          startDateTime?.map((x) => x.toUtc().toIso8601String()).toList() ?? [],
+      'endDateTime':
+          endDateTime?.map((x) => x.toUtc().toIso8601String()).toList() ?? [],
+      'recurrentDays': recurrentDays ?? [],
       'projectID': projectID,
     };
   }
@@ -83,7 +87,7 @@ class TaskEntry extends Equatable {
       title: map['title'],
       description: map['description'],
       isCompleted: map['isCompleted'] ?? false,
-      dueDate: DateTime.parse(map['dueDate']),
+      dueDate: map['dueDate'] != null ? DateTime.parse(map['dueDate']) : null,
       startDateTime: List<DateTime>.from(
           map['startDateTime']?.map((x) => DateTime.parse(x))),
       endDateTime: List<DateTime>.from(

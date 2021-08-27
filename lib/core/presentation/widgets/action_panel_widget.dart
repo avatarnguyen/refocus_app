@@ -1,20 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:refocus_app/enum/today_entry_type.dart';
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
+import 'package:refocus_app/features/task/domain/entities/task_entry.dart';
 import 'package:refocus_app/features/task/domain/usecases/helpers/project_params.dart';
+import 'package:refocus_app/features/task/domain/usecases/helpers/task_params.dart';
 import 'package:refocus_app/features/task/presentation/bloc/project_bloc.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
+import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
 
 import 'package:uuid/uuid.dart';
 import 'package:get/get.dart';
 
 import '../../../injection.dart';
 import '../text_stream.dart';
+import 'setting_option.dart';
 
 class ActionPanelWidget extends StatefulWidget {
   const ActionPanelWidget({
     Key? key,
+    this.projectEntry,
   }) : super(key: key);
+
+  final ProjectEntry? projectEntry;
 
   @override
   _ActionPanelWidgetState createState() => _ActionPanelWidgetState();
@@ -31,6 +39,7 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
   Uuid uuid = const Uuid();
 
   final _textStream = getIt<TextStream>();
+  final _settingOption = getIt<SettingOption>();
 
   @override
   Widget build(BuildContext context) {
@@ -76,11 +85,33 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
                 size: 28,
                 color: context.theme.primaryColor,
               ).gestures(onTap: () {
-                BlocProvider.of<ProjectBloc>(context).add(
-                  CreateProjectEntriesEvent(ProjectParams(
-                      ProjectEntry(id: uuid.v1(), title: textStream.data))),
-                );
-                // _textStream.dispose();
+                if (_settingOption.type == TodayEntryType.project) {
+                  BlocProvider.of<ProjectBloc>(context).add(
+                    CreateProjectEntriesEvent(ProjectParams(
+                        ProjectEntry(id: uuid.v1(), title: textStream.data))),
+                  );
+                }
+                if (_settingOption.type == TodayEntryType.task) {
+                  print('Add New Task');
+                  context.read<TaskBloc>().add(
+                        CreateTaskEntriesEvent(
+                          params: [
+                            TaskParams(
+                              // project: widget.projectEntry,
+                              task: TaskEntry(
+                                id: uuid.v1(),
+                                isCompleted: false,
+                                dueDate: DateTime.now(),
+                                projectID:
+                                    'd0c89d74-b4e6-4145-95dc-b1a6eb1e7bfc',
+                                title: textStream.data,
+                                startDateTime: [DateTime.now()],
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                }
                 Get.back();
               }),
             ].toRow(mainAxisAlignment: MainAxisAlignment.spaceEvenly),
