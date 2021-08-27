@@ -16,5 +16,6 @@ type Todo @model @auth(rules: [{allow: public}]) @key(name: "byProject", fields:
   endDateTime: [AWSDateTime]
   recurrentDays: [String]
   projectID: ID
+  priority: Int
 }
  

@@ -36,7 +36,7 @@ class _AddTextFieldWidgetState extends State<AddTextFieldWidget> {
     //       // Do sth with matches
     //     });
     _textStream.getTextStream.listen((text) {
-      print(text);
+      // print(text);
       _textController.text = text;
       _textController.selection = TextSelection.fromPosition(
           TextPosition(offset: _textController.text.length));
@@ -49,10 +49,10 @@ class _AddTextFieldWidgetState extends State<AddTextFieldWidget> {
     return Container(
       height: 100,
       width: context.width,
-      decoration: BoxDecoration(
-        color: context.theme.backgroundColor,
-        borderRadius: const BorderRadius.all(Radius.circular(8)),
-        boxShadow: const [
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.all(Radius.circular(8)),
+        boxShadow: [
           kShadowLightBase,
           kShadowLight100,
         ],
@@ -74,6 +74,7 @@ class _AddTextFieldWidgetState extends State<AddTextFieldWidget> {
           placeholder: 'Enter ...',
           padding: const EdgeInsets.all(16),
           decoration: const BoxDecoration(
+            color: Colors.white,
             borderRadius: BorderRadius.all(Radius.circular(8)),
           ),
         ),

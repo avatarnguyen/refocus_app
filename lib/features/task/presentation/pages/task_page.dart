@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
 import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
@@ -27,6 +28,19 @@ class _TaskPageState extends State<TaskPage> {
     //     );
   }
 
+  Color getColor(Set<MaterialState> states) {
+    const interactiveStates = <MaterialState>{
+      MaterialState.selected,
+      MaterialState.hovered,
+      MaterialState.focused,
+      // MaterialState.disabled,
+    };
+    if (states.any(interactiveStates.contains)) {
+      return kcPrimary500;
+    }
+    return kcPrimary300;
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<TaskBloc, TaskState>(
@@ -50,9 +64,42 @@ class _TaskPageState extends State<TaskPage> {
               itemBuilder: (context, index) {
                 final _task = _tasks[index];
                 // print(_task.title);
-                return ListTile(
-                  title: Text(_task.title ?? 'Empty'),
-                );
+                return [
+                  Transform.scale(
+                    scale: 1.2,
+                    child: Checkbox(
+                        tristate: true,
+                        materialTapTargetSize: MaterialTapTargetSize.padded,
+                        fillColor: MaterialStateProperty.resolveWith(getColor),
+                        value: _task.isCompleted,
+                        shape: const CircleBorder(),
+                        onChanged: (_) {}),
+                  ),
+                  [
+                    Text(
+                      _task.title ?? '',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: context.textTheme.bodyText2,
+                    ),
+                    if (_task.dueDate != null)
+                      Text(
+                        DateFormat.MMMMEEEEd().format(_task.dueDate!),
+                        style: context.textTheme.subtitle2!.copyWith(
+                          color: kcSecondary500,
+                        ),
+                      ).padding(top: 4),
+                  ]
+                      .toColumn(crossAxisAlignment: CrossAxisAlignment.start)
+                      .padding(vertical: 8)
+                      .flexible(),
+                ]
+                    .toRow()
+                    .card(
+                        shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ))
+                    .padding(horizontal: 16, vertical: 2);
               },
             ),
           );

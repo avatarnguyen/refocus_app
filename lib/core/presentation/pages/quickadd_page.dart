@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:refocus_app/core/presentation/widgets/action_panel_widget.dart';
 import 'package:refocus_app/core/presentation/widgets/add_textfield_widget.dart';
 import 'package:refocus_app/core/presentation/widgets/option_widget.dart';
 import 'package:refocus_app/core/util/ui/layout_helpers.dart';
 import 'package:refocus_app/core/util/ui/style_helpers.dart';
+import 'package:refocus_app/features/task/presentation/bloc/project_bloc.dart';
+import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
 import 'package:styled_widget/styled_widget.dart';
 import 'package:get/get.dart';
 
@@ -27,7 +30,10 @@ class QuickAddPage extends StatelessWidget {
               .alignment(Alignment.topRight)
               .paddingOnly(bottom: 80),
           const AddTextFieldWidget(),
-          const OptionRowWidget().paddingOnly(top: 24)
+          BlocProvider<ProjectBloc>.value(
+            value: BlocProvider.of<ProjectBloc>(context),
+            child: const OptionRowWidget(),
+          ).paddingOnly(top: 24)
         ].toColumn().parent(textContainer),
         const ActionPanelWidget()
       ].toColumn(mainAxisAlignment: MainAxisAlignment.spaceBetween),

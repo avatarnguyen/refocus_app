@@ -10,7 +10,7 @@ class TextStream {
       _textController.stream.asBroadcastStream();
 
   void updateText(String? text) {
-    (text == null || text.isEmpty)
+    (text == null)
         ? _textController.sink.addError('Invalid value entered!')
         : _textController.sink.add(text);
   }

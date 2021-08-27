@@ -33,6 +33,7 @@ class Todo extends Model {
   final List<TemporalDateTime>? _endDateTime;
   final List<String>? _recurrentDays;
   final String? _projectID;
+  final int? _priority;
 
   @override
   getInstanceType() => classType;
@@ -82,9 +83,13 @@ class Todo extends Model {
     return _projectID;
   }
   
-  const Todo._internal({required this.id, required title, description, required isCompleted, dueDate, startDateTime, endDateTime, recurrentDays, projectID}): _title = title, _description = description, _isCompleted = isCompleted, _dueDate = dueDate, _startDateTime = startDateTime, _endDateTime = endDateTime, _recurrentDays = recurrentDays, _projectID = projectID;
+  int? get priority {
+    return _priority;
+  }
   
-  factory Todo({String? id, required String title, String? description, required bool isCompleted, TemporalDate? dueDate, List<TemporalDateTime>? startDateTime, List<TemporalDateTime>? endDateTime, List<String>? recurrentDays, String? projectID}) {
+  const Todo._internal({required this.id, required title, description, required isCompleted, dueDate, startDateTime, endDateTime, recurrentDays, projectID, priority}): _title = title, _description = description, _isCompleted = isCompleted, _dueDate = dueDate, _startDateTime = startDateTime, _endDateTime = endDateTime, _recurrentDays = recurrentDays, _projectID = projectID, _priority = priority;
+  
+  factory Todo({String? id, required String title, String? description, required bool isCompleted, TemporalDate? dueDate, List<TemporalDateTime>? startDateTime, List<TemporalDateTime>? endDateTime, List<String>? recurrentDays, String? projectID, int? priority}) {
     return Todo._internal(
       id: id == null ? UUID.getUUID() : id,
       title: title,
@@ -94,7 +99,8 @@ class Todo extends Model {
       startDateTime: startDateTime != null ? List<TemporalDateTime>.unmodifiable(startDateTime) : startDateTime,
       endDateTime: endDateTime != null ? List<TemporalDateTime>.unmodifiable(endDateTime) : endDateTime,
       recurrentDays: recurrentDays != null ? List<String>.unmodifiable(recurrentDays) : recurrentDays,
-      projectID: projectID);
+      projectID: projectID,
+      priority: priority);
   }
   
   bool equals(Object other) {
@@ -113,7 +119,8 @@ class Todo extends Model {
       DeepCollectionEquality().equals(_startDateTime, other._startDateTime) &&
       DeepCollectionEquality().equals(_endDateTime, other._endDateTime) &&
       DeepCollectionEquality().equals(_recurrentDays, other._recurrentDays) &&
-      _projectID == other._projectID;
+      _projectID == other._projectID &&
+      _priority == other._priority;
   }
   
   @override
@@ -132,13 +139,14 @@ class Todo extends Model {
     buffer.write("startDateTime=" + (_startDateTime != null ? _startDateTime!.toString() : "null") + ", ");
     buffer.write("endDateTime=" + (_endDateTime != null ? _endDateTime!.toString() : "null") + ", ");
     buffer.write("recurrentDays=" + (_recurrentDays != null ? _recurrentDays!.toString() : "null") + ", ");
-    buffer.write("projectID=" + "$_projectID");
+    buffer.write("projectID=" + "$_projectID" + ", ");
+    buffer.write("priority=" + (_priority != null ? _priority!.toString() : "null"));
     buffer.write("}");
     
     return buffer.toString();
   }
   
-  Todo copyWith({String? id, String? title, String? description, bool? isCompleted, TemporalDate? dueDate, List<TemporalDateTime>? startDateTime, List<TemporalDateTime>? endDateTime, List<String>? recurrentDays, String? projectID}) {
+  Todo copyWith({String? id, String? title, String? description, bool? isCompleted, TemporalDate? dueDate, List<TemporalDateTime>? startDateTime, List<TemporalDateTime>? endDateTime, List<String>? recurrentDays, String? projectID, int? priority}) {
     return Todo(
       id: id ?? this.id,
       title: title ?? this.title,
@@ -148,7 +156,8 @@ class Todo extends Model {
       startDateTime: startDateTime ?? this.startDateTime,
       endDateTime: endDateTime ?? this.endDateTime,
       recurrentDays: recurrentDays ?? this.recurrentDays,
-      projectID: projectID ?? this.projectID);
+      projectID: projectID ?? this.projectID,
+      priority: priority ?? this.priority);
   }
   
   Todo.fromJson(Map<String, dynamic> json)  
@@ -160,10 +169,11 @@ class Todo extends Model {
       _startDateTime = (json['startDateTime'] as List)?.map((e) => TemporalDateTime.fromString(e))?.toList(),
       _endDateTime = (json['endDateTime'] as List)?.map((e) => TemporalDateTime.fromString(e))?.toList(),
       _recurrentDays = json['recurrentDays']?.cast<String>(),
-      _projectID = json['projectID'];
+      _projectID = json['projectID'],
+      _priority = json['priority'];
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'title': _title, 'description': _description, 'isCompleted': _isCompleted, 'dueDate': _dueDate?.format(), 'startDateTime': _startDateTime?.map((e) => e.format()).toList(), 'endDateTime': _endDateTime?.map((e) => e.format()).toList(), 'recurrentDays': _recurrentDays, 'projectID': _projectID
+    'id': id, 'title': _title, 'description': _description, 'isCompleted': _isCompleted, 'dueDate': _dueDate?.format(), 'startDateTime': _startDateTime?.map((e) => e.format()).toList(), 'endDateTime': _endDateTime?.map((e) => e.format()).toList(), 'recurrentDays': _recurrentDays, 'projectID': _projectID, 'priority': _priority
   };
 
   static final QueryField ID = QueryField(fieldName: "todo.id");
@@ -175,6 +185,7 @@ class Todo extends Model {
   static final QueryField ENDDATETIME = QueryField(fieldName: "endDateTime");
   static final QueryField RECURRENTDAYS = QueryField(fieldName: "recurrentDays");
   static final QueryField PROJECTID = QueryField(fieldName: "projectID");
+  static final QueryField PRIORITY = QueryField(fieldName: "priority");
   static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "Todo";
     modelSchemaDefinition.pluralName = "Todos";
@@ -241,6 +252,12 @@ class Todo extends Model {
       key: Todo.PROJECTID,
       isRequired: false,
       ofType: ModelFieldType(ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
+      key: Todo.PRIORITY,
+      isRequired: false,
+      ofType: ModelFieldType(ModelFieldTypeEnum.int)
     ));
   });
 }

@@ -97,13 +97,12 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
                         CreateTaskEntriesEvent(
                           params: [
                             TaskParams(
-                              // project: widget.projectEntry,
                               task: TaskEntry(
                                 id: uuid.v1(),
                                 isCompleted: false,
                                 dueDate: DateTime.now(),
-                                projectID:
-                                    'd0c89d74-b4e6-4145-95dc-b1a6eb1e7bfc',
+                                projectID: _settingOption.projectEntry?.id ??
+                                    'inbox_2021',
                                 title: textStream.data,
                                 startDateTime: [DateTime.now()],
                               ),

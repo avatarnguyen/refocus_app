@@ -14,6 +14,7 @@ class TaskEntry extends Equatable {
     this.startDateTime,
     this.endDateTime,
     this.recurrentDays,
+    this.priority,
     required this.projectID,
   });
 
@@ -25,6 +26,7 @@ class TaskEntry extends Equatable {
   final List<DateTime>? startDateTime;
   final List<DateTime>? endDateTime;
   final List<String>? recurrentDays;
+  final int? priority;
   final String projectID;
 
   @override
@@ -37,6 +39,7 @@ class TaskEntry extends Equatable {
         startDateTime,
         endDateTime,
         recurrentDays,
+        priority,
         projectID
       ];
 
@@ -49,6 +52,7 @@ class TaskEntry extends Equatable {
     List<DateTime>? startDateTime,
     List<DateTime>? endDateTime,
     List<String>? recurrentDays,
+    int? priority,
     String? projectID,
   }) {
     return TaskEntry(
@@ -60,6 +64,7 @@ class TaskEntry extends Equatable {
       startDateTime: startDateTime ?? this.startDateTime,
       endDateTime: endDateTime ?? this.endDateTime,
       recurrentDays: recurrentDays ?? this.recurrentDays,
+      priority: priority ?? this.priority,
       projectID: projectID ?? this.projectID,
     );
   }
@@ -77,6 +82,7 @@ class TaskEntry extends Equatable {
       'endDateTime':
           endDateTime?.map((x) => x.toUtc().toIso8601String()).toList() ?? [],
       'recurrentDays': recurrentDays ?? [],
+      'priority': priority ?? 0,
       'projectID': projectID,
     };
   }
@@ -93,6 +99,7 @@ class TaskEntry extends Equatable {
       endDateTime: List<DateTime>.from(
           (map['endDateTime'])?.map((x) => DateTime.parse(x))),
       recurrentDays: List<String>.from(map['recurrentDays']),
+      priority: map['priority'] ?? 0,
       projectID: map['projectID'] ?? '',
     );
   }

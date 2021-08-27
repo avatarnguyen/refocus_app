@@ -129,9 +129,9 @@ class _HomePageWidgetState extends State<HomePageWidget> {
       animationDuration: const Duration(milliseconds: 300),
       animateChildDecoration: false,
       rtlOpening: true,
-      childDecoration: const BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(16)),
-      ),
+      // childDecoration: const BoxDecoration(
+      //   borderRadius: BorderRadius.all(Radius.circular(16)),
+      // ),
       drawer: SafeArea(
         child: SizedBox.expand(
           child: ListTileTheme(
