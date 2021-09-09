@@ -98,7 +98,6 @@ class _ProjectPageState extends State<ProjectPage> {
     ProjectEntry project,
   ) async {
     SlidingSheetDialog? _taskSheetDialog;
-    Widget? _taskSheetHeader;
     Widget? _taskPageContent;
     final result = await showSlidingBottomSheet(
       context,
@@ -116,25 +115,7 @@ class _ProjectPageState extends State<ProjectPage> {
           ),
           minHeight: context.height - 56,
           headerBuilder: (context, state) {
-            return _taskSheetHeader ??= Container(
-              color: context.theme.backgroundColor,
-              height: 56,
-              width: double.infinity,
-              child: const Icon(
-                Icons.clear,
-                color: kcPrimary500,
-              )
-                  .paddingAll(4)
-                  .decorated(
-                      color: kcPrimary100,
-                      borderRadius: BorderRadius.circular(12.0))
-                  .ripple()
-                  .paddingOnly(left: 16)
-                  .gestures(
-                      onTap: () =>
-                          Navigator.pop(context, 'This is the result.'))
-                  .alignment(Alignment.centerLeft),
-            );
+            return const TaskPageHeaderWidget();
           },
           builder: (context, state) {
             return BlocProvider<TaskBloc>.value(
@@ -149,5 +130,45 @@ class _ProjectPageState extends State<ProjectPage> {
     );
 
     print(result); // This is the result.
+  }
+}
+
+class TaskPageHeaderWidget extends StatelessWidget {
+  const TaskPageHeaderWidget({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        color: context.theme.backgroundColor,
+        height: 56,
+        width: double.infinity,
+        child: [
+          const Icon(
+            Icons.clear,
+            color: kcPrimary500,
+            size: 28,
+          )
+              .paddingAll(4)
+              .decorated(
+                  color: kcPrimary100,
+                  borderRadius: BorderRadius.circular(12.0))
+              .ripple()
+              .paddingOnly(left: 16)
+              .gestures(onTap: Get.back),
+          const Icon(
+            Icons.add,
+            color: kcPrimary500,
+            size: 28,
+          )
+              .paddingAll(4)
+              .decorated(
+                  color: kcPrimary100,
+                  borderRadius: BorderRadius.circular(12.0))
+              .ripple()
+              .paddingOnly(right: 16)
+              .gestures(onTap: Get.back),
+        ].toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween));
   }
 }

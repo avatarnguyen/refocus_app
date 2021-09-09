@@ -14,9 +14,9 @@ import 'package:refocus_app/features/calendar/presentation/widgets/widgets.dart'
 import 'package:refocus_app/injection.dart';
 
 class TodayPage extends StatefulWidget {
-  const TodayPage({Key? key, required this.onDrawerSelected}) : super(key: key);
+  const TodayPage({Key? key}) : super(key: key);
 
-  final VoidCallback onDrawerSelected;
+  // final VoidCallback onDrawerSelected;
 
   @override
   _TodayPageState createState() => _TodayPageState();
@@ -39,8 +39,15 @@ class _TodayPageState extends State<TodayPage> {
       backgroundColor: kcLightBackground,
       body: [
         [
-          verticalSpaceRegular,
           [
+            InkWell(
+              onTap: () {},
+              child: const Icon(
+                Icons.menu,
+                size: 26,
+                color: kcPrimary500,
+              ),
+            ),
             InkWell(
               onTap: () async {},
               child: const Icon(
@@ -49,15 +56,8 @@ class _TodayPageState extends State<TodayPage> {
                 color: kcPrimary500,
               ),
             ),
-            InkWell(
-              onTap: () => widget.onDrawerSelected(),
-              child: const Icon(
-                Icons.menu,
-                size: 26,
-                color: kcPrimary500,
-              ),
-            ),
           ].toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween),
+          verticalSpaceRegular,
           verticalSpaceRegular,
           [
             [
@@ -71,8 +71,13 @@ class _TodayPageState extends State<TodayPage> {
               verticalSpaceSmall,
               PlatformText(
                 returnDate(today),
-                style: context.textTheme.headline6!.copyWith(
+                overflow: TextOverflow.fade,
+                maxLines: 1,
+                softWrap: true,
+                textScaleFactor: context.mediaQuery.textScaleFactor,
+                style: context.textTheme.bodyText2!.copyWith(
                   color: Colors.grey[600],
+                  // fontSize: kSmallTextSize,
                 ),
               ),
             ].toColumn(crossAxisAlignment: CrossAxisAlignment.start),

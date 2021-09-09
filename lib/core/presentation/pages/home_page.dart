@@ -3,7 +3,6 @@ import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:refocus_app/core/presentation/pages/today_page.dart';
@@ -57,7 +56,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
   );
   final PageStream _pageStream = getIt<PageStream>();
   final GoogleSignIn _googleSignIn = getIt<GoogleSignIn>();
-  final _advancedDrawerController = AdvancedDrawerController();
+  // final _advancedDrawerController = AdvancedDrawerController();
 
   double rightPadding = rightPaddingSize;
 
@@ -65,21 +64,21 @@ class _HomePageWidgetState extends State<HomePageWidget> {
 
   final log = logger(HomePage);
   bool amplifyConfigured = false;
-  bool _drawerClosed = true;
+  // bool _drawerClosed = true;
 
   @override
   void initState() {
-    _advancedDrawerController.addListener(() {
-      if (_advancedDrawerController.value == AdvancedDrawerValue.visible()) {
-        setState(() {
-          _drawerClosed = false;
-        });
-      } else {
-        setState(() {
-          _drawerClosed = true;
-        });
-      }
-    });
+    // _advancedDrawerController.addListener(() {
+    //   if (_advancedDrawerController.value == AdvancedDrawerValue.visible()) {
+    //     setState(() {
+    //       _drawerClosed = false;
+    //     });
+    //   } else {
+    //     setState(() {
+    //       _drawerClosed = true;
+    //     });
+    //   }
+    // });
     super.initState();
     _configureAmplify();
 
@@ -107,13 +106,13 @@ class _HomePageWidgetState extends State<HomePageWidget> {
   @override
   void dispose() {
     _pageController.dispose();
-    _advancedDrawerController.removeListener(() {});
+    // _advancedDrawerController.removeListener(() {});
     super.dispose();
   }
 
-  void onDrawerPressed() {
-    _advancedDrawerController.showDrawer();
-  }
+  // void onDrawerPressed() {
+  //   _advancedDrawerController.showDrawer();
+  // }
 
   void switchToPageView() {
     _pageController.animateToPage(_currentPage == 0 ? 1 : 0,
@@ -122,65 +121,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return AdvancedDrawer(
-      backdropColor: kcPrimary700,
-      controller: _advancedDrawerController,
-      animationCurve: Curves.easeInOut,
-      animationDuration: const Duration(milliseconds: 300),
-      animateChildDecoration: false,
-      rtlOpening: true,
-      // childDecoration: const BoxDecoration(
-      //   borderRadius: BorderRadius.all(Radius.circular(16)),
-      // ),
-      drawer: SafeArea(
-        child: SizedBox.expand(
-          child: ListTileTheme(
-            textColor: Colors.white,
-            iconColor: Colors.white,
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                const Spacer(flex: 1),
-                ListTile(
-                  onTap: () {},
-                  leading: Icon(Icons.home),
-                  title: Text('Home'),
-                ),
-                ListTile(
-                  onTap: () {},
-                  leading: Icon(Icons.account_circle_rounded),
-                  title: Text('Profile'),
-                ),
-                ListTile(
-                  onTap: () {},
-                  leading: Icon(Icons.favorite),
-                  title: Text('Favourites'),
-                ),
-                ListTile(
-                  onTap: () {},
-                  leading: Icon(Icons.settings),
-                  title: Text('Settings'),
-                ),
-                const Spacer(),
-                DefaultTextStyle(
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.white54,
-                  ),
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(
-                      vertical: 16.0,
-                    ),
-                    child: const Text('Terms of Service | Privacy Policy'),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-      child: _drawerBody(context),
-    );
+    return _drawerBody(context);
   }
 
   Scaffold _drawerBody(BuildContext context) {
@@ -198,6 +139,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
           snappings: [0.09, 0.5, 1.0],
           positioning: SnapPositioning.relativeToAvailableSpace,
         ),
+        minHeight: context.height / 2,
         headerBuilder: (context, state) => SlidingHeaderWidget(
           changePage: switchToPageView,
         ),
@@ -208,42 +150,36 @@ class _HomePageWidgetState extends State<HomePageWidget> {
               )
             : Container(),
         body: Container(
-          color: kcLightBackground,
-          height: context.height,
-          width: context.width,
-          padding: EdgeInsets.only(right: rightPadding),
-          child: PageView(
-            allowImplicitScrolling: true,
-            physics: _drawerClosed
-                ? const ClampingScrollPhysics()
-                : const NeverScrollableScrollPhysics(),
-            controller: _pageController,
-            onPageChanged: (int index) {
-              _pageStream.broadCastCurrentPage(index);
-              _currentPage = index;
-              if (index == 0) {
-                //* Maybe change to Valuelistener Builder to make this faster
-                setState(() {
-                  rightPadding = 0.0;
-                });
-              } else {
-                setState(() {
-                  rightPadding = rightPaddingSize;
-                });
-              }
-            },
-            children: [
-              const CalendarPage(),
-              amplifyConfigured
-                  ? TodayPage(
-                      onDrawerSelected: onDrawerPressed,
-                    )
-                  : progressIndicator,
-            ],
-          )
-              .opacity(_drawerClosed ? 1.0 : 0.32, animate: true)
-              .animate(400.milliseconds, Curves.fastOutSlowIn),
-        ),
+            color: kcLightBackground,
+            height: context.height,
+            width: context.width,
+            padding: EdgeInsets.only(right: rightPadding),
+            child: PageView(
+              allowImplicitScrolling: true,
+              physics: const ClampingScrollPhysics(),
+              controller: _pageController,
+              onPageChanged: (int index) {
+                _pageStream.broadCastCurrentPage(index);
+                _currentPage = index;
+                if (index == 0) {
+                  //* Maybe change to Valuelistener Builder to make this faster
+                  setState(() {
+                    rightPadding = 0.0;
+                  });
+                } else {
+                  setState(() {
+                    rightPadding = rightPaddingSize;
+                  });
+                }
+              },
+              children: [
+                const CalendarPage(),
+                amplifyConfigured ? const TodayPage() : progressIndicator,
+              ],
+            )
+            // .opacity(_drawerClosed ? 1.0 : 0.32, animate: true)
+            // .animate(400.milliseconds, Curves.fastOutSlowIn),
+            ),
       ),
     );
   }
