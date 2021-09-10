@@ -56,7 +56,6 @@ class _HomePageWidgetState extends State<HomePageWidget> {
   );
   final PageStream _pageStream = getIt<PageStream>();
   final GoogleSignIn _googleSignIn = getIt<GoogleSignIn>();
-  // final _advancedDrawerController = AdvancedDrawerController();
 
   double rightPadding = rightPaddingSize;
 
@@ -68,17 +67,6 @@ class _HomePageWidgetState extends State<HomePageWidget> {
 
   @override
   void initState() {
-    // _advancedDrawerController.addListener(() {
-    //   if (_advancedDrawerController.value == AdvancedDrawerValue.visible()) {
-    //     setState(() {
-    //       _drawerClosed = false;
-    //     });
-    //   } else {
-    //     setState(() {
-    //       _drawerClosed = true;
-    //     });
-    //   }
-    // });
     super.initState();
     _configureAmplify();
 
@@ -106,13 +94,8 @@ class _HomePageWidgetState extends State<HomePageWidget> {
   @override
   void dispose() {
     _pageController.dispose();
-    // _advancedDrawerController.removeListener(() {});
     super.dispose();
   }
-
-  // void onDrawerPressed() {
-  //   _advancedDrawerController.showDrawer();
-  // }
 
   void switchToPageView() {
     _pageController.animateToPage(_currentPage == 0 ? 1 : 0,
@@ -148,7 +131,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                 value: BlocProvider.of<ProjectBloc>(context),
                 child: const ProjectPage(),
               )
-            : Container(),
+            : const SizedBox(),
         body: Container(
             color: kcLightBackground,
             height: context.height,
