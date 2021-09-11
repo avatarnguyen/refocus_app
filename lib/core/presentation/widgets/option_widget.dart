@@ -21,23 +21,21 @@ class OptionRowWidget extends StatefulWidget {
 class _OptionRowWidgetState extends State<OptionRowWidget> {
   final _settingsOption = getIt<SettingOption>();
   TodayEntryType entryType = TodayEntryType.task;
-  ProjectEntry? _currentProject;
-  DateTime selectedDate = DateTime.now();
-  DateTime? _plannedDate;
-  int _groupValue = 0;
+  // DateTime selectedDate = DateTime.now();
+  // DateTime? _plannedDate;
 
   @override
   Widget build(BuildContext context) {
-    final _entryMapIcon = <TodayEntryType, IconData>{
-      TodayEntryType.task: Icons.done_all,
-      TodayEntryType.event: Icons.calendar_today,
-      TodayEntryType.timeblock: Icons.access_time,
-    };
-    final _entryMapString = <TodayEntryType, String>{
-      TodayEntryType.task: 'Task',
-      TodayEntryType.event: 'Event',
-      TodayEntryType.timeblock: 'Time Block',
-    };
+    // final _entryMapIcon = <TodayEntryType, IconData>{
+    //   TodayEntryType.task: Icons.done_all,
+    //   TodayEntryType.event: Icons.calendar_today,
+    //   TodayEntryType.timeblock: Icons.access_time,
+    // };
+    // final _entryMapString = <TodayEntryType, String>{
+    //   TodayEntryType.task: 'Task',
+    //   TodayEntryType.event: 'Event',
+    //   TodayEntryType.timeblock: 'Time Block',
+    // };
 
     return SizedBox(
         height: 64,
@@ -92,76 +90,4 @@ class _OptionRowWidgetState extends State<OptionRowWidget> {
       ).padding(horizontal: 2).flexible(),
     ].toColumn(mainAxisAlignment: MainAxisAlignment.start);
   }
-
-  // void _materialDateTimePicker(BuildContext context) async {
-  //   final picked = await showDatePicker(
-  //     context: context,
-  //     initialDate: selectedDate,
-  //     firstDate: DateTime(2000),
-  //     lastDate: DateTime(2025),
-  //     builder: (context, child) => child ?? Container(),
-  //   );
-  //   if (picked != null && picked != selectedDate) {
-  //     setState(() {
-  //       selectedDate = picked;
-  //     });
-  //   }
-  // }
-
-  void _changeDateTimePicker(int? index) {
-    if (index != null) {
-      setState(() {
-        _groupValue = index;
-      });
-    }
-  }
-
-  // void _cupertinoDateTimePicker(BuildContext context) {
-  //   showModalBottomSheet(
-  //       context: context,
-  //       backgroundColor: context.theme.backgroundColor,
-  //       builder: (BuildContext builder) {
-  //         return [
-  //           Container(
-  //             height: context.height / 3,
-  //             color: Colors.white,
-  //             child: CupertinoDatePicker(
-  //               mode: CupertinoDatePickerMode.dateAndTime,
-  //               onDateTimeChanged: (picked) {
-  //                 if (picked != selectedDate) {
-  //                   setState(() {
-  //                     selectedDate = picked;
-  //                   });
-  //                 }
-  //               },
-  //               initialDateTime: selectedDate,
-  //               use24hFormat: true,
-  //               minimumYear: 2000,
-  //               maximumYear: 2025,
-  //             ),
-  //           ),
-  //           // CupertinoSlidingSegmentedControl(
-  //           //   padding: const EdgeInsets.all(8),
-  //           //   thumbColor: context.theme.primaryColor,
-  //           //   backgroundColor: context.theme.backgroundColor,
-  //           //   groupValue: _groupValue,
-  //           //   children: {
-  //           //     0: _buildSegment('Date'),
-  //           //     1: _buildSegment('Time'),
-  //           //   },
-  //           //   onValueChanged: _changeDateTimePicker,
-  //           // ).paddingOnly(top: 8),
-  //           PlatformButton(
-  //             onPressed: () {
-  //               _settingsOption.dateTime = selectedDate;
-  //               setState(() {
-  //                 _plannedDate = selectedDate;
-  //               });
-  //               Get.back();
-  //             },
-  //             child: const Text('Speichern'),
-  //           ),
-  //         ].toColumn(mainAxisSize: MainAxisSize.min).safeArea();
-  //       });
-  // }
 }
