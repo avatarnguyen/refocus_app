@@ -6,7 +6,7 @@ import 'package:refocus_app/injection.dart';
 import 'package:styled_widget/styled_widget.dart';
 import 'package:get/get.dart';
 
-import 'setting_option.dart';
+import '../../helper/setting_option.dart';
 
 class OptionRowWidget extends StatefulWidget {
   const OptionRowWidget({

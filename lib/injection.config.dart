@@ -14,16 +14,16 @@ import 'package:internet_connection_checker/internet_connection_checker.dart'
 import 'core/injectable_module.dart' as _i41;
 import 'core/network/network_info.dart' as _i9;
 import 'core/presentation/bloc/today_bloc.dart' as _i33;
-import 'core/presentation/text_stream.dart' as _i14;
-import 'core/presentation/widgets/page_stream.dart' as _i40;
-import 'core/presentation/widgets/setting_option.dart' as _i10;
+import 'core/presentation/helper/page_stream.dart' as _i40;
+import 'core/presentation/helper/setting_option.dart' as _i10;
+import 'core/presentation/helper/text_stream.dart' as _i14;
 import 'features/calendar/data/datasources/gcal_local_data_source.dart' as _i7;
 import 'features/calendar/data/datasources/gcal_remote_data_source.dart'
     as _i21;
 import 'features/calendar/data/repositories/calendar_repository_impl.dart'
     as _i28;
-import 'features/calendar/domain/entities/calendar_entry.dart' as _i6;
-import 'features/calendar/domain/entities/calendar_event_entry.dart' as _i5;
+import 'features/calendar/domain/entities/calendar_entry.dart' as _i5;
+import 'features/calendar/domain/entities/calendar_event_entry.dart' as _i6;
 import 'features/calendar/domain/repositories/calendar_repository.dart' as _i27;
 import 'features/calendar/domain/usecases/add_event.dart' as _i36;
 import 'features/calendar/domain/usecases/delete_event.dart' as _i29;
@@ -61,15 +61,15 @@ Future<_i1.GetIt> $initGetIt(_i1.GetIt get,
   final gh = _i2.GetItHelper(get, environment, environmentFilter);
   final registerModule = _$RegisterModule();
   gh.lazySingleton<_i3.AwsStream>(() => _i3.AwsStream());
-  await gh.factoryAsync<_i4.Box<_i5.CalendarEventEntry>>(
-      () => registerModule.gcalEventsBox,
-      preResolve: true);
-  await gh.factoryAsync<_i4.Box<_i6.CalendarEntry>>(
+  await gh.factoryAsync<_i4.Box<_i5.CalendarEntry>>(
       () => registerModule.calendarBox,
       preResolve: true);
+  await gh.factoryAsync<_i4.Box<_i6.CalendarEventEntry>>(
+      () => registerModule.gcalEventsBox,
+      preResolve: true);
   gh.lazySingleton<_i7.GCalLocalDataSource>(() => _i7.HiveGCalLocalDataSource(
-      calendarBox: get<_i4.Box<_i6.CalendarEntry>>(),
-      gcalEventsBox: get<_i4.Box<_i5.CalendarEventEntry>>()));
+      calendarBox: get<_i4.Box<_i5.CalendarEntry>>(),
+      gcalEventsBox: get<_i4.Box<_i6.CalendarEventEntry>>()));
   gh.lazySingleton<_i8.InternetConnectionChecker>(
       () => registerModule.internetChecker);
   gh.lazySingleton<_i9.NetworkInfo>(

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 import 'package:refocus_app/enum/today_entry_type.dart';
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
@@ -25,7 +26,14 @@ class SettingOption {
     _projectSubject.add(entry);
   }
 
-  DateTime? _dateTime;
-  DateTime? get dateTime => _dateTime;
-  set dateTime(DateTime? entry) => _dateTime = entry;
+  DateTime? _dueDate;
+  DateTime? get dueDate => _dueDate;
+  set dueDate(DateTime? entry) => _dueDate = entry;
+
+  DateTime? _remindDate;
+  DateTime? get remindDate => _remindDate;
+  set remindDate(DateTime? entry) => _remindDate = entry;
+  TimeOfDay? _remindTime;
+  TimeOfDay? get remindTime => _remindTime;
+  set remindTime(TimeOfDay? entry) => _remindTime = entry;
 }

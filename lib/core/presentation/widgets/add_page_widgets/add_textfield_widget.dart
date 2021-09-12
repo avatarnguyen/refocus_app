@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:refocus_app/core/presentation/widgets/setting_option.dart';
+import 'package:refocus_app/core/presentation/helper/setting_option.dart';
 import 'package:refocus_app/core/util/ui/style_helpers.dart';
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
 import 'package:rich_text_controller/rich_text_controller.dart';
@@ -10,7 +10,7 @@ import 'package:styled_widget/styled_widget.dart';
 
 import 'package:refocus_app/injection.dart';
 import 'package:get/get.dart';
-import '../text_stream.dart';
+import '../../helper/text_stream.dart';
 
 class AddTextFieldWidget extends StatefulWidget {
   const AddTextFieldWidget({Key? key}) : super(key: key);
@@ -48,6 +48,7 @@ class _AddTextFieldWidgetState extends State<AddTextFieldWidget> {
     //       print(matches);
     //       // Do sth with matches
     //     });
+    //TODO: Text Stream Bug
     //! Bug: When Deleting Text, the cursor go to the end
     _textSubscription = _textStream.getTextStream.listen((text) {
       // print(text);
