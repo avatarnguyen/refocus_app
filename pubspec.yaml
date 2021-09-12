@@ -11,17 +11,17 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  bloc: ^7.0.0
-  flutter_bloc: ^7.0.0
+  bloc: ^7.1.0
+  flutter_bloc: ^7.2.0
   intl: ^0.17.0
   uuid: ^3.0.4
   get: ^4.3.8
   # Class helpers
   equatable: ^2.0.3
-  # freezed_annotation: ^0.14.3
+  freezed_annotation: ^0.14.3
   # Service locator
   get_it: ^7.2.0
-  injectable: ^1.4.1
+  injectable: ^1.5.0
   # Functional programming stuffs
   dartz: ^0.10.0-nullsafety.2
   # Remote API
@@ -31,53 +31,51 @@ dependencies:
   # local cache
   hive: ^2.0.4
   hive_flutter: ^1.1.0
-  shared_preferences: ^2.0.6
+  shared_preferences: ^2.0.7
 
   # aws cloud
-  amplify_flutter: ^0.2.2
-  amplify_datastore: ^0.2.2
-  amplify_api: ^0.2.0
-  amplify_auth_cognito: ^0.2.2
+  amplify_flutter: ^0.2.4
+  amplify_datastore: ^0.2.4
+  amplify_api: ^0.2.4
+  amplify_auth_cognito: ^0.2.4
 
-  path_provider: ^2.0.2
+  path_provider: ^2.0.3
   # Google Calendar
-  google_sign_in: ^5.0.5
+  google_sign_in: ^5.1.0
   extension_google_sign_in_as_googleapis_auth: ^2.0.2
-  googleapis: ^4.0.0
+  googleapis: ^5.0.0
   googleapis_auth: ^1.1.0
-  url_launcher: ^6.0.9
+  url_launcher: ^6.0.10
   # UI Helpers
-  styled_widget: ^0.3.1+2
+  styled_widget: ^0.4.0+3
   # Extension
   dartx: ^0.7.1
   # Stream Extension
-  rxdart: ^0.27.1
+  rxdart: ^0.27.2
   # Dev helpers
-  logger: ^1.0.0
+  logger: ^1.1.0
   # UI Packages:
   flutter_platform_widgets: ^1.9.5
   sliding_sheet: ^0.5.0
-  # tale_drawer: ^0.0.1
-  flutter_advanced_drawer: ^1.2.3
   rich_text_controller:
     git:
       url: https://github.com/micazi/rich_text_controller
 
   ## Calendar
-  syncfusion_flutter_calendar: ^19.2.56
+  syncfusion_flutter_calendar: ^19.2.60
   date_picker_timeline: ^1.2.3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  bloc_test: ^8.0.0
-  mocktail: ^0.1.0
-  very_good_analysis: ^2.1.0
-  injectable_generator: ^1.4.1
-  build_runner: ^2.0.6
-  # freezed: ^0.14.3
-  # json_serializable: ^5.0.0
-  hive_generator: ^1.1.0
+  bloc_test: ^8.1.0
+  mocktail: ^0.1.4
+  very_good_analysis: ^2.3.0
+  injectable_generator: ^1.5.2
+  build_runner: ^2.1.2
+  freezed: ^0.14.5
+  json_serializable: ^5.0.0
+  hive_generator: ^1.1.1
   flutter_gen_runner:
 
 flutter_gen:

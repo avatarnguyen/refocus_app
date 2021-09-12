@@ -112,16 +112,17 @@ class _AppState extends State<App> {
       supportedLocales: AppLocalizations.supportedLocales,
     );
     // return PlatformWidget(
-    //   cupertino: (context, platform) => GetCupertinoApp(
-    //     initialRoute: '/',
-    //     getPages: _getPagesList,
-    //     theme: _cupertinoThemeData,
-    //     localizationsDelegates: const [
-    //       AppLocalizations.delegate,
-    //       GlobalCupertinoLocalizations.delegate,
-    //     ],
-    //     supportedLocales: AppLocalizations.supportedLocales,
-    //   ),
+    // cupertino: (context, platform) => GetCupertinoApp(
+    //   color: ,
+    //   initialRoute: '/',
+    //   getPages: _getPagesList,
+    //   theme: _cupertinoThemeData,
+    //   localizationsDelegates: const [
+    //     AppLocalizations.delegate,
+    //     GlobalCupertinoLocalizations.delegate,
+    //   ],
+    //   supporteLocales: AppLocalizations.supportedLocales,
+    // ),
     //   material: (context, platform) => GetMaterialApp(
     //     initialRoute: '/',
     //     getPages: _getPagesList,

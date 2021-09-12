@@ -208,7 +208,7 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
           _buildActionItem(
             Icons.alarm_add,
             color: _onSelectingReminder
-                ? context.theme.accentColor
+                ? context.theme.colorScheme.secondary
                 : kcSecondary200,
           ).gestures(onTap: () {
             setState(() {
@@ -221,8 +221,9 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
           // Adding Priority
           _buildActionItem(
             Icons.flag,
-            color:
-                _onSelectingPrio ? context.theme.accentColor : kcSecondary200,
+            color: _onSelectingPrio
+                ? context.theme.colorScheme.secondary
+                : kcSecondary200,
           ).gestures(onTap: () {
             if (_currentPrio == null) {
               _textStream.updateText('${textData ?? ''} !');
