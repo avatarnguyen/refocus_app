@@ -39,6 +39,7 @@ class _AddTextFieldWidgetState extends State<AddTextFieldWidget> {
     //       // @
     //       RegExp(r'\B@[a-zA-Z0-9]+\b'): const TextStyle(color: kcSecondary500),
     //       // /
+
     //       RegExp(r'\B/[a-zA-Z0-9]+\b'): const TextStyle(color: Colors.green),
     //       // !
     //       RegExp(r'\B#[a-zA-Z0-9]+\b'): const TextStyle(color: Colors.red),
@@ -47,7 +48,7 @@ class _AddTextFieldWidgetState extends State<AddTextFieldWidget> {
     //       print(matches);
     //       // Do sth with matches
     //     });
-
+    //! Bug: When Deleting Text, the cursor go to the end
     _textSubscription = _textStream.getTextStream.listen((text) {
       // print(text);
       _textController.text = text;

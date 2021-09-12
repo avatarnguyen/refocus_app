@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:refocus_app/core/util/ui/style_helpers.dart';
 import 'package:refocus_app/enum/today_entry_type.dart';
-import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
 import 'package:refocus_app/injection.dart';
 import 'package:styled_widget/styled_widget.dart';
 import 'package:get/get.dart';
@@ -21,22 +20,9 @@ class OptionRowWidget extends StatefulWidget {
 class _OptionRowWidgetState extends State<OptionRowWidget> {
   final _settingsOption = getIt<SettingOption>();
   TodayEntryType entryType = TodayEntryType.task;
-  // DateTime selectedDate = DateTime.now();
-  // DateTime? _plannedDate;
 
   @override
   Widget build(BuildContext context) {
-    // final _entryMapIcon = <TodayEntryType, IconData>{
-    //   TodayEntryType.task: Icons.done_all,
-    //   TodayEntryType.event: Icons.calendar_today,
-    //   TodayEntryType.timeblock: Icons.access_time,
-    // };
-    // final _entryMapString = <TodayEntryType, String>{
-    //   TodayEntryType.task: 'Task',
-    //   TodayEntryType.event: 'Event',
-    //   TodayEntryType.timeblock: 'Time Block',
-    // };
-
     return SizedBox(
         height: 64,
         width: context.width,

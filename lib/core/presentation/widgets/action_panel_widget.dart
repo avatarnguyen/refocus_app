@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,10 +26,7 @@ import 'setting_option.dart';
 class ActionPanelWidget extends StatefulWidget {
   const ActionPanelWidget({
     Key? key,
-    // this.projectEntry,
   }) : super(key: key);
-
-  // final ProjectEntry? projectEntry;
 
   @override
   _ActionPanelWidgetState createState() => _ActionPanelWidgetState();
@@ -40,6 +39,8 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
   final _settingOption = getIt<SettingOption>();
   bool _onSelectingProject = false;
   bool _onSelectingDueDate = false;
+  bool _onSelectingReminder = false;
+  bool _onSelectingPrio = false;
 
   final _dueDateSelectionItems = [
     DueDateSelectionType.today,
@@ -50,6 +51,8 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
   DueDateSelectionType? _currentSelectedDueDate;
 
   var _selectedDate = DateTime.now();
+  var _remindDate = DateTime.now();
+  var _remindTime = TimeOfDay.now();
 
   Widget _buildActionItem(IconData? icon, {Color? color}) {
     return Icon(
@@ -79,6 +82,35 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
                     _dueDateSelectionItems,
                     _currentText,
                   );
+                } else if (_onSelectingReminder) {
+                  return SizedBox(
+                    width: context.width,
+                    child: [
+                      Text(
+                        _formatDateToHumanLang(_remindDate),
+                        style: context.textTheme.headline3!.copyWith(
+                            color: kcPrimary100, fontWeight: FontWeight.w400),
+                      ).ripple().gestures(onTap: () {
+                        Platform.isIOS
+                            ? _cupertinoDateTimePicker(context, _currentText)
+                            : _materialDateTimePicker(context, _currentText);
+                      }),
+                      verticalSpaceSmall,
+                      Text(
+                        _remindTime.format(context),
+                        style: context.textTheme.headline6!.copyWith(
+                          color: kcPrimary100,
+                        ),
+                      ).ripple().gestures(onTap: () {
+                        Platform.isIOS
+                            ? _cupertinoDateTimePicker(context, _currentText)
+                            : _materialTimePicker(context, _currentText);
+                      }),
+                      verticalSpaceRegular,
+                    ].toColumn(
+                      mainAxisSize: MainAxisSize.min,
+                    ),
+                  );
                 } else {
                   return const SizedBox();
                 }
@@ -96,6 +128,16 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
     );
   }
 
+  String _formatDateToHumanLang(DateTime date) {
+    if (date.isToday) {
+      return 'Today';
+    } else if (date.isTomorrow) {
+      return 'Tomorrow';
+    } else {
+      return DateFormat.yMEd().format(date);
+    }
+  }
+
   String _getItemString(dynamic item) {
     if (item is ProjectEntry) {
       return item.title?.trim() ?? '';
@@ -103,7 +145,7 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
       var _dueDateString = <String>['Today', 'Tomorrow', 'Next Week', 'Custom'];
       return _dueDateString[item.index];
     } else {
-      return '';
+      return item as String;
     }
   }
 
@@ -115,6 +157,23 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
     } else {
       return '$originText on $replaceText';
     }
+  }
+
+  String _replaceTimeString(
+      String originText, String replaceDate, String replaceTime) {
+    final _matcherDate = RegExp(
+        r'([?]|[remind]{3,6}|[alarm]{3,6})( ?)(([on]*)( ?)([MTWFS]+)(\w{2})(,?)( ?)(0?[1-9]|1[0-2])[\/](0?[1-9]|[12]\d|3[01])[\/](19|20)\d{2})');
+    final _matcherTime = RegExp(
+        r'((at ?)((([0-1]?\d)|(2[0-3]))(:|\.|)?[0-5][0-9]|((0?[1-9])|(1[0-2]))(:|\.|)([0-5][0-9]))(( ||,)([aA]|[pP])[mM]|([aA]|[pP])[mM])?)');
+    var _tmpStr = originText;
+
+    if (_tmpStr.contains(_matcherDate) || _tmpStr.contains(_matcherTime)) {
+      _tmpStr = _tmpStr.replaceFirst(_matcherDate, 'remind on $replaceDate');
+      _tmpStr = _tmpStr.replaceFirst(_matcherTime, 'at $replaceTime');
+    } else {
+      _tmpStr = '$_tmpStr remind $replaceDate at $replaceTime';
+    }
+    return _tmpStr;
   }
 
   void _mapSelectionToTextStream(DueDateSelectionType type, String? text) {
@@ -137,7 +196,7 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
       _textStream.updateText(_updatedText);
       _selectedDate = _date;
     } else {
-      context.isPhone
+      Platform.isIOS
           ? _cupertinoDateTimePicker(context, text)
           : _materialDateTimePicker(context, text);
     }
@@ -149,13 +208,35 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
       initialDate: _selectedDate,
       firstDate: DateTime(2000),
       lastDate: DateTime(2025),
-      builder: (context, child) => child ?? Container(),
+      builder: (context, child) => child ?? const SizedBox(),
     );
     if (picked != null && picked != _selectedDate) {
       final _dateStr = DateFormat.yMEd().format(picked);
-      final _updatedText = _replaceDateString(text ?? '', _dateStr);
+      if (_onSelectingReminder) {
+        final _timeStr = _remindTime.format(context);
+        final _updatedText = _replaceTimeString(text ?? '', _dateStr, _timeStr);
+        _textStream.updateText(_updatedText);
+        _remindDate = picked;
+      } else {
+        final _updatedText = _replaceDateString(text ?? '', _dateStr);
+        _textStream.updateText(_updatedText);
+        _selectedDate = picked;
+      }
+    }
+  }
+
+  void _materialTimePicker(BuildContext context, String? text) async {
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+      builder: (context, child) => child ?? const SizedBox(),
+    );
+    if (picked != null) {
+      final _dateStr = DateFormat.yMEd().format(_remindDate);
+      final _timeStr = picked.format(context); //TimeOfDayFormat.HH_colon_mm
+      final _updatedText = _replaceTimeString(text ?? '', _dateStr, _timeStr);
       _textStream.updateText(_updatedText);
-      _selectedDate = picked;
+      _remindTime = picked;
     }
   }
 
@@ -169,24 +250,36 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
             height: context.height / 3,
             color: Colors.white,
             child: CupertinoDatePicker(
-              mode: CupertinoDatePickerMode.date,
+              mode: _onSelectingReminder
+                  ? CupertinoDatePickerMode.dateAndTime
+                  : CupertinoDatePickerMode.date,
               onDateTimeChanged: (picked) {
                 if (picked != _selectedDate) {
                   final _dateStr = DateFormat.yMEd().format(picked);
-                  final _updatedText = _replaceDateString(text ?? '', _dateStr);
-                  _textStream.updateText(_updatedText);
-                  _selectedDate = picked;
+                  if (_onSelectingReminder) {
+                    _remindDate = picked;
+                    _remindTime = TimeOfDay.fromDateTime(picked);
+                    final _timeStr = _remindTime.format(context);
+                    final _updatedText =
+                        _replaceTimeString(text ?? '', _dateStr, _timeStr);
+                    _textStream.updateText(_updatedText);
+                  } else {
+                    final _updatedText =
+                        _replaceDateString(text ?? '', _dateStr);
+                    _textStream.updateText(_updatedText);
+                    _selectedDate = picked;
+                  }
                 }
               },
               initialDateTime: _selectedDate,
-              use24hFormat: true,
-              minimumYear: 2020,
-              maximumYear: 2025,
+              use24hFormat: context.mediaQuery.alwaysUse24HourFormat,
+              minimumYear: DateTime.now().year,
+              maximumYear: DateTime.now().year + 3,
             ),
           ).flexible(),
           PlatformButton(
             onPressed: Get.back,
-            child: const Text('Speichern'),
+            child: const Text('Done'),
           ),
         ].toColumn(mainAxisSize: MainAxisSize.min).safeArea();
       },
@@ -236,6 +329,7 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
     );
   }
 
+  //* Action Row at the Bottom
   Container _buildActionInputRow(String? textData, BuildContext context) {
     return Container(
       height: 44,
@@ -259,6 +353,7 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
               .gestures(onTap: () {
             setState(() {
               _onSelectingDueDate = false;
+              _onSelectingReminder = false;
               _onSelectingProject = !_onSelectingProject;
             });
           }),
@@ -278,11 +373,29 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
             }
             setState(() {
               _onSelectingProject = false;
+              _onSelectingReminder = false;
               _onSelectingDueDate = !_onSelectingDueDate;
             });
           }),
-          _buildActionItem(Icons.alarm_add).gestures(
-              onTap: () => _textStream.updateText('${textData ?? ''}?')),
+          _buildActionItem(
+            Icons.alarm_add,
+            color: _onSelectingReminder
+                ? context.theme.accentColor
+                : kcSecondary200,
+          ).gestures(onTap: () {
+            if (!_onSelectingReminder) {
+              final _dateStr = DateFormat.yMEd().format(_remindDate);
+              final _timeStr = _remindTime.format(context);
+              final _updatedText =
+                  _replaceTimeString(textData ?? '', _dateStr, _timeStr);
+              _textStream.updateText(_updatedText);
+            }
+            setState(() {
+              _onSelectingProject = false;
+              _onSelectingDueDate = false;
+              _onSelectingReminder = !_onSelectingReminder;
+            });
+          }),
           // Adding Priority
           _buildActionItem(Icons.flag).gestures(
               onTap: () => _textStream.updateText('${textData ?? ''}!')),
