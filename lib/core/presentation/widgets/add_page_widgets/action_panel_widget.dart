@@ -2,9 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import 'package:refocus_app/core/presentation/widgets/add_page_widgets/due_datetime_widget.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
+import 'package:refocus_app/enum/prio_type.dart';
 import 'package:refocus_app/enum/today_entry_type.dart';
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
 import 'package:refocus_app/features/task/domain/entities/task_entry.dart';
@@ -37,6 +37,14 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
   bool _onSelectingReminder = false;
   bool _onSelectingPrio = false;
 
+  final _prioList = [
+    PrioType.low,
+    PrioType.medium,
+    PrioType.high,
+  ];
+
+  PrioType? _currentPrio;
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
@@ -51,6 +59,9 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
                 if (_onSelectingProject) {
                   return _buildSelectionListRow(
                       context, _projects, _currentText);
+                } else if (_onSelectingPrio) {
+                  return _buildSelectionListRow(
+                      context, _prioList, _currentText);
                 } else if (_onSelectingDueDate || _onSelectingReminder) {
                   return DueDateTimeWidget(
                     currentText: _currentText ?? '',
@@ -85,6 +96,9 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
   String _getItemString(dynamic item) {
     if (item is ProjectEntry) {
       return item.title?.trim() ?? '';
+    } else if (item is PrioType) {
+      var _dueDateString = <String>['Low Prio', 'Medium Prio', 'High Prio'];
+      return _dueDateString[item.index];
     } else {
       return item as String;
     }
@@ -113,12 +127,17 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
                 color: kcPrimary100,
               ),
             ),
-            selected: _settingOption.projectEntry == _item,
+            selected:
+                (_settingOption.projectEntry == _item || _currentPrio == _item),
             onSelected: (bool selected) {
               setState(() {
                 if (_item is ProjectEntry) {
                   _settingOption.projectEntry = _item;
                   _settingOption.broadCastCurrentProjectEntry(_item);
+                }
+                if (_item is PrioType) {
+                  _currentPrio = _item;
+                  _mapPrioTypeToAction(_item, currentText ?? '');
                 }
               });
             },
@@ -126,6 +145,22 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
         },
       ),
     );
+  }
+
+  void _mapPrioTypeToAction(PrioType prio, String currentText) {
+    final _tmpStr = currentText.replaceAll(RegExp(r'!{1,3}'), '');
+    switch (prio) {
+      case PrioType.low:
+        _textStream.updateText('$_tmpStr!');
+        break;
+      case PrioType.medium:
+        _textStream.updateText('$_tmpStr!!');
+        break;
+      case PrioType.high:
+        _textStream.updateText('$_tmpStr!!!');
+        break;
+      default:
+    }
   }
 
   //* Action Row at the Bottom
@@ -184,8 +219,15 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
             });
           }),
           // Adding Priority
-          _buildActionItem(Icons.flag).gestures(onTap: () {
-            _textStream.updateText('${textData ?? ''}!');
+          _buildActionItem(
+            Icons.flag,
+            color:
+                _onSelectingPrio ? context.theme.accentColor : kcSecondary200,
+          ).gestures(onTap: () {
+            if (_currentPrio == null) {
+              _textStream.updateText('${textData ?? ''} !');
+              _currentPrio = PrioType.low;
+            }
             setState(() {
               _onSelectingProject = false;
               _onSelectingReminder = false;

@@ -30,6 +30,9 @@ class _QuickAddPageState extends State<QuickAddPage> {
 
   @override
   void dispose() {
+    _settingOption.dueDate = null;
+    _settingOption.remindDate = null;
+    _settingOption.remindTime = null;
     super.dispose();
   }
 
