@@ -36,6 +36,7 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
   bool _onSelectingDueDate = false;
   bool _onSelectingReminder = false;
   bool _onSelectingPrio = false;
+  bool _onAddingNote = false;
 
   final _prioList = [
     PrioType.low,
@@ -116,7 +117,7 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
           final _item = items[index];
           return ChoiceChip(
             backgroundColor: kcPrimary800,
-            selectedColor: context.theme.accentColor,
+            selectedColor: context.theme.colorScheme.secondary,
             shape: RoundedRectangleBorder(
               side: const BorderSide(color: kcPrimary100),
               borderRadius: BorderRadius.circular(8),

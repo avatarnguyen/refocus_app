@@ -57,9 +57,9 @@ dependencies:
   # UI Packages:
   flutter_platform_widgets: ^1.9.5
   sliding_sheet: ^0.5.0
-  rich_text_controller:
-    git:
-      url: https://github.com/micazi/rich_text_controller
+  # rich_text_controller:
+  #   git:
+  #     url: https://github.com/micazi/rich_text_controller
 
   ## Calendar
   syncfusion_flutter_calendar: ^19.2.60

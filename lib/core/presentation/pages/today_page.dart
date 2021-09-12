@@ -167,6 +167,7 @@ class TodayListWidget extends StatelessWidget {
         if (state is TodayLoaded) {
           final _entries =
               state.todayEntries.sortedBy((entry) => entry.startDateTime!);
+          //TODO: Error occur when event is full day or no date exists
           return RefreshIndicator(
             onRefresh: () async => await _pullToRefresh(context),
             child: ListView.builder(
@@ -223,7 +224,9 @@ class ListItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final _isEvent = type == TodayEntryType.event;
-    final _isPassed = endDateTime!.compareTo(DateTime.now()) <= 0;
+    final _isPassed = endDateTime != null
+        ? endDateTime!.compareTo(DateTime.now()) <= 0
+        : false;
 
     final _color = _isPassed
         ? Colors.grey.shade600

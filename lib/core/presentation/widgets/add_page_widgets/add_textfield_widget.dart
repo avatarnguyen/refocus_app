@@ -2,14 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:get/get.dart';
+import 'package:refocus_app/core/presentation/helper/custom_text_controller.dart';
 import 'package:refocus_app/core/presentation/helper/setting_option.dart';
 import 'package:refocus_app/core/util/ui/style_helpers.dart';
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
-import 'package:rich_text_controller/rich_text_controller.dart';
+import 'package:refocus_app/injection.dart';
 import 'package:styled_widget/styled_widget.dart';
 
-import 'package:refocus_app/injection.dart';
-import 'package:get/get.dart';
 import '../../helper/text_stream.dart';
 
 class AddTextFieldWidget extends StatefulWidget {
@@ -19,7 +19,7 @@ class AddTextFieldWidget extends StatefulWidget {
 }
 
 class _AddTextFieldWidgetState extends State<AddTextFieldWidget> {
-  final _textController = TextEditingController();
+  // final _textController = TextEditingController();
   final _textStream = getIt<TextStream>();
   final _settingsOption = getIt<SettingOption>();
 
@@ -28,26 +28,34 @@ class _AddTextFieldWidgetState extends State<AddTextFieldWidget> {
 
   ProjectEntry? _currentProject;
 
-  // late RichTextController _textController;
+  late RichTextController _textController;
+
+  final _matcherDueDate = RegExp(
+      r'([on]{2}( |)+([MTWFS]{1})+(\w{2})+(, |,)+(0?[1-9]|1[0-2])[\/](0?[1-9]|[12]\d|3[01])[\/](19|20)\d{2})');
+  final _matcherRemindDate = RegExp(
+      r'([?]|[remind]{3,6}|[alrm]{3,6})( ?)(([on]*)( ?)([MTWFS]+)(\w{2})(,?)( ?)(0?[1-9]|1[0-2])[\/](0?[1-9]|[12]\d|3[01])[\/](19|20)\d{2})');
+  final _matcherRemindTime = RegExp(
+      r'((at ?)((([0-1]?\d)|(2[0-3]))(:|\.|)?[0-5][0-9]|((0?[1-9])|(1[0-2]))(:|\.|)([0-5][0-9]))(( ||,)([aA]|[pP])[mM]|([aA]|[pP])[mM])?)');
+  final _matcherPrio = RegExp(r'!{1,3}');
 
   @override
   void initState() {
-    // _textController = RichTextController(
-    //     patternMap: {
-    //       // #
-    //       RegExp(r"\B#[a-zA-Z0-9]+\b"): const TextStyle(color: kcPrimary500),
-    //       // @
-    //       RegExp(r'\B@[a-zA-Z0-9]+\b'): const TextStyle(color: kcSecondary500),
-    //       // /
-
-    //       RegExp(r'\B/[a-zA-Z0-9]+\b'): const TextStyle(color: Colors.green),
-    //       // !
-    //       RegExp(r'\B#[a-zA-Z0-9]+\b'): const TextStyle(color: Colors.red),
-    //     },
-    //     onMatch: (List<String> matches) {
-    //       print(matches);
-    //       // Do sth with matches
-    //     });
+    _textController = RichTextController(
+        patternMap: {
+          // Matching for Due Date
+          _matcherDueDate: const TextStyle(color: kcPrimary500),
+          // Matcher for Reminder
+          _matcherRemindDate: const TextStyle(color: kcSecondary500),
+          _matcherRemindTime: const TextStyle(color: kcSecondary500),
+          // /
+          RegExp(r'\B/[a-zA-Z0-9]+\b'): const TextStyle(color: Colors.green),
+          // '!' Matcher for Prio
+          _matcherPrio: const TextStyle(color: Colors.red),
+        },
+        onMatch: (List<String> matches) {
+          print(matches);
+          // Do sth with matches
+        });
     //TODO: Text Stream Bug
     //! Bug: When Deleting Text, the cursor go to the end
     _textSubscription = _textStream.getTextStream.listen((text) {
@@ -92,7 +100,8 @@ class _AddTextFieldWidgetState extends State<AddTextFieldWidget> {
             _currentProject?.title ?? 'Inbox',
             style: context.textTheme.subtitle1!.copyWith(
               decoration: TextDecoration.underline,
-              color: kcPrimary500,
+              color: StyleUtils.getColorFromString(
+                  _currentProject?.color ?? '#8879FC'),
             ),
           ).padding(top: 16),
           _buildTextInput(context),
