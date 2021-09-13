@@ -90,14 +90,14 @@ class _AppState extends State<App> {
     return GetMaterialApp(
       initialRoute: '/',
       getPages: [
-        GetPage(name: '/', page: () => const HomePage()),
-        GetPage(
+        GetPage<dynamic>(name: '/', page: () => const HomePage()),
+        GetPage<dynamic>(
           name: rCalendarListPage,
           page: () => const CalendarListPage(),
           fullscreenDialog: true,
           transition: Transition.cupertinoDialog,
         ),
-        GetPage(
+        GetPage<dynamic>(
           name: rAddNewPage,
           page: () => const QuickAddPage(),
           fullscreenDialog: true,

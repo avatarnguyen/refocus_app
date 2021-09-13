@@ -55,7 +55,7 @@ class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
       await _awsSubscription?.cancel();
       _awsSubscription = getIt<AwsStream>()
           .getProjectStream
-          .listen((_) => add(GetProjectEntriesEvent()));
+          .listen((dynamic _) => add(GetProjectEntriesEvent()));
     } else if (event is CreateProjectEntriesEvent) {
       log('Create New Project');
 

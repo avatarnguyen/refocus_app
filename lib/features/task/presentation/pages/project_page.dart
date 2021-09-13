@@ -99,7 +99,7 @@ class _ProjectPageState extends State<ProjectPage> {
   ) async {
     SlidingSheetDialog? _taskSheetDialog;
     Widget? _taskPageContent;
-    final result = await showSlidingBottomSheet(
+    final dynamic result = await showSlidingBottomSheet<dynamic>(
       context,
       builder: (context) {
         return _taskSheetDialog ??= SlidingSheetDialog(

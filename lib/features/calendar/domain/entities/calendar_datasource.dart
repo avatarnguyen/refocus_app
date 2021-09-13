@@ -1,17 +1,16 @@
 import 'dart:ui';
 
+import 'package:dartx/dartx.dart';
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
+import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/get_events_between.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/helpers/date_range_query_params.dart';
 import 'package:refocus_app/injection.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
-import 'package:dartx/dartx.dart';
-
-import 'calendar_event_entry.dart';
 
 class CalendarData extends CalendarDataSource implements EquatableMixin {
   CalendarData({List<CalendarEventEntry>? events}) {
@@ -23,19 +22,19 @@ class CalendarData extends CalendarDataSource implements EquatableMixin {
 
   @override
   bool isAllDay(int index) {
-    final CalendarEventEntry? event = appointments?[index];
+    final event = appointments?[index] as CalendarEventEntry?;
     return event?.allDay != null;
   }
 
   @override
   DateTime getStartTime(int index) {
-    final CalendarEventEntry? event = appointments?[index];
+    final event = appointments?[index] as CalendarEventEntry?;
     return event?.startDate ?? event!.startDateTime!.toLocal();
   }
 
   @override
   DateTime getEndTime(int index) {
-    final CalendarEventEntry event = appointments![index];
+    final event = appointments![index] as CalendarEventEntry;
     return (event.endDate == null && event.endDateTime == null)
         ? (event.startDate ?? event.startDateTime!.toLocal())
         : (event.endDate != null
@@ -45,19 +44,19 @@ class CalendarData extends CalendarDataSource implements EquatableMixin {
 
   @override
   String getSubject(int index) {
-    final CalendarEventEntry event = appointments?[index];
+    final event = appointments?[index] as CalendarEventEntry;
     return event.subject.isEmpty ? 'No Title' : event.subject;
   }
 
   @override
   Object? getId(int index) {
-    final CalendarEventEntry event = appointments?[index];
+    final event = appointments?[index] as CalendarEventEntry;
     return event.id;
   }
 
   @override
   Color getColor(int index) {
-    final CalendarEventEntry event = appointments?[index];
+    final event = appointments?[index] as CalendarEventEntry;
     final colorStr = event.colorId ?? '#115FFB';
     return StyleUtils.getColorFromString(colorStr);
   }
@@ -65,13 +64,13 @@ class CalendarData extends CalendarDataSource implements EquatableMixin {
   @override
   Future<void> handleLoadMore(DateTime startDate, DateTime endDate) async {
     final getEventsBetween = getIt<GetEventsBetween>();
-    var newEvents = [];
+    var newEvents = <CalendarEventEntry>[];
 
     // log.d('On Start -> $_isOnStart');
 
     if (_isOnStart) {
       _isOnStart = false;
-      notifyListeners(CalendarDataSourceAction.add, []);
+      notifyListeners(CalendarDataSourceAction.add, <dynamic>[]);
     } else {
       log.i('Load More: $startDate - $endDate');
       if (startDate.isAtSameDayAs(endDate) &&
@@ -106,10 +105,10 @@ class CalendarData extends CalendarDataSource implements EquatableMixin {
     }
   }
 
-  List<dynamic> _eitherFailureOrSuccess(
+  List<CalendarEventEntry> _eitherFailureOrSuccess(
     Either<Failure, List<CalendarEventEntry>> result,
   ) {
-    final newEvents = [];
+    final newEvents = <CalendarEventEntry>[];
     //! What if entry in appointments does not exist any more?
     result.fold(log.e, (events) {
       // log.i('Success: $events');

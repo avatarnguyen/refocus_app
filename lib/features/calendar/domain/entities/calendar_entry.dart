@@ -41,28 +41,7 @@ class CalendarEntry extends Equatable {
         timeZone,
       ];
 
-  // // ignore: sort_constructors_first
-  // factory CalendarEntry.fromJson(Map<String, dynamic> json) {
-  //   return CalendarEntry(
-  //     id: json['id'],
-  //     name: json['summary'] ?? '',
-  //     accountName: json.containsKey('accountName') ? json['accountName'] : null,
-  //     color: json.containsKey('colorId')
-  //         ? json['colorId']
-  //         : json.containsKey('color')
-  //             ? json['color']
-  //             : null,
-  //     isDefault: json.containsKey('primary')
-  //         ? json['primary']
-  //         : json.containsKey('isDefault')
-  //             ? json['isDefault']
-  //             : null,
-  //     selected: json.containsKey('selected') ? json['selected'] : true,
-  //     timeZone: json.containsKey('timeZone') ? json['timeZone'] : null,
-  //   );
-  // }
-
-  Map<String, dynamic> toGCalJson() => {
+  Map<String, dynamic> toGCalJson() => <String, dynamic>{
         'id': id,
         'summary': name,
         if (color != null) 'color': color,

@@ -2,16 +2,15 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
+import 'package:refocus_app/features/calendar/presentation/bloc/calendar/calendar_bloc.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar/datetime_stream.dart';
+import 'package:refocus_app/features/calendar/presentation/widgets/appointment_widget.dart';
+import 'package:refocus_app/features/calendar/presentation/widgets/day_event_widget.dart';
+import 'package:refocus_app/injection.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
-import 'package:get/get.dart';
-
-import '../../../../injection.dart';
-import '../bloc/calendar/calendar_bloc.dart';
-import 'appointment_widget.dart';
-import 'day_event_widget.dart';
 
 class CalendarViewWidget extends StatefulWidget {
   const CalendarViewWidget({
@@ -67,10 +66,10 @@ class _CalendarViewWidgetState extends State<CalendarViewWidget> {
 
   Widget appointmentBuilder(BuildContext context,
       CalendarAppointmentDetails calendarAppointmentDetails) {
-    final CalendarEventEntry event =
-        calendarAppointmentDetails.appointments.first;
+    final event =
+        calendarAppointmentDetails.appointments.first as CalendarEventEntry;
 
-    var _colorValue = event.colorId!.replaceAll('#', '0xff');
+    final _colorValue = event.colorId!.replaceAll('#', '0xff');
     final _color = Color(int.parse(_colorValue));
     final _backgroudColor = StyleUtils.lighten(_color, 0.25);
 
@@ -115,7 +114,6 @@ class _CalendarViewWidgetState extends State<CalendarViewWidget> {
     return Expanded(
       child: SfCalendar(
         controller: _controller,
-        view: CalendarView.day,
         dataSource: widget.state is Loaded
             ? (widget.state as Loaded).calendarData
             : null,

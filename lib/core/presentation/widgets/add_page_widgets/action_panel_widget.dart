@@ -114,7 +114,7 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
         scrollDirection: Axis.horizontal,
         itemCount: items.length,
         itemBuilder: (context, index) {
-          final _item = items[index];
+          final dynamic _item = items[index];
           return ChoiceChip(
             backgroundColor: kcPrimary800,
             selectedColor: context.theme.colorScheme.secondary,
@@ -177,7 +177,8 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
         ).gestures(onTap: () {
           _settingOption.projectEntry = null;
           _settingOption.broadCastCurrentProjectEntry(null);
-          Get.back();
+          //ignore:
+          Get.back<dynamic>();
         }),
         [
           // Adding project (default: Inbox)
@@ -239,7 +240,7 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
           }),
           // Adding Description or Notes
           _buildActionItem(Icons.notes).gestures(
-            onTap: () => {},
+            onTap: () {},
           ),
           //* Adding Contact
           // Text('@', style: context.textTheme.bodyText1!.copyWith(
@@ -286,7 +287,7 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
                     ),
                   );
             }
-            Get.back();
+            Get.back<dynamic>();
           },
         ),
         // horizontalSpaceTiny,

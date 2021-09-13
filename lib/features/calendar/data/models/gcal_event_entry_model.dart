@@ -1,21 +1,22 @@
 import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
 
+// ignore_for_file: implicit_dynamic_parameter
 class GCalEventEntryModel extends CalendarEventEntry {
   const GCalEventEntryModel({
-    required subject,
-    id,
-    colorId,
-    notes,
-    location,
-    recurrence,
-    recurringEventId,
-    startDateTime,
-    startDate,
-    endDateTime,
-    endDate,
-    allDay,
-    organizer,
-    timeZone,
+    required String subject,
+    String? id,
+    String? colorId,
+    String? notes,
+    String? location,
+    List<String>? recurrence,
+    String? recurringEventId,
+    DateTime? startDateTime,
+    DateTime? startDate,
+    DateTime? endDateTime,
+    DateTime? endDate,
+    bool? allDay,
+    String? organizer,
+    String? timeZone,
   }) : super(
           id: id,
           colorId: colorId,
@@ -44,13 +45,13 @@ class GCalEventEntryModel extends CalendarEventEntry {
         : null;
 
     return GCalEventEntryModel(
-      subject: json['summary'] ?? '',
-      id: json['id'],
-      colorId: json['colorId'],
-      notes: json['description'],
-      location: json['location'],
-      recurrence: json['recurrence'],
-      recurringEventId: json['recurringEventId'],
+      subject: json['summary'] as String? ?? '',
+      id: json['id'] as String?,
+      colorId: json['colorId'] as String?,
+      notes: json['description'] as String?,
+      location: json['location'] as String?,
+      recurrence: json['recurrence'] as List<String>?,
+      recurringEventId: json['recurringEventId'] as String?,
       startDateTime: startEvent != null
           ? startEvent.containsKey('dateTime')
               ? DateTime.parse(startEvent['dateTime'] as String)
@@ -89,7 +90,7 @@ class GCalEventEntryModel extends CalendarEventEntry {
     );
   }
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => <String, dynamic>{
         'summary': subject,
         if (id != null) 'id': id,
         if (colorId != null) 'colorId': colorId,

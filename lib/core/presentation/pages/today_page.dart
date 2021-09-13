@@ -1,10 +1,9 @@
+import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:dartx/dartx.dart';
-
 import 'package:refocus_app/core/presentation/bloc/today_bloc.dart';
 import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart' as custom_log;
@@ -157,7 +156,7 @@ class TodayListWidget extends StatelessWidget {
 
   Future<void> _pullToRefresh(BuildContext context) async {
     context.read<TodayBloc>().add(GetTodayEntries(DateTime.now()));
-    await Future.delayed(1000.milliseconds);
+    await Future<dynamic>.delayed(1000.milliseconds);
   }
 
   @override

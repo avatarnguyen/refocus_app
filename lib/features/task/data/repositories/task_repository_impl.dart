@@ -38,8 +38,8 @@ class TaskRepositoryImpl implements TaskRepository {
   Future<Either<Failure, Unit>> createTasks(List<TaskEntry> tasks) async {
     final log = logger(TaskRepositoryImpl);
     try {
-      for (var task in tasks) {
-        final _todo = Todo.fromJson(task.toMap());
+      for (final task in tasks) {
+        final _todo = Todo.fromJson(task.toJson());
         log.i('Created Task: ${_todo.toJson()}');
 
         await remoteDataSource.createOrUpdateRemoteTask(_todo);
@@ -73,7 +73,7 @@ class TaskRepositoryImpl implements TaskRepository {
     final log = logger(TaskRepositoryImpl);
 
     try {
-      final _todo = Todo.fromJson(task.toMap());
+      final _todo = Todo.fromJson(task.toJson());
 
       log.i('Delete Project: ${_todo.toJson()}');
 
@@ -118,7 +118,7 @@ class TaskRepositoryImpl implements TaskRepository {
       log.v('Todo: $_todos');
 
       final _tasks = _todos
-          .map((todo) => TaskEntry.fromMap(
+          .map((todo) => TaskEntry.fromJson(
                 todo.toJson(),
               ))
           .toList();
@@ -151,7 +151,7 @@ class TaskRepositoryImpl implements TaskRepository {
     final log = logger(TaskRepositoryImpl);
 
     try {
-      final _todo = Todo.fromJson(task.toMap());
+      final _todo = Todo.fromJson(task.toJson());
       log.v('${_todo.toJson()}');
       await remoteDataSource.createOrUpdateRemoteTask(_todo);
 

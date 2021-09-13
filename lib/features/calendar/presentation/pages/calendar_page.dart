@@ -117,7 +117,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
           [
             InkWell(
               onTap: () async {
-                await Get.toNamed(rCalendarListPage);
+                await Get.toNamed<dynamic>(rCalendarListPage);
                 BlocProvider.of<CalendarBloc>(context).add(
                   GetCalendarEntries(),
                 );

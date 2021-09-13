@@ -50,11 +50,11 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.only(
-        bottom: 16.0,
-        right: 24.0,
-        left: 24.0,
+        bottom: 16,
+        right: 24,
+        left: 24,
       ),
-      height: 72.0,
+      height: 72,
       child: [
         Icon(
           _currentPage == 0 ? Icons.list : Icons.calendar_today,
@@ -90,7 +90,7 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
           color: kcSecondary100,
           size: 33,
         ).gestures(
-          onTap: () => getx.Get.to(
+          onTap: () => getx.Get.to<dynamic>(
             () => MultiBlocProvider(
               providers: [
                 BlocProvider<ProjectBloc>.value(

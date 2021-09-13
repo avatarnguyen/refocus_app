@@ -69,7 +69,7 @@ class RichTextController extends TextEditingController {
           ),
         );
 
-        return (this.onMatch!(matches) ?? '');
+        return (this.onMatch!(matches) as String? ?? '');
       },
       onNonMatch: (String span) {
         children.add(TextSpan(text: span, style: style));

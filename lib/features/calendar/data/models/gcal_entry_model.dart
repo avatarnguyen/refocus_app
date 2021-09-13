@@ -1,13 +1,14 @@
 import 'package:refocus_app/features/calendar/domain/entities/calendar_entry.dart';
 
+// ignore_for_file: implicit_dynamic_map_literal
 class GCalEntryModel extends CalendarEntry {
   const GCalEntryModel({
-    required id,
-    required summary,
-    color,
-    primary,
-    selected,
-    timeZone,
+    required String id,
+    required String summary,
+    String? color,
+    bool? primary,
+    bool? selected,
+    String? timeZone,
   }) : super(
           id: id,
           name: summary,
@@ -19,15 +20,14 @@ class GCalEntryModel extends CalendarEntry {
 
   factory GCalEntryModel.fromJson(Map<String, dynamic> json) {
     return GCalEntryModel(
-      id: json['id'],
-      summary: json['summary'] ?? '',
-      color: json['backgroundColor'] ?? json['color'],
-      primary: json['primary'],
-      selected: json['selected'] ?? true,
-      timeZone: json['timeZone'],
+      id: json['id'] as String,
+      summary: json['summary'] as String? ?? '',
+      color: json['backgroundColor'] as String? ?? json['color'] as String?,
+      primary: json['primary'] as bool?,
+      selected: json['selected'] as bool? ?? true,
+      timeZone: json['timeZone'] as String?,
     );
   }
-
   Map<String, dynamic> toJson() => {
         'id': id,
         'summary': name,

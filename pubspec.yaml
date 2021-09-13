@@ -7,78 +7,77 @@ environment:
   sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
-  flutter:
-    sdk: flutter
-  flutter_localizations:
-    sdk: flutter
-  bloc: ^7.1.0
-  flutter_bloc: ^7.2.0
-  intl: ^0.17.0
-  uuid: ^3.0.4
-  get: ^4.3.8
-  # Class helpers
-  equatable: ^2.0.3
-  freezed_annotation: ^0.14.3
-  # Service locator
-  get_it: ^7.2.0
-  injectable: ^1.5.0
-  # Functional programming stuffs
-  dartz: ^0.10.0-nullsafety.2
-  # Remote API
-  connectivity: ^3.0.6
-  internet_connection_checker: ^0.0.1+2
-  http: ^0.13.3
-  # local cache
-  hive: ^2.0.4
-  hive_flutter: ^1.1.0
-  shared_preferences: ^2.0.7
+  amplify_api: ^0.2.4
+  amplify_auth_cognito: ^0.2.4
+  amplify_datastore: ^0.2.4
 
   # aws cloud
   amplify_flutter: ^0.2.4
-  amplify_datastore: ^0.2.4
-  amplify_api: ^0.2.4
-  amplify_auth_cognito: ^0.2.4
-
-  path_provider: ^2.0.3
-  # Google Calendar
-  google_sign_in: ^5.1.0
-  extension_google_sign_in_as_googleapis_auth: ^2.0.2
-  googleapis: ^5.0.0
-  googleapis_auth: ^1.1.0
-  url_launcher: ^6.0.10
-  # UI Helpers
-  styled_widget: ^0.4.0+3
+  bloc: ^7.1.0
+  # Remote API
+  connectivity: ^3.0.6
   # Extension
   dartx: ^0.7.1
-  # Stream Extension
-  rxdart: ^0.27.2
-  # Dev helpers
-  logger: ^1.1.0
+  # Functional programming stuffs
+  dartz: ^0.10.0-nullsafety.2
+  date_picker_timeline: ^1.2.3
+  # Class helpers
+  equatable: ^2.0.3
+  extension_google_sign_in_as_googleapis_auth: ^2.0.2
+  flutter:
+    sdk: flutter
+  flutter_bloc: ^7.2.0
+  flutter_localizations:
+    sdk: flutter
   # UI Packages:
   flutter_platform_widgets: ^1.9.5
+  freezed_annotation: ^0.14.3
+  get: ^4.3.8
+  # Service locator
+  get_it: ^7.2.0
+  # Google Calendar
+  google_sign_in: ^5.1.0
+  googleapis: ^5.0.0
+  googleapis_auth: ^1.1.0
+  # local cache
+  hive: ^2.0.4
+  hive_flutter: ^1.1.0
+  http: ^0.13.3
+  injectable: ^1.5.0
+  internet_connection_checker: ^0.0.1+2
+  intl: ^0.17.0
+  # Dev helpers
+  logger: ^1.1.0
+
+  path_provider: ^2.0.3
+  # Stream Extension
+  rxdart: ^0.27.2
+  shared_preferences: ^2.0.7
   sliding_sheet: ^0.5.0
+  # UI Helpers
+  styled_widget: ^0.4.0+3
   # rich_text_controller:
   #   git:
   #     url: https://github.com/micazi/rich_text_controller
-
   ## Calendar
   syncfusion_flutter_calendar: ^19.2.60
-  date_picker_timeline: ^1.2.3
+  url_launcher: ^6.0.10
+  uuid: ^3.0.4
 
 dev_dependencies:
+  bloc_test: ^8.1.0
+  build_runner: ^2.1.2
+  flutter_gen_runner: null
   flutter_test:
     sdk: flutter
-  bloc_test: ^8.1.0
+  freezed: ^0.14.5
+  hive_generator: ^1.1.1
+  injectable_generator: ^1.5.2
+  json_serializable: ^5.0.0
   mocktail: ^0.1.4
   very_good_analysis: ^2.3.0
-  injectable_generator: ^1.5.2
-  build_runner: ^2.1.2
-  freezed: ^0.14.5
-  json_serializable: ^5.0.0
-  hive_generator: ^1.1.1
-  flutter_gen_runner:
 
-flutter_gen:
+flutter_gen: null
 
 flutter:
   uses-material-design: true
