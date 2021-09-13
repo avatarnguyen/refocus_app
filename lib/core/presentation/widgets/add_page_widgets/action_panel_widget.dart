@@ -64,7 +64,11 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
                   return _buildSelectionListRow(
                       context, _prioList, _currentText);
                 } else if (_onSelectingDueDate || _onSelectingReminder) {
+                  final _key = _onSelectingDueDate
+                      ? 'Due Date Widget'
+                      : 'Reminder Widget';
                   return DueDateTimeWidget(
+                    key: Key(_key),
                     currentText: _currentText ?? '',
                     onSelectingReminder: _onSelectingReminder,
                     onSelectingDueDate: _onSelectingDueDate,

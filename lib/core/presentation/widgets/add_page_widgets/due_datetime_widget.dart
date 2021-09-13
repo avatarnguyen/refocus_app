@@ -8,11 +8,11 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:refocus_app/core/presentation/helper/setting_option.dart';
 import 'package:refocus_app/core/presentation/helper/text_stream.dart';
+import 'package:refocus_app/core/util/helpers/regexp_matcher.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/duedate_selection_type.dart';
+import 'package:refocus_app/injection.dart';
 import 'package:styled_widget/styled_widget.dart';
-
-import '../../../../injection.dart';
 
 class DueDateTimeWidget extends StatefulWidget {
   const DueDateTimeWidget({
@@ -46,24 +46,48 @@ class _DueDateTimeWidgetState extends State<DueDateTimeWidget> {
   late DateTime _remindDate;
   late TimeOfDay _remindTime;
 
-  final _matcherDueDate = RegExp(
-      r'([on]{2}( |)+([MTWFS]{1})+(\w{2})+(, |,)+(0?[1-9]|1[0-2])[\/](0?[1-9]|[12]\d|3[01])[\/](19|20)\d{2})');
-  final _matcherRemindDate = RegExp(
-      r'([?]|[remind]{3,6}|[alrm]{3,6})( ?)(([on]*)( ?)([MTWFS]+)(\w{2})(,?)( ?)(0?[1-9]|1[0-2])[\/](0?[1-9]|[12]\d|3[01])[\/](19|20)\d{2})');
-  final _matcherRemindTime = RegExp(
-      r'((at ?)((([0-1]?\d)|(2[0-3]))(:|\.|)?[0-5][0-9]|((0?[1-9])|(1[0-2]))(:|\.|)([0-5][0-9]))(( ||,)([aA]|[pP])[mM]|([aA]|[pP])[mM])?)');
+  final _matcherDueDate = StringMatcher.matcherDueDate;
+  final _matcherRemindDate = StringMatcher.matcherRemindDate;
+  final _matcherRemindTime = StringMatcher.matcherRemindTime;
 
   @override
   void initState() {
     super.initState();
 
-    print(_settingOption.dueDate);
+    // print('Due Date Widget INIT ${widget.onSelectingDueDate}');
 
-    _remindDate = _settingOption.remindDate ?? DateTime.now();
-    _remindTime = _settingOption.remindTime ?? TimeOfDay.now();
+    if (widget.onSelectingReminder) {
+      _remindDate = _settingOption.remindDate ?? DateTime.now();
+      _remindTime = _settingOption.remindTime ?? TimeOfDay.now();
+    } else {
+      _dueDate = _settingOption.dueDate ?? DateTime.now();
+      _currentSelectedDueDate = _getCurrentDueDateSelectionType(_dueDate);
+    }
+  }
 
-    _dueDate = _settingOption.dueDate ?? DateTime.now();
-    _currentSelectedDueDate = _getCurrentDueDateSelectionType(_dueDate);
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (widget.onSelectingReminder) {
+      if (!(widget.currentText.contains(_matcherRemindDate) ||
+          widget.currentText.contains(_matcherRemindTime))) {
+        final _dateStr = DateFormat.yMEd().format(_remindDate);
+        final _timeStr = _remindTime.format(context);
+        final _updatedText =
+            _replaceTimeString(widget.currentText, _dateStr, _timeStr);
+        _textStream.updateText(_updatedText);
+      }
+    }
+    if (widget.onSelectingDueDate) {
+      if (!widget.currentText.contains(_matcherDueDate)) {
+        _currentSelectedDueDate = DueDateSelectionType.today;
+        final _today = DateTime.now();
+        final _todayStr = DateFormat.yMEd().format(_today);
+        final _updatedText = _replaceDateString(widget.currentText, _todayStr);
+        _textStream.updateText(_updatedText);
+        _settingOption.dueDate = _today;
+      }
+    }
   }
 
   DueDateSelectionType _getCurrentDueDateSelectionType(DateTime date) {
@@ -86,88 +110,77 @@ class _DueDateTimeWidgetState extends State<DueDateTimeWidget> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.onSelectingReminder) {
-      if (!(widget.currentText.contains(_matcherRemindDate) ||
-          widget.currentText.contains(_matcherRemindTime))) {
-        final _dateStr = DateFormat.yMEd().format(_remindDate);
-        final _timeStr = _remindTime.format(context);
-        final _updatedText =
-            _replaceTimeString(widget.currentText, _dateStr, _timeStr);
-        _textStream.updateText(_updatedText);
-      }
-    }
     if (widget.onSelectingDueDate) {
-      if (!(widget.currentText.contains(_matcherDueDate))) {
-        _currentSelectedDueDate = DueDateSelectionType.today;
-        final _today = DateTime.now();
-        final _todayStr = DateFormat.yMEd().format(_today);
-        final _updatedText = _replaceDateString(widget.currentText, _todayStr);
-        _textStream.updateText(_updatedText);
-        _settingOption.dueDate = _today;
-      }
+      return _buildSetDueDate(context);
+    } else {
+      return _buildSetReminder(context);
     }
+  }
 
-    return widget.onSelectingDueDate
-        ? SizedBox(
-            height: 44,
-            width: context.width,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: _dueDateSelectionItems.length,
-              itemBuilder: (context, index) {
-                final _item = _dueDateSelectionItems[index];
-                return ChoiceChip(
-                  backgroundColor: kcPrimary800,
-                  selectedColor: context.theme.accentColor,
-                  shape: RoundedRectangleBorder(
-                    side: const BorderSide(color: kcPrimary100),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  label: Text(
-                    _getItemString(_item),
-                    style: context.textTheme.subtitle1!.copyWith(
-                      color: kcPrimary100,
-                    ),
-                  ),
-                  selected: (_currentSelectedDueDate == _item),
-                  onSelected: (bool selected) {
-                    setState(() {
-                      _currentSelectedDueDate = _item;
-                      _mapSelectionToTextStream(_item, widget.currentText);
-                    });
-                  },
-                ).paddingSymmetric(horizontal: 4.0);
-              },
+  Widget _buildSetReminder(BuildContext context) {
+    return SizedBox(
+      width: context.width,
+      child: [
+        Text(
+          _formatDateToHumanLang(_remindDate),
+          style: context.textTheme.headline3!
+              .copyWith(color: kcPrimary100, fontWeight: FontWeight.w400),
+        ).ripple().gestures(onTap: () {
+          Platform.isIOS
+              ? _cupertinoDateTimePicker(context, widget.currentText)
+              : _materialDateTimePicker(context, widget.currentText);
+        }),
+        verticalSpaceSmall,
+        Text(
+          _remindTime.format(context),
+          style: context.textTheme.headline6!.copyWith(
+            color: kcPrimary100,
+          ),
+        ).ripple().gestures(onTap: () {
+          Platform.isIOS
+              ? _cupertinoDateTimePicker(context, widget.currentText)
+              : _materialTimePicker(context, widget.currentText);
+        }),
+        verticalSpaceRegular,
+      ].toColumn(
+        mainAxisSize: MainAxisSize.min,
+      ),
+    );
+  }
+
+  Widget _buildSetDueDate(BuildContext context) {
+    return SizedBox(
+      height: 44,
+      width: context.width,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: _dueDateSelectionItems.length,
+        itemBuilder: (context, index) {
+          final _item = _dueDateSelectionItems[index];
+          return ChoiceChip(
+            backgroundColor: kcPrimary800,
+            selectedColor: context.theme.accentColor,
+            shape: RoundedRectangleBorder(
+              side: const BorderSide(color: kcPrimary100),
+              borderRadius: BorderRadius.circular(8),
             ),
-          )
-        : SizedBox(
-            width: context.width,
-            child: [
-              Text(
-                _formatDateToHumanLang(_remindDate),
-                style: context.textTheme.headline3!
-                    .copyWith(color: kcPrimary100, fontWeight: FontWeight.w400),
-              ).ripple().gestures(onTap: () {
-                Platform.isIOS
-                    ? _cupertinoDateTimePicker(context, widget.currentText)
-                    : _materialDateTimePicker(context, widget.currentText);
-              }),
-              verticalSpaceSmall,
-              Text(
-                _remindTime.format(context),
-                style: context.textTheme.headline6!.copyWith(
-                  color: kcPrimary100,
-                ),
-              ).ripple().gestures(onTap: () {
-                Platform.isIOS
-                    ? _cupertinoDateTimePicker(context, widget.currentText)
-                    : _materialTimePicker(context, widget.currentText);
-              }),
-              verticalSpaceRegular,
-            ].toColumn(
-              mainAxisSize: MainAxisSize.min,
+            label: Text(
+              _getItemString(_item),
+              style: context.textTheme.subtitle1!.copyWith(
+                color: kcPrimary100,
+              ),
             ),
-          );
+            selected: (_currentSelectedDueDate == _item),
+            onSelected: (bool selected) {
+              setState(() {
+                _currentSelectedDueDate = _item;
+                _mapSelectionToTextStream(_item, widget.currentText);
+              });
+            },
+          ).paddingSymmetric(horizontal: 4.0);
+        },
+      ),
+    );
   }
 
   String _formatDateToHumanLang(DateTime date) {
@@ -282,6 +295,8 @@ class _DueDateTimeWidgetState extends State<DueDateTimeWidget> {
   }
 
   void _cupertinoDateTimePicker(BuildContext context, String? text) {
+    final _currentDateTime =
+        widget.onSelectingReminder ? _remindDate : _dueDate;
     showModalBottomSheet<dynamic>(
       context: context,
       backgroundColor: context.theme.backgroundColor,
@@ -295,7 +310,7 @@ class _DueDateTimeWidgetState extends State<DueDateTimeWidget> {
                   ? CupertinoDatePickerMode.dateAndTime
                   : CupertinoDatePickerMode.date,
               onDateTimeChanged: (picked) {
-                if (picked != _dueDate) {
+                if (picked != _currentDateTime) {
                   final _dateStr = DateFormat.yMEd().format(picked);
                   if (widget.onSelectingReminder) {
                     _remindDate = picked;

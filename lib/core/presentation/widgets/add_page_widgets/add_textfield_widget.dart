@@ -5,12 +5,12 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:get/get.dart';
 import 'package:refocus_app/core/presentation/helper/custom_text_controller.dart';
 import 'package:refocus_app/core/presentation/helper/setting_option.dart';
+import 'package:refocus_app/core/presentation/helper/text_stream.dart';
+import 'package:refocus_app/core/util/helpers/regexp_matcher.dart';
 import 'package:refocus_app/core/util/ui/style_helpers.dart';
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
 import 'package:refocus_app/injection.dart';
 import 'package:styled_widget/styled_widget.dart';
-
-import '../../helper/text_stream.dart';
 
 class AddTextFieldWidget extends StatefulWidget {
   const AddTextFieldWidget({Key? key}) : super(key: key);
@@ -30,13 +30,10 @@ class _AddTextFieldWidgetState extends State<AddTextFieldWidget> {
 
   late RichTextController _textController;
 
-  final _matcherDueDate = RegExp(
-      r'([on]{2}( |)+([MTWFS]{1})+(\w{2})+(, |,)+(0?[1-9]|1[0-2])[\/](0?[1-9]|[12]\d|3[01])[\/](19|20)\d{2})');
-  final _matcherRemindDate = RegExp(
-      r'([?]|[remind]{3,6}|[alrm]{3,6})( ?)(([on]*)( ?)([MTWFS]+)(\w{2})(,?)( ?)(0?[1-9]|1[0-2])[\/](0?[1-9]|[12]\d|3[01])[\/](19|20)\d{2})');
-  final _matcherRemindTime = RegExp(
-      r'((at ?)((([0-1]?\d)|(2[0-3]))(:|\.|)?[0-5][0-9]|((0?[1-9])|(1[0-2]))(:|\.|)([0-5][0-9]))(( ||,)([aA]|[pP])[mM]|([aA]|[pP])[mM])?)');
-  final _matcherPrio = RegExp(r'!{1,3}');
+  final _matcherDueDate = StringMatcher.matcherDueDate;
+  final _matcherRemindDate = StringMatcher.matcherRemindDate;
+  final _matcherRemindTime = StringMatcher.matcherRemindTime;
+  final _matcherPrio = StringMatcher.matcherPrio;
 
   @override
   void initState() {
@@ -59,7 +56,7 @@ class _AddTextFieldWidgetState extends State<AddTextFieldWidget> {
     //TODO: Text Stream Bug
     //! Bug: When Deleting Text, the cursor go to the end
     _textSubscription = _textStream.getTextStream.listen((text) {
-      // print(text);
+      print(text);
       _textController.text = text;
       _textController.selection = TextSelection.fromPosition(
           TextPosition(offset: _textController.text.length));
