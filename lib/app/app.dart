@@ -70,7 +70,7 @@ class _AppState extends State<App> {
         onSurface: Colors.black87,
         onBackground: Colors.black87,
         onError: Colors.white,
-        brightness: Brightness.dark,
+        brightness: Brightness.light,
       ),
       textTheme: _materialTextTheme,
     );

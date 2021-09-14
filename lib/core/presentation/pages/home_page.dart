@@ -4,25 +4,23 @@ import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:refocus_app/core/presentation/pages/today_page.dart';
+import 'package:refocus_app/amplifyconfiguration.dart';
 import 'package:refocus_app/core/presentation/helper/page_stream.dart';
+import 'package:refocus_app/core/presentation/pages/today_page.dart';
 import 'package:refocus_app/core/presentation/widgets/slider_header_widget.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart';
+import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/features/calendar/presentation/pages/calendar_page.dart';
 import 'package:refocus_app/features/task/presentation/bloc/project_bloc.dart';
 import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
 import 'package:refocus_app/features/task/presentation/pages/project_page.dart';
+import 'package:refocus_app/injection.dart';
 import 'package:refocus_app/models/ModelProvider.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
-import 'package:refocus_app/core/util/ui/ui_helper.dart';
 
-import 'package:get/get.dart';
-
-import '../../../amplifyconfiguration.dart';
-import '../../../injection.dart';
-
-const rightPaddingSize = 8.0;
+// const rightPaddingSize = 8.0;
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -57,7 +55,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
   final PageStream _pageStream = getIt<PageStream>();
   final GoogleSignIn _googleSignIn = getIt<GoogleSignIn>();
 
-  double rightPadding = rightPaddingSize;
+  // double rightPadding = rightPaddingSize;
 
   int _currentPage = 1;
 
@@ -117,10 +115,8 @@ class _HomePageWidgetState extends State<HomePageWidget> {
         shadowColor: Colors.black26,
         addTopViewPaddingOnFullscreen: true,
         snapSpec: const SnapSpec(
-          snap: true,
           initialSnap: 0.09,
           snappings: [0.09, 0.5, 1.0],
-          positioning: SnapPositioning.relativeToAvailableSpace,
         ),
         minHeight: context.height / 2,
         headerBuilder: (context, state) => SlidingHeaderWidget(
@@ -132,11 +128,10 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                 child: const ProjectPage(),
               )
             : const SizedBox(),
-        body: Container(
-            color: kcLightBackground,
+        body: SizedBox(
             height: context.height,
             width: context.width,
-            padding: EdgeInsets.only(right: rightPadding),
+            // padding: EdgeInsets.only(right: rightPadding),
             child: PageView(
               allowImplicitScrolling: true,
               physics: const ClampingScrollPhysics(),
@@ -144,20 +139,20 @@ class _HomePageWidgetState extends State<HomePageWidget> {
               onPageChanged: (int index) {
                 _pageStream.broadCastCurrentPage(index);
                 _currentPage = index;
-                if (index == 0) {
-                  //* Maybe change to Valuelistener Builder to make this faster
-                  setState(() {
-                    rightPadding = 0.0;
-                  });
-                } else {
-                  setState(() {
-                    rightPadding = rightPaddingSize;
-                  });
-                }
+                // if (index == 0) {
+                //   //* Maybe change to Valuelistener Builder to make this faster
+                //   setState(() {
+                //     rightPadding = 0.0;
+                //   });
+                // } else {
+                //   setState(() {
+                //     rightPadding = rightPaddingSize;
+                //   });
+                // }
               },
               children: [
                 const CalendarPage(),
-                amplifyConfigured ? const TodayPage() : progressIndicator,
+                if (amplifyConfigured) const TodayPage() else progressIndicator,
               ],
             )
             // .opacity(_drawerClosed ? 1.0 : 0.32, animate: true)

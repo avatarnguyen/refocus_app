@@ -200,7 +200,9 @@ class _CalendarWidgetState extends State<CalendarWidget> {
             }
           },
         ),
-      ].toColumn(crossAxisAlignment: CrossAxisAlignment.start).parent((page)),
+      ]
+          .toColumn(crossAxisAlignment: CrossAxisAlignment.start)
+          .parent(calendarPage),
     );
   }
 }
