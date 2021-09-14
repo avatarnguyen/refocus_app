@@ -38,70 +38,68 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
   }
 
   Stream<TodayState> _mapTodayLoadedToState(GetTodayEntries event) async* {
-    // try {
-    final _todayItems = <TodayEntry>[];
+    try {
+      final _todayItems = <TodayEntry>[];
 
-    final _startDateTime = event.date.copyWith(hour: 0, minute: 0, second: 0);
-    final _endDateTime =
-        _startDateTime.copyWith(hour: 23, minute: 59, second: 59);
+      final _startDateTime = event.date.copyWith(hour: 0, minute: 0, second: 0);
+      final _endDateTime =
+          _startDateTime.copyWith(hour: 23, minute: 59, second: 59);
 
-    final _calendarEvents = await getEventEntry(
-      DateRangeParams(
-        startDate: _startDateTime,
-        endDate: _endDateTime,
-      ),
-    );
-    // Get Task within specific DateTime Range
-    final _tasks = await getTasks(TaskParams(
-      dueDate: event.date,
-      startDate: event.date,
-    ));
+      final _calendarEvents = await getEventEntry(
+        DateRangeParams(
+          startDate: _startDateTime,
+          endDate: _endDateTime,
+        ),
+      );
+      // Get Task within specific DateTime Range
+      final _tasks = await getTasks(TaskParams(
+        dueDate: event.date,
+        startDate: event.date,
+      ));
 
-    yield* _tasks.fold((failure) async* {
-      yield TodayError(_mapFailureToMessage(failure));
-    }, (tasks) async* {
-      yield* _calendarEvents.fold((failure) async* {
+      yield* _tasks.fold((failure) async* {
         yield TodayError(_mapFailureToMessage(failure));
-      }, (events) async* {
-        print('[Today Bloc] $events');
-        final _entries = events
-            .map((event) => TodayEntry(
-                  id: event.id!,
-                  type: TodayEntryType.event,
-                  title: event.subject,
-                  startDateTime: event.startDateTime,
-                  endDateTime: event.endDateTime,
-                  calendarEventID: event.calendarId,
-                  color: event.colorId,
+      }, (tasks) async* {
+        yield* _calendarEvents.fold((failure) async* {
+          yield TodayError(_mapFailureToMessage(failure));
+        }, (events) async* {
+          print('[Today Bloc] $events');
+          final _entries = events
+              .map((event) => TodayEntry(
+                    id: event.id!,
+                    type: TodayEntryType.event,
+                    title: event.subject,
+                    startDateTime: event.startDateTime,
+                    endDateTime: event.endDateTime,
+                    calendarEventID: event.calendarId,
+                    color: event.colorId,
+                  ))
+              .toList();
+          _todayItems.addAll(_entries);
+        });
+        final _tastEntries = tasks
+            .map((task) => TodayEntry(
+                  id: task.id,
+                  type: TodayEntryType.task,
+                  title: task.title,
+                  startDateTime: (task.startDateTime != null &&
+                          task.startDateTime!.isNotEmpty)
+                      ? task.startDateTime!.first
+                      : null,
+                  endDateTime: (task.startDateTime != null &&
+                          task.startDateTime!.isNotEmpty)
+                      ? task.startDateTime!.first + 1.hours
+                      : null,
+                  // color: task.projectID
                 ))
             .toList();
-        _todayItems.addAll(_entries);
+        _todayItems.addAll(_tastEntries);
+        yield TodayLoaded(todayEntries: _todayItems);
       });
-      final _tastEntries = tasks
-          .map((task) => TodayEntry(
-                id: task.id,
-                type: TodayEntryType.task,
-                title: task.title,
-                startDateTime: (task.startDateTime != null &&
-                        task.startDateTime!.isNotEmpty)
-                    ? task.startDateTime!.first
-                    : task.dueDate,
-                endDateTime: (task.startDateTime != null &&
-                        task.startDateTime!.isNotEmpty)
-                    ? task.startDateTime!.first + 1.hours
-                    : task.dueDate != null
-                        ? task.dueDate! + 1.hours
-                        : null,
-                // color: task.projectID
-              ))
-          .toList();
-      _todayItems.addAll(_tastEntries);
-      yield TodayLoaded(todayEntries: _todayItems);
-    });
-    // } catch (e) {
-    //   print('[Error in Today Bloc]: $e');
-    //   yield const TodayError('Try to get todays entries failed');
-    // }
+    } catch (e) {
+      print('[Error in Today Bloc]: $e');
+      yield const TodayError('Try to get todays entries failed');
+    }
   }
 
   String _mapFailureToMessage(Failure failure) {

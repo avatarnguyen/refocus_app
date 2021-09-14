@@ -27,7 +27,7 @@ class _TodayPageState extends State<TodayPage> {
   bool showMonthView = false;
 
   String returnDate(DateTime date) {
-    return DateFormat.yMMMMEEEEd('de_DE').format(date);
+    return DateFormat.yMMMMEEEEd().format(date);
   }
 
   @override
@@ -57,16 +57,16 @@ class _TodayPageState extends State<TodayPage> {
             ),
           ].toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween),
           verticalSpaceRegular,
-          verticalSpaceRegular,
           [
             [
               PlatformText(
-                'Good Morning!',
+                _getGreeting(),
                 overflow: TextOverflow.fade,
-                style: context.textTheme.headline3!.copyWith(
+                style: context.textTheme.headline4!.copyWith(
                   fontWeight: FontWeight.w800,
                 ),
               ),
+              //TODO: Fetch Weather Info here
               verticalSpaceSmall,
               PlatformText(
                 returnDate(today),
@@ -101,39 +101,6 @@ class _TodayPageState extends State<TodayPage> {
             .toColumn(crossAxisAlignment: CrossAxisAlignment.start)
             .parent(headerTodayContainer),
         verticalSpaceRegular,
-        [
-          const LinearProgressIndicator(
-            value: 0.3,
-            minHeight: 8.0,
-            color: kcPrimary500,
-            backgroundColor: kcPrimary200,
-          )
-              .clipRRect(all: 4.0)
-              .parent(({required child}) => Flexible(child: child)),
-          horizontalSpaceSmall,
-          Text(
-            '30 %',
-            style: context.textTheme.subtitle1!.copyWith(color: Colors.black54),
-          )
-        ].toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween).parent(
-              ({required child}) => Container(
-                margin: const EdgeInsets.symmetric(horizontal: 8),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8.0,
-                ),
-                height: 32,
-                decoration: BoxDecoration(
-                  boxShadow: const [
-                    kShadowLightBase,
-                    kShadowLight60,
-                  ],
-                  borderRadius: BorderRadius.circular(8),
-                  color: Colors.white,
-                ),
-                child: child,
-              ),
-            ),
-        verticalSpaceSmall,
         //* Body: List View
         BlocProvider<TodayBloc>(
           create: (context) => getIt<TodayBloc>()
@@ -144,8 +111,21 @@ class _TodayPageState extends State<TodayPage> {
             child: TodayListWidget(),
           ),
         ),
-      ].toColumn(crossAxisAlignment: CrossAxisAlignment.start).parent((page)),
+      ].toColumn(crossAxisAlignment: CrossAxisAlignment.start).parent(page),
     );
+  }
+
+  String _getGreeting() {
+    final _currentHour = DateTime.now().hour;
+    if (_currentHour.isGreaterThan(11) && _currentHour.isLowerThan(18)) {
+      return 'Good Afternoon!';
+    } else if (_currentHour.isGreaterThan(5) && _currentHour.isLowerThan(12)) {
+      return 'Good Morning!';
+    } else if (_currentHour.isGreaterThan(17) && _currentHour.isLowerThan(22)) {
+      return 'Good Evening!';
+    } else {
+      return 'Good Night!';
+    }
   }
 }
 
@@ -186,6 +166,7 @@ class TodayListWidget extends StatelessWidget {
                   startDateTime: _entry.startDateTime,
                   endDateTime: _entry.endDateTime,
                   eventID: _entry.calendarEventID,
+                  projectOrCal: _entry.projectOrCal,
                 );
               },
             ),
@@ -216,6 +197,7 @@ class ListItemWidget extends StatelessWidget {
     this.color,
     this.eventID,
     this.taskID,
+    this.projectOrCal,
   }) : super(key: key);
 
   final String? title;
@@ -225,6 +207,7 @@ class ListItemWidget extends StatelessWidget {
   final String? color;
   final String? eventID;
   final String? taskID;
+  final String? projectOrCal;
 
   @override
   Widget build(BuildContext context) {
@@ -272,7 +255,7 @@ class ListItemWidget extends StatelessWidget {
           width: context.width - 84,
           padding: const EdgeInsets.symmetric(
             vertical: 8,
-            horizontal: 12,
+            horizontal: 10,
           ),
           decoration: BoxDecoration(
               color: _backgroudColor,
@@ -280,7 +263,7 @@ class ListItemWidget extends StatelessWidget {
           child: [
             [
               if (_isEvent)
-                Icon(Icons.calendar_today, color: _textColor)
+                Icon(Icons.calendar_today, color: _textColor, size: 22)
                     .paddingOnly(right: 10)
                     .gestures(onTap: () {
                   print('Select Item');
@@ -296,8 +279,9 @@ class ListItemWidget extends StatelessWidget {
                 overflow: TextOverflow.fade,
                 maxLines: 2,
                 textScaleFactor: context.textScaleFactor,
-                style: context.textTheme.headline5!.copyWith(
+                style: context.textTheme.bodyText1!.copyWith(
                   color: _textColor,
+                  // fontSize: kBodyTextSize,
                 ),
               ).expanded(),
               Icon(
@@ -307,33 +291,39 @@ class ListItemWidget extends StatelessWidget {
                 print('More Option');
               }),
             ].toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween),
-            verticalSpaceSmall,
+            verticalSpaceTiny,
             if (!_isEvent) const InsideTaskItem(),
             // if (!_isEvent) const InsideTaskItem(),
-            verticalSpaceTiny,
-            [
-              horizontalSpaceLarge,
-              if (!_isEvent)
+            // verticalSpaceTiny,
+            if (!_isEvent)
+              [
+                if (projectOrCal != null) horizontalSpaceLarge,
                 Icon(
                   Icons.arrow_drop_down,
                   color: _textColor,
                 ),
-              Chip(
-                backgroundColor: _chipColor,
-                visualDensity: const VisualDensity(
-                  vertical: VisualDensity.minimumDensity,
-                ),
-                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                ),
-                labelPadding: EdgeInsets.zero,
-                labelStyle: context.textTheme.caption!.copyWith(
-                  color: _textColor,
-                ),
-                label: const Text('Work'),
+                if (projectOrCal != null)
+                  Chip(
+                    backgroundColor: _chipColor,
+                    visualDensity: const VisualDensity(
+                      vertical: VisualDensity.minimumDensity,
+                      horizontal: VisualDensity.minimumDensity,
+                    ),
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                    ),
+                    labelPadding: EdgeInsets.zero,
+                    labelStyle: kXSmallStyleRegular.copyWith(
+                      color: _textColor,
+                    ),
+                    label: Text(projectOrCal!),
+                  )
+              ].toRow(
+                mainAxisAlignment: projectOrCal != null
+                    ? MainAxisAlignment.spaceBetween
+                    : MainAxisAlignment.center,
               )
-            ].toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween)
           ].toColumn(mainAxisSize: MainAxisSize.min),
         ),
       ].toRow(crossAxisAlignment: CrossAxisAlignment.start),
@@ -350,12 +340,13 @@ class InsideTaskItem extends StatelessWidget {
       const Icon(
         Icons.check_box_outline_blank,
         color: kcPrimary700,
+        size: 16,
       ),
       horizontalSpaceTiny,
       Text(
         'Task A Ajhdu lkjasdofj kjasdföljasoiejr jköldska jf',
         overflow: TextOverflow.ellipsis,
-        style: context.textTheme.subtitle1!.copyWith(
+        style: context.textTheme.caption!.copyWith(
           color: kcPrimary700,
         ),
       ).expanded(),
