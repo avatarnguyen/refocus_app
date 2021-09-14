@@ -165,10 +165,13 @@ class TodayListWidget extends StatelessWidget {
       builder: (context, state) {
         if (state is TodayLoaded) {
           final _entries =
-              state.todayEntries.sortedBy((entry) => entry.startDateTime!);
-          //TODO: Error occur when event is full day or no date exists
+              state.todayEntries; //.sortedBy((entry) => entry.startDateTime!);
+
+          //TODO: fix error
+
+          // ! Error occur when event is full day or no date exists
           return RefreshIndicator(
-            onRefresh: () async => await _pullToRefresh(context),
+            onRefresh: () async => _pullToRefresh(context),
             child: ListView.builder(
               itemCount: _entries.length,
               itemBuilder: (BuildContext context, int index) {
@@ -243,14 +246,18 @@ class ListItemWidget extends StatelessWidget {
           child: [
             verticalSpaceSmall,
             Text(
-              CustomDateUtils.returnTime(startDateTime!.toLocal()),
+              startDateTime != null
+                  ? CustomDateUtils.returnTime(startDateTime!.toLocal())
+                  : '',
               textAlign: TextAlign.end,
               style: context.textTheme.subtitle2!.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
             Text(
-              CustomDateUtils.returnTime(endDateTime!.toLocal()),
+              endDateTime != null
+                  ? CustomDateUtils.returnTime(endDateTime!.toLocal())
+                  : '',
               textAlign: TextAlign.end,
               style: context.textTheme.subtitle2,
             ),
@@ -270,17 +277,18 @@ class ListItemWidget extends StatelessWidget {
               borderRadius: const BorderRadius.all(Radius.circular(8))),
           child: [
             [
-              _isEvent
-                  ? Icon(Icons.calendar_today, color: _textColor)
-                      .paddingOnly(right: 10)
-                      .gestures(onTap: () {
-                      print('Select Item');
-                    })
-                  : Icon(Icons.done_all, color: _textColor)
-                      .paddingOnly(right: 10)
-                      .gestures(onTap: () {
-                      print('Select Item');
-                    }),
+              if (_isEvent)
+                Icon(Icons.calendar_today, color: _textColor)
+                    .paddingOnly(right: 10)
+                    .gestures(onTap: () {
+                  print('Select Item');
+                })
+              else
+                Icon(Icons.done_all, color: _textColor)
+                    .paddingOnly(right: 10)
+                    .gestures(onTap: () {
+                  print('Select Item');
+                }),
               Text(
                 title ?? '',
                 overflow: TextOverflow.fade,
@@ -299,7 +307,7 @@ class ListItemWidget extends StatelessWidget {
             ].toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween),
             verticalSpaceSmall,
             if (!_isEvent) const InsideTaskItem(),
-            if (!_isEvent) const InsideTaskItem(),
+            // if (!_isEvent) const InsideTaskItem(),
             verticalSpaceTiny,
             [
               horizontalSpaceLarge,

@@ -31,5 +31,6 @@ abstract class TaskRepository {
       ProjectEntry project);
 
   /// Query Task With Given Attribute
-  // TODO
+  Future<Either<Failure, List<TaskEntry>>> getFilteredTask(
+      {DateTime? dueDate, DateTime? startDate});
 }

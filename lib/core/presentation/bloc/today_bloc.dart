@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
+import 'package:dartx/dartx.dart';
 import 'package:equatable/equatable.dart';
 import 'package:injectable/injectable.dart';
 import 'package:refocus_app/constants/failure_message.dart';
@@ -9,8 +10,8 @@ import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/enum/today_entry_type.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/get_events_between.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/helpers/date_range_query_params.dart';
+import 'package:refocus_app/features/task/domain/usecases/helpers/task_params.dart';
 import 'package:refocus_app/features/task/domain/usecases/task/get_task.dart';
-import 'package:dartx/dartx.dart';
 import 'package:refocus_app/features/today/domain/today_entry.dart';
 
 part 'today_event.dart';
@@ -37,22 +38,28 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
   }
 
   Stream<TodayState> _mapTodayLoadedToState(GetTodayEntries event) async* {
-    try {
-      final _todayItems = <TodayEntry>[];
+    // try {
+    final _todayItems = <TodayEntry>[];
 
-      final _startDateTime = event.date.copyWith(hour: 0, minute: 0, second: 0);
-      final _endDateTime =
-          _startDateTime.copyWith(hour: 23, minute: 59, second: 59);
+    final _startDateTime = event.date.copyWith(hour: 0, minute: 0, second: 0);
+    final _endDateTime =
+        _startDateTime.copyWith(hour: 23, minute: 59, second: 59);
 
-      final _calendarEvents = await getEventEntry(
-        DateRangeParams(
-          startDate: _startDateTime,
-          endDate: _endDateTime,
-        ),
-      );
-      //TODO: Get Task within specific DateTime Range
-      // final _tasks = await getTasks();
+    final _calendarEvents = await getEventEntry(
+      DateRangeParams(
+        startDate: _startDateTime,
+        endDate: _endDateTime,
+      ),
+    );
+    // Get Task within specific DateTime Range
+    final _tasks = await getTasks(TaskParams(
+      dueDate: event.date,
+      startDate: event.date,
+    ));
 
+    yield* _tasks.fold((failure) async* {
+      yield TodayError(_mapFailureToMessage(failure));
+    }, (tasks) async* {
       yield* _calendarEvents.fold((failure) async* {
         yield TodayError(_mapFailureToMessage(failure));
       }, (events) async* {
@@ -69,12 +76,30 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
                 ))
             .toList();
         _todayItems.addAll(_entries);
-        yield TodayLoaded(todayEntries: _todayItems);
       });
-    } catch (e) {
-      log(e.toString());
-      yield const TodayError('Try to get todays entries failed');
-    }
+      final _tastEntries = tasks
+          .map((task) => TodayEntry(
+                id: task.id,
+                type: TodayEntryType.task,
+                title: task.title,
+                startDateTime: (task.startDateTime != null &&
+                        task.startDateTime!.isNotEmpty)
+                    ? task.startDateTime!.first
+                    : null,
+                endDateTime: (task.startDateTime != null &&
+                        task.startDateTime!.isNotEmpty)
+                    ? task.startDateTime!.first + 1.hours
+                    : null,
+                // color: task.projectID
+              ))
+          .toList();
+      _todayItems.addAll(_tastEntries);
+      yield TodayLoaded(todayEntries: _todayItems);
+    });
+    // } catch (e) {
+    //   print('[Error in Today Bloc]: $e');
+    //   yield const TodayError('Try to get todays entries failed');
+    // }
   }
 
   String _mapFailureToMessage(Failure failure) {

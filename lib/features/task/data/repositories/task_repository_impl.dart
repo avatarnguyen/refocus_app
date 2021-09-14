@@ -161,4 +161,28 @@ class TaskRepositoryImpl implements TaskRepository {
       return Left(ServerFailure());
     }
   }
+
+  @override
+  Future<Either<Failure, List<TaskEntry>>> getFilteredTask(
+      {DateTime? dueDate, DateTime? startDate}) async {
+    final log = logger(TaskRepositoryImpl);
+
+    try {
+      final _todos = await remoteDataSource.getRemoteTask(
+        startTime: startDate,
+        dueDate: dueDate,
+      );
+      log.v('getFilteredTask - Todo: $_todos');
+
+      final _tasks = _todos
+          .map((todo) => TaskEntry.fromJson(
+                todo.toJson(),
+              ))
+          .toList();
+      return Right(_tasks);
+    } on ServerException catch (e) {
+      log.e(e);
+      return Left(ServerFailure());
+    }
+  }
 }
