@@ -85,11 +85,13 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
                 startDateTime: (task.startDateTime != null &&
                         task.startDateTime!.isNotEmpty)
                     ? task.startDateTime!.first
-                    : null,
+                    : task.dueDate,
                 endDateTime: (task.startDateTime != null &&
                         task.startDateTime!.isNotEmpty)
                     ? task.startDateTime!.first + 1.hours
-                    : null,
+                    : task.dueDate != null
+                        ? task.dueDate! + 1.hours
+                        : null,
                 // color: task.projectID
               ))
           .toList();

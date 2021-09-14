@@ -164,12 +164,15 @@ class TodayListWidget extends StatelessWidget {
     return BlocBuilder<TodayBloc, TodayState>(
       builder: (context, state) {
         if (state is TodayLoaded) {
-          final _entries =
-              state.todayEntries; //.sortedBy((entry) => entry.startDateTime!);
+          final _todayEntries = state.todayEntries;
+          final _fetchedEntries =
+              _todayEntries.filter((entry) => entry.startDateTime != null);
+          final _allDayEntries =
+              _todayEntries.filter((entry) => entry.startDateTime == null);
 
-          //TODO: fix error
+          final _entries = _allDayEntries +
+              _fetchedEntries.sortedBy((entry) => entry.startDateTime!);
 
-          // ! Error occur when event is full day or no date exists
           return RefreshIndicator(
             onRefresh: () async => _pullToRefresh(context),
             child: ListView.builder(
@@ -226,9 +229,8 @@ class ListItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final _isEvent = type == TodayEntryType.event;
-    final _isPassed = endDateTime != null
-        ? endDateTime!.compareTo(DateTime.now()) <= 0
-        : false;
+    final _isPassed =
+        endDateTime != null && endDateTime!.compareTo(DateTime.now()) <= 0;
 
     final _color = _isPassed
         ? Colors.grey.shade600
@@ -319,13 +321,11 @@ class ListItemWidget extends StatelessWidget {
               Chip(
                 backgroundColor: _chipColor,
                 visualDensity: const VisualDensity(
-                  horizontal: 0.0,
                   vertical: VisualDensity.minimumDensity,
                 ),
                 materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
-                  vertical: 0,
                 ),
                 labelPadding: EdgeInsets.zero,
                 labelStyle: context.textTheme.caption!.copyWith(
