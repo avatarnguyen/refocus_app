@@ -102,7 +102,7 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
     if (item is ProjectEntry) {
       return item.title?.trim() ?? '';
     } else if (item is PrioType) {
-      var _dueDateString = <String>['Low Prio', 'Medium Prio', 'High Prio'];
+      final _dueDateString = <String>['Low Prio', 'Medium Prio', 'High Prio'];
       return _dueDateString[item.index];
     } else {
       return item as String;
@@ -133,7 +133,7 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
               ),
             ),
             selected:
-                (_settingOption.projectEntry == _item || _currentPrio == _item),
+                _settingOption.projectEntry == _item || _currentPrio == _item,
             onSelected: (bool selected) {
               setState(() {
                 if (_item is ProjectEntry) {

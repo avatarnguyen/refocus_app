@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:refocus_app/core/presentation/helper/custom_text_controller.dart';
 import 'package:refocus_app/core/presentation/helper/setting_option.dart';
 import 'package:refocus_app/core/presentation/helper/text_stream.dart';
+import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/core/util/helpers/regexp_matcher.dart';
 import 'package:refocus_app/core/util/ui/style_helpers.dart';
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
@@ -19,14 +20,10 @@ class AddTextFieldWidget extends StatefulWidget {
 }
 
 class _AddTextFieldWidgetState extends State<AddTextFieldWidget> {
-  // final _textController = TextEditingController();
   final _textStream = getIt<TextStream>();
   final _settingsOption = getIt<SettingOption>();
 
-  late StreamSubscription<ProjectEntry?> _projectSubscription;
-  late StreamSubscription<String> _textSubscription;
-
-  ProjectEntry? _currentProject;
+  // late StreamSubscription<String> _textSubscription;
 
   late RichTextController _textController;
 
@@ -53,30 +50,22 @@ class _AddTextFieldWidgetState extends State<AddTextFieldWidget> {
           print(matches);
           // Do sth with matches
         });
-    //TODO: Text Stream Bug
-    //! Bug: When Deleting Text, the cursor go to the end
-    _textSubscription = _textStream.getTextStream.listen((text) {
-      print(text);
-      _textController.text = text;
-      _textController.selection = TextSelection.fromPosition(
-          TextPosition(offset: _textController.text.length));
-    });
-    _projectSubscription =
-        _settingsOption.projectStream.listen(_projectEntryReceived);
-    super.initState();
-  }
 
-  void _projectEntryReceived(ProjectEntry? entry) {
-    setState(() {
-      _currentProject = entry;
-    });
+    // _textSubscription = _textStream.getTextStream.listen((text) {
+    //   final _currentTxt = _textController.text;
+    //   if (_currentTxt != text) {
+    //     _textController.text = text;
+    //     _textController.selection = TextSelection.fromPosition(
+    //         TextPosition(offset: _textController.text.length));
+    //   }
+    // });
+
+    super.initState();
   }
 
   @override
   void dispose() {
-    // _textStream.dispose();
-    _textSubscription.cancel();
-    _projectSubscription.cancel();
+    // _textSubscription.cancel();
     super.dispose();
   }
 
@@ -93,15 +82,56 @@ class _AddTextFieldWidgetState extends State<AddTextFieldWidget> {
           ],
         ),
         child: [
-          Text(
-            _currentProject?.title ?? 'Inbox',
-            style: context.textTheme.subtitle1!.copyWith(
-              decoration: TextDecoration.underline,
-              color: StyleUtils.getColorFromString(
-                  _currentProject?.color ?? '#8879FC'),
-            ),
-          ).padding(top: 16),
+          StreamBuilder<ProjectEntry?>(
+              stream: _settingsOption.projectStream,
+              builder: (context, snapshot) {
+                final _project = snapshot.data;
+                return Text(
+                  _project?.title ?? 'Inbox',
+                  style: context.textTheme.subtitle1!.copyWith(
+                    decoration: TextDecoration.underline,
+                    color: StyleUtils.getColorFromString(
+                        _project?.color ?? '#8879FC'),
+                  ),
+                ).padding(top: 16);
+              }),
           _buildTextInput(context),
+          [
+            StreamBuilder<DateTime?>(
+                stream: _settingsOption.dueDateStream,
+                builder: (context, snapshot) {
+                  final _dueDate = snapshot.data;
+                  return Text(
+                    _dueDate != null
+                        ? ' ${CustomDateUtils.returnDateAndMonth(_dueDate)} '
+                        : '',
+                    style: context.textTheme.subtitle2!.copyWith(
+                      color: kcPrimary700,
+                      backgroundColor: kcPrimary200,
+                    ),
+                  ).padding(left: 8, right: 8);
+                }),
+            StreamBuilder<DateTime?>(
+                stream: _settingsOption.reminderStream,
+                builder: (context, snapshot) {
+                  final _reminder = snapshot.data;
+                  if (_reminder != null) {
+                    final _date = CustomDateUtils.returnDateWithDay(_reminder);
+                    final _time = CustomDateUtils.returnTime(_reminder);
+                    return Text(
+                      ' $_date $_time ',
+                      style: context.textTheme.subtitle2!.copyWith(
+                        color: kcSecondary700,
+                        backgroundColor: kcSecondary200,
+                      ),
+                    ).padding(right: 8);
+                  } else {
+                    return const SizedBox.shrink();
+                  }
+                }),
+          ]
+              .toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween)
+              .padding(bottom: 8, top: 4)
         ].toColumn(mainAxisSize: MainAxisSize.min));
   }
 

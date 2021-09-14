@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
+import 'package:intl/intl.dart';
 import 'package:refocus_app/constants/routes_name.dart';
 import 'package:refocus_app/core/presentation/pages/home_page.dart';
 import 'package:refocus_app/core/presentation/pages/quickadd_page.dart';
@@ -34,6 +35,7 @@ class _AppState extends State<App> {
   @override
   void initState() {
     super.initState();
+    Intl.defaultLocale = 'en_US';
   }
 
   @override

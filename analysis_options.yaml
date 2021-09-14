@@ -12,6 +12,7 @@ analyzer:
     invalid_assignment: warning
     implicit_dynamic_type: warning
     implicit_dynamic_list_literal: warning
+    implicit_dynamic_method: ignore
 linter:
   rules:
     public_member_api_docs: false

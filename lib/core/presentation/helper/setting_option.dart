@@ -26,14 +26,34 @@ class SettingOption {
     _projectSubject.add(entry);
   }
 
+  //* Due Date Stream
+  final BehaviorSubject<DateTime?> _dueDateSubject =
+      BehaviorSubject<DateTime?>.seeded(null);
+  Stream<DateTime?> get dueDateStream => _dueDateSubject.stream;
+
+  void broadCastCurrentDueDateEntry(DateTime? entry) {
+    _dueDateSubject.add(entry);
+    _dueDate = entry;
+  }
+
   DateTime? _dueDate;
   DateTime? get dueDate => _dueDate;
   set dueDate(DateTime? entry) => _dueDate = entry;
 
+  //* Reminder DateTime Stream
+  final BehaviorSubject<DateTime?> _reminderSubject =
+      BehaviorSubject<DateTime?>.seeded(null);
+  Stream<DateTime?> get reminderStream => _reminderSubject.stream;
+
+  void broadCastCurrentReminderEntry(DateTime? entry) {
+    _reminderSubject.add(entry);
+    _remindDate = entry;
+  }
+
   DateTime? _remindDate;
   DateTime? get remindDate => _remindDate;
   set remindDate(DateTime? entry) => _remindDate = entry;
-  TimeOfDay? _remindTime;
-  TimeOfDay? get remindTime => _remindTime;
-  set remindTime(TimeOfDay? entry) => _remindTime = entry;
+  // TimeOfDay? _remindTime;
+  // TimeOfDay? get remindTime => _remindTime;
+  // set remindTime(TimeOfDay? entry) => _remindTime = entry;
 }
