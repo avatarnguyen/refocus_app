@@ -37,8 +37,9 @@ void main() async {
 
   group('getLastGCalEntry', () {
     final tGCalEntryModel = GCalEventEntryModel.fromJson(
-        json.decode(fixture('google_calendar_entry_cached.json')));
-    final tCalendarEventEntry = tGCalEntryModel as CalendarEventEntry;
+        json.decode(fixture('google_calendar_entry_cached.json'))
+            as Map<String, dynamic>);
+    final tCalendarEventEntry = tGCalEntryModel;
     test(
       'should return calendar entry from Hive Box when there is one in cache',
       () async {
@@ -66,7 +67,7 @@ void main() async {
         final result = await dataSource.getLastCalendarEventEntry();
 
         // assert
-        expect(result, equals([]));
+        expect(result, equals(<GCalEventEntryModel>[]));
       },
     );
   });
