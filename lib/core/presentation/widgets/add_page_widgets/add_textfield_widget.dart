@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:get/get.dart';
@@ -35,21 +33,22 @@ class _AddTextFieldWidgetState extends State<AddTextFieldWidget> {
   @override
   void initState() {
     _textController = RichTextController(
-        patternMap: {
-          // Matching for Due Date
-          _matcherDueDate: const TextStyle(color: kcPrimary500),
-          // Matcher for Reminder
-          _matcherRemindDate: const TextStyle(color: kcSecondary500),
-          _matcherRemindTime: const TextStyle(color: kcSecondary500),
-          // /
-          RegExp(r'\B/[a-zA-Z0-9]+\b'): const TextStyle(color: Colors.green),
-          // '!' Matcher for Prio
-          _matcherPrio: const TextStyle(color: Colors.red),
-        },
-        onMatch: (List<String> matches) {
-          print(matches);
-          // Do sth with matches
-        });
+      patternMap: {
+        // Matching for Due Date
+        _matcherDueDate: const TextStyle(color: kcPrimary500),
+        // Matcher for Reminder
+        _matcherRemindDate: const TextStyle(color: kcSecondary500),
+        _matcherRemindTime: const TextStyle(color: kcSecondary500),
+        // /
+        RegExp(r'\B/[a-zA-Z0-9]+\b'): const TextStyle(color: Colors.green),
+        // '!' Matcher for Prio
+        _matcherPrio: const TextStyle(color: Colors.red),
+      },
+      onMatch: (List<String> matches) {
+        print(matches);
+        //TODO: Do sth with matches
+      },
+    );
 
     // _textSubscription = _textStream.getTextStream.listen((text) {
     //   final _currentTxt = _textController.text;

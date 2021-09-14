@@ -5,7 +5,6 @@ part of 'task_entry.dart';
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
-// ignore_for:file: implicit_dynamic_parameter
 
 _$_TaskEntry _$$_TaskEntryFromJson(Map<String, dynamic> json) => _$_TaskEntry(
       id: json['id'] as String,
@@ -13,17 +12,13 @@ _$_TaskEntry _$$_TaskEntryFromJson(Map<String, dynamic> json) => _$_TaskEntry(
       projectID: json['projectID'] as String,
       title: json['title'] as String?,
       description: json['description'] as String?,
-      dueDate: json['dueDate'] == null
-          ? null
-          : DateTime.parse(json['dueDate'] as String),
-      startDateTime: (json['startDateTime'] as List<dynamic>?)
-          ?.map((dynamic e) => DateTime.parse(e as String))
-          .toList(),
-      endDateTime: (json['endDateTime'] as List<dynamic>?)
-          ?.map((dynamic e) => DateTime.parse(e as String))
-          .toList(),
+      dueDate: const DateTimeSerialiser().fromJson(json['dueDate'] as String?),
+      startDateTime: const ListDateTimeSerialiser()
+          .fromJson(json['startDateTime'] as List<String>?),
+      endDateTime: const ListDateTimeSerialiser()
+          .fromJson(json['endDateTime'] as List<String>?),
       recurrentDays: (json['recurrentDays'] as List<dynamic>?)
-          ?.map((dynamic e) => e as String)
+          ?.map((e) => e as String)
           .toList(),
       priority: json['priority'] as int?,
     );
@@ -35,11 +30,11 @@ Map<String, dynamic> _$$_TaskEntryToJson(_$_TaskEntry instance) =>
       'projectID': instance.projectID,
       'title': instance.title,
       'description': instance.description,
-      'dueDate': instance.dueDate?.toIso8601String(),
+      'dueDate': const DateTimeSerialiser().toJson(instance.dueDate),
       'startDateTime':
-          instance.startDateTime?.map((e) => e.toIso8601String()).toList(),
+          const ListDateTimeSerialiser().toJson(instance.startDateTime),
       'endDateTime':
-          instance.endDateTime?.map((e) => e.toIso8601String()).toList(),
+          const ListDateTimeSerialiser().toJson(instance.endDateTime),
       'recurrentDays': instance.recurrentDays,
       'priority': instance.priority,
     };

@@ -39,8 +39,9 @@ class TaskRepositoryImpl implements TaskRepository {
     final log = logger(TaskRepositoryImpl);
     try {
       for (final task in tasks) {
+        // log.i('Task: ${task.toJson()}');
         final _todo = Todo.fromJson(task.toJson());
-        log.i('Created Task: ${_todo.toJson()}');
+        log.i('Created Todo: ${_todo.toJson()}');
 
         await remoteDataSource.createOrUpdateRemoteTask(_todo);
       }

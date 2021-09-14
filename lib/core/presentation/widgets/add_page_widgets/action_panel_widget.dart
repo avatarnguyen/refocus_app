@@ -188,7 +188,7 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
           // Adding project (default: Inbox)
           _buildActionItem(Icons.folder,
                   color: _onSelectingProject
-                      ? context.theme.accentColor
+                      ? context.theme.colorScheme.secondary
                       : kcSecondary200)
               .gestures(onTap: () {
             setState(() {
@@ -201,7 +201,7 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
           //* Adding due dates and reminder
           _buildActionItem(Icons.calendar_today,
                   color: _onSelectingDueDate
-                      ? context.theme.accentColor
+                      ? context.theme.colorScheme.secondary
                       : kcSecondary200)
               .gestures(onTap: () {
             setState(() {
@@ -272,7 +272,9 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
               );
             }
             if (_settingOption.type == TodayEntryType.task) {
-              print('Add New Task');
+              final _startDateTime = _settingOption.remindDate;
+              final _endDateTime =
+                  _settingOption.remindDate ?? _settingOption.dueDate;
               context.read<TaskBloc>().add(
                     CreateTaskEntriesEvent(
                       params: [
@@ -280,18 +282,22 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
                           task: TaskEntry(
                             id: uuid.v1(),
                             isCompleted: false,
-                            dueDate: DateTime.now(),
+                            dueDate: _settingOption.dueDate,
                             projectID:
                                 _settingOption.projectEntry?.id ?? 'inbox_2021',
                             title: textData,
-                            startDateTime: [DateTime.now()],
+                            startDateTime: _startDateTime != null
+                                ? [_startDateTime]
+                                : null,
+                            // endDateTime:
+                            //     _endDateTime != null ? [_endDateTime] : null,
                           ),
                         ),
                       ],
                     ),
                   );
             }
-            Get.back<dynamic>();
+            Get.back();
           },
         ),
         // horizontalSpaceTiny,

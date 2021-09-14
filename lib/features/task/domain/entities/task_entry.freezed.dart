@@ -27,9 +27,9 @@ class _$TaskEntryTearOff {
       required String projectID,
       String? title,
       String? description,
-      DateTime? dueDate,
-      List<DateTime>? startDateTime,
-      List<DateTime>? endDateTime,
+      @DateTimeSerialiser() DateTime? dueDate,
+      @ListDateTimeSerialiser() List<DateTime>? startDateTime,
+      @ListDateTimeSerialiser() List<DateTime>? endDateTime,
       List<String>? recurrentDays,
       int? priority}) {
     return _TaskEntry(
@@ -61,8 +61,11 @@ mixin _$TaskEntry {
   String get projectID => throw _privateConstructorUsedError;
   String? get title => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
+  @DateTimeSerialiser()
   DateTime? get dueDate => throw _privateConstructorUsedError;
+  @ListDateTimeSerialiser()
   List<DateTime>? get startDateTime => throw _privateConstructorUsedError;
+  @ListDateTimeSerialiser()
   List<DateTime>? get endDateTime => throw _privateConstructorUsedError;
   List<String>? get recurrentDays => throw _privateConstructorUsedError;
   int? get priority => throw _privateConstructorUsedError;
@@ -83,9 +86,9 @@ abstract class $TaskEntryCopyWith<$Res> {
       String projectID,
       String? title,
       String? description,
-      DateTime? dueDate,
-      List<DateTime>? startDateTime,
-      List<DateTime>? endDateTime,
+      @DateTimeSerialiser() DateTime? dueDate,
+      @ListDateTimeSerialiser() List<DateTime>? startDateTime,
+      @ListDateTimeSerialiser() List<DateTime>? endDateTime,
       List<String>? recurrentDays,
       int? priority});
 }
@@ -168,9 +171,9 @@ abstract class _$TaskEntryCopyWith<$Res> implements $TaskEntryCopyWith<$Res> {
       String projectID,
       String? title,
       String? description,
-      DateTime? dueDate,
-      List<DateTime>? startDateTime,
-      List<DateTime>? endDateTime,
+      @DateTimeSerialiser() DateTime? dueDate,
+      @ListDateTimeSerialiser() List<DateTime>? startDateTime,
+      @ListDateTimeSerialiser() List<DateTime>? endDateTime,
       List<String>? recurrentDays,
       int? priority});
 }
@@ -251,9 +254,9 @@ class _$_TaskEntry implements _TaskEntry {
       required this.projectID,
       this.title,
       this.description,
-      this.dueDate,
-      this.startDateTime,
-      this.endDateTime,
+      @DateTimeSerialiser() this.dueDate,
+      @ListDateTimeSerialiser() this.startDateTime,
+      @ListDateTimeSerialiser() this.endDateTime,
       this.recurrentDays,
       this.priority});
 
@@ -271,10 +274,13 @@ class _$_TaskEntry implements _TaskEntry {
   @override
   final String? description;
   @override
+  @DateTimeSerialiser()
   final DateTime? dueDate;
   @override
+  @ListDateTimeSerialiser()
   final List<DateTime>? startDateTime;
   @override
+  @ListDateTimeSerialiser()
   final List<DateTime>? endDateTime;
   @override
   final List<String>? recurrentDays;
@@ -352,9 +358,9 @@ abstract class _TaskEntry implements TaskEntry {
       required String projectID,
       String? title,
       String? description,
-      DateTime? dueDate,
-      List<DateTime>? startDateTime,
-      List<DateTime>? endDateTime,
+      @DateTimeSerialiser() DateTime? dueDate,
+      @ListDateTimeSerialiser() List<DateTime>? startDateTime,
+      @ListDateTimeSerialiser() List<DateTime>? endDateTime,
       List<String>? recurrentDays,
       int? priority}) = _$_TaskEntry;
 
@@ -372,10 +378,13 @@ abstract class _TaskEntry implements TaskEntry {
   @override
   String? get description => throw _privateConstructorUsedError;
   @override
+  @DateTimeSerialiser()
   DateTime? get dueDate => throw _privateConstructorUsedError;
   @override
+  @ListDateTimeSerialiser()
   List<DateTime>? get startDateTime => throw _privateConstructorUsedError;
   @override
+  @ListDateTimeSerialiser()
   List<DateTime>? get endDateTime => throw _privateConstructorUsedError;
   @override
   List<String>? get recurrentDays => throw _privateConstructorUsedError;
