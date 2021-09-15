@@ -10,6 +10,7 @@ import 'package:refocus_app/core/presentation/widgets/today_list_item.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart' as custom_log;
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/features/calendar/presentation/widgets/widgets.dart';
+import 'package:refocus_app/features/today/domain/today_entry.dart';
 import 'package:refocus_app/injection.dart';
 
 class TodayPage extends StatefulWidget {
@@ -54,7 +55,7 @@ class _TodayPageState extends State<TodayPage> {
                 size: 26,
                 color: kcPrimary500,
               ),
-            ),
+            )
           ].toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween),
           verticalSpaceRegular,
           [
@@ -130,10 +131,17 @@ class _TodayPageState extends State<TodayPage> {
   }
 }
 
-class TodayListWidget extends StatelessWidget {
+class TodayListWidget extends StatefulWidget {
   const TodayListWidget({
     Key? key,
   }) : super(key: key);
+
+  @override
+  State<TodayListWidget> createState() => _TodayListWidgetState();
+}
+
+class _TodayListWidgetState extends State<TodayListWidget> {
+  final _entries = <TodayEntry>[];
 
   Future<void> _pullToRefresh(BuildContext context) async {
     context.read<TodayBloc>().add(GetTodayEntries(DateTime.now()));
@@ -144,31 +152,39 @@ class TodayListWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<TodayBloc, TodayState>(
       builder: (context, state) {
-        if (state is TodayLoaded) {
-          final _todayEntries = state.todayEntries;
-          final _fetchedEntries =
-              _todayEntries.filter((entry) => entry.startDateTime != null);
-          final _allDayEntries =
-              _todayEntries.filter((entry) => entry.startDateTime == null);
+        var _todayLength = 0;
 
-          final _entries = _allDayEntries +
-              _fetchedEntries.sortedBy((entry) => entry.startDateTime!);
+        if (state is TodayLoaded) {
+          // Load Tomorrow Events
+          if (state.tomorrowEntries != null) {
+            _entries.clear();
+
+            final _todayEntries = state.todayEntries;
+            final _filteredTodayEntries = _getFilteredEntries(_todayEntries);
+            _entries.addAll(_filteredTodayEntries);
+
+            _todayLength = _filteredTodayEntries.length;
+
+            final _tomorrowEntries = state.tomorrowEntries;
+            final _filteredTmrEntries = _getFilteredEntries(_tomorrowEntries!);
+            _entries.addAll(_filteredTmrEntries);
+          } else {
+            context.read<TodayBloc>().add(GetTomorrowEntries(1.days.fromNow));
+          }
 
           return RefreshIndicator(
             onRefresh: () async => _pullToRefresh(context),
             child: ListView.builder(
-              // padding: const EdgeInsets.only(right: 4),
               itemCount: _entries.length + 2,
               itemBuilder: (BuildContext context, int index) {
                 if (index == 0) {
                   return const TodayListHeader(text: 'Today');
                 }
-
-                if (index == (_entries.length + 1)) {
+                if (index == (_todayLength + 1)) {
                   return const TodayListHeader(text: 'Tomorrow');
                 }
 
-                index -= 1;
+                index = (index < _todayLength + 1) ? index - 1 : index - 2;
                 final _entry = _entries[index];
                 return ListItemWidget(
                   title: _entry.title,
@@ -183,7 +199,7 @@ class TodayListWidget extends StatelessWidget {
             ),
           );
         } else if (state is TodayLoading) {
-          return const LoadingWidget();
+          return const FullScreenLoadingWidget();
         } else if (state is TodayError) {
           return MessageDisplay(
             message: state.message,
@@ -195,6 +211,16 @@ class TodayListWidget extends StatelessWidget {
         }
       },
     );
+  }
+
+  List<TodayEntry> _getFilteredEntries(List<TodayEntry> entries) {
+    final _fetchedEntries =
+        entries.filter((TodayEntry entry) => entry.startDateTime != null);
+    final _allDayEntries =
+        entries.filter((entry) => entry.startDateTime == null);
+
+    return _allDayEntries +
+        _fetchedEntries.sortedBy((entry) => entry.startDateTime!);
   }
 }
 
@@ -212,11 +238,11 @@ class TodayListHeader extends StatelessWidget {
       width: context.width,
       child: Text(
         text,
-        style: context.textTheme.headline4!.copyWith(
+        style: context.textTheme.headline5!.copyWith(
           fontWeight: FontWeight.bold,
           color: context.theme.colorScheme.primary,
         ),
-      ).padding(top: 4, bottom: 4, left: 8),
+      ).padding(top: 8, bottom: 4, left: 8),
     );
   }
 }

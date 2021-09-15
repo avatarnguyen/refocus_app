@@ -28,8 +28,8 @@ void main() {
       'should return a valid model from JSON google calendar entry',
       () {
         // arrange
-        final Map<String, dynamic> jsonMap =
-            json.decode(fixture('google_calendar_entry.json'));
+        final jsonMap = json.decode(fixture('google_calendar_entry.json'))
+            as Map<String, dynamic>;
         // act
         final result = GCalEventEntryModel.fromJson(jsonMap);
 

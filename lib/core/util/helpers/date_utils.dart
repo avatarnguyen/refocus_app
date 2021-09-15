@@ -1,4 +1,5 @@
 import 'package:intl/intl.dart';
+import 'package:time/src/extensions.dart';
 
 class CustomDateUtils {
   // TODO: Change TimeZone
@@ -21,6 +22,14 @@ class CustomDateUtils {
 
   static String returnDateWithDay(DateTime date) {
     return DateFormat.yMEd().format(date);
+  }
+
+  static DateTime getBeginngOfDay(DateTime date) {
+    return date.copyWith(hour: 0, minute: 0, second: 0);
+  }
+
+  static DateTime getEndOfDay(DateTime date) {
+    return date.copyWith(hour: 23, minute: 59, second: 59);
   }
 
   /// The last day of a given month

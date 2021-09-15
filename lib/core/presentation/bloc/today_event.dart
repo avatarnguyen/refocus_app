@@ -16,3 +16,12 @@ class GetTodayEntries extends TodayEvent {
   @override
   List<Object> get props => [date];
 }
+
+class GetTomorrowEntries extends TodayEvent {
+  const GetTomorrowEntries(this.date);
+
+  final DateTime date;
+
+  @override
+  List<Object> get props => [date];
+}

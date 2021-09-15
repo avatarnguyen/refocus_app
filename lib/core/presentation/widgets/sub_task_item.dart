@@ -23,7 +23,7 @@ class InsideTaskItem extends StatelessWidget {
           color: kcPrimary700,
         ),
       ).expanded(),
-    ].toRow().paddingOnly(left: 34, right: 16).gestures(onTap: () {
+    ].toRow().paddingOnly(left: 30, right: 16).gestures(onTap: () {
       print('Check');
     });
   }

@@ -11,7 +11,22 @@ class LoadingWidget extends StatelessWidget {
       height: MediaQuery.of(context).size.height / 3,
       width: MediaQuery.of(context).size.height / 3,
       child: const Center(
-        child: CircularProgressIndicator(),
+        child: CircularProgressIndicator.adaptive(),
+      ),
+    );
+  }
+}
+
+class FullScreenLoadingWidget extends StatelessWidget {
+  const FullScreenLoadingWidget({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const SizedBox(
+      child: Center(
+        child: CircularProgressIndicator.adaptive(),
       ),
     );
   }

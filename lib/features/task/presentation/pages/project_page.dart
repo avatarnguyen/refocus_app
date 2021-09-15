@@ -2,14 +2,14 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
+import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/features/calendar/presentation/widgets/widgets.dart';
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
 import 'package:refocus_app/features/task/presentation/bloc/project_bloc.dart';
-import 'package:refocus_app/core/util/ui/ui_helper.dart';
-import 'package:get/get.dart';
 import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
 import 'package:refocus_app/features/task/presentation/pages/task_page.dart';
-import 'package:refocus_app/injection.dart';
+import 'package:refocus_app/models/ModelProvider.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
 import 'package:uuid/uuid.dart';
 
@@ -39,49 +39,18 @@ class _ProjectPageState extends State<ProjectPage> {
         if (state is ProjectLoaded) {
           final _projects = state.project;
           return ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: _projects.length,
-              itemBuilder: (context, index) {
-                final _project = _projects[index];
-                final _color =
-                    StyleUtils.getColorFromString(_project.color ?? '#8879FC');
-                final _backgroundColor = StyleUtils.darken(_color);
-                const _textColor = Colors.white;
-
-                return [
-                  Text(
-                    _project.title!,
-                    style: context.textTheme.bodyText1!.copyWith(
-                      color: _textColor,
-                    ),
-                  ),
-                  Chip(
-                    labelPadding: EdgeInsets.zero,
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    visualDensity:
-                        const VisualDensity(horizontal: 0.0, vertical: -2),
-                    label: Text('10', style: context.textTheme.subtitle1),
-                  ),
-                ]
-                    .toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween)
-                    .paddingAll(16)
-                    .ripple()
-                    .card(
-                      color: _backgroundColor,
-                      elevation: 2,
-                      margin: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    )
-                    .gestures(
-                        onTap: () => showTaskBottomSheet(context, _project));
-              });
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: _projects.length + 1,
+            itemBuilder: (context, index) {
+              if (index == 0) {
+                return const ProjectItem();
+              }
+              index -= 1;
+              final _project = _projects[index];
+              return ProjectItem(project: _project);
+            },
+          );
         } else if (state is ProjectLoading) {
           return progressIndicator;
         } else {
@@ -91,6 +60,65 @@ class _ProjectPageState extends State<ProjectPage> {
         }
       },
     );
+  }
+}
+
+class ProjectItem extends StatefulWidget {
+  const ProjectItem({Key? key, this.project}) : super(key: key);
+
+  final ProjectEntry? project;
+
+  @override
+  State<ProjectItem> createState() => _ProjectItemState();
+}
+
+class _ProjectItemState extends State<ProjectItem> {
+  late ProjectEntry _currentProject;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentProject = widget.project ??
+        const ProjectEntry(title: 'Inbox', id: 'inbox_2021', color: '#8879FC');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final _color =
+        StyleUtils.getColorFromString(_currentProject.color ?? '#8879FC');
+    final _backgroundColor = StyleUtils.darken(_color);
+    const _textColor = Colors.white;
+
+    return [
+      Text(
+        _currentProject.title!,
+        style: context.textTheme.bodyText1!.copyWith(
+          color: _textColor,
+        ),
+      ),
+      Chip(
+        labelPadding: EdgeInsets.zero,
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        visualDensity: const VisualDensity(vertical: -2),
+        label: Text('10', style: context.textTheme.subtitle1),
+      ),
+    ]
+        .toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween)
+        .paddingAll(16)
+        .ripple()
+        .card(
+          color: _backgroundColor,
+          elevation: 2,
+          margin: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 8,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        )
+        .gestures(onTap: () => showTaskBottomSheet(context, _currentProject));
   }
 
   void showTaskBottomSheet(
