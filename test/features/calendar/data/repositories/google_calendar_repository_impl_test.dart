@@ -71,7 +71,7 @@ void main() {
         // arrange
         when(() => mockRemoteDataSource.addRemoteGoogleEvent(
                 eventModel: tGoogleCalendarEntryModel))
-            .thenAnswer((_) async => const Right(unit));
+            .thenAnswer((_) async => const Right<dynamic, Unit>(unit));
         // act
         final result = await repository.addEventsData(tEvent);
         // assert

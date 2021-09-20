@@ -17,12 +17,11 @@ class TaskRepositoryImpl implements TaskRepository {
   });
 
   final TaskRemoteDataSource remoteDataSource;
+  final log = logger(TaskRepositoryImpl);
 
   @override
   Future<Either<Failure, ProjectEntry>> createProject(
       ProjectEntry project) async {
-    final log = logger(TaskRepositoryImpl);
-
     try {
       final newProject = Project.fromJson(project.toMap());
       log.i('Create Project: ${newProject.toJson()}');
@@ -36,7 +35,6 @@ class TaskRepositoryImpl implements TaskRepository {
 
   @override
   Future<Either<Failure, Unit>> createTasks(List<TaskEntry> tasks) async {
-    final log = logger(TaskRepositoryImpl);
     try {
       for (final task in tasks) {
         // log.i('Task: ${task.toJson()}');
@@ -54,8 +52,6 @@ class TaskRepositoryImpl implements TaskRepository {
 
   @override
   Future<Either<Failure, Unit>> deleteProject(ProjectEntry project) async {
-    final log = logger(TaskRepositoryImpl);
-
     try {
       final _project = Project.fromJson(project.toMap());
 
@@ -71,8 +67,6 @@ class TaskRepositoryImpl implements TaskRepository {
 
   @override
   Future<Either<Failure, Unit>> deleteTask(TaskEntry task) async {
-    final log = logger(TaskRepositoryImpl);
-
     try {
       final _todo = Todo.fromJson(task.toJson());
 
@@ -88,8 +82,6 @@ class TaskRepositoryImpl implements TaskRepository {
 
   @override
   Future<Either<Failure, List<ProjectEntry>>> getAllProjects() async {
-    final log = logger(TaskRepositoryImpl);
-
     try {
       final _projects = await remoteDataSource.getRemoteProject();
       log.v('Fetched Projects Count: ${_projects.length}');
@@ -107,8 +99,6 @@ class TaskRepositoryImpl implements TaskRepository {
   @override
   Future<Either<Failure, List<TaskEntry>>> getTaskOfSpecificProject(
       ProjectEntry project) async {
-    final log = logger(TaskRepositoryImpl);
-
     try {
       final _project = Project.fromJson(project.toMap());
       log.v('${_project.toJson()}');
@@ -134,8 +124,6 @@ class TaskRepositoryImpl implements TaskRepository {
   @override
   Future<Either<Failure, ProjectEntry>> updateProject(
       ProjectEntry project) async {
-    final log = logger(TaskRepositoryImpl);
-
     try {
       final _project = Project.fromJson(project.toMap());
       log.v('${_project.toJson()}');
@@ -148,15 +136,24 @@ class TaskRepositoryImpl implements TaskRepository {
   }
 
   @override
-  Future<Either<Failure, TaskEntry>> updateTask(TaskEntry task) async {
-    final log = logger(TaskRepositoryImpl);
-
+  Future<Either<Failure, TaskEntry>> updateTask(
+      TaskEntry? task, String? taskID) async {
     try {
-      final _todo = Todo.fromJson(task.toJson());
-      log.v('${_todo.toJson()}');
-      await remoteDataSource.createOrUpdateRemoteTask(_todo);
+      if (task != null) {
+        final _todo = Todo.fromJson(task.toJson());
+        // log.v('${_todo.toJson()}');
+        await remoteDataSource.createOrUpdateRemoteTask(_todo);
+        return Right(task);
+      } else if (taskID != null) {
+        final _task = await remoteDataSource.getRemoteTask(todoID: taskID);
+        final _updatedTask =
+            _task.first.copyWith(isCompleted: !_task.first.isCompleted);
 
-      return Right(task);
+        await remoteDataSource.createOrUpdateRemoteTask(_updatedTask);
+        return Right(TaskEntry.fromJson(_updatedTask.toJson()));
+      } else {
+        return Left(ArgumentFailure());
+      }
     } on ServerException {
       return Left(ServerFailure());
     }
@@ -164,20 +161,21 @@ class TaskRepositoryImpl implements TaskRepository {
 
   @override
   Future<Either<Failure, List<TaskEntry>>> getFilteredTask(
-      {DateTime? dueDate, DateTime? startDate}) async {
-    final log = logger(TaskRepositoryImpl);
-
+      {DateTime? dueDate, DateTime? startDate, DateTime? endDate}) async {
     try {
       final _todos = await remoteDataSource.getRemoteTask(
         startTime: startDate,
         dueDate: dueDate,
+        endTime: endDate,
       );
       log.v('getFilteredTask - Todo: $_todos');
 
       final _tasks = _todos
-          .map((todo) => TaskEntry.fromJson(
-                todo.toJson(),
-              ))
+          .map(
+            (todo) => TaskEntry.fromJson(
+              todo.toJson(),
+            ),
+          )
           .toList();
       return Right(_tasks);
     } on ServerException catch (e) {

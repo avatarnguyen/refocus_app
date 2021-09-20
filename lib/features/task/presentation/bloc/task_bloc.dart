@@ -46,11 +46,15 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
         TaskParams(project: event.project),
       );
       yield* _eitherTaskLoadedOrErrorState(failureOrEntry);
-      //TODO: What Stream here
+      //TODO: Watch Stream here
     } else if (event is CreateTaskEntriesEvent) {
       log('Create New Task');
 
       yield* _mapTaskCreatedToState(event);
+    } else if (event is EditTaskEntryEvent) {
+      log('Edit Task');
+
+      yield* _mapTaskEditToState(event);
     }
   }
 
@@ -64,6 +68,15 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       print(entry);
     });
     // }
+  }
+
+  Stream<TaskState> _mapTaskEditToState(EditTaskEntryEvent event) async* {
+    final failureOrSuccess = await updateTask(event.params);
+    yield* failureOrSuccess.fold((failure) async* {
+      yield TaskError(_mapFailureToMessage(failure));
+    }, (entry) async* {
+      print(entry);
+    });
   }
 
   Stream<TaskState> _eitherTaskLoadedOrErrorState(

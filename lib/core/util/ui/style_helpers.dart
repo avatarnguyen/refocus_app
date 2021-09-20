@@ -39,7 +39,6 @@ const Color kcLightShadow = Color(0x19303133);
 const BoxShadow kShadowLightBase = BoxShadow(
   color: Color(0x0c303133),
   blurRadius: 1,
-  offset: Offset(0, 0),
 );
 
 const BoxShadow kShadowLight60 = BoxShadow(
@@ -64,7 +63,6 @@ const BoxShadow kShadowLight100 = BoxShadow(
 const BoxShadow kShadowPrimaryBase = BoxShadow(
   color: Color(0x0c1e90ff),
   blurRadius: 1,
-  offset: Offset(0, 0),
 );
 const BoxShadow kShadowPrimary60 = BoxShadow(
   color: Color(0x191e90ff),

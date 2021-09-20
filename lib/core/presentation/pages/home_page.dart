@@ -55,8 +55,6 @@ class _HomePageWidgetState extends State<HomePageWidget> {
   final PageStream _pageStream = getIt<PageStream>();
   final GoogleSignIn _googleSignIn = getIt<GoogleSignIn>();
 
-  // double rightPadding = rightPaddingSize;
-
   int _currentPage = 1;
 
   final log = logger(HomePage);
@@ -131,7 +129,6 @@ class _HomePageWidgetState extends State<HomePageWidget> {
         body: SizedBox(
             height: context.height,
             width: context.width,
-            // padding: EdgeInsets.only(right: rightPadding),
             child: PageView(
               allowImplicitScrolling: true,
               physics: const ClampingScrollPhysics(),
@@ -139,16 +136,6 @@ class _HomePageWidgetState extends State<HomePageWidget> {
               onPageChanged: (int index) {
                 _pageStream.broadCastCurrentPage(index);
                 _currentPage = index;
-                // if (index == 0) {
-                //   //* Maybe change to Valuelistener Builder to make this faster
-                //   setState(() {
-                //     rightPadding = 0.0;
-                //   });
-                // } else {
-                //   setState(() {
-                //     rightPadding = rightPaddingSize;
-                //   });
-                // }
               },
               children: [
                 const CalendarPage(),

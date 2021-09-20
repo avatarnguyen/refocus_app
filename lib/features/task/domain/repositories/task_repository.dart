@@ -1,8 +1,7 @@
 import 'package:dartz/dartz.dart';
+import 'package:refocus_app/core/error/failures.dart';
+import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
 import 'package:refocus_app/features/task/domain/entities/task_entry.dart';
-
-import '../../../../core/error/failures.dart';
-import '../entities/project_entry.dart';
 
 abstract class TaskRepository {
   /// Create Project
@@ -21,7 +20,8 @@ abstract class TaskRepository {
   Future<Either<Failure, Unit>> createTasks(List<TaskEntry> tasks);
 
   /// Update Task
-  Future<Either<Failure, TaskEntry>> updateTask(TaskEntry task);
+  Future<Either<Failure, TaskEntry>> updateTask(
+      TaskEntry? task, String? taskID);
 
   /// Delete Task
   Future<Either<Failure, Unit>> deleteTask(TaskEntry task);
@@ -32,5 +32,5 @@ abstract class TaskRepository {
 
   /// Query Task With Given Attribute
   Future<Either<Failure, List<TaskEntry>>> getFilteredTask(
-      {DateTime? dueDate, DateTime? startDate});
+      {DateTime? dueDate, DateTime? startDate, DateTime? endDate});
 }

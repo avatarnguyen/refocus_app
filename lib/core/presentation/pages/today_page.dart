@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -8,6 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:refocus_app/core/presentation/bloc/today_bloc.dart';
 import 'package:refocus_app/core/presentation/widgets/today_list_item.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart' as custom_log;
+import 'package:refocus_app/core/util/helpers/logging.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/features/calendar/presentation/widgets/widgets.dart';
 import 'package:refocus_app/features/today/domain/today_entry.dart';
@@ -104,9 +107,9 @@ class _TodayPageState extends State<TodayPage> {
         //* Body: List View
         BlocProvider<TodayBloc>(
           create: (context) => getIt<TodayBloc>()
-            ..add(
-              GetTodayEntries(DateTime.now()),
-            ),
+            ..add(GetTodayEntries(DateTime.now()))
+            ..add(GetTomorrowEntries(1.days.fromNow))
+            ..add(GetUpcomingTask(2.days.fromNow, 5.days.fromNow)),
           child: const Expanded(
             child: TodayListWidget(),
           ),
@@ -141,41 +144,48 @@ class TodayListWidget extends StatefulWidget {
 }
 
 class _TodayListWidgetState extends State<TodayListWidget> {
-  final _entries = <TodayEntry>[];
+  final _log = logger(TodayListWidget);
+
+  var _entries = <TodayEntry>[];
 
   Future<void> _pullToRefresh(BuildContext context) async {
-    context.read<TodayBloc>().add(GetTodayEntries(DateTime.now()));
+    context.read<TodayBloc>()
+      ..add(GetTodayEntries(DateTime.now()))
+      ..add(GetTomorrowEntries(1.days.fromNow))
+      ..add(GetUpcomingTask(2.days.fromNow, 5.days.fromNow));
     await Future<dynamic>.delayed(1000.milliseconds);
   }
+
+  var _todayLength = 0;
+  var _tomorrowLength = 0;
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<TodayBloc, TodayState>(
       builder: (context, state) {
-        var _todayLength = 0;
-
         if (state is TodayLoaded) {
-          // Load Tomorrow Events
-          if (state.tomorrowEntries != null) {
-            _entries.clear();
+          _log.i(
+              'TodayLoaded: ${state.todayEntries}, ${state.tomorrowEntries}');
+          _log.i('Upcoming Task: ${state.upcomingTasks}');
 
-            final _todayEntries = state.todayEntries;
-            final _filteredTodayEntries = _getFilteredEntries(_todayEntries);
-            _entries.addAll(_filteredTodayEntries);
-
-            _todayLength = _filteredTodayEntries.length;
-
-            final _tomorrowEntries = state.tomorrowEntries;
-            final _filteredTmrEntries = _getFilteredEntries(_tomorrowEntries!);
-            _entries.addAll(_filteredTmrEntries);
-          } else {
-            context.read<TodayBloc>().add(GetTomorrowEntries(1.days.fromNow));
+          _entries.clear();
+          _entries
+            ..addAll(state.todayEntries)
+            ..addAll(state.tomorrowEntries ?? [])
+            ..addAll(state.upcomingTasks ?? []);
+          if (_todayLength == 0) {
+            _todayLength = state.todayEntries.length;
           }
+          if (_tomorrowLength == 0 && state.tomorrowEntries != null) {
+            _tomorrowLength = state.tomorrowEntries!.length;
+          }
+
+          _log.d(_entries.length);
 
           return RefreshIndicator(
             onRefresh: () async => _pullToRefresh(context),
             child: ListView.builder(
-              itemCount: _entries.length + 2,
+              itemCount: _entries.length + 3, // add 3 header
               itemBuilder: (BuildContext context, int index) {
                 if (index == 0) {
                   return const TodayListHeader(text: 'Today');
@@ -183,8 +193,15 @@ class _TodayListWidgetState extends State<TodayListWidget> {
                 if (index == (_todayLength + 1)) {
                   return const TodayListHeader(text: 'Tomorrow');
                 }
-
-                index = (index < _todayLength + 1) ? index - 1 : index - 2;
+                if (index == (_todayLength + _tomorrowLength + 2)) {
+                  return const TodayListHeader(text: 'Upcoming Tasks');
+                }
+                index = (index < _todayLength + 1)
+                    ? index - 1
+                    : (index < (_todayLength + _tomorrowLength + 2))
+                        ? index - 2
+                        : index - 3;
+                // _log.i('Current Index: $index');
                 final _entry = _entries[index];
                 return ListItemWidget(
                   title: _entry.title,
@@ -198,6 +215,8 @@ class _TodayListWidgetState extends State<TodayListWidget> {
               },
             ),
           );
+
+          // return const FullScreenLoadingWidget();
         } else if (state is TodayLoading) {
           return const FullScreenLoadingWidget();
         } else if (state is TodayError) {

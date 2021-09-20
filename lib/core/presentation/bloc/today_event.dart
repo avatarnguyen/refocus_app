@@ -25,3 +25,13 @@ class GetTomorrowEntries extends TodayEvent {
   @override
   List<Object> get props => [date];
 }
+
+class GetUpcomingTask extends TodayEvent {
+  const GetUpcomingTask(this.startDate, this.endDate);
+
+  final DateTime startDate;
+  final DateTime endDate;
+
+  @override
+  List<Object> get props => [startDate, endDate];
+}

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
-import 'package:refocus_app/core/presentation/widgets/sub_task_item.dart';
 import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/today_entry_type.dart';
+import 'package:refocus_app/features/task/domain/usecases/helpers/task_params.dart';
+import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
 import 'package:styled_widget/styled_widget.dart';
 
 class ListItemWidget extends StatelessWidget {
@@ -39,7 +41,7 @@ class ListItemWidget extends StatelessWidget {
         ? Colors.grey.shade600
         : StyleUtils.getColorFromString(color ?? '#115FFB');
     final _backgroudColor = StyleUtils.lighten(_color, 0.32).withOpacity(0.4);
-    final _chipColor = StyleUtils.lighten(_color, 0.32);
+    // final _chipColor = StyleUtils.lighten(_color, 0.32);
     final _textColor = StyleUtils.darken(_color, 0.32);
 
     return Container(
@@ -76,7 +78,9 @@ class ListItemWidget extends StatelessWidget {
                     value: false,
                     shape: const CircleBorder(
                         side: BorderSide(width: 8, color: Colors.blue)),
-                    onChanged: (_) {},
+                    onChanged: (bool? selected) => context
+                        .read<TaskBloc>()
+                        .add(EditTaskEntryEvent(params: TaskParams())),
                   ).paddingOnly(right: 8)
                 else
                   Icon(Icons.done_all, color: _textColor, size: 22)

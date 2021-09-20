@@ -71,6 +71,46 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
         yield* _eitherTodayLoadedOrErrorState(_events, _task,
             todayEntries: _currentState.todayEntries);
       }
+    } else if (event is GetUpcomingTask) {
+      if (state is TodayLoaded) {
+        final _items = <TodayEntry>[];
+
+        final _startDate = event.startDate;
+        final _endDate = event.endDate;
+
+        final _upcomingTask = await getTasks(
+            TaskParams(startDate: _startDate, endDate: _endDate));
+
+        yield* _upcomingTask.fold((failure) async* {
+          yield TodayError(_mapFailureToMessage(failure));
+        }, (tasks) async* {
+          final _taskEntries = tasks
+              .map((task) => TodayEntry(
+                    id: task.id,
+                    type: TodayEntryType.task,
+                    title: task.title,
+                    startDateTime: (task.startDateTime != null &&
+                            task.startDateTime!.isNotEmpty)
+                        ? task.startDateTime!.first
+                        : null,
+                    endDateTime: (task.startDateTime != null &&
+                            task.startDateTime!.isNotEmpty)
+                        ? task.startDateTime!.first + 1.hours
+                        : null,
+                    // color: task.projectID
+                  ))
+              .toList();
+          _items.addAll(_taskEntries);
+
+          final _currentState = state as TodayLoaded;
+
+          yield TodayLoaded(
+            todayEntries: _currentState.todayEntries,
+            tomorrowEntries: _currentState.tomorrowEntries,
+            upcomingTasks: _items,
+          );
+        });
+      }
     }
   }
 
@@ -104,20 +144,22 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
           _items.addAll(_entries);
         });
         final _taskEntries = tasks
-            .map((task) => TodayEntry(
-                  id: task.id,
-                  type: TodayEntryType.task,
-                  title: task.title,
-                  startDateTime: (task.startDateTime != null &&
-                          task.startDateTime!.isNotEmpty)
-                      ? task.startDateTime!.first
-                      : null,
-                  endDateTime: (task.startDateTime != null &&
-                          task.startDateTime!.isNotEmpty)
-                      ? task.startDateTime!.first + 1.hours
-                      : null,
-                  // color: task.projectID
-                ))
+            .map(
+              (task) => TodayEntry(
+                id: task.id,
+                type: TodayEntryType.task,
+                title: task.title,
+                startDateTime: (task.startDateTime != null &&
+                        task.startDateTime!.isNotEmpty)
+                    ? task.startDateTime!.first
+                    : null,
+                endDateTime: (task.startDateTime != null &&
+                        task.startDateTime!.isNotEmpty)
+                    ? task.startDateTime!.first + 1.hours
+                    : null,
+                // color: task.projectID
+              ),
+            )
             .toList();
         _items.addAll(_taskEntries);
         if (todayEntries != null) {
