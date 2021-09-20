@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:refocus_app/core/util/helpers/date_utils.dart';
@@ -7,6 +8,10 @@ import 'package:refocus_app/enum/today_entry_type.dart';
 import 'package:refocus_app/features/task/domain/usecases/helpers/task_params.dart';
 import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
 import 'package:styled_widget/styled_widget.dart';
+
+import 'sub_task_item.dart';
+
+const timeLineWidth = 48.0;
 
 class ListItemWidget extends StatelessWidget {
   const ListItemWidget({
@@ -34,6 +39,7 @@ class ListItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final _isEvent = type == TodayEntryType.event;
     final _isTask = type == TodayEntryType.task;
+    final _isTimeblock = type == TodayEntryType.timeblock;
     final _isPassed =
         endDateTime != null && endDateTime!.compareTo(DateTime.now()) <= 0;
 
@@ -44,136 +50,129 @@ class ListItemWidget extends StatelessWidget {
     // final _chipColor = StyleUtils.lighten(_color, 0.32);
     final _textColor = StyleUtils.darken(_color, 0.32);
 
-    return Container(
-      margin: const EdgeInsets.all(6),
-      child: [
-        Opacity(
-          opacity: _isPassed ? 0.6 : 1.0,
-          child: Container(
-            width: context.width - 28,
-            padding: const EdgeInsets.symmetric(
-              vertical: 8,
-              horizontal: 10,
-            ),
-            decoration: BoxDecoration(
-                color: _backgroudColor,
-                borderRadius: const BorderRadius.all(Radius.circular(8))),
-            child: [
-              [
-                if (_isEvent)
-                  Icon(Icons.calendar_today, color: _textColor, size: 20)
-                      .paddingOnly(right: 10, left: 2)
-                      .gestures(onTap: () {
-                    print('Select Calendar');
-                  })
-                else if (_isTask)
-                  Checkbox(
-                    tristate: true,
-                    visualDensity: const VisualDensity(
-                      horizontal: VisualDensity.minimumDensity,
-                      vertical: VisualDensity.minimumDensity,
-                    ),
-                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    fillColor: MaterialStateProperty.resolveWith(getColor),
-                    value: false,
-                    shape: const CircleBorder(
-                        side: BorderSide(width: 8, color: Colors.blue)),
-                    onChanged: (bool? selected) => context
-                        .read<TaskBloc>()
-                        .add(EditTaskEntryEvent(params: TaskParams())),
-                  ).paddingOnly(right: 8)
-                else
-                  Icon(Icons.done_all, color: _textColor, size: 22)
-                      .paddingOnly(right: 10, left: 2)
-                      .gestures(onTap: () {
-                    print('Select Time Block');
-                  }),
-                Text(
-                  title ?? '',
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 2,
-                  textScaleFactor: context.textScaleFactor,
-                  style: context.textTheme.bodyText1!.copyWith(
-                    color: _textColor,
-                    fontSize: kSmallTextSize,
-                  ),
-                ).expanded(),
-                // Icon(
-                //   Icons.more_horiz,
-                //   color: _textColor,
-                // ).gestures(onTap: () {
-                //   print('More Option');
-                // }),
-              ].toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween),
-              if (startDateTime != null) verticalSpaceTiny,
-              if (startDateTime != null)
-                SizedBox(
-                  child: [
-                    Icon(
-                      Icons.alarm,
-                      color: _textColor,
-                      size: 16,
-                    ),
-                    horizontalSpaceTiny,
-                    Text(
-                      startDateTime != null
-                          ? CustomDateUtils.returnTime(startDateTime!.toLocal())
-                          : '',
-                      textAlign: TextAlign.end,
-                      style: context.textTheme.subtitle2!.copyWith(
-                        color: _textColor,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      endDateTime != null
-                          ? ' - ${CustomDateUtils.returnTime(endDateTime!.toLocal())}'
-                          : '',
-                      textAlign: TextAlign.end,
-                      style: context.textTheme.subtitle2!.copyWith(
-                        color: _textColor,
-                      ),
-                    ),
-                  ].toRow().paddingOnly(left: 30, right: 16),
-                ),
-              // verticalSpaceTiny,
-              // const InsideTaskItem(),
-              // if (!_isEvent) const InsideTaskItem(),
-              // verticalSpaceTiny,
-              // if (!_isEvent)
-              //   [
-              //     if (projectOrCal != null) horizontalSpaceLarge,
-              //     Icon(
-              //       Icons.arrow_drop_down,
-              //       color: _textColor,
-              //     ),
-              //     if (projectOrCal != null)
-              //       Chip(
-              //         backgroundColor: _chipColor,
-              //         visualDensity: const VisualDensity(
-              //           vertical: VisualDensity.minimumDensity,
-              //           horizontal: VisualDensity.minimumDensity,
-              //         ),
-              //         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              //         padding: const EdgeInsets.symmetric(
-              //           horizontal: 8,
-              //         ),
-              //         labelPadding: EdgeInsets.zero,
-              //         labelStyle: kXSmallStyleRegular.copyWith(
-              //           color: _textColor,
-              //         ),
-              //         label: Text(projectOrCal!),
-              //       )
-              //   ].toRow(
-              //     mainAxisAlignment: projectOrCal != null
-              //         ? MainAxisAlignment.spaceBetween
-              //         : MainAxisAlignment.center,
-              //   )
-            ].toColumn(mainAxisSize: MainAxisSize.min),
-          ),
-        ),
-      ].toRow(crossAxisAlignment: CrossAxisAlignment.start),
+    final _timelineTextStyle = context.textTheme.subtitle2!.copyWith(
+      color: kcPrimary800,
     );
+
+    return _isEvent
+        ? [
+            SizedBox(
+              width: timeLineWidth,
+              child: Text(
+                startDateTime != null
+                    ? CustomDateUtils.returnTime(startDateTime!.toLocal())
+                    : 'all day',
+                // 'ganztätig',
+                overflow: TextOverflow.clip,
+                textAlign: TextAlign.right,
+                maxLines: 1,
+                textScaleFactor: context.textScaleFactor,
+                style: _timelineTextStyle,
+              ),
+            ),
+            Icon(
+              Icons.arrow_right,
+              size: 16,
+              color: _textColor,
+            ),
+            horizontalSpaceTiny,
+            Text(
+              title ?? '',
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+              textScaleFactor: context.textScaleFactor,
+              style: context.textTheme.caption!.copyWith(
+                color: _textColor,
+              ),
+            ).expanded(),
+          ].toRow().marginAll(6).opacity(_isPassed ? 0.6 : 1.0)
+        : [
+            [
+              Text(
+                startDateTime != null
+                    ? CustomDateUtils.returnTime(startDateTime!.toLocal())
+                    : 'all day',
+                // 'ganztätig',
+                overflow: TextOverflow.clip,
+                textAlign: TextAlign.right,
+                maxLines: 1,
+                textScaleFactor: context.textScaleFactor,
+                style: startDateTime != null
+                    ? context.textTheme.subtitle2!.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: kcPrimary800,
+                      )
+                    : _timelineTextStyle,
+              ).padding(top: 4),
+              if (endDateTime != null)
+                Text(
+                  CustomDateUtils.returnTime(
+                      endDateTime!.toLocal()), // 'ganztätig',
+                  overflow: TextOverflow.clip,
+                  textAlign: TextAlign.right,
+                  maxLines: 1,
+                  textScaleFactor: context.textScaleFactor,
+                  style: _timelineTextStyle,
+                )
+            ]
+                .toColumn(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                )
+                .expanded(),
+            Container(
+              width: context.width - (6 + 28 + timeLineWidth),
+              margin: const EdgeInsets.only(left: 6),
+              padding: const EdgeInsets.symmetric(
+                vertical: 8,
+                horizontal: 10,
+              ),
+              decoration: BoxDecoration(
+                color: _backgroudColor,
+                borderRadius: const BorderRadius.all(Radius.circular(8)),
+              ),
+              child: [
+                [
+                  if (_isTask)
+                    Checkbox(
+                      tristate: true,
+                      visualDensity: const VisualDensity(
+                        horizontal: VisualDensity.minimumDensity,
+                        vertical: VisualDensity.minimumDensity,
+                      ),
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      fillColor: MaterialStateProperty.resolveWith(getColor),
+                      value: false,
+                      shape: const CircleBorder(
+                          side: BorderSide(width: 8, color: Colors.blue)),
+                      onChanged: (bool? selected) => context
+                          .read<TaskBloc>()
+                          .add(EditTaskEntryEvent(params: TaskParams())),
+                    ).paddingOnly(right: 8)
+                  else
+                    Icon(Icons.calendar_today, color: _textColor, size: 22)
+                        .paddingOnly(right: 10, left: 2)
+                        .gestures(onTap: () {
+                      print('Select Time Block');
+                    }),
+                  Text(
+                    title ?? '',
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
+                    textScaleFactor: context.textScaleFactor,
+                    style: context.textTheme.bodyText1!.copyWith(
+                      color: _textColor,
+                      fontSize: kSmallTextSize,
+                    ),
+                  ).expanded(),
+                ].toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween),
+
+                //* Subtask
+                // verticalSpaceTiny,
+                // const InsideTaskItem(),
+              ].toColumn(mainAxisSize: MainAxisSize.min),
+            ),
+          ].toRow(crossAxisAlignment: CrossAxisAlignment.start).marginAll(6);
   }
 
   // Get Checkbox color, depends on state
