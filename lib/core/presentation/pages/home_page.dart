@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_datastore/amplify_datastore.dart';
@@ -117,6 +119,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
           snappings: [0.09, 0.5, 1.0],
         ),
         minHeight: context.height / 2,
+        closeOnBackButtonPressed: Platform.isAndroid,
         headerBuilder: (context, state) => const SlidingHeaderWidget(),
         builder: (context, state) => amplifyConfigured
             ? BlocProvider<ProjectBloc>.value(

@@ -28,7 +28,6 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
   }) : super(TodayLoading());
 
   final GetEventsBetween getEventEntry;
-  // final GetCalendarList getCalendarList;
   final GetTasks getTasks;
 
   @override

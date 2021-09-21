@@ -16,36 +16,11 @@ class SlidingHeaderWidget extends StatefulWidget {
     Key? key,
   }) : super(key: key);
 
-  // final VoidCallback changePage;
-
   @override
   _SlidingHeaderWidgetState createState() => _SlidingHeaderWidgetState();
 }
 
 class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
-  // final PageStream _pageStream = getIt<PageStream>();
-  // late StreamSubscription<int> _pageSubscription;
-
-  // int _currentPage = 1;
-
-  @override
-  void initState() {
-    // _pageSubscription = _pageStream.pageStream.listen(_pageIndexReceived);
-    super.initState();
-  }
-
-  // void _pageIndexReceived(int currentPage) {
-  //   setState(() {
-  //     _currentPage = currentPage;
-  //   });
-  // }
-
-  // @override
-  // void dispose() {
-  //   super.dispose();
-  //   _pageSubscription.cancel();
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -77,11 +52,6 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
             ),
           ),
           horizontalSpaceMedium,
-          // SizedBox(
-          //   height: 32,
-          //   width: 56,
-          //   child: CustomPaint(painter: LinePainter()),
-          // ),
         ].toRow(),
         const Icon(
           Icons.add,

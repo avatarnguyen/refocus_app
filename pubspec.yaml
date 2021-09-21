@@ -10,12 +10,12 @@ dependencies:
   amplify_api: ^0.2.4
   amplify_auth_cognito: ^0.2.4
   amplify_datastore: ^0.2.4
-
   # aws cloud
   amplify_flutter: ^0.2.4
   bloc: ^7.1.0
   # Remote API
   connectivity: ^3.0.6
+  cupertino_icons: ^1.0.3
   # Extension
   dartx: ^0.7.1
   # Functional programming stuffs

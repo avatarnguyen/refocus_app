@@ -11,6 +11,7 @@ abstract class CalendarRepository {
   ///
   /// And cache locally. If no internet connection, data will be retrive from local cache
   Future<Either<Failure, CalendarData>> getEventsData();
+
   // Update the month when user scroll to certain month
   Future<Either<Failure, List<CalendarEventEntry>>> getEventsDataBetween(
       DateTime startDate, DateTime endDate);

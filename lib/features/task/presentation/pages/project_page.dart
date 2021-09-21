@@ -9,7 +9,6 @@ import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
 import 'package:refocus_app/features/task/presentation/bloc/project_bloc.dart';
 import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
 import 'package:refocus_app/features/task/presentation/pages/task_page.dart';
-import 'package:refocus_app/models/ModelProvider.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
 import 'package:uuid/uuid.dart';
 
@@ -121,6 +120,7 @@ class _ProjectItemState extends State<ProjectItem> {
         .gestures(onTap: () => showTaskBottomSheet(context, _currentProject));
   }
 
+  //TODO: Change to 'customBuilder' when sliding sheet release new version
   void showTaskBottomSheet(
     BuildContext parentContext,
     ProjectEntry project,
@@ -136,7 +136,6 @@ class _ProjectItemState extends State<ProjectItem> {
           duration: 500.milliseconds,
           color: context.theme.backgroundColor,
           snapSpec: const SnapSpec(
-            snap: true,
             initialSnap: 0.86,
             snappings: [0.4, 0.86],
             positioning: SnapPositioning.relativeToSheetHeight,

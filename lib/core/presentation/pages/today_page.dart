@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:dartx/dartx.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -36,87 +40,70 @@ class _TodayPageState extends State<TodayPage> {
   Widget build(BuildContext context) {
     final today = DateTime.now();
 
-    return PlatformScaffold(
-      backgroundColor: kcLightBackground,
-      body: [
-        [
-          [
-            [
-              const Icon(
-                Icons.menu,
-                size: 28,
-                color: kcPrimary500,
-              ).ripple().gestures(onTap: () {
-                widget.changePage();
-              }),
-              horizontalSpaceRegular,
-              const Icon(
-                Icons.search,
-                size: 26,
-                color: kcPrimary500,
-              ).ripple().gestures(onTap: () {
-                widget.changePage();
-              }),
-            ].toRow(),
-            [
-              const Icon(
-                Icons.inbox,
-                size: 28,
-                color: kcPrimary500,
-              ).ripple().gestures(onTap: () {}),
-              horizontalSpaceRegular,
-              const Icon(
-                Icons.person,
-                size: 28,
-                color: kcPrimary500,
-              ).ripple().gestures(onTap: () {})
-            ].toRow(),
-          ].toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween),
-          verticalSpaceRegular,
-          [
-            [
-              PlatformText(
-                _getGreeting(),
-                overflow: TextOverflow.fade,
-                style: context.textTheme.headline4!.copyWith(
-                  fontWeight: FontWeight.w800,
-                ),
+    return BlocProvider<TodayBloc>(
+      create: (context) => getIt<TodayBloc>()
+        ..add(GetTodayEntries(DateTime.now()))
+        ..add(GetTomorrowEntries(1.days.fromNow))
+        ..add(GetUpcomingTask(2.days.fromNow, 5.days.fromNow)),
+      child: Platform.isIOS
+          ? CupertinoPageScaffold(
+              child: NestedScrollView(
+                headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                  CupertinoSliverNavigationBar(
+                    border: null,
+                    backgroundColor: kcLightBackground,
+                    padding: const EdgeInsetsDirectional.all(8),
+                    largeTitle: Text(
+                      _getGreeting(),
+                    ),
+                    leading: [
+                      CupertinoButton(
+                        padding: EdgeInsets.zero,
+                        child: const Icon(CupertinoIcons.calendar),
+                        onPressed: () {
+                          widget.changePage();
+                        },
+                      ),
+                      CupertinoButton(
+                        padding: EdgeInsets.zero,
+                        child: const Icon(CupertinoIcons.search),
+                        onPressed: () {
+                          widget.changePage();
+                        },
+                      )
+                    ].toRow(mainAxisSize: MainAxisSize.min),
+                    trailing: SizedBox(
+                      child: [
+                        CupertinoButton(
+                          padding: EdgeInsets.zero,
+                          child: const Icon(CupertinoIcons.archivebox_fill),
+                          onPressed: () {},
+                        ),
+                        CupertinoButton(
+                          padding: EdgeInsets.zero,
+                          child: const Icon(CupertinoIcons.person_fill),
+                          onPressed: () {},
+                        ),
+                      ].toRow(mainAxisSize: MainAxisSize.min),
+                    ),
+                  ),
+                  SliverPersistentHeader(
+                    pinned: true,
+                    delegate: PersistentHeaderDelegate(
+                      kcLightBackground,
+                      returnDate(today),
+                      minSize: 30,
+                      maxSize: 30,
+                    ),
+                  ),
+                ],
+                body: const TodayListWidget().parent(
+                    ({required child}) => todayPage(context, child: child)),
               ),
-              //TODO: Fetch Weather Info here
-              verticalSpaceSmall,
-              PlatformText(
-                returnDate(today),
-                overflow: TextOverflow.fade,
-                maxLines: 1,
-                softWrap: true,
-                textScaleFactor: context.mediaQuery.textScaleFactor,
-                style: context.textTheme.bodyText2!.copyWith(
-                  color: Colors.grey[600],
-                ),
-              ),
-            ].toColumn(crossAxisAlignment: CrossAxisAlignment.start),
-          ].toRow(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.end,
-          )
-        ]
-            .toColumn(crossAxisAlignment: CrossAxisAlignment.start)
-            .parent(headerTodayContainer),
-
-        verticalSpaceRegular,
-        //* Body: List View
-        BlocProvider<TodayBloc>(
-          create: (context) => getIt<TodayBloc>()
-            ..add(GetTodayEntries(DateTime.now()))
-            ..add(GetTomorrowEntries(1.days.fromNow))
-            ..add(GetUpcomingTask(2.days.fromNow, 5.days.fromNow)),
-          child: const Expanded(
-            child: TodayListWidget(),
-          ),
-        ),
-      ]
-          .toColumn(crossAxisAlignment: CrossAxisAlignment.start)
-          .parent(({required child}) => todayPage(context, child: child)),
+            )
+          : Scaffold(
+              body: const TodayListWidget(),
+            ),
     );
   }
 
@@ -134,6 +121,45 @@ class _TodayPageState extends State<TodayPage> {
   }
 }
 
+class PersistentHeaderDelegate extends SliverPersistentHeaderDelegate {
+  PersistentHeaderDelegate(this.backgroundColor, this.title,
+      {this.maxSize, this.minSize});
+  final Color backgroundColor;
+  final String title;
+  final double? maxSize;
+  final double? minSize;
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Container(
+      padding: const EdgeInsets.only(left: 16, bottom: 8),
+      color: backgroundColor,
+      child: Text(
+        title,
+        overflow: TextOverflow.clip,
+        maxLines: 1,
+        softWrap: true,
+        textScaleFactor: context.mediaQuery.textScaleFactor,
+        style: context.textTheme.bodyText2!.copyWith(
+          color: Colors.grey[600],
+        ),
+      ),
+    );
+  }
+
+  @override
+  double get maxExtent => maxSize ?? 80;
+
+  @override
+  double get minExtent => minSize ?? 50;
+
+  @override
+  bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) {
+    return true;
+  }
+}
+
 class TodayListWidget extends StatefulWidget {
   const TodayListWidget({
     Key? key,
@@ -146,7 +172,7 @@ class TodayListWidget extends StatefulWidget {
 class _TodayListWidgetState extends State<TodayListWidget> {
   final _log = logger(TodayListWidget);
 
-  var _entries = <TodayEntry>[];
+  final _entries = <TodayEntry>[];
 
   Future<void> _pullToRefresh(BuildContext context) async {
     context.read<TodayBloc>()
@@ -185,6 +211,7 @@ class _TodayListWidgetState extends State<TodayListWidget> {
           return RefreshIndicator(
             onRefresh: () async => _pullToRefresh(context),
             child: ListView.builder(
+              padding: const EdgeInsets.only(top: 8, bottom: 40),
               itemCount: _entries.length + 3, // add 3 header
               itemBuilder: (BuildContext context, int index) {
                 if (index == 0) {

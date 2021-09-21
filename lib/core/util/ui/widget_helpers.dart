@@ -4,16 +4,15 @@ import 'package:get/get_utils/src/extensions/context_extensions.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:styled_widget/styled_widget.dart';
 
-Widget todayPage(BuildContext context, {required Widget child}) => SafeArea(
-        child: SizedBox(
+Widget todayPage(BuildContext context, {required Widget child}) => SizedBox(
       child: [
         SizedBox(
           height: 88,
           child: CustomPaint(painter: LinePainter()),
-        ).positioned(top: context.height * 0.38, left: 6),
+        ).positioned(top: context.height * 0.32, left: 6),
         Styled.widget(child: child).padding(bottom: 40, left: 8, right: 8),
       ].toStack(),
-    ));
+    );
 Widget calendarPage({required Widget child}) => SafeArea(
       child: SizedBox(
         child: Styled.widget(child: child),

@@ -122,37 +122,45 @@ class _CalendarWidgetState extends State<CalendarWidget> {
               color: kcPrimary500,
             ).ripple().gestures(onTap: () {}),
           ].toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween),
-          verticalSpaceTiny,
+          verticalSpaceRegular,
           [
             [
-              Text(
+              PlatformText(
                 today.year.toString(),
-                style: context.textTheme.headline2,
-              ),
-              Text(
-                custom_date_tils.CustomDateUtils.returnMonth(today),
+                overflow: TextOverflow.fade,
                 style: context.textTheme.headline4!.copyWith(
-                  color: Colors.grey.shade600,
+                  fontWeight: FontWeight.w800,
                 ),
               ),
-            ].toColumn(crossAxisAlignment: CrossAxisAlignment.start),
-            InkWell(
-              onTap: () {
-                setState(() {
-                  showMonthView = !showMonthView;
-                });
-              },
-              child: Icon(
-                Icons.calendar_view_month_rounded,
-                size: 24,
-                color: showMonthView ? kcPrimary600 : kcPrimary500,
-              )
-                  .decorated(
-                    color: showMonthView ? kcPrimary200 : Colors.transparent,
-                    borderRadius: BorderRadius.circular(10),
-                  )
-                  .constrained(height: 32, width: 32),
-            ).padding(right: 4),
+              PlatformText(
+                custom_date_tils.CustomDateUtils.returnMonth(today),
+                overflow: TextOverflow.fade,
+                maxLines: 1,
+                softWrap: true,
+                textScaleFactor: context.mediaQuery.textScaleFactor,
+                style: context.textTheme.bodyText2!.copyWith(
+                  color: Colors.grey[600],
+                ),
+              ),
+            ]
+                .toColumn(crossAxisAlignment: CrossAxisAlignment.start)
+                .padding(left: 6),
+            Icon(
+              Icons.calendar_view_month_rounded,
+              size: 24,
+              color: showMonthView ? kcPrimary600 : kcPrimary500,
+            )
+                .decorated(
+                  color: showMonthView ? kcPrimary200 : Colors.transparent,
+                  borderRadius: BorderRadius.circular(10),
+                )
+                .constrained(height: 32, width: 32)
+                .ripple()
+                .gestures(onTap: () {
+              setState(() {
+                showMonthView = !showMonthView;
+              });
+            }),
           ].toRow(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.end,
