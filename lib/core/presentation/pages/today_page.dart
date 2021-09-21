@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -17,9 +15,9 @@ import 'package:refocus_app/features/today/domain/today_entry.dart';
 import 'package:refocus_app/injection.dart';
 
 class TodayPage extends StatefulWidget {
-  const TodayPage({Key? key}) : super(key: key);
+  const TodayPage({Key? key, required this.changePage}) : super(key: key);
 
-  // final VoidCallback onDrawerSelected;
+  final VoidCallback changePage;
 
   @override
   _TodayPageState createState() => _TodayPageState();
@@ -43,22 +41,36 @@ class _TodayPageState extends State<TodayPage> {
       body: [
         [
           [
-            InkWell(
-              onTap: () {},
-              child: const Icon(
+            [
+              const Icon(
                 Icons.menu,
+                size: 28,
+                color: kcPrimary500,
+              ).ripple().gestures(onTap: () {
+                widget.changePage();
+              }),
+              horizontalSpaceRegular,
+              const Icon(
+                Icons.search,
                 size: 26,
                 color: kcPrimary500,
-              ),
-            ),
-            InkWell(
-              onTap: () async {},
-              child: const Icon(
+              ).ripple().gestures(onTap: () {
+                widget.changePage();
+              }),
+            ].toRow(),
+            [
+              const Icon(
                 Icons.inbox,
-                size: 26,
+                size: 28,
                 color: kcPrimary500,
-              ),
-            )
+              ).ripple().gestures(onTap: () {}),
+              horizontalSpaceRegular,
+              const Icon(
+                Icons.person,
+                size: 28,
+                color: kcPrimary500,
+              ).ripple().gestures(onTap: () {})
+            ].toRow(),
           ].toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween),
           verticalSpaceRegular,
           [
@@ -83,19 +95,6 @@ class _TodayPageState extends State<TodayPage> {
                 ),
               ),
             ].toColumn(crossAxisAlignment: CrossAxisAlignment.start),
-            InkWell(
-              onTap: () {},
-              child: Icon(
-                Icons.calendar_view_month_rounded,
-                size: 24,
-                color: showMonthView ? kcPrimary600 : kcPrimary500,
-              )
-                  .decorated(
-                    color: showMonthView ? kcPrimary200 : Colors.transparent,
-                    borderRadius: BorderRadius.circular(10),
-                  )
-                  .constrained(height: 32, width: 32),
-            ),
           ].toRow(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -103,6 +102,7 @@ class _TodayPageState extends State<TodayPage> {
         ]
             .toColumn(crossAxisAlignment: CrossAxisAlignment.start)
             .parent(headerTodayContainer),
+
         verticalSpaceRegular,
         //* Body: List View
         BlocProvider<TodayBloc>(
@@ -116,7 +116,7 @@ class _TodayPageState extends State<TodayPage> {
         ),
       ]
           .toColumn(crossAxisAlignment: CrossAxisAlignment.start)
-          .parent(todayPage),
+          .parent(({required child}) => todayPage(context, child: child)),
     );
   }
 

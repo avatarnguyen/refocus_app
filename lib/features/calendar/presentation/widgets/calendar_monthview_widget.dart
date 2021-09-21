@@ -20,7 +20,7 @@ class CalendarMonthViewWidget extends StatelessWidget {
       future: loadMoreAppointments(),
       builder: (context, snapShot) {
         return Container(
-          margin: EdgeInsets.only(top: context.height * 0.55, left: 8),
+          margin: EdgeInsets.only(top: context.height * 0.65, left: 8),
           child: progressIndicator,
         );
       },
@@ -56,14 +56,14 @@ class CalendarMonthViewWidget extends StatelessWidget {
             dayTextStyle: kCaptionStyleBold.copyWith(color: Colors.black38)),
         monthViewSettings: MonthViewSettings(
           showAgenda: true,
-          agendaViewHeight: screenHeightPercentage(context, percentage: 0.4),
+          agendaViewHeight: screenHeightPercentage(context, percentage: 0.35),
           numberOfWeeksInView: 4,
           dayFormat: 'EEE',
           monthCellStyle: MonthCellStyle(
-            backgroundColor: Colors.white,
-            trailingDatesBackgroundColor: Colors.white,
-            leadingDatesBackgroundColor: Colors.white,
-            todayBackgroundColor: Colors.white,
+            backgroundColor: Colors.white70,
+            trailingDatesBackgroundColor: Colors.white70,
+            leadingDatesBackgroundColor: Colors.white70,
+            todayBackgroundColor: Colors.white70,
             textStyle: kCaptionStyleRegular.copyWith(color: Colors.black87),
           ),
           agendaStyle: AgendaStyle(

@@ -117,9 +117,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
           snappings: [0.09, 0.5, 1.0],
         ),
         minHeight: context.height / 2,
-        headerBuilder: (context, state) => SlidingHeaderWidget(
-          changePage: switchToPageView,
-        ),
+        headerBuilder: (context, state) => const SlidingHeaderWidget(),
         builder: (context, state) => amplifyConfigured
             ? BlocProvider<ProjectBloc>.value(
                 value: BlocProvider.of<ProjectBloc>(context),
@@ -139,7 +137,10 @@ class _HomePageWidgetState extends State<HomePageWidget> {
               },
               children: [
                 const CalendarPage(),
-                if (amplifyConfigured) const TodayPage() else progressIndicator,
+                if (amplifyConfigured)
+                  TodayPage(changePage: switchToPageView)
+                else
+                  progressIndicator,
               ],
             )
             // .opacity(_drawerClosed ? 1.0 : 0.32, animate: true)

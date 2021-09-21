@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:get/get_utils/src/extensions/context_extensions.dart';
 import 'package:get/route_manager.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:refocus_app/constants/routes_name.dart';
@@ -96,51 +98,42 @@ class _CalendarWidgetState extends State<CalendarWidget> {
 
   @override
   Widget build(BuildContext context) {
-    var testEvent = EventParams(
-      calendarId: 'primary',
-      eventEntry: CalendarEventEntry(
-        id: 'jihijjs8ba46eqh4r53kfhbvds',
-        subject: 'Test Event from Momant',
-        startDateTime: DateTime.parse('2021-08-05T16:45:00+02:00'),
-        endDateTime: DateTime.parse('2021-08-05T18:30:00+02:00'),
-        organizer: 'Test Dev',
-      ),
-    );
-
     final today = DateTime.now();
 
-    return Scaffold(
+    return PlatformScaffold(
       backgroundColor: kcLightBackground,
       body: <Widget>[
         [
-          verticalSpaceRegular,
+          // verticalSpaceRegular,
           [
-            InkWell(
+            const Icon(
+              Icons.calendar_view_day,
+              size: 26,
+              color: kcPrimary500,
+            ).ripple().gestures(
               onTap: () async {
                 await Get.toNamed<dynamic>(rCalendarListPage);
-                BlocProvider.of<CalendarBloc>(context).add(
-                  GetCalendarEntries(),
-                );
+                context.read<CalendarBloc>().add(GetCalendarEntries());
               },
-              child: const Icon(
-                Icons.calendar_view_day,
-                size: 26,
-                color: kcPrimary500,
-              ),
-            )
-          ]
-              .toRow(mainAxisAlignment: MainAxisAlignment.end)
-              .padding(horizontal: 8),
+            ),
+            const Icon(
+              Icons.inbox,
+              size: 26,
+              color: kcPrimary500,
+            ).ripple().gestures(onTap: () {}),
+          ].toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween),
           verticalSpaceTiny,
           [
             [
               Text(
-                custom_date_tils.CustomDateUtils.returnMonth(today),
-                style: kHeadline2StyleBold,
+                today.year.toString(),
+                style: context.textTheme.headline2,
               ),
               Text(
-                today.year.toString(),
-                style: kHeadline5StyleRegular,
+                custom_date_tils.CustomDateUtils.returnMonth(today),
+                style: context.textTheme.headline4!.copyWith(
+                  color: Colors.grey.shade600,
+                ),
               ),
             ].toColumn(crossAxisAlignment: CrossAxisAlignment.start),
             InkWell(
@@ -167,9 +160,9 @@ class _CalendarWidgetState extends State<CalendarWidget> {
         ]
             .toColumn(crossAxisAlignment: CrossAxisAlignment.start)
             .parent(headerContainer),
-        verticalSpaceRegular,
-        if (!showMonthView) const DatePickerWidget(),
-        if (!showMonthView) verticalSpaceMedium,
+        verticalSpaceSmall,
+        // if (!showMonthView) const DatePickerWidget(),
+        // if (showMonthView) verticalSpaceMedium,
         // Calendar View
         BlocBuilder<CalendarBloc, CalendarState>(
           builder: (context, state) {

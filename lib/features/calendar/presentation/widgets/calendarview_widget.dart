@@ -57,7 +57,7 @@ class _CalendarViewWidgetState extends State<CalendarViewWidget> {
       future: loadMoreAppointments(),
       builder: (context, snapShot) {
         return Container(
-          margin: EdgeInsets.only(top: context.height * 0.55, left: 8),
+          margin: EdgeInsets.only(top: context.height * 0.65, left: 8),
           child: progressIndicator,
         );
       },
