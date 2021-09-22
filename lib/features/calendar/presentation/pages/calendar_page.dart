@@ -14,6 +14,7 @@ import 'package:refocus_app/core/util/ui/ui_helper.dart';
 
 import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/helpers/event_params.dart';
+import 'package:refocus_app/features/calendar/presentation/bloc/calendar/datetime_stream.dart';
 import 'package:refocus_app/features/calendar/presentation/widgets/calendar_monthview_widget.dart';
 import 'package:refocus_app/features/calendar/presentation/widgets/calendarview_widget.dart';
 import 'package:refocus_app/features/calendar/presentation/widgets/datepicker_widget.dart';
@@ -59,6 +60,7 @@ class CalendarWidget extends StatefulWidget {
 class _CalendarWidgetState extends State<CalendarWidget> {
   final log = custom_log.logger(CalendarWidget);
 
+  final DateTimeStream _dateTimeStream = getIt<DateTimeStream>();
   final GoogleSignIn _googleSignIn = getIt<GoogleSignIn>();
   GoogleSignInAccount? _currentUser;
 
@@ -142,9 +144,11 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                   color: Colors.grey[600],
                 ),
               ),
-            ]
-                .toColumn(crossAxisAlignment: CrossAxisAlignment.start)
-                .padding(left: 6),
+            ].toColumn(crossAxisAlignment: CrossAxisAlignment.start).gestures(
+                onTap: () {
+              _dateTimeStream.broadCastCurrentDate(DateTime.now());
+            }),
+            // .padding(left: 6),
             Icon(
               Icons.calendar_view_month_rounded,
               size: 24,
@@ -154,7 +158,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                   color: showMonthView ? kcPrimary200 : Colors.transparent,
                   borderRadius: BorderRadius.circular(10),
                 )
-                .constrained(height: 32, width: 32)
+                .constrained(height: 32, width: showMonthView ? 32 : 26)
                 .ripple()
                 .gestures(onTap: () {
               setState(() {

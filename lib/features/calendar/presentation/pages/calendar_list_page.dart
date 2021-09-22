@@ -4,7 +4,7 @@ import 'package:refocus_app/features/calendar/presentation/bloc/calendar_list/ca
 import 'package:refocus_app/features/calendar/presentation/widgets/checkboxlistitem_widget.dart';
 import 'package:refocus_app/features/calendar/presentation/widgets/widgets.dart';
 
-import '../../../../injection.dart';
+import 'package:refocus_app/injection.dart';
 
 class CalendarListPage extends StatelessWidget {
   const CalendarListPage({Key? key}) : super(key: key);

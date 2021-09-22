@@ -4,18 +4,16 @@ import 'package:dartx/dartx.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:refocus_app/core/presentation/bloc/today_bloc.dart';
-import 'package:refocus_app/core/presentation/widgets/today_list_item.dart';
+import 'package:refocus_app/core/presentation/widgets/persistent_header_delegate.dart';
+import 'package:refocus_app/core/presentation/widgets/today_list_widget.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart' as custom_log;
-import 'package:refocus_app/core/util/helpers/logging.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
-import 'package:refocus_app/features/calendar/presentation/widgets/widgets.dart';
-import 'package:refocus_app/features/today/domain/today_entry.dart';
 import 'package:refocus_app/injection.dart';
 
 class TodayPage extends StatefulWidget {
@@ -28,12 +26,36 @@ class TodayPage extends StatefulWidget {
 }
 
 class _TodayPageState extends State<TodayPage> {
+  late ScrollController _sController;
   final log = custom_log.logger(TodayPage);
 
   bool showMonthView = false;
+  bool isAtTop = false;
 
   String returnDate(DateTime date) {
     return DateFormat.yMMMMEEEEd().format(date);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _sController = ScrollController();
+    _sController.addListener(() {
+      // log.i(_sController.offset);
+      if (_sController.offset > 38) {
+        if (!isAtTop) {
+          setState(() {
+            isAtTop = true;
+          });
+        }
+      } else {
+        if (isAtTop) {
+          setState(() {
+            isAtTop = false;
+          });
+        }
+      }
+    });
   }
 
   @override
@@ -48,14 +70,15 @@ class _TodayPageState extends State<TodayPage> {
       child: Platform.isIOS
           ? CupertinoPageScaffold(
               child: NestedScrollView(
+                controller: _sController,
                 headerSliverBuilder: (context, innerBoxIsScrolled) => [
                   CupertinoSliverNavigationBar(
                     border: null,
                     backgroundColor: kcLightBackground,
                     padding: const EdgeInsetsDirectional.all(8),
-                    largeTitle: Text(
-                      _getGreeting(),
-                    ),
+                    largeTitle: !isAtTop
+                        ? Text(_getGreeting())
+                        : const Icon(CupertinoIcons.sun_max_fill),
                     leading: [
                       CupertinoButton(
                         padding: EdgeInsets.zero,
@@ -90,7 +113,6 @@ class _TodayPageState extends State<TodayPage> {
                   SliverPersistentHeader(
                     pinned: true,
                     delegate: PersistentHeaderDelegate(
-                      kcLightBackground,
                       returnDate(today),
                       minSize: 30,
                       maxSize: 30,
@@ -98,11 +120,70 @@ class _TodayPageState extends State<TodayPage> {
                   ),
                 ],
                 body: const TodayListWidget().parent(
-                    ({required child}) => todayPage(context, child: child)),
+                  ({required child}) => todayPage(context, child: child),
+                ),
               ),
             )
           : Scaffold(
-              body: const TodayListWidget(),
+              body: NestedScrollView(
+                controller: _sController,
+                headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                  SliverAppBar(
+                    // backgroundColor: context.theme.backgroundColor,
+                    // foregroundColor: context.theme.primaryColor,
+                    pinned: true,
+                    elevation: 0,
+                    expandedHeight: 114,
+                    leading: IconButton(
+                      padding: EdgeInsets.zero,
+                      icon: const Icon(Icons.calendar_today),
+                      onPressed: () {
+                        widget.changePage();
+                      },
+                    ),
+                    actions: [
+                      IconButton(
+                        padding: EdgeInsets.zero,
+                        icon: const Icon(Icons.search),
+                        onPressed: () {
+                          widget.changePage();
+                        },
+                      ),
+                      IconButton(
+                        padding: EdgeInsets.zero,
+                        icon: const Icon(Icons.inbox),
+                        onPressed: () {},
+                      ),
+                      IconButton(
+                        padding: EdgeInsets.zero,
+                        icon: const Icon(Icons.person),
+                        onPressed: () {},
+                      ),
+                    ],
+                    flexibleSpace: FlexibleSpaceBar(
+                      centerTitle: isAtTop,
+                      titlePadding: !isAtTop
+                          ? const EdgeInsets.only(left: 16, bottom: 4)
+                          : const EdgeInsets.only(bottom: 16),
+                      title: !isAtTop
+                          ? Text(_getGreeting())
+                          : const Icon(CupertinoIcons.sun_max_fill),
+                    ),
+                  ),
+                  SliverPersistentHeader(
+                    pinned: true,
+                    delegate: PersistentHeaderDelegate(
+                      returnDate(today),
+                      backgroundColor: kcPrimary500,
+                      minSize: 30,
+                      maxSize: 30,
+                    ),
+                  ),
+                ],
+                body: const TodayListWidget().parent(
+                  ({required child}) => todayPage(context, child: child),
+                ),
+              ),
             ),
     );
   }
@@ -118,177 +199,5 @@ class _TodayPageState extends State<TodayPage> {
     } else {
       return 'Good Night!';
     }
-  }
-}
-
-class PersistentHeaderDelegate extends SliverPersistentHeaderDelegate {
-  PersistentHeaderDelegate(this.backgroundColor, this.title,
-      {this.maxSize, this.minSize});
-  final Color backgroundColor;
-  final String title;
-  final double? maxSize;
-  final double? minSize;
-
-  @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return Container(
-      padding: const EdgeInsets.only(left: 16, bottom: 8),
-      color: backgroundColor,
-      child: Text(
-        title,
-        overflow: TextOverflow.clip,
-        maxLines: 1,
-        softWrap: true,
-        textScaleFactor: context.mediaQuery.textScaleFactor,
-        style: context.textTheme.bodyText2!.copyWith(
-          color: Colors.grey[600],
-        ),
-      ),
-    );
-  }
-
-  @override
-  double get maxExtent => maxSize ?? 80;
-
-  @override
-  double get minExtent => minSize ?? 50;
-
-  @override
-  bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) {
-    return true;
-  }
-}
-
-class TodayListWidget extends StatefulWidget {
-  const TodayListWidget({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  State<TodayListWidget> createState() => _TodayListWidgetState();
-}
-
-class _TodayListWidgetState extends State<TodayListWidget> {
-  final _log = logger(TodayListWidget);
-
-  final _entries = <TodayEntry>[];
-
-  Future<void> _pullToRefresh(BuildContext context) async {
-    context.read<TodayBloc>()
-      ..add(GetTodayEntries(DateTime.now()))
-      ..add(GetTomorrowEntries(1.days.fromNow))
-      ..add(GetUpcomingTask(2.days.fromNow, 5.days.fromNow));
-    await Future<dynamic>.delayed(1000.milliseconds);
-  }
-
-  var _todayLength = 0;
-  var _tomorrowLength = 0;
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<TodayBloc, TodayState>(
-      builder: (context, state) {
-        if (state is TodayLoaded) {
-          _log.i(
-              'TodayLoaded: ${state.todayEntries}, ${state.tomorrowEntries}');
-          _log.i('Upcoming Task: ${state.upcomingTasks}');
-
-          _entries.clear();
-          _entries
-            ..addAll(state.todayEntries)
-            ..addAll(state.tomorrowEntries ?? [])
-            ..addAll(state.upcomingTasks ?? []);
-          if (_todayLength == 0) {
-            _todayLength = state.todayEntries.length;
-          }
-          if (_tomorrowLength == 0 && state.tomorrowEntries != null) {
-            _tomorrowLength = state.tomorrowEntries!.length;
-          }
-
-          _log.d(_entries.length);
-
-          return RefreshIndicator(
-            onRefresh: () async => _pullToRefresh(context),
-            child: ListView.builder(
-              padding: const EdgeInsets.only(top: 8, bottom: 40),
-              itemCount: _entries.length + 3, // add 3 header
-              itemBuilder: (BuildContext context, int index) {
-                if (index == 0) {
-                  return const TodayListHeader(text: 'Today');
-                }
-                if (index == (_todayLength + 1)) {
-                  return const TodayListHeader(text: 'Tomorrow');
-                }
-                if (index == (_todayLength + _tomorrowLength + 2)) {
-                  return const TodayListHeader(text: 'Upcoming Tasks');
-                }
-                index = (index < _todayLength + 1)
-                    ? index - 1
-                    : (index < (_todayLength + _tomorrowLength + 2))
-                        ? index - 2
-                        : index - 3;
-                // _log.i('Current Index: $index');
-                final _entry = _entries[index];
-                return ListItemWidget(
-                  title: _entry.title,
-                  color: _entry.color,
-                  type: _entry.type,
-                  startDateTime: _entry.startDateTime,
-                  endDateTime: _entry.endDateTime,
-                  eventID: _entry.calendarEventID,
-                  projectOrCal: _entry.projectOrCal,
-                );
-              },
-            ),
-          );
-
-          // return const FullScreenLoadingWidget();
-        } else if (state is TodayLoading) {
-          return const FullScreenLoadingWidget();
-        } else if (state is TodayError) {
-          return MessageDisplay(
-            message: state.message,
-          );
-        } else {
-          return const MessageDisplay(
-            message: 'Unexpected State',
-          );
-        }
-      },
-    );
-  }
-
-  List<TodayEntry> _getFilteredEntries(List<TodayEntry> entries) {
-    final _fetchedEntries =
-        entries.filter((TodayEntry entry) => entry.startDateTime != null);
-    final _allDayEntries =
-        entries.filter((entry) => entry.startDateTime == null);
-
-    return _allDayEntries +
-        _fetchedEntries.sortedBy((entry) => entry.startDateTime!);
-  }
-}
-
-class TodayListHeader extends StatelessWidget {
-  const TodayListHeader({
-    Key? key,
-    required this.text,
-  }) : super(key: key);
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: context.width,
-      child: Text(
-        text,
-        style: context.textTheme.headline5!.copyWith(
-          fontWeight: FontWeight.bold,
-          color: context.theme.colorScheme.primary,
-        ),
-      ).padding(top: 8, bottom: 4, left: 8),
-    );
   }
 }

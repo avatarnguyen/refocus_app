@@ -72,10 +72,10 @@ class ListItemWidget extends StatelessWidget {
             ),
             Icon(
               Icons.arrow_right,
-              size: 16,
+              size: 24,
               color: _textColor,
             ),
-            horizontalSpaceTiny,
+            // horizontalSpaceTiny,
             Text(
               title ?? '',
               overflow: TextOverflow.ellipsis,
@@ -92,7 +92,6 @@ class ListItemWidget extends StatelessWidget {
                 startDateTime != null
                     ? CustomDateUtils.returnTime(startDateTime!.toLocal())
                     : 'all day',
-                // 'ganztätig',
                 overflow: TextOverflow.clip,
                 textAlign: TextAlign.right,
                 maxLines: 1,
