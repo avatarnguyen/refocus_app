@@ -40,20 +40,18 @@ class _TodayListWidgetState extends State<TodayListWidget> {
   }
 
   void _dateTimeReceived(DateTime newDate) {
-    print('Date Time Received $newDate');
+    // print('Date Time Received $newDate');
     if (newDate.isToday) {
-      _selectedDate = null;
-      context.read<TodayBloc>()
-        ..add(GetTodayEntries(DateTime.now()))
-        ..add(GetTomorrowEntries(1.days.fromNow))
-        ..add(GetUpcomingTask(2.days.fromNow, 5.days.fromNow));
-      // setState(() {
-      // });
+      if (_selectedDate != null) {
+        _selectedDate = null;
+        context.read<TodayBloc>()
+          ..add(GetTodayEntries(DateTime.now()))
+          ..add(GetTomorrowEntries(1.days.fromNow))
+          ..add(GetUpcomingTask(2.days.fromNow, 5.days.fromNow));
+      }
     } else {
       _selectedDate = CustomDateUtils.returnDateWithDay(newDate);
       context.read<TodayBloc>().add(GetTodayEntries(newDate));
-      // setState(() {
-      // });
     }
   }
 

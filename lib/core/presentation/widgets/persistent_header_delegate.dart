@@ -4,6 +4,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
+import 'package:refocus_app/features/calendar/presentation/bloc/calendar/datetime_stream.dart';
+
+import 'package:refocus_app/injection.dart';
 
 class PersistentHeaderDelegate extends SliverPersistentHeaderDelegate {
   PersistentHeaderDelegate(this.title,
@@ -18,6 +21,8 @@ class PersistentHeaderDelegate extends SliverPersistentHeaderDelegate {
   final double? minSize;
   final TextStyle? textStyle;
   final EdgeInsetsGeometry? contentPadding;
+
+  final DateTimeStream _dateTimeStream = getIt<DateTimeStream>();
 
   @override
   Widget build(
@@ -38,7 +43,9 @@ class PersistentHeaderDelegate extends SliverPersistentHeaderDelegate {
                   : Colors.grey[600],
             ),
       ),
-    );
+    ).gestures(onTap: () {
+      _dateTimeStream.broadCastCurrentDate(DateTime.now());
+    });
   }
 
   @override
