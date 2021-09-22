@@ -4,9 +4,10 @@ import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify.dart';
+import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get/get.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:refocus_app/amplifyconfiguration.dart';
 import 'package:refocus_app/core/presentation/helper/page_stream.dart';
@@ -105,8 +106,8 @@ class _HomePageWidgetState extends State<HomePageWidget> {
     return _drawerBody(context);
   }
 
-  Scaffold _drawerBody(BuildContext context) {
-    return Scaffold(
+  PlatformScaffold _drawerBody(BuildContext context) {
+    return PlatformScaffold(
       body: SlidingSheet(
         color: kcDarkBackground,
         isBackdropInteractable: true,

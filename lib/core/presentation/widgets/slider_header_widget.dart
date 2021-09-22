@@ -1,15 +1,12 @@
-import 'dart:async';
-
+import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get/get.dart' as getx;
-import 'package:refocus_app/core/presentation/pages/quickadd_page.dart';
-import 'package:refocus_app/core/presentation/helper/page_stream.dart';
+import 'package:refocus_app/config/routes/router.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
-import 'package:refocus_app/features/task/presentation/bloc/project_bloc.dart';
-import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
+import 'package:refocus_app/features/calendar/presentation/bloc/calendar/datetime_stream.dart';
 import 'package:refocus_app/injection.dart';
+import 'package:sliding_sheet/sliding_sheet.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class SlidingHeaderWidget extends StatefulWidget {
   const SlidingHeaderWidget({
@@ -21,6 +18,8 @@ class SlidingHeaderWidget extends StatefulWidget {
 }
 
 class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
+  final DateTimeStream _dateTimeStream = getIt<DateTimeStream>();
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -35,7 +34,9 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
           Icons.calendar_today,
           color: kcSecondary100,
           size: 24,
-        ).gestures(onTap: () {}),
+        ).gestures(onTap: () {
+          showDatePickerBottomSheet(context);
+        }),
         [
           Text(
             'All',
@@ -57,26 +58,68 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
           Icons.add,
           color: kcSecondary100,
           size: 33,
-        ).gestures(
-          onTap: () => getx.Get.to<dynamic>(
-            () => MultiBlocProvider(
-              providers: [
-                BlocProvider<ProjectBloc>.value(
-                  value: BlocProvider.of<ProjectBloc>(context),
-                ),
-                BlocProvider<TaskBloc>.value(
-                  value: BlocProvider.of<TaskBloc>(context),
-                ),
-              ],
-              child: const QuickAddPage(),
-            ),
-            fullscreenDialog: true,
-            transition: getx.Transition.fade,
-          ),
-        ),
+        ).gestures(onTap: () {
+          context.router.push(const QuickAddRoute());
+        }),
       ].toRow(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
       ),
     );
+  }
+
+  dynamic showDatePickerBottomSheet(
+    BuildContext parentContext,
+  ) async {
+    final dynamic result = await showSlidingBottomSheet<dynamic>(
+      context,
+      builder: (context) {
+        return SlidingSheetDialog(
+          elevation: 8,
+          cornerRadius: 16,
+          duration: 500.milliseconds,
+          color: context.backgroundColor,
+          snapSpec: const SnapSpec(
+            initialSnap: 0.5,
+            snappings: [0.1, 0.7],
+          ),
+          minHeight: parentContext.height / 2.5,
+          // headerBuilder: (context, state) {
+          // },
+          builder: (context, state) {
+            return SafeArea(
+              top: false,
+              child: SizedBox(
+                height: 360,
+                child: SfDateRangePicker(
+                  initialSelectedDate: DateTime.now(),
+                  showActionButtons: true,
+                  selectionColor: parentContext.colorScheme.secondary,
+                  todayHighlightColor: parentContext.colorScheme.secondary,
+                  onCancel: () {
+                    _dateTimeStream.broadCastCurrentDate(DateTime.now());
+                    context.router.pop();
+                  },
+                  onSelectionChanged: _onSelectionChanged,
+                  onSubmit: (Object value) {
+                    if (value is DateTime) {
+                      // _dateTimeStream.broadCastCurrentDate(value);
+                      context.router.pop();
+                    }
+                  },
+                ).padding(all: 8),
+              ),
+            );
+          },
+        );
+      },
+    );
+    return result;
+  }
+
+  void _onSelectionChanged(DateRangePickerSelectionChangedArgs args) {
+    final dynamic _picked = args.value;
+    if (_picked is DateTime) {
+      _dateTimeStream.broadCastCurrentDate(_picked);
+    }
   }
 }

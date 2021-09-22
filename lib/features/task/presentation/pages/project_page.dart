@@ -1,8 +1,8 @@
 import 'dart:developer';
 
+import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get/get.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/features/calendar/presentation/widgets/widgets.dart';
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
@@ -91,7 +91,7 @@ class _ProjectItemState extends State<ProjectItem> {
     return [
       Text(
         _currentProject.title!,
-        style: context.textTheme.bodyText1!.copyWith(
+        style: context.bodyText1.copyWith(
           color: _textColor,
         ),
       ),
@@ -100,11 +100,11 @@ class _ProjectItemState extends State<ProjectItem> {
         padding: const EdgeInsets.symmetric(horizontal: 8),
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         visualDensity: const VisualDensity(vertical: -2),
-        label: Text('10', style: context.textTheme.subtitle1),
+        label: Text('10', style: context.subtitle1),
       ),
     ]
         .toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween)
-        .paddingAll(16)
+        .padding(all: 16)
         .ripple()
         .card(
           color: _backgroundColor,
@@ -117,7 +117,11 @@ class _ProjectItemState extends State<ProjectItem> {
             borderRadius: BorderRadius.circular(8),
           ),
         )
-        .gestures(onTap: () => showTaskBottomSheet(context, _currentProject));
+        .gestures(
+      onTap: () {
+        showTaskBottomSheet(context, _currentProject);
+      },
+    );
   }
 
   //TODO: Change to 'customBuilder' when sliding sheet release new version
@@ -134,7 +138,7 @@ class _ProjectItemState extends State<ProjectItem> {
           elevation: 8,
           cornerRadius: 16,
           duration: 500.milliseconds,
-          color: context.theme.backgroundColor,
+          color: context.backgroundColor,
           snapSpec: const SnapSpec(
             initialSnap: 0.86,
             snappings: [0.4, 0.86],
@@ -168,7 +172,7 @@ class TaskPageHeaderWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        color: context.theme.backgroundColor,
+        color: context.backgroundColor,
         height: 56,
         width: double.infinity,
         child: [
@@ -177,25 +181,23 @@ class TaskPageHeaderWidget extends StatelessWidget {
             color: kcPrimary500,
             size: 28,
           )
-              .paddingAll(4)
+              .padding(all: 4)
               .decorated(
-                  color: kcPrimary100,
-                  borderRadius: BorderRadius.circular(12.0))
+                  color: kcPrimary100, borderRadius: BorderRadius.circular(12))
               .ripple()
-              .paddingOnly(left: 16)
-              .gestures(onTap: Get.back),
+              .padding(left: 16)
+              .gestures(onTap: context.router.pop),
           const Icon(
             Icons.add,
             color: kcPrimary500,
             size: 28,
           )
-              .paddingAll(4)
+              .padding(all: 4)
               .decorated(
-                  color: kcPrimary100,
-                  borderRadius: BorderRadius.circular(12.0))
+                  color: kcPrimary100, borderRadius: BorderRadius.circular(12))
               .ripple()
-              .paddingOnly(right: 16)
-              .gestures(onTap: Get.back),
+              .padding(right: 16)
+              .gestures(onTap: context.router.pop),
         ].toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween));
   }
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get/get.dart';
 import 'package:refocus_app/core/presentation/widgets/add_page_widgets/due_datetime_widget.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/prio_type.dart';
@@ -12,6 +11,7 @@ import 'package:refocus_app/features/task/domain/usecases/helpers/project_params
 import 'package:refocus_app/features/task/domain/usecases/helpers/task_params.dart';
 import 'package:refocus_app/features/task/presentation/bloc/project_bloc.dart';
 import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
+import 'package:styled_widget/styled_widget.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../injection.dart';
@@ -119,34 +119,37 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
         itemCount: items.length,
         itemBuilder: (context, index) {
           final dynamic _item = items[index];
-          return ChoiceChip(
-            backgroundColor: kcPrimary800,
-            selectedColor: context.theme.colorScheme.secondary,
-            shape: RoundedRectangleBorder(
-              side: const BorderSide(color: kcPrimary100),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            label: Text(
-              _getItemString(_item),
-              style: context.textTheme.subtitle1!.copyWith(
-                color: kcPrimary100,
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: ChoiceChip(
+              backgroundColor: kcPrimary800,
+              selectedColor: context.colorScheme.secondary,
+              shape: RoundedRectangleBorder(
+                side: const BorderSide(color: kcPrimary100),
+                borderRadius: BorderRadius.circular(8),
               ),
+              label: Text(
+                _getItemString(_item),
+                style: context.subtitle1.copyWith(
+                  color: kcPrimary100,
+                ),
+              ),
+              selected:
+                  _settingOption.projectEntry == _item || _currentPrio == _item,
+              onSelected: (bool selected) {
+                setState(() {
+                  if (_item is ProjectEntry) {
+                    _settingOption.projectEntry = _item;
+                    _settingOption.broadCastCurrentProjectEntry(_item);
+                  }
+                  if (_item is PrioType) {
+                    _currentPrio = _item;
+                    _mapPrioTypeToAction(_item, currentText ?? '');
+                  }
+                });
+              },
             ),
-            selected:
-                _settingOption.projectEntry == _item || _currentPrio == _item,
-            onSelected: (bool selected) {
-              setState(() {
-                if (_item is ProjectEntry) {
-                  _settingOption.projectEntry = _item;
-                  _settingOption.broadCastCurrentProjectEntry(_item);
-                }
-                if (_item is PrioType) {
-                  _currentPrio = _item;
-                  _mapPrioTypeToAction(_item, currentText ?? '');
-                }
-              });
-            },
-          ).paddingSymmetric(horizontal: 4.0);
+          );
         },
       ),
     );
@@ -181,14 +184,13 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
         ).gestures(onTap: () {
           _settingOption.projectEntry = null;
           _settingOption.broadCastCurrentProjectEntry(null);
-          //ignore:
-          Get.back<dynamic>();
+          context.router.pop();
         }),
         [
           // Adding project (default: Inbox)
           _buildActionItem(Icons.folder,
                   color: _onSelectingProject
-                      ? context.theme.colorScheme.secondary
+                      ? context.colorScheme.secondary
                       : kcSecondary200)
               .gestures(onTap: () {
             setState(() {
@@ -201,7 +203,7 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
           //* Adding due dates and reminder
           _buildActionItem(Icons.calendar_today,
                   color: _onSelectingDueDate
-                      ? context.theme.colorScheme.secondary
+                      ? context.colorScheme.secondary
                       : kcSecondary200)
               .gestures(onTap: () {
             setState(() {
@@ -214,7 +216,7 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
           _buildActionItem(
             Icons.alarm_add,
             color: _onSelectingReminder
-                ? context.theme.colorScheme.secondary
+                ? context.colorScheme.secondary
                 : kcSecondary200,
           ).gestures(onTap: () {
             setState(() {
@@ -228,7 +230,7 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
           _buildActionItem(
             Icons.flag,
             color: _onSelectingPrio
-                ? context.theme.colorScheme.secondary
+                ? context.colorScheme.secondary
                 : kcSecondary200,
           ).gestures(onTap: () {
             if (_currentPrio == null) {
@@ -247,7 +249,7 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
             onTap: () {},
           ),
           //* Adding Contact
-          // Text('@', style: context.textTheme.bodyText1!.copyWith(
+          // Text('@', style: context.bodyText1!.copyWith(
           //   color: kcSecondary100,
           // );)
           //     .padding(horizontal: 8)
@@ -262,7 +264,7 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
         Icon(
           Icons.send,
           size: 26,
-          color: context.theme.primaryColor,
+          color: context.primaryColor,
         ).gestures(
           onTap: () {
             if (_settingOption.type == TodayEntryType.project) {
@@ -297,7 +299,7 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
                     ),
                   );
             }
-            Get.back();
+            context.router.pop();
           },
         ),
         // horizontalSpaceTiny,

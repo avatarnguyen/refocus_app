@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:get/get_utils/src/extensions/context_extensions.dart';
+import 'package:refocus_app/core/util/ui/ui_helper.dart';
 
 class PersistentHeaderDelegate extends SliverPersistentHeaderDelegate {
   PersistentHeaderDelegate(this.title,
@@ -24,15 +24,15 @@ class PersistentHeaderDelegate extends SliverPersistentHeaderDelegate {
       BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Container(
       padding: contentPadding ?? const EdgeInsets.only(left: 18, bottom: 8),
-      color: backgroundColor ?? context.theme.backgroundColor,
+      color: backgroundColor ?? context.backgroundColor,
       child: Text(
         title,
         overflow: TextOverflow.clip,
         maxLines: 1,
         softWrap: true,
-        textScaleFactor: context.mediaQuery.textScaleFactor,
+        textScaleFactor: context.textScaleFactor,
         style: textStyle ??
-            context.textTheme.bodyText2!.copyWith(
+            context.bodyText2.copyWith(
               color: Platform.isIOS
                   ? CupertinoColors.systemGrey
                   : Colors.grey[600],
@@ -42,7 +42,7 @@ class PersistentHeaderDelegate extends SliverPersistentHeaderDelegate {
   }
 
   @override
-  double get maxExtent => maxSize ?? 32;
+  double get maxExtent => maxSize ?? 40;
 
   @override
   double get minExtent => minSize ?? 24;

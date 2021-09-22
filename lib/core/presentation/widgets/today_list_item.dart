@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get/get.dart';
 import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/today_entry_type.dart';
@@ -50,7 +49,7 @@ class ListItemWidget extends StatelessWidget {
     // final _chipColor = StyleUtils.lighten(_color, 0.32);
     final _textColor = StyleUtils.darken(_color, 0.32);
 
-    final _timelineTextStyle = context.textTheme.subtitle2!.copyWith(
+    final _timelineTextStyle = context.subtitle2.copyWith(
       color: kcPrimary800,
     );
 
@@ -81,11 +80,11 @@ class ListItemWidget extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               maxLines: 1,
               textScaleFactor: context.textScaleFactor,
-              style: context.textTheme.caption!.copyWith(
+              style: context.caption.copyWith(
                 color: _textColor,
               ),
             ).expanded(),
-          ].toRow().marginAll(6).opacity(_isPassed ? 0.6 : 1.0)
+          ].toRow().opacity(_isPassed ? 0.6 : 1.0).padding(all: 6)
         : [
             [
               Text(
@@ -133,24 +132,28 @@ class ListItemWidget extends StatelessWidget {
               child: [
                 [
                   if (_isTask)
-                    Checkbox(
-                      tristate: true,
-                      visualDensity: const VisualDensity(
-                        horizontal: VisualDensity.minimumDensity,
-                        vertical: VisualDensity.minimumDensity,
-                      ),
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      fillColor: MaterialStateProperty.resolveWith(getColor),
-                      value: false,
-                      shape: const CircleBorder(
-                          side: BorderSide(width: 8, color: Colors.blue)),
-                      onChanged: (bool? selected) => context
-                          .read<TaskBloc>()
-                          .add(EditTaskEntryEvent(params: TaskParams())),
-                    ).paddingOnly(right: 8)
+                    Material(
+                      color: Colors.transparent,
+                      child: Checkbox(
+                        tristate: true,
+                        visualDensity: const VisualDensity(
+                          horizontal: VisualDensity.minimumDensity,
+                          vertical: VisualDensity.minimumDensity,
+                        ),
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        fillColor: MaterialStateProperty.resolveWith(getColor),
+                        value: false,
+                        shape: const CircleBorder(
+                            side: BorderSide(width: 8, color: Colors.blue)),
+                        onChanged: (bool? selected) => context
+                            .read<TaskBloc>()
+                            .add(
+                                const EditTaskEntryEvent(params: TaskParams())),
+                      ).padding(right: 8),
+                    )
                   else
                     Icon(Icons.calendar_today, color: _textColor, size: 22)
-                        .paddingOnly(right: 10, left: 2)
+                        .padding(right: 10, left: 2)
                         .gestures(onTap: () {
                       print('Select Time Block');
                     }),
@@ -159,7 +162,7 @@ class ListItemWidget extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     maxLines: 2,
                     textScaleFactor: context.textScaleFactor,
-                    style: context.textTheme.bodyText1!.copyWith(
+                    style: context.bodyText1.copyWith(
                       color: _textColor,
                       fontSize: kSmallTextSize,
                     ),
@@ -171,7 +174,9 @@ class ListItemWidget extends StatelessWidget {
                 // const InsideTaskItem(),
               ].toColumn(mainAxisSize: MainAxisSize.min),
             ),
-          ].toRow(crossAxisAlignment: CrossAxisAlignment.start).marginAll(6);
+          ]
+            .toRow(crossAxisAlignment: CrossAxisAlignment.start)
+            .padding(all: 6); //.marginAll(6);
   }
 
   // Get Checkbox color, depends on state

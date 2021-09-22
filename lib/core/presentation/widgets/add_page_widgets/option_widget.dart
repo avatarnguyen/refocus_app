@@ -1,10 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:refocus_app/core/util/ui/style_helpers.dart';
+import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/today_entry_type.dart';
 import 'package:refocus_app/injection.dart';
 import 'package:styled_widget/styled_widget.dart';
-import 'package:get/get.dart';
 
 import '../../helper/setting_option.dart';
 
@@ -65,7 +64,7 @@ class _OptionRowWidgetState extends State<OptionRowWidget> {
         icon,
         size: 24,
         color: entryType == type ? kcSecondary100 : Colors.white24,
-      ).paddingOnly(bottom: 8),
+      ).padding(bottom: 8),
       Text(
         text ?? '',
         maxLines: 2,
@@ -74,6 +73,6 @@ class _OptionRowWidgetState extends State<OptionRowWidget> {
           color: entryType == type ? kcSecondary100 : Colors.white24,
         ),
       ).padding(horizontal: 2).flexible(),
-    ].toColumn(mainAxisAlignment: MainAxisAlignment.start);
+    ].toColumn();
   }
 }

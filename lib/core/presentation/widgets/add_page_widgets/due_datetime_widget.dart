@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:dartx/dartx.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:refocus_app/core/presentation/helper/setting_option.dart';
 import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
@@ -133,7 +132,7 @@ class _DueDateTimeWidgetState extends State<DueDateTimeWidget> {
           final _item = _dueDateSelectionItems[index];
           return ChoiceChip(
             backgroundColor: kcPrimary800,
-            selectedColor: context.theme.colorScheme.secondary,
+            selectedColor: context.colorScheme.secondary,
             shape: RoundedRectangleBorder(
               side: const BorderSide(color: kcPrimary100),
               borderRadius: BorderRadius.circular(8),
@@ -151,7 +150,7 @@ class _DueDateTimeWidgetState extends State<DueDateTimeWidget> {
                 _mapSelectionToStream(_item, widget.currentText);
               });
             },
-          ).paddingSymmetric(horizontal: 4);
+          ).paddingDirectional(horizontal: 4);
         },
       ),
     );
@@ -256,7 +255,7 @@ class _DueDateTimeWidgetState extends State<DueDateTimeWidget> {
     }
     showModalBottomSheet<dynamic>(
       context: context,
-      backgroundColor: context.theme.backgroundColor,
+      backgroundColor: context.backgroundColor,
       builder: (BuildContext builder) {
         return [
           Container(
@@ -278,7 +277,7 @@ class _DueDateTimeWidgetState extends State<DueDateTimeWidget> {
                 }
               },
               initialDateTime: _currentDateTime,
-              use24hFormat: context.mediaQuery.alwaysUse24HourFormat,
+              use24hFormat: MediaQuery.of(context).alwaysUse24HourFormat,
               minimumYear: DateTime.now().year,
               maximumYear: DateTime.now().year + 4,
             ),
@@ -295,11 +294,11 @@ class _DueDateTimeWidgetState extends State<DueDateTimeWidget> {
                   _dueDate = DateTime.now();
                 }
                 setState(() {});
-                Get.back();
+                context.router.pop();
               },
               child: Text(
                 'Clear',
-                style: context.textTheme.bodyText2!.copyWith(
+                style: context.bodyText2.copyWith(
                   color: Colors.redAccent,
                 ),
               ),
@@ -307,7 +306,7 @@ class _DueDateTimeWidgetState extends State<DueDateTimeWidget> {
             CupertinoButton(
               onPressed: () {
                 setState(() {});
-                Get.back();
+                context.router.pop();
               },
               child: const Text('Done'),
             ),

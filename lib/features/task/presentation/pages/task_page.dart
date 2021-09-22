@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get/get_utils/src/extensions/context_extensions.dart';
 import 'package:intl/intl.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
@@ -54,7 +53,7 @@ class _TaskPageState extends State<TaskPage> {
                 message: 'Nothing todo here :)');
           }
           return Material(
-            color: context.theme.backgroundColor,
+            color: context.backgroundColor,
             child: ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),

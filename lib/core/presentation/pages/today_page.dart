@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:dartx/dartx.dart';
@@ -7,13 +8,13 @@ import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:refocus_app/core/presentation/bloc/today_bloc.dart';
 import 'package:refocus_app/core/presentation/widgets/persistent_header_delegate.dart';
 import 'package:refocus_app/core/presentation/widgets/today_list_widget.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart' as custom_log;
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
+import 'package:refocus_app/features/calendar/presentation/bloc/calendar/datetime_stream.dart';
 import 'package:refocus_app/injection.dart';
 
 class TodayPage extends StatefulWidget {
@@ -59,14 +60,20 @@ class _TodayPageState extends State<TodayPage> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    _sController.removeListener(() {});
+  }
+
+  @override
   Widget build(BuildContext context) {
     final today = DateTime.now();
 
     return BlocProvider<TodayBloc>(
-      create: (context) => getIt<TodayBloc>()
-        ..add(GetTodayEntries(DateTime.now()))
-        ..add(GetTomorrowEntries(1.days.fromNow))
-        ..add(GetUpcomingTask(2.days.fromNow, 5.days.fromNow)),
+      create: (context) => getIt<TodayBloc>(),
+      // ..add(GetTodayEntries(DateTime.now()))
+      // ..add(GetTomorrowEntries(1.days.fromNow))
+      // ..add(GetUpcomingTask(2.days.fromNow, 5.days.fromNow)),
       child: Platform.isIOS
           ? CupertinoPageScaffold(
               child: NestedScrollView(
@@ -190,11 +197,11 @@ class _TodayPageState extends State<TodayPage> {
 
   String _getGreeting() {
     final _currentHour = DateTime.now().hour;
-    if (_currentHour.isGreaterThan(11) && _currentHour.isLowerThan(18)) {
+    if (_currentHour > 11 && _currentHour < 18) {
       return 'Good Afternoon!';
-    } else if (_currentHour.isGreaterThan(5) && _currentHour.isLowerThan(12)) {
+    } else if (_currentHour > 5 && _currentHour < 12) {
       return 'Good Morning!';
-    } else if (_currentHour.isGreaterThan(17) && _currentHour.isLowerThan(22)) {
+    } else if (_currentHour > 17 && _currentHour < 22) {
       return 'Good Evening!';
     } else {
       return 'Good Night!';

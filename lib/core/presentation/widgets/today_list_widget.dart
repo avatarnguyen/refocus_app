@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:dartx/dartx.dart';
@@ -7,12 +8,14 @@ import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get/get.dart';
 import 'package:refocus_app/core/presentation/bloc/today_bloc.dart';
 import 'package:refocus_app/core/presentation/widgets/persistent_header_delegate.dart';
 import 'package:refocus_app/core/presentation/widgets/today_list_item.dart';
+import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
+import 'package:refocus_app/features/calendar/presentation/bloc/calendar/datetime_stream.dart';
 import 'package:refocus_app/features/calendar/presentation/widgets/widgets.dart';
+import 'package:refocus_app/injection.dart';
 
 class TodayListWidget extends StatefulWidget {
   const TodayListWidget({
@@ -24,6 +27,42 @@ class TodayListWidget extends StatefulWidget {
 }
 
 class _TodayListWidgetState extends State<TodayListWidget> {
+  final DateTimeStream _dateTimeStream = getIt<DateTimeStream>();
+  StreamSubscription<DateTime>? _dateTimeSubscription;
+
+  String? _selectedDate;
+
+  @override
+  void initState() {
+    _dateTimeSubscription =
+        _dateTimeStream.dateTimeStream.listen(_dateTimeReceived);
+    super.initState();
+  }
+
+  void _dateTimeReceived(DateTime newDate) {
+    print('Date Time Received $newDate');
+    if (newDate.isToday) {
+      _selectedDate = null;
+      context.read<TodayBloc>()
+        ..add(GetTodayEntries(DateTime.now()))
+        ..add(GetTomorrowEntries(1.days.fromNow))
+        ..add(GetUpcomingTask(2.days.fromNow, 5.days.fromNow));
+      // setState(() {
+      // });
+    } else {
+      _selectedDate = CustomDateUtils.returnDateWithDay(newDate);
+      context.read<TodayBloc>().add(GetTodayEntries(newDate));
+      // setState(() {
+      // });
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _dateTimeSubscription?.cancel();
+  }
+
   // final _log = logger(TodayListWidget);
   Future<void> _pullToRefresh(BuildContext context) async {
     context.read<TodayBloc>()
@@ -37,9 +76,9 @@ class _TodayListWidgetState extends State<TodayListWidget> {
   Widget build(BuildContext context) {
     final _headerTextStyle = context.textTheme.headline5!.copyWith(
       fontWeight: FontWeight.bold,
-      color: context.theme.colorScheme.primary,
+      color: context.colorScheme.primary,
     );
-    const _headerPadding = EdgeInsets.only(left: 10, bottom: 8);
+    const _headerPadding = EdgeInsets.only(left: 10, bottom: 8, top: 4);
 
     return BlocBuilder<TodayBloc, TodayState>(
       builder: (context, state) {
@@ -84,7 +123,7 @@ class _TodayListWidgetState extends State<TodayListWidget> {
           padding: const EdgeInsets.only(top: 8),
           sliver: SliverPersistentHeader(
             delegate: PersistentHeaderDelegate(
-              'Today',
+              _selectedDate ?? 'Today',
               contentPadding: _headerPadding,
               textStyle: _headerTextStyle,
             ),
@@ -104,13 +143,14 @@ class _TodayListWidgetState extends State<TodayListWidget> {
             );
           }, childCount: state.todayEntries.length),
         ),
-        SliverPersistentHeader(
-          delegate: PersistentHeaderDelegate(
-            'Tomorrow',
-            contentPadding: _headerPadding,
-            textStyle: _headerTextStyle,
+        if (_selectedDate == null)
+          SliverPersistentHeader(
+            delegate: PersistentHeaderDelegate(
+              'Tomorrow',
+              contentPadding: _headerPadding,
+              textStyle: _headerTextStyle,
+            ),
           ),
-        ),
         if (state.tomorrowEntries != null)
           SliverList(
             delegate: SliverChildBuilderDelegate((context, index) {
@@ -127,13 +167,14 @@ class _TodayListWidgetState extends State<TodayListWidget> {
               );
             }, childCount: state.tomorrowEntries!.length),
           ),
-        SliverPersistentHeader(
-          delegate: PersistentHeaderDelegate(
-            'Upcoming Task',
-            contentPadding: _headerPadding,
-            textStyle: _headerTextStyle,
+        if (_selectedDate == null)
+          SliverPersistentHeader(
+            delegate: PersistentHeaderDelegate(
+              'Upcoming Task',
+              contentPadding: _headerPadding,
+              textStyle: _headerTextStyle,
+            ),
           ),
-        ),
         if (state.upcomingTasks != null)
           SliverList(
             delegate: SliverChildBuilderDelegate((context, index) {
@@ -152,16 +193,6 @@ class _TodayListWidgetState extends State<TodayListWidget> {
       ],
     );
   }
-
-//   List<TodayEntry> _getFilteredEntries(List<TodayEntry> entries) {
-//     final _fetchedEntries =
-//         entries.filter((TodayEntry entry) => entry.startDateTime != null);
-//     final _allDayEntries =
-//         entries.filter((entry) => entry.startDateTime == null);
-
-//     return _allDayEntries +
-//         _fetchedEntries.sortedBy((entry) => entry.startDateTime!);
-//   }
 }
 
 class TodayListHeader extends StatelessWidget {
@@ -180,7 +211,7 @@ class TodayListHeader extends StatelessWidget {
         text,
         style: context.textTheme.headline5!.copyWith(
           fontWeight: FontWeight.bold,
-          color: context.theme.colorScheme.primary,
+          color: context.colorScheme.primary,
         ),
       ).padding(top: 8, bottom: 4, left: 8),
     );

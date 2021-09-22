@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
-import 'package:get/get.dart';
 
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 

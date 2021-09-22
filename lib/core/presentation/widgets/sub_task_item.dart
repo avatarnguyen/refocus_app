@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get_utils/src/extensions/context_extensions.dart';
-import 'package:get/get_utils/src/extensions/widget_extensions.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:styled_widget/styled_widget.dart';
 
@@ -23,7 +21,7 @@ class InsideTaskItem extends StatelessWidget {
           color: kcPrimary700,
         ),
       ).expanded(),
-    ].toRow().paddingOnly(left: 30, right: 16).gestures(onTap: () {
+    ].toRow().padding(left: 30, right: 16).gestures(onTap: () {
       print('Check');
     });
   }

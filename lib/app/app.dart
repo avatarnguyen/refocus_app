@@ -6,12 +6,15 @@
 // https://opensource.org/licenses/MIT.
 
 // Amplify Flutter Packages
+import 'dart:developer';
+
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:get/get.dart';
-import 'package:get/get_navigation/src/routes/get_route.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:intl/intl.dart';
+import 'package:refocus_app/config/routes/router.dart';
 import 'package:refocus_app/constants/routes_name.dart';
 import 'package:refocus_app/core/presentation/pages/home_page.dart';
 import 'package:refocus_app/core/presentation/pages/quickadd_page.dart';
@@ -31,6 +34,7 @@ class App extends StatefulWidget {
 
 class _AppState extends State<App> {
   final log = logger(App);
+  final _appRouter = AppRouter();
 
   @override
   void initState() {
@@ -54,7 +58,7 @@ class _AppState extends State<App> {
       subtitle2: kXSmallStyleRegular,
     );
     final _materialThemeData = ThemeData(
-      accentColor: kcTertiary500,
+      // accentColor: kcTertiary500,
       appBarTheme: const AppBarTheme(color: kcPrimary500),
       backgroundColor: kcLightBackground,
       colorScheme: const ColorScheme(
@@ -73,68 +77,31 @@ class _AppState extends State<App> {
         brightness: Brightness.light,
       ),
       textTheme: _materialTextTheme,
+      brightness: Brightness.light,
     );
 
-    const _cupertinoThemeData = CupertinoThemeData(
-      primaryColor: kcPrimary500,
-      primaryContrastingColor: CupertinoColors.black,
-      scaffoldBackgroundColor: kcLightBackground,
-      barBackgroundColor: kcSecondary500,
-      textTheme: CupertinoTextThemeData(
-        primaryColor: kcPrimary500,
-        navLargeTitleTextStyle: kHeadline2StyleBold,
-        navTitleTextStyle: kHeadline1StyleRegular,
-        navActionTextStyle: kCaptionStyleRegular,
-        textStyle: kBodyStyleRegular,
+    return MaterialApp.router(
+      routerDelegate: _appRouter.delegate(
+        navigatorObservers: () => [
+          AppRouteObserver(),
+        ],
       ),
-    );
-
-    return GetMaterialApp(
-      initialRoute: '/',
-      getPages: [
-        GetPage<dynamic>(name: '/', page: () => const HomePage()),
-        GetPage<dynamic>(
-          name: rCalendarListPage,
-          page: () => const CalendarListPage(),
-          fullscreenDialog: true,
-          transition: Transition.cupertinoDialog,
-        ),
-        GetPage<dynamic>(
-          name: rAddNewPage,
-          page: () => const QuickAddPage(),
-          fullscreenDialog: true,
-          transition: Transition.fade,
-        )
-      ],
-      theme: _materialThemeData,
+      routeInformationParser: _appRouter.defaultRouteParser(),
+      routeInformationProvider: AutoRouteInformationProvider(),
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
       ],
       supportedLocales: AppLocalizations.supportedLocales,
+      theme: _materialThemeData,
+      themeMode: ThemeMode.light,
     );
-    // return PlatformWidget(
-    // cupertino: (context, platform) => GetCupertinoApp(
-    //   color: ,
-    //   initialRoute: '/',
-    //   getPages: _getPagesList,
-    //   theme: _cupertinoThemeData,
-    //   localizationsDelegates: const [
-    //     AppLocalizations.delegate,
-    //     GlobalCupertinoLocalizations.delegate,
-    //   ],
-    //   supporteLocales: AppLocalizations.supportedLocales,
-    // ),
-    //   material: (context, platform) => GetMaterialApp(
-    //     initialRoute: '/',
-    //     getPages: _getPagesList,
-    //     theme: _materialThemeData,
-    //     localizationsDelegates: const [
-    //       AppLocalizations.delegate,
-    //       GlobalMaterialLocalizations.delegate,
-    //     ],
-    //     supportedLocales: AppLocalizations.supportedLocales,
-    //   ),
-    // );
+  }
+}
+
+class AppRouteObserver extends AutoRouterObserver {
+  @override
+  void didPush(Route route, Route? previousRoute) {
+    log('New route pushed: ${route.settings.name}');
   }
 }

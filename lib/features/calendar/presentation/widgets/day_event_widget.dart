@@ -1,6 +1,6 @@
+import 'package:awesome_flutter_extensions/all.dart';
 import 'package:flutter/material.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
-import 'package:get/get.dart';
 
 class DayEventCellWidget extends StatelessWidget {
   const DayEventCellWidget({
@@ -31,7 +31,7 @@ class DayEventCellWidget extends StatelessWidget {
       child: Text(
         event.subject,
         textAlign: TextAlign.center,
-        style: context.textTheme.subtitle2!.copyWith(
+        style: context.subtitle2.copyWith(
           color: textColor,
         ),
       ),

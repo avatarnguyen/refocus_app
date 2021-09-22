@@ -1,29 +1,22 @@
 import 'dart:async';
 
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:get/get_utils/src/extensions/context_extensions.dart';
-import 'package:get/route_manager.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:refocus_app/constants/routes_name.dart';
+import 'package:refocus_app/config/routes/router.dart';
 import 'package:refocus_app/core/util/helpers/date_utils.dart'
     as custom_date_tils;
 import 'package:refocus_app/core/util/helpers/logging.dart' as custom_log;
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
-
-import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
-import 'package:refocus_app/features/calendar/domain/usecases/helpers/event_params.dart';
+import 'package:refocus_app/features/calendar/presentation/bloc/calendar/calendar_bloc.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar/datetime_stream.dart';
 import 'package:refocus_app/features/calendar/presentation/widgets/calendar_monthview_widget.dart';
 import 'package:refocus_app/features/calendar/presentation/widgets/calendarview_widget.dart';
-import 'package:refocus_app/features/calendar/presentation/widgets/datepicker_widget.dart';
+import 'package:refocus_app/features/calendar/presentation/widgets/widgets.dart';
 import 'package:refocus_app/injection.dart';
-
 import 'package:uuid/uuid.dart';
-
-import '../bloc/calendar/calendar_bloc.dart';
-import '../widgets/widgets.dart';
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({Key? key}) : super(key: key);
@@ -106,7 +99,6 @@ class _CalendarWidgetState extends State<CalendarWidget> {
       backgroundColor: kcLightBackground,
       body: <Widget>[
         [
-          // verticalSpaceRegular,
           [
             const Icon(
               Icons.calendar_view_day,
@@ -114,7 +106,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
               color: kcPrimary500,
             ).ripple().gestures(
               onTap: () async {
-                await Get.toNamed<dynamic>(rCalendarListPage);
+                await context.router.push(const CalendarListRoute());
                 context.read<CalendarBloc>().add(GetCalendarEntries());
               },
             ),
@@ -139,7 +131,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                 overflow: TextOverflow.fade,
                 maxLines: 1,
                 softWrap: true,
-                textScaleFactor: context.mediaQuery.textScaleFactor,
+                textScaleFactor: context.textScaleFactor,
                 style: context.textTheme.bodyText2!.copyWith(
                   color: Colors.grey[600],
                 ),
