@@ -126,9 +126,9 @@ class _TodayPageState extends State<TodayPage> {
                     ),
                   ),
                 ],
-                body: const TodayListWidget().parent(
-                  ({required child}) => todayPage(context, child: child),
-                ),
+                body: const TodayListWidget(),
+              ).parent(
+                ({required child}) => todayPage(context, child: child),
               ),
             )
           : Scaffold(
@@ -187,9 +187,9 @@ class _TodayPageState extends State<TodayPage> {
                     ),
                   ),
                 ],
-                body: const TodayListWidget().parent(
-                  ({required child}) => todayPage(context, child: child),
-                ),
+                body: const TodayListWidget(),
+              ).parent(
+                ({required child}) => todayPage(context, child: child),
               ),
             ),
     );

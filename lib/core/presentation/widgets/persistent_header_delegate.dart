@@ -44,7 +44,9 @@ class PersistentHeaderDelegate extends SliverPersistentHeaderDelegate {
             ),
       ),
     ).gestures(onTap: () {
-      _dateTimeStream.broadCastCurrentDate(DateTime.now());
+      if (maxSize != null) {
+        _dateTimeStream.broadCastCurrentDate(DateTime.now());
+      }
     });
   }
 

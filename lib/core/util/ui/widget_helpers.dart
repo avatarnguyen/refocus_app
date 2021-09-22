@@ -8,7 +8,7 @@ Widget todayPage(BuildContext context, {required Widget child}) => SizedBox(
         SizedBox(
           height: 88,
           child: CustomPaint(painter: LinePainter()),
-        ).positioned(top: context.height * 0.3, left: 6),
+        ).positioned(top: context.height * 0.4, left: 6),
         Styled.widget(child: child).padding(bottom: 40, left: 8, right: 8),
       ].toStack(),
     );
