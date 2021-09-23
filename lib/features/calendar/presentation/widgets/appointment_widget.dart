@@ -46,6 +46,7 @@ class AppointmentEventCellWidget extends StatelessWidget {
                   ? context.textTheme.bodyText2!.copyWith(
                       color: textColor,
                       fontWeight: FontWeight.w500,
+                      fontSize: 16,
                     )
                   : kTinyStyleRegular.copyWith(
                       color: textColor,
@@ -64,7 +65,7 @@ class AppointmentEventCellWidget extends StatelessWidget {
               ),
               horizontalSpaceTiny,
               Text(
-                "${DateFormat('hh:mm a').format(event.startDateTime!)} - ${DateFormat('hh:mm a').format(event.endDateTime!)}",
+                "${DateFormat('hh:mm a').format(event.startDateTime!.toLocal())} - ${DateFormat('hh:mm a').format(event.endDateTime!.toLocal())}",
                 textScaleFactor: diff > 45 ? 1.0 : 0.7,
                 style: context.textTheme.subtitle2!.copyWith(
                   color: textColor.withOpacity(0.9),
@@ -74,20 +75,22 @@ class AppointmentEventCellWidget extends StatelessWidget {
             ]
                 .toRow()
                 .parent(({required child}) => SizedBox(
-                      child: child,
+                      child: Styled.widget(child: child),
                     ))
                 .flexible(),
         ]
             .toColumn(crossAxisAlignment: CrossAxisAlignment.start)
-            .parent(({required child}) => SizedBox(
-                  child: child,
-                ))
-            .expanded(flex: 6),
-        Icon(
-          Icons.more_horiz,
-          color: textColor,
-          size: diff > 20 ? 24 : 22,
-        ).flexible(),
+            .parent(
+              ({required child}) => SizedBox(
+                child: Styled.widget(child: child),
+              ),
+            )
+            .expanded(),
+        // Icon(
+        //   Icons.more_horiz,
+        //   color: textColor,
+        //   size: diff > 20 ? 24 : 22,
+        // ).flexible(),
       ].toRow(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,

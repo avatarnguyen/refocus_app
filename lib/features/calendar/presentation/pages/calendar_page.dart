@@ -120,7 +120,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
       body: <Widget>[
         [
           [
-            const SizedBox(height: 26, width: 24),
+            const SizedBox(height: 24, width: 24),
             const Icon(
               Icons.task_alt,
               size: 26,
@@ -128,23 +128,24 @@ class _CalendarWidgetState extends State<CalendarWidget> {
             ).ripple().gestures(onTap: () {
               widget.changePage();
             }),
-          ].toRow(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.end,
-          ),
-          verticalSpaceSmall,
+          ]
+              .toRow(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.end,
+              )
+              .padding(top: 10),
+          // verticalSpaceSmall,
           [
             [
               PlatformText(
                 today.year.toString(),
                 overflow: TextOverflow.fade,
-                style: context.textTheme.headline4!.copyWith(
+                style: context.textTheme.headline3!.copyWith(
                   fontWeight: FontWeight.w800,
                 ),
               ),
               PlatformText(
                 returnDate(today),
-                // custom_date_tils.CustomDateUtils.returnMonth(today),
                 overflow: TextOverflow.fade,
                 maxLines: 1,
                 softWrap: true,
@@ -159,7 +160,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
             }),
             // .padding(left: 6),
             Icon(
-              Icons.calendar_view_month_rounded,
+              CupertinoIcons.list_bullet_below_rectangle,
               size: 24,
               color: showMonthView ? kcPrimary600 : kcPrimary500,
             )
@@ -182,9 +183,8 @@ class _CalendarWidgetState extends State<CalendarWidget> {
         ]
             .toColumn(crossAxisAlignment: CrossAxisAlignment.start)
             .parent(headerContainer),
-        verticalSpaceSmall,
-        // if (!showMonthView) const DatePickerWidget(),
-        // if (showMonthView) verticalSpaceMedium,
+
+        if (showMonthView) verticalSpaceRegular else verticalSpaceTiny,
         // Calendar View
         BlocBuilder<CalendarBloc, CalendarState>(
           builder: (context, state) {
