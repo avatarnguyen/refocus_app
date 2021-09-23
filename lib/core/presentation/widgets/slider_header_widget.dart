@@ -175,6 +175,7 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
         CupertinoSlidingSegmentedControl<int>(
           padding: const EdgeInsets.all(4),
           groupValue: _currentSegmentedIdx,
+          thumbColor: kcPrimary100,
           children: {
             0: _buildSegment('Calendars', 0),
             1: _buildSegment('Projects', 1),

@@ -1,12 +1,15 @@
 import 'dart:async';
 
 import 'package:auto_route/auto_route.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:intl/intl.dart';
 import 'package:refocus_app/config/routes/router.dart';
 import 'package:refocus_app/core/presentation/helper/page_stream.dart';
+import 'package:refocus_app/core/presentation/widgets/persistent_header_delegate.dart';
 import 'package:refocus_app/core/util/helpers/date_utils.dart'
     as custom_date_tils;
 import 'package:refocus_app/core/util/helpers/logging.dart' as custom_log;
@@ -20,7 +23,9 @@ import 'package:refocus_app/injection.dart';
 import 'package:uuid/uuid.dart';
 
 class CalendarPage extends StatefulWidget {
-  const CalendarPage({Key? key}) : super(key: key);
+  const CalendarPage({Key? key, required this.changePage}) : super(key: key);
+
+  final VoidCallback changePage;
 
   @override
   _CalendarPageState createState() => _CalendarPageState();
@@ -34,8 +39,14 @@ class _CalendarPageState extends State<CalendarPage>
 
     return BlocProvider<CalendarBloc>(
       create: (context) => getIt<CalendarBloc>(),
-      child: const CalendarWidget(),
+      child: CalendarWidget(
+        changePage: _changePage,
+      ),
     );
+  }
+
+  void _changePage() {
+    widget.changePage();
   }
 
   @override
@@ -45,7 +56,10 @@ class _CalendarPageState extends State<CalendarPage>
 class CalendarWidget extends StatefulWidget {
   const CalendarWidget({
     Key? key,
+    required this.changePage,
   }) : super(key: key);
+
+  final VoidCallback changePage;
 
   @override
   _CalendarWidgetState createState() => _CalendarWidgetState();
@@ -82,7 +96,6 @@ class _CalendarWidgetState extends State<CalendarWidget> {
             .add(GetCalendarEntries());
       }
     });
-    // _googleSignIn.signInSilently();
   }
 
   //! Should put sign in other page
@@ -94,6 +107,10 @@ class _CalendarWidgetState extends State<CalendarWidget> {
     }
   }
 
+  String returnDate(DateTime date) {
+    return DateFormat.MMMMEEEEd().format(date);
+  }
+
   @override
   Widget build(BuildContext context) {
     final today = DateTime.now();
@@ -103,23 +120,19 @@ class _CalendarWidgetState extends State<CalendarWidget> {
       body: <Widget>[
         [
           [
+            const SizedBox(height: 26, width: 24),
             const Icon(
-              Icons.calendar_view_day,
+              Icons.task_alt,
               size: 26,
               color: kcPrimary500,
-            ).ripple().gestures(
-              onTap: () async {
-                await context.router.push(const CalendarListRoute());
-                context.read<CalendarBloc>().add(GetCalendarEntries());
-              },
-            ),
-            const Icon(
-              Icons.inbox,
-              size: 26,
-              color: kcPrimary500,
-            ).ripple().gestures(onTap: () {}),
-          ].toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween),
-          verticalSpaceRegular,
+            ).ripple().gestures(onTap: () {
+              widget.changePage();
+            }),
+          ].toRow(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.end,
+          ),
+          verticalSpaceSmall,
           [
             [
               PlatformText(
@@ -130,7 +143,8 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                 ),
               ),
               PlatformText(
-                custom_date_tils.CustomDateUtils.returnMonth(today),
+                returnDate(today),
+                // custom_date_tils.CustomDateUtils.returnMonth(today),
                 overflow: TextOverflow.fade,
                 maxLines: 1,
                 softWrap: true,

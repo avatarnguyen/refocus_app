@@ -127,8 +127,8 @@ class _HomePageWidgetState extends State<HomePageWidget> {
         isBackdropInteractable: true,
         elevation: 16,
         cornerRadius: 16,
-        shadowColor: Colors.black26,
-        backdropColor: Colors.black12,
+        shadowColor: kcPrimary100,
+        backdropColor: Colors.black26,
         // addTopViewPaddingOnFullscreen: true,
         snapSpec: const SnapSpec(
           initialSnap: 0.09,
@@ -164,7 +164,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                 _currentPage = index;
               },
               children: [
-                const CalendarPage(),
+                CalendarPage(changePage: switchToPageView),
                 if (amplifyConfigured)
                   TodayPage(changePage: switchToPageView)
                 else

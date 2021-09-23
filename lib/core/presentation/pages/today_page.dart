@@ -75,60 +75,74 @@ class _TodayPageState extends State<TodayPage> {
       child: Platform.isIOS
           ? CupertinoPageScaffold(
               child: NestedScrollView(
-                controller: _sController,
-                headerSliverBuilder: (context, innerBoxIsScrolled) => [
-                  CupertinoSliverNavigationBar(
-                    border: null,
-                    backgroundColor: kcLightBackground,
-                    padding: const EdgeInsetsDirectional.all(8),
-                    largeTitle: !isAtTop
-                        ? Text(_getGreeting())
-                        : const Icon(CupertinoIcons.sun_max_fill),
-                    leading: [
-                      CupertinoButton(
-                        padding: EdgeInsets.zero,
-                        child: const Icon(CupertinoIcons.calendar),
-                        onPressed: () {
-                          widget.changePage();
-                        },
-                      ),
-                      CupertinoButton(
-                        padding: EdgeInsets.zero,
-                        child: const Icon(CupertinoIcons.search),
-                        onPressed: () {
-                          widget.changePage();
-                        },
-                      )
-                    ].toRow(mainAxisSize: MainAxisSize.min),
-                    trailing: SizedBox(
-                      child: [
-                        CupertinoButton(
-                          padding: EdgeInsets.zero,
-                          child: const Icon(CupertinoIcons.archivebox_fill),
-                          onPressed: () {},
-                        ),
-                        CupertinoButton(
-                          padding: EdgeInsets.zero,
-                          child: const Icon(CupertinoIcons.person_fill),
-                          onPressed: () {},
-                        ),
-                      ].toRow(mainAxisSize: MainAxisSize.min),
-                    ),
+              controller: _sController,
+              headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                CupertinoSliverNavigationBar(
+                  border: null,
+                  backgroundColor: kcLightBackground,
+                  padding: const EdgeInsetsDirectional.all(8),
+                  largeTitle: !isAtTop
+                      ? Text(_getGreeting())
+                      : const Icon(CupertinoIcons.sun_max_fill),
+                  leading: CupertinoButton(
+                    padding: EdgeInsets.zero,
+                    child: const Icon(CupertinoIcons.calendar),
+                    onPressed: () {
+                      widget.changePage();
+                    },
                   ),
-                  SliverPersistentHeader(
-                    pinned: true,
-                    delegate: PersistentHeaderDelegate(
-                      returnDate(today),
-                      minSize: 30,
-                      maxSize: 30,
-                    ),
+                  // [
+                  //   CupertinoButton(
+                  //     padding: EdgeInsets.zero,
+                  //     child: const Icon(CupertinoIcons.calendar),
+                  //     onPressed: () {
+                  //       widget.changePage();
+                  //     },
+                  //   ),
+                  //   CupertinoButton(
+                  //     padding: EdgeInsets.zero,
+                  //     child: const Icon(CupertinoIcons.search),
+                  //     onPressed: () {
+                  //       widget.changePage();
+                  //     },
+                  //   )
+                  // ].toRow(mainAxisSize: MainAxisSize.min),
+                  trailing: CupertinoButton(
+                    padding: EdgeInsets.zero,
+                    child: const Icon(CupertinoIcons.person_fill),
+                    onPressed: () {},
                   ),
-                ],
-                body: const TodayListWidget(),
-              ).parent(
-                ({required child}) => todayPage(context, child: child),
-              ),
+
+                  // SizedBox(
+                  //   child: [
+                  //     CupertinoButton(
+                  //       padding: EdgeInsets.zero,
+                  //       child: const Icon(CupertinoIcons.archivebox_fill),
+                  //       onPressed: () {},
+                  //     ),
+                  //     CupertinoButton(
+                  //       padding: EdgeInsets.zero,
+                  //       child: const Icon(CupertinoIcons.person_fill),
+                  //       onPressed: () {},
+                  //     ),
+                  //   ].toRow(mainAxisSize: MainAxisSize.min),
+                  // ),
+                ),
+                SliverPersistentHeader(
+                  pinned: true,
+                  delegate: PersistentHeaderDelegate(
+                    returnDate(today),
+                    minSize: 30,
+                    maxSize: 30,
+                  ),
+                ),
+              ],
+              body: const TodayListWidget().padding(horizontal: 8),
             )
+              // .parent(
+              //   ({required child}) => todayPage(context, child: child),
+              // ),
+              )
           : Scaffold(
               body: NestedScrollView(
                 controller: _sController,

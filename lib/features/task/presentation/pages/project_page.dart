@@ -141,8 +141,8 @@ class _ProjectItemState extends State<ProjectItem> {
           duration: 500.milliseconds,
           color: context.backgroundColor,
           snapSpec: const SnapSpec(
-            initialSnap: 0.86,
-            snappings: [0.4, 0.86],
+            initialSnap: 0.89,
+            snappings: [0.4, 0.89],
             positioning: SnapPositioning.relativeToSheetHeight,
           ),
           minHeight: context.height - 56,
