@@ -1,11 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:refocus_app/core/presentation/helper/setting_option.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/today_entry_type.dart';
 import 'package:refocus_app/injection.dart';
 import 'package:styled_widget/styled_widget.dart';
-
-import '../../helper/setting_option.dart';
 
 class OptionRowWidget extends StatefulWidget {
   const OptionRowWidget({

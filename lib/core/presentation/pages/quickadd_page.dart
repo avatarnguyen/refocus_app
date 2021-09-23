@@ -1,4 +1,3 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:refocus_app/core/presentation/helper/setting_option.dart';
@@ -8,7 +7,6 @@ import 'package:refocus_app/core/presentation/widgets/add_page_widgets/option_wi
 import 'package:refocus_app/core/util/ui/layout_helpers.dart';
 import 'package:refocus_app/core/util/ui/style_helpers.dart';
 import 'package:refocus_app/features/task/presentation/bloc/project_bloc.dart';
-import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
 import 'package:refocus_app/injection.dart';
 import 'package:styled_widget/styled_widget.dart';
 
