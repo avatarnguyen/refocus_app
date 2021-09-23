@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:amplify_api/amplify_api.dart';
@@ -11,10 +12,12 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:refocus_app/amplifyconfiguration.dart';
 import 'package:refocus_app/core/presentation/helper/page_stream.dart';
+import 'package:refocus_app/core/presentation/helper/sliding_body_stream.dart';
 import 'package:refocus_app/core/presentation/pages/today_page.dart';
 import 'package:refocus_app/core/presentation/widgets/slider_header_widget.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
+import 'package:refocus_app/features/calendar/presentation/pages/calendar_list_page.dart';
 import 'package:refocus_app/features/calendar/presentation/pages/calendar_page.dart';
 import 'package:refocus_app/features/task/presentation/bloc/project_bloc.dart';
 import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
@@ -56,9 +59,12 @@ class _HomePageWidgetState extends State<HomePageWidget> {
     initialPage: 1,
   );
   final PageStream _pageStream = getIt<PageStream>();
+  final SlidingBodyStream _slidingStream = getIt<SlidingBodyStream>();
+  late StreamSubscription _slidingBodySub;
   final GoogleSignIn _googleSignIn = getIt<GoogleSignIn>();
 
   int _currentPage = 1;
+  int _currentSlidingBodyPage = 1;
 
   final log = logger(HomePage);
   bool amplifyConfigured = false;
@@ -68,8 +74,15 @@ class _HomePageWidgetState extends State<HomePageWidget> {
   void initState() {
     super.initState();
     _configureAmplify();
+    _slidingBodySub = _slidingStream.pageStream.listen(_slidingPageReceived);
 
     _googleSignIn.signInSilently();
+  }
+
+  void _slidingPageReceived(int newPage) {
+    setState(() {
+      _currentSlidingBodyPage = newPage;
+    });
   }
 
   Future _configureAmplify() async {
@@ -93,6 +106,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
   @override
   void dispose() {
     _pageController.dispose();
+    _slidingBodySub.cancel();
     super.dispose();
   }
 
@@ -114,20 +128,30 @@ class _HomePageWidgetState extends State<HomePageWidget> {
         elevation: 16,
         cornerRadius: 16,
         shadowColor: Colors.black26,
-        addTopViewPaddingOnFullscreen: true,
+        backdropColor: Colors.black12,
+        // addTopViewPaddingOnFullscreen: true,
         snapSpec: const SnapSpec(
           initialSnap: 0.09,
-          snappings: [0.09, 0.5, 1.0],
+          snappings: [0.09, 0.5, 0.89],
         ),
-        minHeight: context.height / 2,
+        // parallaxSpec: ParallaxSpec(),
+        minHeight: context.height * 0.9,
         closeOnBackButtonPressed: Platform.isAndroid,
         headerBuilder: (context, state) => const SlidingHeaderWidget(),
-        builder: (context, state) => amplifyConfigured
-            ? BlocProvider<ProjectBloc>.value(
+        builder: (context, state) {
+          if (amplifyConfigured) {
+            if (_currentSlidingBodyPage == 0) {
+              return const CalendarListPage();
+            } else {
+              return BlocProvider<ProjectBloc>.value(
                 value: BlocProvider.of<ProjectBloc>(context),
                 child: const ProjectPage(),
-              )
-            : const SizedBox(),
+              );
+            }
+          } else {
+            return const SizedBox();
+          }
+        },
         body: SizedBox(
             height: context.height,
             width: context.width,

@@ -35,37 +35,32 @@ class _CalendarListWidgetState extends State<CalendarListWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Calendars'),
-      ),
-      body: BlocBuilder<CalendarListBloc, CalendarListState>(
-        builder: (context, state) {
-          if (state is CalendarListInitial) {
-            return const MessageDisplay(
-              message: 'Initial State',
-            );
-          }
-          if (state is Loaded) {
-            final calendars = state.calendarList;
-            return ListView.builder(
-              itemCount: calendars.length,
-              itemBuilder: (context, index) =>
-                  CheckBoxListItem(calendar: calendars[index]),
-            );
-          } else if (state is Error) {
-            return MessageDisplay(
-              message: state.message,
-            );
-          } else if (state is Loading) {
-            return const LoadingWidget();
-          } else {
-            return const MessageDisplay(
-              message: 'Unexpected State',
-            );
-          }
-        },
-      ),
+    return BlocBuilder<CalendarListBloc, CalendarListState>(
+      builder: (context, state) {
+        if (state is CalendarListInitial) {
+          return const LoadingWidget();
+        }
+        if (state is Loaded) {
+          final calendars = state.calendarList;
+          return ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: calendars.length,
+            itemBuilder: (context, index) =>
+                CheckBoxListItem(calendar: calendars[index]),
+          );
+        } else if (state is Error) {
+          return MessageDisplay(
+            message: state.message,
+          );
+        } else if (state is Loading) {
+          return const LoadingWidget();
+        } else {
+          return const MessageDisplay(
+            message: 'Unexpected State',
+          );
+        }
+      },
     );
   }
 }

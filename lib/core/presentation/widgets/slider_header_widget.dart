@@ -8,6 +8,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:refocus_app/config/routes/router.dart';
 import 'package:refocus_app/core/presentation/helper/page_stream.dart';
+import 'package:refocus_app/core/presentation/helper/sliding_body_stream.dart';
 import 'package:refocus_app/core/presentation/pages/quickadd_page.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar/datetime_stream.dart';
@@ -29,40 +30,63 @@ class SlidingHeaderWidget extends StatefulWidget {
 class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
   final DateTimeStream _dateTimeStream = getIt<DateTimeStream>();
   final PageStream _pageStream = getIt<PageStream>();
+  final SlidingBodyStream _slidingStream = getIt<SlidingBodyStream>();
+
   late StreamSubscription<int> _pageSub;
+  late StreamSubscription<int> _segmentedControlSub;
+
   String _titleText = 'Projects';
   bool _isMonthCal = false;
+  int _currentSegmentedIdx = 1;
 
   @override
   void initState() {
     _pageSub = _pageStream.pageStream.listen(_pageIndexReceived);
+    _segmentedControlSub =
+        _slidingStream.pageStream.listen(_slidingIndexReceived);
     super.initState();
   }
 
   @override
   void dispose() {
     _pageSub.cancel();
+    _segmentedControlSub.cancel();
     super.dispose();
+  }
+
+  void _slidingIndexReceived(int newIdx) {
+    setState(() {
+      _currentSegmentedIdx = newIdx;
+    });
   }
 
   void _pageIndexReceived(int newIdx) {
     switch (newIdx) {
       case 0:
+        _slidingStream.broadCastCurrentPage(0);
+
         setState(() {
           _titleText = 'Calendars';
           _isMonthCal = false;
+          _currentSegmentedIdx = 0;
         });
         break;
       case 1:
+        _slidingStream.broadCastCurrentPage(1);
+
         setState(() {
           _titleText = 'Projects';
           _isMonthCal = false;
+          _currentSegmentedIdx = 1;
         });
         break;
       default:
+        _slidingStream.broadCastCurrentPage(0);
+
         setState(() {
           _titleText = 'Calendars';
           _isMonthCal = true;
+          _currentSegmentedIdx = 0;
         });
         break;
     }
@@ -72,80 +96,111 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.only(
-        bottom: 16,
+        top: 16,
+        bottom: 4,
         right: 24,
         left: 24,
       ),
-      height: 72,
+      height: 136,
       child: [
-        const Icon(
-          Icons.calendar_today,
-          color: kcSecondary100,
-          size: 24,
-        ).gestures(onTap: () {
-          showDatePickerBottomSheet(context);
-        }),
         [
-          Text(
-            _titleText,
-            style: context.textTheme.bodyText2!.copyWith(
-              color: kcSecondary100,
-              decoration: TextDecoration.underline,
+          const Icon(
+            Icons.calendar_today,
+            color: kcSecondary100,
+            size: 24,
+          ).gestures(onTap: () {
+            showDatePickerBottomSheet(context);
+          }),
+          [
+            Text(
+              _titleText,
+              style: context.textTheme.bodyText2!.copyWith(
+                color: kcSecondary100,
+                decoration: TextDecoration.underline,
+              ),
             ),
-          ),
-          // horizontalSpaceMedium,
-          // Text(
-          //   'Personal',
-          //   style: context.textTheme.bodyText2!.copyWith(
-          //     color: kcSecondary100,
-          //   ),
-          // ),
-          // horizontalSpaceMedium,
-        ].toRow(mainAxisAlignment: MainAxisAlignment.center),
-        const Icon(
-          Icons.add,
-          color: kcSecondary100,
-          size: 33,
-        ).gestures(onTap: () {
-          Navigator.push(
-            context,
-            Platform.isIOS
-                ? CupertinoPageRoute<dynamic>(
-                    fullscreenDialog: true,
-                    builder: (_) => MultiBlocProvider(
-                      providers: [
-                        BlocProvider<ProjectBloc>.value(
-                          value: BlocProvider.of<ProjectBloc>(context),
-                        ),
-                        BlocProvider<TaskBloc>.value(
-                          value: BlocProvider.of<TaskBloc>(context),
-                        ),
-                      ],
-                      child: const QuickAddPage(),
+            // horizontalSpaceMedium,
+            // Text(
+            //   'Personal',
+            //   style: context.textTheme.bodyText2!.copyWith(
+            //     color: kcSecondary100,
+            //   ),
+            // ),
+            // horizontalSpaceMedium,
+          ].toRow(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start),
+          const Icon(
+            Icons.add,
+            color: kcSecondary100,
+            size: 33,
+          ).gestures(onTap: () {
+            Navigator.push(
+              context,
+              Platform.isIOS
+                  ? CupertinoPageRoute<dynamic>(
+                      fullscreenDialog: true,
+                      builder: (_) => MultiBlocProvider(
+                        providers: [
+                          BlocProvider<ProjectBloc>.value(
+                            value: BlocProvider.of<ProjectBloc>(context),
+                          ),
+                          BlocProvider<TaskBloc>.value(
+                            value: BlocProvider.of<TaskBloc>(context),
+                          ),
+                        ],
+                        child: const QuickAddPage(),
+                      ),
+                    )
+                  : MaterialPageRoute<dynamic>(
+                      fullscreenDialog: true,
+                      builder: (_) => MultiBlocProvider(
+                        providers: [
+                          BlocProvider<ProjectBloc>.value(
+                            value: BlocProvider.of<ProjectBloc>(context),
+                          ),
+                          BlocProvider<TaskBloc>.value(
+                            value: BlocProvider.of<TaskBloc>(context),
+                          ),
+                        ],
+                        child: const QuickAddPage(),
+                      ),
                     ),
-                  )
-                : MaterialPageRoute<dynamic>(
-                    fullscreenDialog: true,
-                    builder: (_) => MultiBlocProvider(
-                      providers: [
-                        BlocProvider<ProjectBloc>.value(
-                          value: BlocProvider.of<ProjectBloc>(context),
-                        ),
-                        BlocProvider<TaskBloc>.value(
-                          value: BlocProvider.of<TaskBloc>(context),
-                        ),
-                      ],
-                      child: const QuickAddPage(),
-                    ),
-                  ),
-          );
-          // context.navigateTo(const QuickAddRoute());
-        }),
-      ].toRow(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      ),
+            );
+            // context.navigateTo(const QuickAddRoute());
+          }),
+        ].toRow(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        ),
+        CupertinoSlidingSegmentedControl<int>(
+          padding: const EdgeInsets.all(4),
+          groupValue: _currentSegmentedIdx,
+          children: {
+            0: _buildSegment('Calendars', 0),
+            1: _buildSegment('Projects', 1),
+          },
+          onValueChanged: (value) {
+            if (value != null) {
+              _slidingStream.broadCastCurrentPage(value);
+              setState(() {
+                _currentSegmentedIdx = value;
+              });
+            }
+          },
+        ),
+      ].toColumn(mainAxisAlignment: MainAxisAlignment.spaceBetween),
     );
   }
+
+  Widget _buildSegment(String text, int index) => Container(
+        padding: const EdgeInsets.all(8),
+        child: Text(
+          text,
+          style: context.bodyText1.copyWith(
+            color: index == _currentSegmentedIdx ? kcPrimary900 : kcPrimary100,
+          ),
+        ),
+      );
 
   dynamic showDatePickerBottomSheet(
     BuildContext parentContext,

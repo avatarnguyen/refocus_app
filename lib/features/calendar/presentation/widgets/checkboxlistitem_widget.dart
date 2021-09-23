@@ -31,20 +31,22 @@ class _CheckBoxListItemState extends State<CheckBoxListItem> {
   Widget build(BuildContext context) {
     final _bloc = BlocProvider.of<CalendarListBloc>(context, listen: false);
 
-    return CheckboxListTile(
-      title: Text(widget.calendar.name),
-      value: _isSelected,
-      onChanged: (newValue) {
-        _bloc.add(
-          UpdateCalendarEvent(CalendarParams(
-            calendar: widget.calendar.copyWith(selected: newValue),
-          )),
-        );
-        setState(() {
-          _isSelected = newValue ?? false;
-        });
-      },
-      controlAffinity: ListTileControlAffinity.trailing,
+    return Material(
+      child: CheckboxListTile(
+        title: Text(widget.calendar.name),
+        value: _isSelected,
+        onChanged: (newValue) {
+          _bloc.add(
+            UpdateCalendarEvent(CalendarParams(
+              calendar: widget.calendar.copyWith(selected: newValue),
+            )),
+          );
+          setState(() {
+            _isSelected = newValue ?? false;
+          });
+        },
+        controlAffinity: ListTileControlAffinity.trailing,
+      ),
     );
   }
 }
