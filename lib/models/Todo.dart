@@ -15,6 +15,7 @@
 
 // ignore_for_file: public_member_api_docs
 
+import 'ModelProvider.dart';
 import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
@@ -29,11 +30,12 @@ class Todo extends Model {
   final String? _description;
   final bool? _isCompleted;
   final TemporalDate? _dueDate;
-  final List<TemporalDateTime>? _startDateTime;
-  final List<TemporalDateTime>? _endDateTime;
-  final List<String>? _recurrentDays;
+  final TemporalDateTime? _startDateTime;
+  final TemporalDateTime? _endDateTime;
+  final String? _recurrenceRule;
   final String? _projectID;
   final int? _priority;
+  final List<Subtask>? _Subtasks;
 
   @override
   getInstanceType() => classType;
@@ -67,16 +69,16 @@ class Todo extends Model {
     return _dueDate;
   }
   
-  List<TemporalDateTime>? get startDateTime {
+  TemporalDateTime? get startDateTime {
     return _startDateTime;
   }
   
-  List<TemporalDateTime>? get endDateTime {
+  TemporalDateTime? get endDateTime {
     return _endDateTime;
   }
   
-  List<String>? get recurrentDays {
-    return _recurrentDays;
+  String? get recurrenceRule {
+    return _recurrenceRule;
   }
   
   String? get projectID {
@@ -87,20 +89,25 @@ class Todo extends Model {
     return _priority;
   }
   
-  const Todo._internal({required this.id, required title, description, required isCompleted, dueDate, startDateTime, endDateTime, recurrentDays, projectID, priority}): _title = title, _description = description, _isCompleted = isCompleted, _dueDate = dueDate, _startDateTime = startDateTime, _endDateTime = endDateTime, _recurrentDays = recurrentDays, _projectID = projectID, _priority = priority;
+  List<Subtask>? get Subtasks {
+    return _Subtasks;
+  }
   
-  factory Todo({String? id, required String title, String? description, required bool isCompleted, TemporalDate? dueDate, List<TemporalDateTime>? startDateTime, List<TemporalDateTime>? endDateTime, List<String>? recurrentDays, String? projectID, int? priority}) {
+  const Todo._internal({required this.id, required title, description, required isCompleted, dueDate, startDateTime, endDateTime, recurrenceRule, projectID, priority, Subtasks}): _title = title, _description = description, _isCompleted = isCompleted, _dueDate = dueDate, _startDateTime = startDateTime, _endDateTime = endDateTime, _recurrenceRule = recurrenceRule, _projectID = projectID, _priority = priority, _Subtasks = Subtasks;
+  
+  factory Todo({String? id, required String title, String? description, required bool isCompleted, TemporalDate? dueDate, TemporalDateTime? startDateTime, TemporalDateTime? endDateTime, String? recurrenceRule, String? projectID, int? priority, List<Subtask>? Subtasks}) {
     return Todo._internal(
       id: id == null ? UUID.getUUID() : id,
       title: title,
       description: description,
       isCompleted: isCompleted,
       dueDate: dueDate,
-      startDateTime: startDateTime != null ? List<TemporalDateTime>.unmodifiable(startDateTime) : startDateTime,
-      endDateTime: endDateTime != null ? List<TemporalDateTime>.unmodifiable(endDateTime) : endDateTime,
-      recurrentDays: recurrentDays != null ? List<String>.unmodifiable(recurrentDays) : recurrentDays,
+      startDateTime: startDateTime,
+      endDateTime: endDateTime,
+      recurrenceRule: recurrenceRule,
       projectID: projectID,
-      priority: priority);
+      priority: priority,
+      Subtasks: Subtasks != null ? List<Subtask>.unmodifiable(Subtasks) : Subtasks);
   }
   
   bool equals(Object other) {
@@ -116,11 +123,12 @@ class Todo extends Model {
       _description == other._description &&
       _isCompleted == other._isCompleted &&
       _dueDate == other._dueDate &&
-      DeepCollectionEquality().equals(_startDateTime, other._startDateTime) &&
-      DeepCollectionEquality().equals(_endDateTime, other._endDateTime) &&
-      DeepCollectionEquality().equals(_recurrentDays, other._recurrentDays) &&
+      _startDateTime == other._startDateTime &&
+      _endDateTime == other._endDateTime &&
+      _recurrenceRule == other._recurrenceRule &&
       _projectID == other._projectID &&
-      _priority == other._priority;
+      _priority == other._priority &&
+      DeepCollectionEquality().equals(_Subtasks, other._Subtasks);
   }
   
   @override
@@ -136,9 +144,9 @@ class Todo extends Model {
     buffer.write("description=" + "$_description" + ", ");
     buffer.write("isCompleted=" + (_isCompleted != null ? _isCompleted!.toString() : "null") + ", ");
     buffer.write("dueDate=" + (_dueDate != null ? _dueDate!.format() : "null") + ", ");
-    buffer.write("startDateTime=" + (_startDateTime != null ? _startDateTime!.toString() : "null") + ", ");
-    buffer.write("endDateTime=" + (_endDateTime != null ? _endDateTime!.toString() : "null") + ", ");
-    buffer.write("recurrentDays=" + (_recurrentDays != null ? _recurrentDays!.toString() : "null") + ", ");
+    buffer.write("startDateTime=" + (_startDateTime != null ? _startDateTime!.format() : "null") + ", ");
+    buffer.write("endDateTime=" + (_endDateTime != null ? _endDateTime!.format() : "null") + ", ");
+    buffer.write("recurrenceRule=" + "$_recurrenceRule" + ", ");
     buffer.write("projectID=" + "$_projectID" + ", ");
     buffer.write("priority=" + (_priority != null ? _priority!.toString() : "null"));
     buffer.write("}");
@@ -146,7 +154,7 @@ class Todo extends Model {
     return buffer.toString();
   }
   
-  Todo copyWith({String? id, String? title, String? description, bool? isCompleted, TemporalDate? dueDate, List<TemporalDateTime>? startDateTime, List<TemporalDateTime>? endDateTime, List<String>? recurrentDays, String? projectID, int? priority}) {
+  Todo copyWith({String? id, String? title, String? description, bool? isCompleted, TemporalDate? dueDate, TemporalDateTime? startDateTime, TemporalDateTime? endDateTime, String? recurrenceRule, String? projectID, int? priority, List<Subtask>? Subtasks}) {
     return Todo(
       id: id ?? this.id,
       title: title ?? this.title,
@@ -155,9 +163,10 @@ class Todo extends Model {
       dueDate: dueDate ?? this.dueDate,
       startDateTime: startDateTime ?? this.startDateTime,
       endDateTime: endDateTime ?? this.endDateTime,
-      recurrentDays: recurrentDays ?? this.recurrentDays,
+      recurrenceRule: recurrenceRule ?? this.recurrenceRule,
       projectID: projectID ?? this.projectID,
-      priority: priority ?? this.priority);
+      priority: priority ?? this.priority,
+      Subtasks: Subtasks ?? this.Subtasks);
   }
   
   Todo.fromJson(Map<String, dynamic> json)  
@@ -166,14 +175,20 @@ class Todo extends Model {
       _description = json['description'],
       _isCompleted = json['isCompleted'],
       _dueDate = json['dueDate'] != null ? TemporalDate.fromString(json['dueDate']) : null,
-      _startDateTime = (json['startDateTime'] as List)?.map((e) => TemporalDateTime.fromString(e))?.toList(),
-      _endDateTime = (json['endDateTime'] as List)?.map((e) => TemporalDateTime.fromString(e))?.toList(),
-      _recurrentDays = json['recurrentDays']?.cast<String>(),
+      _startDateTime = json['startDateTime'] != null ? TemporalDateTime.fromString(json['startDateTime']) : null,
+      _endDateTime = json['endDateTime'] != null ? TemporalDateTime.fromString(json['endDateTime']) : null,
+      _recurrenceRule = json['recurrenceRule'],
       _projectID = json['projectID'],
-      _priority = json['priority'];
+      _priority = json['priority'],
+      _Subtasks = json['Subtasks'] is List
+        ? (json['Subtasks'] as List)
+          .where((e) => e?['serializedData'] != null)
+          .map((e) => Subtask.fromJson(new Map<String, dynamic>.from(e['serializedData'])))
+          .toList()
+        : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'title': _title, 'description': _description, 'isCompleted': _isCompleted, 'dueDate': _dueDate?.format(), 'startDateTime': _startDateTime?.map((e) => e.format()).toList(), 'endDateTime': _endDateTime?.map((e) => e.format()).toList(), 'recurrentDays': _recurrentDays, 'projectID': _projectID, 'priority': _priority
+    'id': id, 'title': _title, 'description': _description, 'isCompleted': _isCompleted, 'dueDate': _dueDate?.format(), 'startDateTime': _startDateTime?.format(), 'endDateTime': _endDateTime?.format(), 'recurrenceRule': _recurrenceRule, 'projectID': _projectID, 'priority': _priority, 'Subtasks': _Subtasks?.map((e) => e?.toJson())?.toList()
   };
 
   static final QueryField ID = QueryField(fieldName: "todo.id");
@@ -183,9 +198,12 @@ class Todo extends Model {
   static final QueryField DUEDATE = QueryField(fieldName: "dueDate");
   static final QueryField STARTDATETIME = QueryField(fieldName: "startDateTime");
   static final QueryField ENDDATETIME = QueryField(fieldName: "endDateTime");
-  static final QueryField RECURRENTDAYS = QueryField(fieldName: "recurrentDays");
+  static final QueryField RECURRENCERULE = QueryField(fieldName: "recurrenceRule");
   static final QueryField PROJECTID = QueryField(fieldName: "projectID");
   static final QueryField PRIORITY = QueryField(fieldName: "priority");
+  static final QueryField SUBTASKS = QueryField(
+    fieldName: "Subtasks",
+    fieldType: ModelFieldType(ModelFieldTypeEnum.model, ofModelName: (Subtask).toString()));
   static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "Todo";
     modelSchemaDefinition.pluralName = "Todos";
@@ -230,22 +248,19 @@ class Todo extends Model {
     modelSchemaDefinition.addField(ModelFieldDefinition.field(
       key: Todo.STARTDATETIME,
       isRequired: false,
-      isArray: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.collection, ofModelName: describeEnum(ModelFieldTypeEnum.dateTime))
+      ofType: ModelFieldType(ModelFieldTypeEnum.dateTime)
     ));
     
     modelSchemaDefinition.addField(ModelFieldDefinition.field(
       key: Todo.ENDDATETIME,
       isRequired: false,
-      isArray: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.collection, ofModelName: describeEnum(ModelFieldTypeEnum.dateTime))
+      ofType: ModelFieldType(ModelFieldTypeEnum.dateTime)
     ));
     
     modelSchemaDefinition.addField(ModelFieldDefinition.field(
-      key: Todo.RECURRENTDAYS,
+      key: Todo.RECURRENCERULE,
       isRequired: false,
-      isArray: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.collection, ofModelName: describeEnum(ModelFieldTypeEnum.string))
+      ofType: ModelFieldType(ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(ModelFieldDefinition.field(
@@ -258,6 +273,13 @@ class Todo extends Model {
       key: Todo.PRIORITY,
       isRequired: false,
       ofType: ModelFieldType(ModelFieldTypeEnum.int)
+    ));
+    
+    modelSchemaDefinition.addField(ModelFieldDefinition.hasMany(
+      key: Todo.SUBTASKS,
+      isRequired: false,
+      ofModelName: (Subtask).toString(),
+      associatedKey: Subtask.TODOID
     ));
   });
 }

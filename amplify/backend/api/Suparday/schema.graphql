@@ -1,3 +1,11 @@
+type Subtask @model @auth(rules: [{allow: public}]) @key(name: "byTodo", fields: ["todoID"]) {
+  id: ID!
+  title: String!
+  isCompleted: Boolean!
+  priority: Int
+  todoID: ID
+}
+
 type Project @model @auth(rules: [{allow: public}]) {
   id: ID!
   title: String
@@ -12,10 +20,11 @@ type Todo @model @auth(rules: [{allow: public}]) @key(name: "byProject", fields:
   description: String
   isCompleted: Boolean!
   dueDate: AWSDate
-  startDateTime: [AWSDateTime]
-  endDateTime: [AWSDateTime]
-  recurrentDays: [String]
+  startDateTime: AWSDateTime
+  endDateTime: AWSDateTime
+  recurrenceRule: AWSJSON
   projectID: ID
   priority: Int
+  Subtasks: [Subtask] @connection(keyName: "byTodo", fields: ["id"])
 }
  

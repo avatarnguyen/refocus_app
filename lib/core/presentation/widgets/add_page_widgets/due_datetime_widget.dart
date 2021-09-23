@@ -104,16 +104,32 @@ class _DueDateTimeWidgetState extends State<DueDateTimeWidget> {
               : _materialDateTimePicker(context, widget.currentText);
         }),
         verticalSpaceSmall,
-        Text(
-          CustomDateUtils.returnTime(_remindDate),
-          style: context.textTheme.headline6!.copyWith(
-            color: kcPrimary100,
-          ),
-        ).ripple().gestures(onTap: () {
-          Platform.isIOS
-              ? _cupertinoDateTimePicker(context, widget.currentText)
-              : _materialTimePicker(context, widget.currentText);
-        }),
+        [
+          Text(
+            CustomDateUtils.returnTime(_remindDate),
+            style: context.textTheme.headline6!.copyWith(
+              color: kcPrimary100,
+            ),
+          ).ripple().gestures(onTap: () {
+            Platform.isIOS
+                ? _cupertinoDateTimePicker(context, widget.currentText)
+                : _materialTimePicker(context, widget.currentText);
+          }),
+          Text(' - ',
+              style: context.textTheme.headline6!.copyWith(
+                color: kcPrimary100,
+              )),
+          Text(
+            CustomDateUtils.returnTime(_remindDate),
+            style: context.textTheme.headline6!.copyWith(
+              color: kcPrimary100,
+            ),
+          ).ripple().gestures(onTap: () {
+            Platform.isIOS
+                ? _cupertinoDateTimePicker(context, widget.currentText)
+                : _materialTimePicker(context, widget.currentText);
+          }),
+        ].toRow(),
         verticalSpaceRegular,
       ].toColumn(
         mainAxisSize: MainAxisSize.min,
