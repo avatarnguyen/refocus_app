@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:refocus_app/config/routes/router.dart';
+import 'package:refocus_app/core/presentation/helper/page_stream.dart';
 import 'package:refocus_app/core/util/helpers/date_utils.dart'
     as custom_date_tils;
 import 'package:refocus_app/core/util/helpers/logging.dart' as custom_log;
@@ -53,6 +54,7 @@ class CalendarWidget extends StatefulWidget {
 class _CalendarWidgetState extends State<CalendarWidget> {
   final log = custom_log.logger(CalendarWidget);
 
+  final PageStream _pageStream = getIt<PageStream>();
   final DateTimeStream _dateTimeStream = getIt<DateTimeStream>();
   final GoogleSignIn _googleSignIn = getIt<GoogleSignIn>();
   GoogleSignInAccount? _currentUser;
@@ -67,6 +69,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
     _getCurrentUser();
   }
 
+  //TODO: move this to home page
   void _getCurrentUser() {
     _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) {
       log.v('Init Google Sign In');
@@ -155,6 +158,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                 .gestures(onTap: () {
               setState(() {
                 showMonthView = !showMonthView;
+                _pageStream.broadCastCurrentPage(showMonthView ? 2 : 0);
               });
             }),
           ].toRow(

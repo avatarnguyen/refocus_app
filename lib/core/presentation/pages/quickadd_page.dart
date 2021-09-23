@@ -12,26 +12,11 @@ import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
 import 'package:refocus_app/injection.dart';
 import 'package:styled_widget/styled_widget.dart';
 
-class QuickAddPage extends StatefulWidget implements AutoRouteWrapper {
+class QuickAddPage extends StatefulWidget {
   const QuickAddPage({Key? key}) : super(key: key);
 
   @override
   _QuickAddPageState createState() => _QuickAddPageState();
-
-  @override
-  Widget wrappedRoute(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<ProjectBloc>.value(
-          value: BlocProvider.of<ProjectBloc>(context),
-        ),
-        BlocProvider<TaskBloc>.value(
-          value: BlocProvider.of<TaskBloc>(context),
-        ),
-      ],
-      child: this,
-    );
-  }
 }
 
 class _QuickAddPageState extends State<QuickAddPage> {

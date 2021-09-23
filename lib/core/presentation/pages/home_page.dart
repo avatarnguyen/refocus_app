@@ -72,7 +72,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
     _googleSignIn.signInSilently();
   }
 
-  void _configureAmplify() async {
+  Future _configureAmplify() async {
     try {
       await Future.wait([
         Amplify.addPlugin(AmplifyAPI()),

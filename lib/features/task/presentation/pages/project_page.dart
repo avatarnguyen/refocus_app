@@ -78,7 +78,8 @@ class _ProjectItemState extends State<ProjectItem> {
   void initState() {
     super.initState();
     _currentProject = widget.project ??
-        const ProjectEntry(title: 'Inbox', id: 'inbox_2021', color: '#8879FC');
+        const ProjectEntry(
+            title: 'Tasks Inbox', id: 'inbox_2021', color: '#8879FC');
   }
 
   @override

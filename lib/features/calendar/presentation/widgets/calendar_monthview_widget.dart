@@ -1,17 +1,52 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:refocus_app/features/calendar/presentation/bloc/calendar/datetime_stream.dart';
+import 'package:refocus_app/injection.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 
 import '../bloc/calendar/calendar_bloc.dart';
 
-class CalendarMonthViewWidget extends StatelessWidget {
+class CalendarMonthViewWidget extends StatefulWidget {
   const CalendarMonthViewWidget({
     Key? key,
     required this.state,
   }) : super(key: key);
 
   final CalendarState state;
+
+  @override
+  State<CalendarMonthViewWidget> createState() =>
+      _CalendarMonthViewWidgetState();
+}
+
+class _CalendarMonthViewWidgetState extends State<CalendarMonthViewWidget> {
+  final DateTimeStream _dateTimeStream = getIt<DateTimeStream>();
+  late StreamSubscription<DateTime> _dateTimeSubscription;
+
+  final CalendarController _controller = CalendarController();
+
+  @override
+  void initState() {
+    _dateTimeSubscription =
+        _dateTimeStream.dateTimeStream.listen(_dateTimeReceived);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _dateTimeSubscription.cancel();
+    super.dispose();
+  }
+
+  void _dateTimeReceived(DateTime newDate) {
+    if (_controller.displayDate != null) {
+      _controller.displayDate = newDate;
+      _controller.selectedDate = newDate;
+    }
+  }
 
   Widget loadMoreWidget(
       BuildContext context, LoadMoreCallback loadMoreAppointments) {
@@ -30,9 +65,12 @@ class CalendarMonthViewWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: SfCalendar(
+        controller: _controller,
         view: CalendarView.month,
         initialSelectedDate: DateTime.now(),
-        dataSource: state is Loaded ? (state as Loaded).calendarData : null,
+        dataSource: widget.state is Loaded
+            ? (widget.state as Loaded).calendarData
+            : null,
         loadMoreWidgetBuilder: loadMoreWidget,
         headerHeight: 48,
         headerStyle: CalendarHeaderStyle(

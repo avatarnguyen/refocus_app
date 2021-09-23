@@ -1,9 +1,18 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:dartx/dartx.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:refocus_app/config/routes/router.dart';
+import 'package:refocus_app/core/presentation/helper/page_stream.dart';
+import 'package:refocus_app/core/presentation/pages/quickadd_page.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar/datetime_stream.dart';
+import 'package:refocus_app/features/task/presentation/bloc/project_bloc.dart';
+import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
 import 'package:refocus_app/injection.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
@@ -19,6 +28,45 @@ class SlidingHeaderWidget extends StatefulWidget {
 
 class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
   final DateTimeStream _dateTimeStream = getIt<DateTimeStream>();
+  final PageStream _pageStream = getIt<PageStream>();
+  late StreamSubscription<int> _pageSub;
+  String _titleText = 'Projects';
+  bool _isMonthCal = false;
+
+  @override
+  void initState() {
+    _pageSub = _pageStream.pageStream.listen(_pageIndexReceived);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _pageSub.cancel();
+    super.dispose();
+  }
+
+  void _pageIndexReceived(int newIdx) {
+    switch (newIdx) {
+      case 0:
+        setState(() {
+          _titleText = 'Calendars';
+          _isMonthCal = false;
+        });
+        break;
+      case 1:
+        setState(() {
+          _titleText = 'Projects';
+          _isMonthCal = false;
+        });
+        break;
+      default:
+        setState(() {
+          _titleText = 'Calendars';
+          _isMonthCal = true;
+        });
+        break;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,27 +87,59 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
         }),
         [
           Text(
-            'All',
+            _titleText,
             style: context.textTheme.bodyText2!.copyWith(
               color: kcSecondary100,
               decoration: TextDecoration.underline,
             ),
           ),
-          horizontalSpaceMedium,
-          Text(
-            'Personal',
-            style: context.textTheme.bodyText2!.copyWith(
-              color: kcSecondary100,
-            ),
-          ),
-          horizontalSpaceMedium,
-        ].toRow(),
+          // horizontalSpaceMedium,
+          // Text(
+          //   'Personal',
+          //   style: context.textTheme.bodyText2!.copyWith(
+          //     color: kcSecondary100,
+          //   ),
+          // ),
+          // horizontalSpaceMedium,
+        ].toRow(mainAxisAlignment: MainAxisAlignment.center),
         const Icon(
           Icons.add,
           color: kcSecondary100,
           size: 33,
         ).gestures(onTap: () {
-          context.router.push(const QuickAddRoute());
+          Navigator.push(
+            context,
+            Platform.isIOS
+                ? CupertinoPageRoute<dynamic>(
+                    fullscreenDialog: true,
+                    builder: (_) => MultiBlocProvider(
+                      providers: [
+                        BlocProvider<ProjectBloc>.value(
+                          value: BlocProvider.of<ProjectBloc>(context),
+                        ),
+                        BlocProvider<TaskBloc>.value(
+                          value: BlocProvider.of<TaskBloc>(context),
+                        ),
+                      ],
+                      child: const QuickAddPage(),
+                    ),
+                  )
+                : MaterialPageRoute<dynamic>(
+                    fullscreenDialog: true,
+                    builder: (_) => MultiBlocProvider(
+                      providers: [
+                        BlocProvider<ProjectBloc>.value(
+                          value: BlocProvider.of<ProjectBloc>(context),
+                        ),
+                        BlocProvider<TaskBloc>.value(
+                          value: BlocProvider.of<TaskBloc>(context),
+                        ),
+                      ],
+                      child: const QuickAddPage(),
+                    ),
+                  ),
+          );
+          // context.navigateTo(const QuickAddRoute());
         }),
       ].toRow(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -92,6 +172,10 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
                 height: 360,
                 child: SfDateRangePicker(
                   initialSelectedDate: DateTime.now(),
+                  view: _isMonthCal
+                      ? DateRangePickerView.year
+                      : DateRangePickerView.month,
+                  toggleDaySelection: true,
                   showActionButtons: true,
                   selectionColor: parentContext.colorScheme.secondary,
                   todayHighlightColor: parentContext.colorScheme.secondary,
