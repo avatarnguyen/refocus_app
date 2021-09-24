@@ -108,14 +108,14 @@ class AWSTaskRemoteDataSource implements TaskRemoteDataSource {
         log.d(project);
         log.v('Project ID: ${project.getId()}');
 
-        // _todos = await Amplify.DataStore.query(
-        //   Task.classType,
-        //   where: Task.PROJECTID
-        //       .eq(project.getId())
-        //       .and(Task.ISCOMPLETED.eq(false)),
-        // );
+        _todos = await Amplify.DataStore.query(
+          Task.classType,
+          where: Task.PROJECTID
+              .eq(project.getId())
+              .and(Task.ISCOMPLETED.eq(false)),
+        );
 
-        _todos = await Amplify.DataStore.query(Task.classType);
+        // _todos = await Amplify.DataStore.query(Task.classType);
         log.i('$_todos');
         log.d('AWS Tasks: ${_todos.length}');
       } else if (startTime != null && endTime != null) {
