@@ -288,9 +288,7 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
                             projectID:
                                 _settingOption.projectEntry?.id ?? 'inbox_2021',
                             title: textData,
-                            startDateTime: _startDateTime != null
-                                ? [_startDateTime]
-                                : null,
+                            startDateTime: _startDateTime,
                             // endDateTime:
                             //     _endDateTime != null ? [_endDateTime] : null,
                           ),

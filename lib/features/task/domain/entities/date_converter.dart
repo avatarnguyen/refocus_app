@@ -1,8 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:intl/intl.dart';
 
-class DateTimeSerialiser implements JsonConverter<DateTime?, String?> {
-  const DateTimeSerialiser();
+class DateSerialiser implements JsonConverter<DateTime?, String?> {
+  const DateSerialiser();
 
   @override
   DateTime? fromJson(String? json) {

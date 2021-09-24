@@ -36,6 +36,7 @@ class Todo extends Model {
   final String? _projectID;
   final int? _priority;
   final List<Subtask>? _Subtasks;
+  final TemporalDate? _completedDate;
 
   @override
   getInstanceType() => classType;
@@ -93,9 +94,13 @@ class Todo extends Model {
     return _Subtasks;
   }
   
-  const Todo._internal({required this.id, required title, description, required isCompleted, dueDate, startDateTime, endDateTime, recurrenceRule, projectID, priority, Subtasks}): _title = title, _description = description, _isCompleted = isCompleted, _dueDate = dueDate, _startDateTime = startDateTime, _endDateTime = endDateTime, _recurrenceRule = recurrenceRule, _projectID = projectID, _priority = priority, _Subtasks = Subtasks;
+  TemporalDate? get completedDate {
+    return _completedDate;
+  }
   
-  factory Todo({String? id, required String title, String? description, required bool isCompleted, TemporalDate? dueDate, TemporalDateTime? startDateTime, TemporalDateTime? endDateTime, String? recurrenceRule, String? projectID, int? priority, List<Subtask>? Subtasks}) {
+  const Todo._internal({required this.id, required title, description, required isCompleted, dueDate, startDateTime, endDateTime, recurrenceRule, projectID, priority, Subtasks, completedDate}): _title = title, _description = description, _isCompleted = isCompleted, _dueDate = dueDate, _startDateTime = startDateTime, _endDateTime = endDateTime, _recurrenceRule = recurrenceRule, _projectID = projectID, _priority = priority, _Subtasks = Subtasks, _completedDate = completedDate;
+  
+  factory Todo({String? id, required String title, String? description, required bool isCompleted, TemporalDate? dueDate, TemporalDateTime? startDateTime, TemporalDateTime? endDateTime, String? recurrenceRule, String? projectID, int? priority, List<Subtask>? Subtasks, TemporalDate? completedDate}) {
     return Todo._internal(
       id: id == null ? UUID.getUUID() : id,
       title: title,
@@ -107,7 +112,8 @@ class Todo extends Model {
       recurrenceRule: recurrenceRule,
       projectID: projectID,
       priority: priority,
-      Subtasks: Subtasks != null ? List<Subtask>.unmodifiable(Subtasks) : Subtasks);
+      Subtasks: Subtasks != null ? List<Subtask>.unmodifiable(Subtasks) : Subtasks,
+      completedDate: completedDate);
   }
   
   bool equals(Object other) {
@@ -128,7 +134,8 @@ class Todo extends Model {
       _recurrenceRule == other._recurrenceRule &&
       _projectID == other._projectID &&
       _priority == other._priority &&
-      DeepCollectionEquality().equals(_Subtasks, other._Subtasks);
+      DeepCollectionEquality().equals(_Subtasks, other._Subtasks) &&
+      _completedDate == other._completedDate;
   }
   
   @override
@@ -148,13 +155,14 @@ class Todo extends Model {
     buffer.write("endDateTime=" + (_endDateTime != null ? _endDateTime!.format() : "null") + ", ");
     buffer.write("recurrenceRule=" + "$_recurrenceRule" + ", ");
     buffer.write("projectID=" + "$_projectID" + ", ");
-    buffer.write("priority=" + (_priority != null ? _priority!.toString() : "null"));
+    buffer.write("priority=" + (_priority != null ? _priority!.toString() : "null") + ", ");
+    buffer.write("completedDate=" + (_completedDate != null ? _completedDate!.format() : "null"));
     buffer.write("}");
     
     return buffer.toString();
   }
   
-  Todo copyWith({String? id, String? title, String? description, bool? isCompleted, TemporalDate? dueDate, TemporalDateTime? startDateTime, TemporalDateTime? endDateTime, String? recurrenceRule, String? projectID, int? priority, List<Subtask>? Subtasks}) {
+  Todo copyWith({String? id, String? title, String? description, bool? isCompleted, TemporalDate? dueDate, TemporalDateTime? startDateTime, TemporalDateTime? endDateTime, String? recurrenceRule, String? projectID, int? priority, List<Subtask>? Subtasks, TemporalDate? completedDate}) {
     return Todo(
       id: id ?? this.id,
       title: title ?? this.title,
@@ -166,7 +174,8 @@ class Todo extends Model {
       recurrenceRule: recurrenceRule ?? this.recurrenceRule,
       projectID: projectID ?? this.projectID,
       priority: priority ?? this.priority,
-      Subtasks: Subtasks ?? this.Subtasks);
+      Subtasks: Subtasks ?? this.Subtasks,
+      completedDate: completedDate ?? this.completedDate);
   }
   
   Todo.fromJson(Map<String, dynamic> json)  
@@ -185,10 +194,11 @@ class Todo extends Model {
           .where((e) => e?['serializedData'] != null)
           .map((e) => Subtask.fromJson(new Map<String, dynamic>.from(e['serializedData'])))
           .toList()
-        : null;
+        : null,
+      _completedDate = json['completedDate'] != null ? TemporalDate.fromString(json['completedDate']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'title': _title, 'description': _description, 'isCompleted': _isCompleted, 'dueDate': _dueDate?.format(), 'startDateTime': _startDateTime?.format(), 'endDateTime': _endDateTime?.format(), 'recurrenceRule': _recurrenceRule, 'projectID': _projectID, 'priority': _priority, 'Subtasks': _Subtasks?.map((e) => e?.toJson())?.toList()
+    'id': id, 'title': _title, 'description': _description, 'isCompleted': _isCompleted, 'dueDate': _dueDate?.format(), 'startDateTime': _startDateTime?.format(), 'endDateTime': _endDateTime?.format(), 'recurrenceRule': _recurrenceRule, 'projectID': _projectID, 'priority': _priority, 'Subtasks': _Subtasks?.map((e) => e?.toJson())?.toList(), 'completedDate': _completedDate?.format()
   };
 
   static final QueryField ID = QueryField(fieldName: "todo.id");
@@ -204,6 +214,7 @@ class Todo extends Model {
   static final QueryField SUBTASKS = QueryField(
     fieldName: "Subtasks",
     fieldType: ModelFieldType(ModelFieldTypeEnum.model, ofModelName: (Subtask).toString()));
+  static final QueryField COMPLETEDDATE = QueryField(fieldName: "completedDate");
   static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "Todo";
     modelSchemaDefinition.pluralName = "Todos";
@@ -280,6 +291,12 @@ class Todo extends Model {
       isRequired: false,
       ofModelName: (Subtask).toString(),
       associatedKey: Subtask.TODOID
+    ));
+    
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
+      key: Todo.COMPLETEDDATE,
+      isRequired: false,
+      ofType: ModelFieldType(ModelFieldTypeEnum.date)
     ));
   });
 }

@@ -12,14 +12,14 @@ _$_TaskEntry _$$_TaskEntryFromJson(Map<String, dynamic> json) => _$_TaskEntry(
       projectID: json['projectID'] as String,
       title: json['title'] as String?,
       description: json['description'] as String?,
-      dueDate: const DateTimeSerialiser().fromJson(json['dueDate'] as String?),
-      startDateTime: const ListDateTimeSerialiser()
-          .fromJson(json['startDateTime'] as List<String>?),
-      endDateTime: const ListDateTimeSerialiser()
-          .fromJson(json['endDateTime'] as List<String>?),
-      recurrentDays: (json['recurrentDays'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList(),
+      dueDate: const DateSerialiser().fromJson(json['dueDate'] as String?),
+      completedDate:
+          const DateSerialiser().fromJson(json['completedDate'] as String?),
+      startDateTime:
+          const DateTimeSerialiser().fromJson(json['startDateTime'] as String?),
+      endDateTime:
+          const DateTimeSerialiser().fromJson(json['endDateTime'] as String?),
+      recurrenceRule: json['recurrenceRule'] as Map<String, dynamic>?,
       priority: json['priority'] as int?,
     );
 
@@ -30,11 +30,11 @@ Map<String, dynamic> _$$_TaskEntryToJson(_$_TaskEntry instance) =>
       'projectID': instance.projectID,
       'title': instance.title,
       'description': instance.description,
-      'dueDate': const DateTimeSerialiser().toJson(instance.dueDate),
+      'dueDate': const DateSerialiser().toJson(instance.dueDate),
+      'completedDate': const DateSerialiser().toJson(instance.completedDate),
       'startDateTime':
-          const ListDateTimeSerialiser().toJson(instance.startDateTime),
-      'endDateTime':
-          const ListDateTimeSerialiser().toJson(instance.endDateTime),
-      'recurrentDays': instance.recurrentDays,
+          const DateTimeSerialiser().toJson(instance.startDateTime),
+      'endDateTime': const DateTimeSerialiser().toJson(instance.endDateTime),
+      'recurrenceRule': instance.recurrenceRule,
       'priority': instance.priority,
     };

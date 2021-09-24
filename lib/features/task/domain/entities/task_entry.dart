@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:refocus_app/features/task/domain/entities/datetime_converter.dart';
-import 'package:refocus_app/features/task/domain/entities/list_datetime_converter.dart';
+import 'package:refocus_app/features/task/domain/entities/date_converter.dart';
+import 'package:refocus_app/features/task/domain/entities/date_time_converter.dart';
 
 part 'task_entry.freezed.dart';
 part 'task_entry.g.dart';
@@ -14,10 +14,11 @@ class TaskEntry with _$TaskEntry {
     required String projectID,
     String? title,
     String? description,
-    @DateTimeSerialiser() DateTime? dueDate,
-    @ListDateTimeSerialiser() List<DateTime>? startDateTime,
-    @ListDateTimeSerialiser() List<DateTime>? endDateTime,
-    List<String>? recurrentDays,
+    @DateSerialiser() DateTime? dueDate,
+    @DateSerialiser() DateTime? completedDate,
+    @DateTimeSerialiser() DateTime? startDateTime,
+    @DateTimeSerialiser() DateTime? endDateTime,
+    Map<dynamic, dynamic>? recurrenceRule,
     int? priority,
   }) = _TaskEntry;
 

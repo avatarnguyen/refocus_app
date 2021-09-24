@@ -127,9 +127,8 @@ class AWSTaskRemoteDataSource implements TaskRemoteDataSource {
                 _dueDateUtc.isAfter(startTime)) {
               _filteredTodos.add(_todo);
             }
-          } else if (_todo.startDateTime != null &&
-              _todo.startDateTime!.isNotEmpty) {
-            final _tmpStartDateTime = _todo.startDateTime!.first;
+          } else if (_todo.startDateTime != null) {
+            final _tmpStartDateTime = _todo.startDateTime!;
             final _startUtc = _tmpStartDateTime.getDateTimeInUtc();
 
             if (_startUtc.isBefore(endTime) && _startUtc.isAfter(startTime)) {
@@ -162,11 +161,9 @@ class AWSTaskRemoteDataSource implements TaskRemoteDataSource {
 
           final _filteredTodos = <Todo>[];
 
-          //Todo: Only compared with first element of Start DateTime.
-          //Need to compare all element!
           for (final _todo in _fetchedTodos) {
-            if (_todo.startDateTime!.isNotEmpty) {
-              final _tmpDateTime = _todo.startDateTime!.first;
+            if (_todo.startDateTime != null) {
+              final _tmpDateTime = _todo.startDateTime!;
               final _dateTimeUtc = _tmpDateTime.getDateTimeInUtc();
               if (startTime.isAtSameDayAs(_dateTimeUtc) &&
                   startTime.isAtSameMonthAs(_dateTimeUtc) &&

@@ -27,10 +27,11 @@ class _$TaskEntryTearOff {
       required String projectID,
       String? title,
       String? description,
-      @DateTimeSerialiser() DateTime? dueDate,
-      @ListDateTimeSerialiser() List<DateTime>? startDateTime,
-      @ListDateTimeSerialiser() List<DateTime>? endDateTime,
-      List<String>? recurrentDays,
+      @DateSerialiser() DateTime? dueDate,
+      @DateSerialiser() DateTime? completedDate,
+      @DateTimeSerialiser() DateTime? startDateTime,
+      @DateTimeSerialiser() DateTime? endDateTime,
+      Map<dynamic, dynamic>? recurrenceRule,
       int? priority}) {
     return _TaskEntry(
       id: id,
@@ -39,9 +40,10 @@ class _$TaskEntryTearOff {
       title: title,
       description: description,
       dueDate: dueDate,
+      completedDate: completedDate,
       startDateTime: startDateTime,
       endDateTime: endDateTime,
-      recurrentDays: recurrentDays,
+      recurrenceRule: recurrenceRule,
       priority: priority,
     );
   }
@@ -61,13 +63,16 @@ mixin _$TaskEntry {
   String get projectID => throw _privateConstructorUsedError;
   String? get title => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
-  @DateTimeSerialiser()
+  @DateSerialiser()
   DateTime? get dueDate => throw _privateConstructorUsedError;
-  @ListDateTimeSerialiser()
-  List<DateTime>? get startDateTime => throw _privateConstructorUsedError;
-  @ListDateTimeSerialiser()
-  List<DateTime>? get endDateTime => throw _privateConstructorUsedError;
-  List<String>? get recurrentDays => throw _privateConstructorUsedError;
+  @DateSerialiser()
+  DateTime? get completedDate => throw _privateConstructorUsedError;
+  @DateTimeSerialiser()
+  DateTime? get startDateTime => throw _privateConstructorUsedError;
+  @DateTimeSerialiser()
+  DateTime? get endDateTime => throw _privateConstructorUsedError;
+  Map<dynamic, dynamic>? get recurrenceRule =>
+      throw _privateConstructorUsedError;
   int? get priority => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -86,10 +91,11 @@ abstract class $TaskEntryCopyWith<$Res> {
       String projectID,
       String? title,
       String? description,
-      @DateTimeSerialiser() DateTime? dueDate,
-      @ListDateTimeSerialiser() List<DateTime>? startDateTime,
-      @ListDateTimeSerialiser() List<DateTime>? endDateTime,
-      List<String>? recurrentDays,
+      @DateSerialiser() DateTime? dueDate,
+      @DateSerialiser() DateTime? completedDate,
+      @DateTimeSerialiser() DateTime? startDateTime,
+      @DateTimeSerialiser() DateTime? endDateTime,
+      Map<dynamic, dynamic>? recurrenceRule,
       int? priority});
 }
 
@@ -109,9 +115,10 @@ class _$TaskEntryCopyWithImpl<$Res> implements $TaskEntryCopyWith<$Res> {
     Object? title = freezed,
     Object? description = freezed,
     Object? dueDate = freezed,
+    Object? completedDate = freezed,
     Object? startDateTime = freezed,
     Object? endDateTime = freezed,
-    Object? recurrentDays = freezed,
+    Object? recurrenceRule = freezed,
     Object? priority = freezed,
   }) {
     return _then(_value.copyWith(
@@ -139,18 +146,22 @@ class _$TaskEntryCopyWithImpl<$Res> implements $TaskEntryCopyWith<$Res> {
           ? _value.dueDate
           : dueDate // ignore: cast_nullable_to_non_nullable
               as DateTime?,
+      completedDate: completedDate == freezed
+          ? _value.completedDate
+          : completedDate // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
       startDateTime: startDateTime == freezed
           ? _value.startDateTime
           : startDateTime // ignore: cast_nullable_to_non_nullable
-              as List<DateTime>?,
+              as DateTime?,
       endDateTime: endDateTime == freezed
           ? _value.endDateTime
           : endDateTime // ignore: cast_nullable_to_non_nullable
-              as List<DateTime>?,
-      recurrentDays: recurrentDays == freezed
-          ? _value.recurrentDays
-          : recurrentDays // ignore: cast_nullable_to_non_nullable
-              as List<String>?,
+              as DateTime?,
+      recurrenceRule: recurrenceRule == freezed
+          ? _value.recurrenceRule
+          : recurrenceRule // ignore: cast_nullable_to_non_nullable
+              as Map<dynamic, dynamic>?,
       priority: priority == freezed
           ? _value.priority
           : priority // ignore: cast_nullable_to_non_nullable
@@ -171,10 +182,11 @@ abstract class _$TaskEntryCopyWith<$Res> implements $TaskEntryCopyWith<$Res> {
       String projectID,
       String? title,
       String? description,
-      @DateTimeSerialiser() DateTime? dueDate,
-      @ListDateTimeSerialiser() List<DateTime>? startDateTime,
-      @ListDateTimeSerialiser() List<DateTime>? endDateTime,
-      List<String>? recurrentDays,
+      @DateSerialiser() DateTime? dueDate,
+      @DateSerialiser() DateTime? completedDate,
+      @DateTimeSerialiser() DateTime? startDateTime,
+      @DateTimeSerialiser() DateTime? endDateTime,
+      Map<dynamic, dynamic>? recurrenceRule,
       int? priority});
 }
 
@@ -195,9 +207,10 @@ class __$TaskEntryCopyWithImpl<$Res> extends _$TaskEntryCopyWithImpl<$Res>
     Object? title = freezed,
     Object? description = freezed,
     Object? dueDate = freezed,
+    Object? completedDate = freezed,
     Object? startDateTime = freezed,
     Object? endDateTime = freezed,
-    Object? recurrentDays = freezed,
+    Object? recurrenceRule = freezed,
     Object? priority = freezed,
   }) {
     return _then(_TaskEntry(
@@ -225,18 +238,22 @@ class __$TaskEntryCopyWithImpl<$Res> extends _$TaskEntryCopyWithImpl<$Res>
           ? _value.dueDate
           : dueDate // ignore: cast_nullable_to_non_nullable
               as DateTime?,
+      completedDate: completedDate == freezed
+          ? _value.completedDate
+          : completedDate // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
       startDateTime: startDateTime == freezed
           ? _value.startDateTime
           : startDateTime // ignore: cast_nullable_to_non_nullable
-              as List<DateTime>?,
+              as DateTime?,
       endDateTime: endDateTime == freezed
           ? _value.endDateTime
           : endDateTime // ignore: cast_nullable_to_non_nullable
-              as List<DateTime>?,
-      recurrentDays: recurrentDays == freezed
-          ? _value.recurrentDays
-          : recurrentDays // ignore: cast_nullable_to_non_nullable
-              as List<String>?,
+              as DateTime?,
+      recurrenceRule: recurrenceRule == freezed
+          ? _value.recurrenceRule
+          : recurrenceRule // ignore: cast_nullable_to_non_nullable
+              as Map<dynamic, dynamic>?,
       priority: priority == freezed
           ? _value.priority
           : priority // ignore: cast_nullable_to_non_nullable
@@ -254,10 +271,11 @@ class _$_TaskEntry implements _TaskEntry {
       required this.projectID,
       this.title,
       this.description,
-      @DateTimeSerialiser() this.dueDate,
-      @ListDateTimeSerialiser() this.startDateTime,
-      @ListDateTimeSerialiser() this.endDateTime,
-      this.recurrentDays,
+      @DateSerialiser() this.dueDate,
+      @DateSerialiser() this.completedDate,
+      @DateTimeSerialiser() this.startDateTime,
+      @DateTimeSerialiser() this.endDateTime,
+      this.recurrenceRule,
       this.priority});
 
   factory _$_TaskEntry.fromJson(Map<String, dynamic> json) =>
@@ -274,22 +292,25 @@ class _$_TaskEntry implements _TaskEntry {
   @override
   final String? description;
   @override
-  @DateTimeSerialiser()
+  @DateSerialiser()
   final DateTime? dueDate;
   @override
-  @ListDateTimeSerialiser()
-  final List<DateTime>? startDateTime;
+  @DateSerialiser()
+  final DateTime? completedDate;
   @override
-  @ListDateTimeSerialiser()
-  final List<DateTime>? endDateTime;
+  @DateTimeSerialiser()
+  final DateTime? startDateTime;
   @override
-  final List<String>? recurrentDays;
+  @DateTimeSerialiser()
+  final DateTime? endDateTime;
+  @override
+  final Map<dynamic, dynamic>? recurrenceRule;
   @override
   final int? priority;
 
   @override
   String toString() {
-    return 'TaskEntry(id: $id, isCompleted: $isCompleted, projectID: $projectID, title: $title, description: $description, dueDate: $dueDate, startDateTime: $startDateTime, endDateTime: $endDateTime, recurrentDays: $recurrentDays, priority: $priority)';
+    return 'TaskEntry(id: $id, isCompleted: $isCompleted, projectID: $projectID, title: $title, description: $description, dueDate: $dueDate, completedDate: $completedDate, startDateTime: $startDateTime, endDateTime: $endDateTime, recurrenceRule: $recurrenceRule, priority: $priority)';
   }
 
   @override
@@ -312,15 +333,18 @@ class _$_TaskEntry implements _TaskEntry {
             (identical(other.dueDate, dueDate) ||
                 const DeepCollectionEquality()
                     .equals(other.dueDate, dueDate)) &&
+            (identical(other.completedDate, completedDate) ||
+                const DeepCollectionEquality()
+                    .equals(other.completedDate, completedDate)) &&
             (identical(other.startDateTime, startDateTime) ||
                 const DeepCollectionEquality()
                     .equals(other.startDateTime, startDateTime)) &&
             (identical(other.endDateTime, endDateTime) ||
                 const DeepCollectionEquality()
                     .equals(other.endDateTime, endDateTime)) &&
-            (identical(other.recurrentDays, recurrentDays) ||
+            (identical(other.recurrenceRule, recurrenceRule) ||
                 const DeepCollectionEquality()
-                    .equals(other.recurrentDays, recurrentDays)) &&
+                    .equals(other.recurrenceRule, recurrenceRule)) &&
             (identical(other.priority, priority) ||
                 const DeepCollectionEquality()
                     .equals(other.priority, priority)));
@@ -335,9 +359,10 @@ class _$_TaskEntry implements _TaskEntry {
       const DeepCollectionEquality().hash(title) ^
       const DeepCollectionEquality().hash(description) ^
       const DeepCollectionEquality().hash(dueDate) ^
+      const DeepCollectionEquality().hash(completedDate) ^
       const DeepCollectionEquality().hash(startDateTime) ^
       const DeepCollectionEquality().hash(endDateTime) ^
-      const DeepCollectionEquality().hash(recurrentDays) ^
+      const DeepCollectionEquality().hash(recurrenceRule) ^
       const DeepCollectionEquality().hash(priority);
 
   @JsonKey(ignore: true)
@@ -358,10 +383,11 @@ abstract class _TaskEntry implements TaskEntry {
       required String projectID,
       String? title,
       String? description,
-      @DateTimeSerialiser() DateTime? dueDate,
-      @ListDateTimeSerialiser() List<DateTime>? startDateTime,
-      @ListDateTimeSerialiser() List<DateTime>? endDateTime,
-      List<String>? recurrentDays,
+      @DateSerialiser() DateTime? dueDate,
+      @DateSerialiser() DateTime? completedDate,
+      @DateTimeSerialiser() DateTime? startDateTime,
+      @DateTimeSerialiser() DateTime? endDateTime,
+      Map<dynamic, dynamic>? recurrenceRule,
       int? priority}) = _$_TaskEntry;
 
   factory _TaskEntry.fromJson(Map<String, dynamic> json) =
@@ -378,16 +404,20 @@ abstract class _TaskEntry implements TaskEntry {
   @override
   String? get description => throw _privateConstructorUsedError;
   @override
-  @DateTimeSerialiser()
+  @DateSerialiser()
   DateTime? get dueDate => throw _privateConstructorUsedError;
   @override
-  @ListDateTimeSerialiser()
-  List<DateTime>? get startDateTime => throw _privateConstructorUsedError;
+  @DateSerialiser()
+  DateTime? get completedDate => throw _privateConstructorUsedError;
   @override
-  @ListDateTimeSerialiser()
-  List<DateTime>? get endDateTime => throw _privateConstructorUsedError;
+  @DateTimeSerialiser()
+  DateTime? get startDateTime => throw _privateConstructorUsedError;
   @override
-  List<String>? get recurrentDays => throw _privateConstructorUsedError;
+  @DateTimeSerialiser()
+  DateTime? get endDateTime => throw _privateConstructorUsedError;
+  @override
+  Map<dynamic, dynamic>? get recurrenceRule =>
+      throw _privateConstructorUsedError;
   @override
   int? get priority => throw _privateConstructorUsedError;
   @override

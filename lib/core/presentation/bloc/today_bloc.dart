@@ -88,13 +88,11 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
                     id: task.id,
                     type: TodayEntryType.task,
                     title: task.title,
-                    startDateTime: (task.startDateTime != null &&
-                            task.startDateTime!.isNotEmpty)
-                        ? task.startDateTime!.first
+                    startDateTime: (task.startDateTime != null)
+                        ? task.startDateTime!
                         : null,
-                    endDateTime: (task.startDateTime != null &&
-                            task.startDateTime!.isNotEmpty)
-                        ? task.startDateTime!.first + 1.hours
+                    endDateTime: (task.startDateTime != null)
+                        ? task.startDateTime! + 1.hours
                         : null,
                     // color: task.projectID
                   ))
@@ -148,13 +146,10 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
                 id: task.id,
                 type: TodayEntryType.task,
                 title: task.title,
-                startDateTime: (task.startDateTime != null &&
-                        task.startDateTime!.isNotEmpty)
-                    ? task.startDateTime!.first
-                    : null,
-                endDateTime: (task.startDateTime != null &&
-                        task.startDateTime!.isNotEmpty)
-                    ? task.startDateTime!.first + 1.hours
+                startDateTime:
+                    (task.startDateTime != null) ? task.startDateTime! : null,
+                endDateTime: (task.startDateTime != null)
+                    ? task.startDateTime! + 1.hours
                     : null,
                 // color: task.projectID
               ),

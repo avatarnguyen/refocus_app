@@ -28,6 +28,7 @@ class Subtask extends Model {
   final bool? _isCompleted;
   final int? _priority;
   final String? _todoID;
+  final TemporalDate? _completedDate;
 
   @override
   getInstanceType() => classType;
@@ -61,15 +62,20 @@ class Subtask extends Model {
     return _todoID;
   }
   
-  const Subtask._internal({required this.id, required title, required isCompleted, priority, todoID}): _title = title, _isCompleted = isCompleted, _priority = priority, _todoID = todoID;
+  TemporalDate? get completedDate {
+    return _completedDate;
+  }
   
-  factory Subtask({String? id, required String title, required bool isCompleted, int? priority, String? todoID}) {
+  const Subtask._internal({required this.id, required title, required isCompleted, priority, todoID, completedDate}): _title = title, _isCompleted = isCompleted, _priority = priority, _todoID = todoID, _completedDate = completedDate;
+  
+  factory Subtask({String? id, required String title, required bool isCompleted, int? priority, String? todoID, TemporalDate? completedDate}) {
     return Subtask._internal(
       id: id == null ? UUID.getUUID() : id,
       title: title,
       isCompleted: isCompleted,
       priority: priority,
-      todoID: todoID);
+      todoID: todoID,
+      completedDate: completedDate);
   }
   
   bool equals(Object other) {
@@ -84,7 +90,8 @@ class Subtask extends Model {
       _title == other._title &&
       _isCompleted == other._isCompleted &&
       _priority == other._priority &&
-      _todoID == other._todoID;
+      _todoID == other._todoID &&
+      _completedDate == other._completedDate;
   }
   
   @override
@@ -99,19 +106,21 @@ class Subtask extends Model {
     buffer.write("title=" + "$_title" + ", ");
     buffer.write("isCompleted=" + (_isCompleted != null ? _isCompleted!.toString() : "null") + ", ");
     buffer.write("priority=" + (_priority != null ? _priority!.toString() : "null") + ", ");
-    buffer.write("todoID=" + "$_todoID");
+    buffer.write("todoID=" + "$_todoID" + ", ");
+    buffer.write("completedDate=" + (_completedDate != null ? _completedDate!.format() : "null"));
     buffer.write("}");
     
     return buffer.toString();
   }
   
-  Subtask copyWith({String? id, String? title, bool? isCompleted, int? priority, String? todoID}) {
+  Subtask copyWith({String? id, String? title, bool? isCompleted, int? priority, String? todoID, TemporalDate? completedDate}) {
     return Subtask(
       id: id ?? this.id,
       title: title ?? this.title,
       isCompleted: isCompleted ?? this.isCompleted,
       priority: priority ?? this.priority,
-      todoID: todoID ?? this.todoID);
+      todoID: todoID ?? this.todoID,
+      completedDate: completedDate ?? this.completedDate);
   }
   
   Subtask.fromJson(Map<String, dynamic> json)  
@@ -119,10 +128,11 @@ class Subtask extends Model {
       _title = json['title'],
       _isCompleted = json['isCompleted'],
       _priority = json['priority'],
-      _todoID = json['todoID'];
+      _todoID = json['todoID'],
+      _completedDate = json['completedDate'] != null ? TemporalDate.fromString(json['completedDate']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'title': _title, 'isCompleted': _isCompleted, 'priority': _priority, 'todoID': _todoID
+    'id': id, 'title': _title, 'isCompleted': _isCompleted, 'priority': _priority, 'todoID': _todoID, 'completedDate': _completedDate?.format()
   };
 
   static final QueryField ID = QueryField(fieldName: "subtask.id");
@@ -130,6 +140,7 @@ class Subtask extends Model {
   static final QueryField ISCOMPLETED = QueryField(fieldName: "isCompleted");
   static final QueryField PRIORITY = QueryField(fieldName: "priority");
   static final QueryField TODOID = QueryField(fieldName: "todoID");
+  static final QueryField COMPLETEDDATE = QueryField(fieldName: "completedDate");
   static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "Subtask";
     modelSchemaDefinition.pluralName = "Subtasks";
@@ -169,6 +180,12 @@ class Subtask extends Model {
       key: Subtask.TODOID,
       isRequired: false,
       ofType: ModelFieldType(ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
+      key: Subtask.COMPLETEDDATE,
+      isRequired: false,
+      ofType: ModelFieldType(ModelFieldTypeEnum.date)
     ));
   });
 }
