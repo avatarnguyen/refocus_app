@@ -8,7 +8,9 @@ import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/duedate_selection_type.dart';
 import 'package:refocus_app/injection.dart';
+import 'package:sliding_sheet/sliding_sheet.dart';
 import 'package:styled_widget/styled_widget.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class DueDateTimeWidget extends StatefulWidget {
   const DueDateTimeWidget({
@@ -99,9 +101,7 @@ class _DueDateTimeWidgetState extends State<DueDateTimeWidget> {
           style: context.textTheme.headline3!
               .copyWith(color: kcPrimary100, fontWeight: FontWeight.w400),
         ).ripple().gestures(onTap: () {
-          Platform.isIOS
-              ? _cupertinoDateTimePicker(context, widget.currentText)
-              : _materialDateTimePicker(context, widget.currentText);
+          _showDatePickerBottomSheet(context);
         }),
         verticalSpaceSmall,
         [
@@ -129,7 +129,7 @@ class _DueDateTimeWidgetState extends State<DueDateTimeWidget> {
                 ? _cupertinoDateTimePicker(context, widget.currentText)
                 : _materialTimePicker(context, widget.currentText);
           }),
-        ].toRow(),
+        ].toRow(mainAxisAlignment: MainAxisAlignment.center),
         verticalSpaceRegular,
       ].toColumn(
         mainAxisSize: MainAxisSize.min,
@@ -198,9 +198,7 @@ class _DueDateTimeWidgetState extends State<DueDateTimeWidget> {
 
   void _mapSelectionToStream(DueDateSelectionType type, String? text) {
     if (type == DueDateSelectionType.custom) {
-      Platform.isIOS
-          ? _cupertinoDateTimePicker(context, text)
-          : _materialDateTimePicker(context, text);
+      _showDatePickerBottomSheet(context);
     } else {
       late DateTime _date;
       switch (type) {
@@ -219,26 +217,6 @@ class _DueDateTimeWidgetState extends State<DueDateTimeWidget> {
 
       _dueDate = _date;
       _settingOption.broadCastCurrentDueDateEntry(_date);
-    }
-  }
-
-  // ignore: avoid_void_async
-  void _materialDateTimePicker(BuildContext context, String? text) async {
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: _dueDate,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2025),
-      builder: (context, child) => child ?? const SizedBox(),
-    );
-    if (picked != null && picked != _dueDate) {
-      if (widget.onSelectingReminder) {
-        _settingOption.broadCastCurrentReminderEntry(picked);
-        _remindDate = picked;
-      } else {
-        _settingOption.broadCastCurrentDueDateEntry(picked);
-        _dueDate = picked;
-      }
     }
   }
 
@@ -263,6 +241,81 @@ class _DueDateTimeWidgetState extends State<DueDateTimeWidget> {
     }
   }
 
+  dynamic _showDatePickerBottomSheet(
+    BuildContext parentContext,
+  ) async {
+    final _currentDateTime =
+        widget.onSelectingReminder ? _remindDate : _dueDate;
+    if (_settingOption.remindDate == null && widget.onSelectingReminder) {
+      _settingOption.broadCastCurrentReminderEntry(_currentDateTime);
+    }
+    final dynamic result = await showSlidingBottomSheet<dynamic>(
+      context,
+      builder: (context) {
+        return SlidingSheetDialog(
+          elevation: 8,
+          cornerRadius: 16,
+          duration: 500.milliseconds,
+          color: context.backgroundColor,
+          snapSpec: const SnapSpec(
+            initialSnap: 0.5,
+            snappings: [0.1, 0.7],
+          ),
+          minHeight: parentContext.height / 2.5,
+          // headerBuilder: (context, state) {
+          // },
+          builder: (context, state) {
+            return SafeArea(
+              top: false,
+              child: SizedBox(
+                height: 360,
+                child: SfDateRangePicker(
+                  initialSelectedDate: DateTime.now(),
+                  toggleDaySelection: true,
+                  showActionButtons: true,
+                  selectionColor: parentContext.colorScheme.secondary,
+                  todayHighlightColor: parentContext.colorScheme.secondary,
+                  cancelText: 'CLEAR',
+                  onCancel: () {
+                    if (widget.onSelectingReminder) {
+                      _settingOption.broadCastCurrentReminderEntry(null);
+                      _remindDate = DateTime.now();
+                    } else {
+                      _settingOption.broadCastCurrentDueDateEntry(null);
+                      _currentSelectedDueDate = null;
+                      _dueDate = DateTime.now();
+                    }
+                    setState(() {});
+
+                    context.router.pop();
+                  },
+                  onSelectionChanged: _onSelectionChanged,
+                  onSubmit: (Object value) {
+                    context.router.pop();
+                  },
+                ).padding(all: 8),
+              ),
+            );
+          },
+        );
+      },
+    );
+    return result;
+  }
+
+  void _onSelectionChanged(DateRangePickerSelectionChangedArgs args) {
+    final dynamic picked = args.value;
+    if (picked is DateTime) {
+      if (widget.onSelectingReminder) {
+        _remindDate = picked;
+        _settingOption.broadCastCurrentReminderEntry(picked);
+      } else {
+        _settingOption.broadCastCurrentDueDateEntry(picked);
+        _dueDate = picked;
+      }
+    }
+  }
+
   void _cupertinoDateTimePicker(BuildContext context, String? text) {
     final _currentDateTime =
         widget.onSelectingReminder ? _remindDate : _dueDate;
@@ -278,9 +331,7 @@ class _DueDateTimeWidgetState extends State<DueDateTimeWidget> {
             height: context.height / 3,
             color: Colors.white,
             child: CupertinoDatePicker(
-              mode: widget.onSelectingReminder
-                  ? CupertinoDatePickerMode.dateAndTime
-                  : CupertinoDatePickerMode.date,
+              mode: CupertinoDatePickerMode.time,
               onDateTimeChanged: (picked) {
                 if (picked != _currentDateTime) {
                   if (widget.onSelectingReminder) {
