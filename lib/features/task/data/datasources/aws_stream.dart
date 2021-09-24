@@ -4,6 +4,6 @@ import 'package:refocus_app/models/ModelProvider.dart';
 
 @lazySingleton
 class AwsStream {
-  Stream get getTaskStream => Amplify.DataStore.observe(Todo.classType);
+  Stream get getTaskStream => Amplify.DataStore.observe(Task.classType);
   Stream get getProjectStream => Amplify.DataStore.observe(Project.classType);
 }

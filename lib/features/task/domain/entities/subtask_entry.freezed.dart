@@ -25,14 +25,16 @@ class _$SubTaskEntryTearOff {
       {required String id,
       required bool isCompleted,
       required String todoID,
-      required String title,
-      @DateSerialiser() DateTime? completedDate}) {
+      String? title,
+      @DateSerialiser() DateTime? completedDate,
+      int? priority}) {
     return _SubTaskEntry(
       id: id,
       isCompleted: isCompleted,
       todoID: todoID,
       title: title,
       completedDate: completedDate,
+      priority: priority,
     );
   }
 
@@ -49,9 +51,10 @@ mixin _$SubTaskEntry {
   String get id => throw _privateConstructorUsedError;
   bool get isCompleted => throw _privateConstructorUsedError;
   String get todoID => throw _privateConstructorUsedError;
-  String get title => throw _privateConstructorUsedError;
+  String? get title => throw _privateConstructorUsedError;
   @DateSerialiser()
   DateTime? get completedDate => throw _privateConstructorUsedError;
+  int? get priority => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -68,8 +71,9 @@ abstract class $SubTaskEntryCopyWith<$Res> {
       {String id,
       bool isCompleted,
       String todoID,
-      String title,
-      @DateSerialiser() DateTime? completedDate});
+      String? title,
+      @DateSerialiser() DateTime? completedDate,
+      int? priority});
 }
 
 /// @nodoc
@@ -87,6 +91,7 @@ class _$SubTaskEntryCopyWithImpl<$Res> implements $SubTaskEntryCopyWith<$Res> {
     Object? todoID = freezed,
     Object? title = freezed,
     Object? completedDate = freezed,
+    Object? priority = freezed,
   }) {
     return _then(_value.copyWith(
       id: id == freezed
@@ -104,11 +109,15 @@ class _$SubTaskEntryCopyWithImpl<$Res> implements $SubTaskEntryCopyWith<$Res> {
       title: title == freezed
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       completedDate: completedDate == freezed
           ? _value.completedDate
           : completedDate // ignore: cast_nullable_to_non_nullable
               as DateTime?,
+      priority: priority == freezed
+          ? _value.priority
+          : priority // ignore: cast_nullable_to_non_nullable
+              as int?,
     ));
   }
 }
@@ -124,8 +133,9 @@ abstract class _$SubTaskEntryCopyWith<$Res>
       {String id,
       bool isCompleted,
       String todoID,
-      String title,
-      @DateSerialiser() DateTime? completedDate});
+      String? title,
+      @DateSerialiser() DateTime? completedDate,
+      int? priority});
 }
 
 /// @nodoc
@@ -145,6 +155,7 @@ class __$SubTaskEntryCopyWithImpl<$Res> extends _$SubTaskEntryCopyWithImpl<$Res>
     Object? todoID = freezed,
     Object? title = freezed,
     Object? completedDate = freezed,
+    Object? priority = freezed,
   }) {
     return _then(_SubTaskEntry(
       id: id == freezed
@@ -162,11 +173,15 @@ class __$SubTaskEntryCopyWithImpl<$Res> extends _$SubTaskEntryCopyWithImpl<$Res>
       title: title == freezed
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       completedDate: completedDate == freezed
           ? _value.completedDate
           : completedDate // ignore: cast_nullable_to_non_nullable
               as DateTime?,
+      priority: priority == freezed
+          ? _value.priority
+          : priority // ignore: cast_nullable_to_non_nullable
+              as int?,
     ));
   }
 }
@@ -178,8 +193,9 @@ class _$_SubTaskEntry implements _SubTaskEntry {
       {required this.id,
       required this.isCompleted,
       required this.todoID,
-      required this.title,
-      @DateSerialiser() this.completedDate});
+      this.title,
+      @DateSerialiser() this.completedDate,
+      this.priority});
 
   factory _$_SubTaskEntry.fromJson(Map<String, dynamic> json) =>
       _$$_SubTaskEntryFromJson(json);
@@ -191,14 +207,16 @@ class _$_SubTaskEntry implements _SubTaskEntry {
   @override
   final String todoID;
   @override
-  final String title;
+  final String? title;
   @override
   @DateSerialiser()
   final DateTime? completedDate;
+  @override
+  final int? priority;
 
   @override
   String toString() {
-    return 'SubTaskEntry(id: $id, isCompleted: $isCompleted, todoID: $todoID, title: $title, completedDate: $completedDate)';
+    return 'SubTaskEntry(id: $id, isCompleted: $isCompleted, todoID: $todoID, title: $title, completedDate: $completedDate, priority: $priority)';
   }
 
   @override
@@ -216,7 +234,10 @@ class _$_SubTaskEntry implements _SubTaskEntry {
                 const DeepCollectionEquality().equals(other.title, title)) &&
             (identical(other.completedDate, completedDate) ||
                 const DeepCollectionEquality()
-                    .equals(other.completedDate, completedDate)));
+                    .equals(other.completedDate, completedDate)) &&
+            (identical(other.priority, priority) ||
+                const DeepCollectionEquality()
+                    .equals(other.priority, priority)));
   }
 
   @override
@@ -226,7 +247,8 @@ class _$_SubTaskEntry implements _SubTaskEntry {
       const DeepCollectionEquality().hash(isCompleted) ^
       const DeepCollectionEquality().hash(todoID) ^
       const DeepCollectionEquality().hash(title) ^
-      const DeepCollectionEquality().hash(completedDate);
+      const DeepCollectionEquality().hash(completedDate) ^
+      const DeepCollectionEquality().hash(priority);
 
   @JsonKey(ignore: true)
   @override
@@ -244,8 +266,9 @@ abstract class _SubTaskEntry implements SubTaskEntry {
       {required String id,
       required bool isCompleted,
       required String todoID,
-      required String title,
-      @DateSerialiser() DateTime? completedDate}) = _$_SubTaskEntry;
+      String? title,
+      @DateSerialiser() DateTime? completedDate,
+      int? priority}) = _$_SubTaskEntry;
 
   factory _SubTaskEntry.fromJson(Map<String, dynamic> json) =
       _$_SubTaskEntry.fromJson;
@@ -257,10 +280,12 @@ abstract class _SubTaskEntry implements SubTaskEntry {
   @override
   String get todoID => throw _privateConstructorUsedError;
   @override
-  String get title => throw _privateConstructorUsedError;
+  String? get title => throw _privateConstructorUsedError;
   @override
   @DateSerialiser()
   DateTime? get completedDate => throw _privateConstructorUsedError;
+  @override
+  int? get priority => throw _privateConstructorUsedError;
   @override
   @JsonKey(ignore: true)
   _$SubTaskEntryCopyWith<_SubTaskEntry> get copyWith =>

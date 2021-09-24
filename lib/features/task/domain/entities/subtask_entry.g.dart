@@ -11,9 +11,10 @@ _$_SubTaskEntry _$$_SubTaskEntryFromJson(Map<String, dynamic> json) =>
       id: json['id'] as String,
       isCompleted: json['isCompleted'] as bool,
       todoID: json['todoID'] as String,
-      title: json['title'] as String,
+      title: json['title'] as String?,
       completedDate:
           const DateSerialiser().fromJson(json['completedDate'] as String?),
+      priority: json['priority'] as int?,
     );
 
 Map<String, dynamic> _$$_SubTaskEntryToJson(_$_SubTaskEntry instance) =>
@@ -23,4 +24,5 @@ Map<String, dynamic> _$$_SubTaskEntryToJson(_$_SubTaskEntry instance) =>
       'todoID': instance.todoID,
       'title': instance.title,
       'completedDate': const DateSerialiser().toJson(instance.completedDate),
+      'priority': instance.priority,
     };

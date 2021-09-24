@@ -19,8 +19,8 @@ _$_TaskEntry _$$_TaskEntryFromJson(Map<String, dynamic> json) => _$_TaskEntry(
           const DateTimeSerialiser().fromJson(json['startDateTime'] as String?),
       endDateTime:
           const DateTimeSerialiser().fromJson(json['endDateTime'] as String?),
-      recurrenceRule: json['recurrenceRule'] as Map<String, dynamic>?,
       priority: json['priority'] as int?,
+      isHabit: json['isHabit'] as bool?,
     );
 
 Map<String, dynamic> _$$_TaskEntryToJson(_$_TaskEntry instance) =>
@@ -35,6 +35,6 @@ Map<String, dynamic> _$$_TaskEntryToJson(_$_TaskEntry instance) =>
       'startDateTime':
           const DateTimeSerialiser().toJson(instance.startDateTime),
       'endDateTime': const DateTimeSerialiser().toJson(instance.endDateTime),
-      'recurrenceRule': instance.recurrenceRule,
       'priority': instance.priority,
+      'isHabit': instance.isHabit,
     };

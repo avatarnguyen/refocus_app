@@ -18,17 +18,17 @@
 import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'Project.dart';
 import 'Subtask.dart';
-import 'Todo.dart';
+import 'Task.dart';
 
 export 'Project.dart';
 export 'Subtask.dart';
-export 'Todo.dart';
+export 'Task.dart';
 
 class ModelProvider implements ModelProviderInterface {
   @override
-  String version = "10430fd7607efd2efccbe439994b6588";
+  String version = "46f4eb9ca179a7295b26bdc955cbfe76";
   @override
-  List<ModelSchema> modelSchemas = [Project.schema, Subtask.schema, Todo.schema];
+  List<ModelSchema> modelSchemas = [Project.schema, Subtask.schema, Task.schema];
   static final ModelProvider _instance = ModelProvider();
 
   static ModelProvider get instance => _instance;
@@ -43,8 +43,8 @@ class ModelProvider implements ModelProviderInterface {
     return Subtask.classType;
     }
     break;
-    case "Todo": {
-    return Todo.classType;
+    case "Task": {
+    return Task.classType;
     }
     break;
     default: {

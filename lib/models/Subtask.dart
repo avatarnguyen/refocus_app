@@ -26,9 +26,9 @@ class Subtask extends Model {
   final String id;
   final String? _title;
   final bool? _isCompleted;
-  final int? _priority;
-  final String? _todoID;
   final TemporalDate? _completedDate;
+  final int? _priority;
+  final String? _taskID;
 
   @override
   getInstanceType() => classType;
@@ -38,12 +38,8 @@ class Subtask extends Model {
     return id;
   }
   
-  String get title {
-    try {
-      return _title!;
-    } catch(e) {
-      throw new DataStoreException(DataStoreExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage, recoverySuggestion: DataStoreExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion, underlyingException: e.toString());
-    }
+  String? get title {
+    return _title;
   }
   
   bool get isCompleted {
@@ -54,28 +50,28 @@ class Subtask extends Model {
     }
   }
   
-  int? get priority {
-    return _priority;
-  }
-  
-  String? get todoID {
-    return _todoID;
-  }
-  
   TemporalDate? get completedDate {
     return _completedDate;
   }
   
-  const Subtask._internal({required this.id, required title, required isCompleted, priority, todoID, completedDate}): _title = title, _isCompleted = isCompleted, _priority = priority, _todoID = todoID, _completedDate = completedDate;
+  int? get priority {
+    return _priority;
+  }
   
-  factory Subtask({String? id, required String title, required bool isCompleted, int? priority, String? todoID, TemporalDate? completedDate}) {
+  String? get taskID {
+    return _taskID;
+  }
+  
+  const Subtask._internal({required this.id, title, required isCompleted, completedDate, priority, taskID}): _title = title, _isCompleted = isCompleted, _completedDate = completedDate, _priority = priority, _taskID = taskID;
+  
+  factory Subtask({String? id, String? title, required bool isCompleted, TemporalDate? completedDate, int? priority, String? taskID}) {
     return Subtask._internal(
       id: id == null ? UUID.getUUID() : id,
       title: title,
       isCompleted: isCompleted,
+      completedDate: completedDate,
       priority: priority,
-      todoID: todoID,
-      completedDate: completedDate);
+      taskID: taskID);
   }
   
   bool equals(Object other) {
@@ -89,9 +85,9 @@ class Subtask extends Model {
       id == other.id &&
       _title == other._title &&
       _isCompleted == other._isCompleted &&
+      _completedDate == other._completedDate &&
       _priority == other._priority &&
-      _todoID == other._todoID &&
-      _completedDate == other._completedDate;
+      _taskID == other._taskID;
   }
   
   @override
@@ -105,42 +101,42 @@ class Subtask extends Model {
     buffer.write("id=" + "$id" + ", ");
     buffer.write("title=" + "$_title" + ", ");
     buffer.write("isCompleted=" + (_isCompleted != null ? _isCompleted!.toString() : "null") + ", ");
+    buffer.write("completedDate=" + (_completedDate != null ? _completedDate!.format() : "null") + ", ");
     buffer.write("priority=" + (_priority != null ? _priority!.toString() : "null") + ", ");
-    buffer.write("todoID=" + "$_todoID" + ", ");
-    buffer.write("completedDate=" + (_completedDate != null ? _completedDate!.format() : "null"));
+    buffer.write("taskID=" + "$_taskID");
     buffer.write("}");
     
     return buffer.toString();
   }
   
-  Subtask copyWith({String? id, String? title, bool? isCompleted, int? priority, String? todoID, TemporalDate? completedDate}) {
+  Subtask copyWith({String? id, String? title, bool? isCompleted, TemporalDate? completedDate, int? priority, String? taskID}) {
     return Subtask(
       id: id ?? this.id,
       title: title ?? this.title,
       isCompleted: isCompleted ?? this.isCompleted,
+      completedDate: completedDate ?? this.completedDate,
       priority: priority ?? this.priority,
-      todoID: todoID ?? this.todoID,
-      completedDate: completedDate ?? this.completedDate);
+      taskID: taskID ?? this.taskID);
   }
   
   Subtask.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
       _title = json['title'],
       _isCompleted = json['isCompleted'],
+      _completedDate = json['completedDate'] != null ? TemporalDate.fromString(json['completedDate']) : null,
       _priority = json['priority'],
-      _todoID = json['todoID'],
-      _completedDate = json['completedDate'] != null ? TemporalDate.fromString(json['completedDate']) : null;
+      _taskID = json['taskID'];
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'title': _title, 'isCompleted': _isCompleted, 'priority': _priority, 'todoID': _todoID, 'completedDate': _completedDate?.format()
+    'id': id, 'title': _title, 'isCompleted': _isCompleted, 'completedDate': _completedDate?.format(), 'priority': _priority, 'taskID': _taskID
   };
 
   static final QueryField ID = QueryField(fieldName: "subtask.id");
   static final QueryField TITLE = QueryField(fieldName: "title");
   static final QueryField ISCOMPLETED = QueryField(fieldName: "isCompleted");
-  static final QueryField PRIORITY = QueryField(fieldName: "priority");
-  static final QueryField TODOID = QueryField(fieldName: "todoID");
   static final QueryField COMPLETEDDATE = QueryField(fieldName: "completedDate");
+  static final QueryField PRIORITY = QueryField(fieldName: "priority");
+  static final QueryField TASKID = QueryField(fieldName: "taskID");
   static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "Subtask";
     modelSchemaDefinition.pluralName = "Subtasks";
@@ -160,7 +156,7 @@ class Subtask extends Model {
     
     modelSchemaDefinition.addField(ModelFieldDefinition.field(
       key: Subtask.TITLE,
-      isRequired: true,
+      isRequired: false,
       ofType: ModelFieldType(ModelFieldTypeEnum.string)
     ));
     
@@ -171,21 +167,21 @@ class Subtask extends Model {
     ));
     
     modelSchemaDefinition.addField(ModelFieldDefinition.field(
+      key: Subtask.COMPLETEDDATE,
+      isRequired: false,
+      ofType: ModelFieldType(ModelFieldTypeEnum.date)
+    ));
+    
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
       key: Subtask.PRIORITY,
       isRequired: false,
       ofType: ModelFieldType(ModelFieldTypeEnum.int)
     ));
     
     modelSchemaDefinition.addField(ModelFieldDefinition.field(
-      key: Subtask.TODOID,
+      key: Subtask.TASKID,
       isRequired: false,
       ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
-    
-    modelSchemaDefinition.addField(ModelFieldDefinition.field(
-      key: Subtask.COMPLETEDDATE,
-      isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.date)
     ));
   });
 }

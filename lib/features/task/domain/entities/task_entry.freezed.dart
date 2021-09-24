@@ -31,8 +31,8 @@ class _$TaskEntryTearOff {
       @DateSerialiser() DateTime? completedDate,
       @DateTimeSerialiser() DateTime? startDateTime,
       @DateTimeSerialiser() DateTime? endDateTime,
-      Map<dynamic, dynamic>? recurrenceRule,
-      int? priority}) {
+      int? priority,
+      bool? isHabit}) {
     return _TaskEntry(
       id: id,
       isCompleted: isCompleted,
@@ -43,8 +43,8 @@ class _$TaskEntryTearOff {
       completedDate: completedDate,
       startDateTime: startDateTime,
       endDateTime: endDateTime,
-      recurrenceRule: recurrenceRule,
       priority: priority,
+      isHabit: isHabit,
     );
   }
 
@@ -71,9 +71,8 @@ mixin _$TaskEntry {
   DateTime? get startDateTime => throw _privateConstructorUsedError;
   @DateTimeSerialiser()
   DateTime? get endDateTime => throw _privateConstructorUsedError;
-  Map<dynamic, dynamic>? get recurrenceRule =>
-      throw _privateConstructorUsedError;
   int? get priority => throw _privateConstructorUsedError;
+  bool? get isHabit => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -95,8 +94,8 @@ abstract class $TaskEntryCopyWith<$Res> {
       @DateSerialiser() DateTime? completedDate,
       @DateTimeSerialiser() DateTime? startDateTime,
       @DateTimeSerialiser() DateTime? endDateTime,
-      Map<dynamic, dynamic>? recurrenceRule,
-      int? priority});
+      int? priority,
+      bool? isHabit});
 }
 
 /// @nodoc
@@ -118,8 +117,8 @@ class _$TaskEntryCopyWithImpl<$Res> implements $TaskEntryCopyWith<$Res> {
     Object? completedDate = freezed,
     Object? startDateTime = freezed,
     Object? endDateTime = freezed,
-    Object? recurrenceRule = freezed,
     Object? priority = freezed,
+    Object? isHabit = freezed,
   }) {
     return _then(_value.copyWith(
       id: id == freezed
@@ -158,14 +157,14 @@ class _$TaskEntryCopyWithImpl<$Res> implements $TaskEntryCopyWith<$Res> {
           ? _value.endDateTime
           : endDateTime // ignore: cast_nullable_to_non_nullable
               as DateTime?,
-      recurrenceRule: recurrenceRule == freezed
-          ? _value.recurrenceRule
-          : recurrenceRule // ignore: cast_nullable_to_non_nullable
-              as Map<dynamic, dynamic>?,
       priority: priority == freezed
           ? _value.priority
           : priority // ignore: cast_nullable_to_non_nullable
               as int?,
+      isHabit: isHabit == freezed
+          ? _value.isHabit
+          : isHabit // ignore: cast_nullable_to_non_nullable
+              as bool?,
     ));
   }
 }
@@ -186,8 +185,8 @@ abstract class _$TaskEntryCopyWith<$Res> implements $TaskEntryCopyWith<$Res> {
       @DateSerialiser() DateTime? completedDate,
       @DateTimeSerialiser() DateTime? startDateTime,
       @DateTimeSerialiser() DateTime? endDateTime,
-      Map<dynamic, dynamic>? recurrenceRule,
-      int? priority});
+      int? priority,
+      bool? isHabit});
 }
 
 /// @nodoc
@@ -210,8 +209,8 @@ class __$TaskEntryCopyWithImpl<$Res> extends _$TaskEntryCopyWithImpl<$Res>
     Object? completedDate = freezed,
     Object? startDateTime = freezed,
     Object? endDateTime = freezed,
-    Object? recurrenceRule = freezed,
     Object? priority = freezed,
+    Object? isHabit = freezed,
   }) {
     return _then(_TaskEntry(
       id: id == freezed
@@ -250,14 +249,14 @@ class __$TaskEntryCopyWithImpl<$Res> extends _$TaskEntryCopyWithImpl<$Res>
           ? _value.endDateTime
           : endDateTime // ignore: cast_nullable_to_non_nullable
               as DateTime?,
-      recurrenceRule: recurrenceRule == freezed
-          ? _value.recurrenceRule
-          : recurrenceRule // ignore: cast_nullable_to_non_nullable
-              as Map<dynamic, dynamic>?,
       priority: priority == freezed
           ? _value.priority
           : priority // ignore: cast_nullable_to_non_nullable
               as int?,
+      isHabit: isHabit == freezed
+          ? _value.isHabit
+          : isHabit // ignore: cast_nullable_to_non_nullable
+              as bool?,
     ));
   }
 }
@@ -275,8 +274,8 @@ class _$_TaskEntry implements _TaskEntry {
       @DateSerialiser() this.completedDate,
       @DateTimeSerialiser() this.startDateTime,
       @DateTimeSerialiser() this.endDateTime,
-      this.recurrenceRule,
-      this.priority});
+      this.priority,
+      this.isHabit});
 
   factory _$_TaskEntry.fromJson(Map<String, dynamic> json) =>
       _$$_TaskEntryFromJson(json);
@@ -304,13 +303,13 @@ class _$_TaskEntry implements _TaskEntry {
   @DateTimeSerialiser()
   final DateTime? endDateTime;
   @override
-  final Map<dynamic, dynamic>? recurrenceRule;
-  @override
   final int? priority;
+  @override
+  final bool? isHabit;
 
   @override
   String toString() {
-    return 'TaskEntry(id: $id, isCompleted: $isCompleted, projectID: $projectID, title: $title, description: $description, dueDate: $dueDate, completedDate: $completedDate, startDateTime: $startDateTime, endDateTime: $endDateTime, recurrenceRule: $recurrenceRule, priority: $priority)';
+    return 'TaskEntry(id: $id, isCompleted: $isCompleted, projectID: $projectID, title: $title, description: $description, dueDate: $dueDate, completedDate: $completedDate, startDateTime: $startDateTime, endDateTime: $endDateTime, priority: $priority, isHabit: $isHabit)';
   }
 
   @override
@@ -342,12 +341,11 @@ class _$_TaskEntry implements _TaskEntry {
             (identical(other.endDateTime, endDateTime) ||
                 const DeepCollectionEquality()
                     .equals(other.endDateTime, endDateTime)) &&
-            (identical(other.recurrenceRule, recurrenceRule) ||
-                const DeepCollectionEquality()
-                    .equals(other.recurrenceRule, recurrenceRule)) &&
             (identical(other.priority, priority) ||
                 const DeepCollectionEquality()
-                    .equals(other.priority, priority)));
+                    .equals(other.priority, priority)) &&
+            (identical(other.isHabit, isHabit) ||
+                const DeepCollectionEquality().equals(other.isHabit, isHabit)));
   }
 
   @override
@@ -362,8 +360,8 @@ class _$_TaskEntry implements _TaskEntry {
       const DeepCollectionEquality().hash(completedDate) ^
       const DeepCollectionEquality().hash(startDateTime) ^
       const DeepCollectionEquality().hash(endDateTime) ^
-      const DeepCollectionEquality().hash(recurrenceRule) ^
-      const DeepCollectionEquality().hash(priority);
+      const DeepCollectionEquality().hash(priority) ^
+      const DeepCollectionEquality().hash(isHabit);
 
   @JsonKey(ignore: true)
   @override
@@ -387,8 +385,8 @@ abstract class _TaskEntry implements TaskEntry {
       @DateSerialiser() DateTime? completedDate,
       @DateTimeSerialiser() DateTime? startDateTime,
       @DateTimeSerialiser() DateTime? endDateTime,
-      Map<dynamic, dynamic>? recurrenceRule,
-      int? priority}) = _$_TaskEntry;
+      int? priority,
+      bool? isHabit}) = _$_TaskEntry;
 
   factory _TaskEntry.fromJson(Map<String, dynamic> json) =
       _$_TaskEntry.fromJson;
@@ -416,10 +414,9 @@ abstract class _TaskEntry implements TaskEntry {
   @DateTimeSerialiser()
   DateTime? get endDateTime => throw _privateConstructorUsedError;
   @override
-  Map<dynamic, dynamic>? get recurrenceRule =>
-      throw _privateConstructorUsedError;
-  @override
   int? get priority => throw _privateConstructorUsedError;
+  @override
+  bool? get isHabit => throw _privateConstructorUsedError;
   @override
   @JsonKey(ignore: true)
   _$TaskEntryCopyWith<_TaskEntry> get copyWith =>

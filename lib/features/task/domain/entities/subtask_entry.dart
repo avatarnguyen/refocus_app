@@ -12,8 +12,9 @@ class SubTaskEntry with _$SubTaskEntry {
     required String id,
     required bool isCompleted,
     required String todoID,
-    required String title,
+    String? title,
     @DateSerialiser() DateTime? completedDate,
+    int? priority,
   }) = _SubTaskEntry;
 
   factory SubTaskEntry.fromJson(Map<String, dynamic> json) =>

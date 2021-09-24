@@ -5,8 +5,8 @@ analyzer:
     - "**/*.g.dart"
     - "**/*.freezed.dart"
     - "**/Project.dart"
-    - "**/Todo.dart"
     - "**/Subtask.dart"
+    - "**/Task.dart"
   errors:
     invalid_annotation_target: ignore
     argument_type_not_assignable: warning
@@ -14,6 +14,7 @@ analyzer:
     implicit_dynamic_type: warning
     implicit_dynamic_list_literal: warning
     implicit_dynamic_method: ignore
+    implicit_dynamic_parameter: ignore
 linter:
   rules:
     public_member_api_docs: false

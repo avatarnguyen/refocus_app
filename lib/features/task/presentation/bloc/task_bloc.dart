@@ -46,7 +46,8 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
         TaskParams(project: event.project),
       );
       yield* _eitherTaskLoadedOrErrorState(failureOrEntry);
-      //TODO: Watch Stream here
+
+      //TODO: Watch AWS Stream here
     } else if (event is CreateTaskEntriesEvent) {
       log('Create New Task');
 

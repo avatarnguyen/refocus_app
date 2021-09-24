@@ -18,8 +18,8 @@ class TaskEntry with _$TaskEntry {
     @DateSerialiser() DateTime? completedDate,
     @DateTimeSerialiser() DateTime? startDateTime,
     @DateTimeSerialiser() DateTime? endDateTime,
-    Map<dynamic, dynamic>? recurrenceRule,
     int? priority,
+    bool? isHabit,
   }) = _TaskEntry;
 
   factory TaskEntry.fromJson(Map<String, dynamic> json) =>

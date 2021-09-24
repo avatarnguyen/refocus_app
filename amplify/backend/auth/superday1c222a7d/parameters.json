@@ -1,8 +1,8 @@
 {
-    "identityPoolName": "suparday0539abf2_identitypool_0539abf2",
+    "identityPoolName": "superday1c222a7d_identitypool_1c222a7d",
     "allowUnauthenticatedIdentities": false,
-    "resourceNameTruncated": "supard0539abf2",
-    "userPoolName": "suparday0539abf2_userpool_0539abf2",
+    "resourceNameTruncated": "superd1c222a7d",
+    "userPoolName": "superday1c222a7d_userpool_1c222a7d",
     "autoVerifiedAttributes": [
         "email"
     ],
@@ -20,9 +20,7 @@
     "requiredAttributes": [
         "email"
     ],
-    "aliasAttributes": [
-        "email"
-    ],
+    "aliasAttributes": [],
     "userpoolClientGenerateSecret": false,
     "userpoolClientRefreshTokenValidity": 30,
     "userpoolClientWriteAttributes": [
@@ -31,10 +29,10 @@
     "userpoolClientReadAttributes": [
         "email"
     ],
-    "userpoolClientLambdaRole": "supard0539abf2_userpoolclient_lambda_role",
+    "userpoolClientLambdaRole": "superd1c222a7d_userpoolclient_lambda_role",
     "userpoolClientSetAttributes": false,
-    "sharedId": "0539abf2",
-    "resourceName": "suparday0539abf2",
+    "sharedId": "1c222a7d",
+    "resourceName": "superday1c222a7d",
     "authSelections": "identityPoolAndUserPool",
     "authRoleArn": {
         "Fn::GetAtt": [

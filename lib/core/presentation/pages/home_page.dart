@@ -72,11 +72,11 @@ class _HomePageWidgetState extends State<HomePageWidget> {
 
   @override
   void initState() {
-    super.initState();
     _configureAmplify();
     _slidingBodySub = _slidingStream.pageStream.listen(_slidingPageReceived);
 
     _googleSignIn.signInSilently();
+    super.initState();
   }
 
   void _slidingPageReceived(int newPage) {
@@ -98,6 +98,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
       setState(() {
         amplifyConfigured = true;
       });
+      // await Amplify.DataStore.clear();
     } catch (e) {
       log.e(e);
     }

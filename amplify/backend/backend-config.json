@@ -1,6 +1,6 @@
 {
   "api": {
-    "Suparday": {
+    "Superday": {
       "service": "AppSync",
       "providerPlugin": "awscloudformation",
       "output": {
@@ -9,18 +9,12 @@
             "authenticationType": "API_KEY",
             "apiKeyConfig": {
               "apiKeyExpirationDays": 30,
-              "description": "api key description"
+              "description": "This is an api key"
             }
           },
           "additionalAuthenticationProviders": [
             {
               "authenticationType": "AWS_IAM"
-            },
-            {
-              "authenticationType": "AMAZON_COGNITO_USER_POOLS",
-              "userPoolConfig": {
-                "userPoolId": "authsuparday0539abf2"
-              }
             }
           ]
         }
@@ -28,15 +22,13 @@
     }
   },
   "auth": {
-    "suparday0539abf2": {
+    "superday1c222a7d": {
       "service": "Cognito",
       "providerPlugin": "awscloudformation",
       "dependsOn": [],
       "customAuth": false,
       "frontendAuthConfig": {
-        "loginMechanisms": [
-          "EMAIL"
-        ],
+        "loginMechanisms": [],
         "signupAttributes": [
           "EMAIL"
         ],
@@ -47,6 +39,9 @@
         "mfaConfiguration": "OFF",
         "mfaTypes": [
           "SMS"
+        ],
+        "verificationMechanisms": [
+          "EMAIL"
         ]
       }
     }

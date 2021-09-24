@@ -29,7 +29,7 @@ class Project extends Model {
   final String? _title;
   final String? _color;
   final String? _emoji;
-  final List<Todo>? _Todos;
+  final List<Task>? _Tasks;
 
   @override
   getInstanceType() => classType;
@@ -51,19 +51,19 @@ class Project extends Model {
     return _emoji;
   }
   
-  List<Todo>? get Todos {
-    return _Todos;
+  List<Task>? get Tasks {
+    return _Tasks;
   }
   
-  const Project._internal({required this.id, title, color, emoji, Todos}): _title = title, _color = color, _emoji = emoji, _Todos = Todos;
+  const Project._internal({required this.id, title, color, emoji, Tasks}): _title = title, _color = color, _emoji = emoji, _Tasks = Tasks;
   
-  factory Project({String? id, String? title, String? color, String? emoji, List<Todo>? Todos}) {
+  factory Project({String? id, String? title, String? color, String? emoji, List<Task>? Tasks}) {
     return Project._internal(
       id: id == null ? UUID.getUUID() : id,
       title: title,
       color: color,
       emoji: emoji,
-      Todos: Todos != null ? List<Todo>.unmodifiable(Todos) : Todos);
+      Tasks: Tasks != null ? List<Task>.unmodifiable(Tasks) : Tasks);
   }
   
   bool equals(Object other) {
@@ -78,7 +78,7 @@ class Project extends Model {
       _title == other._title &&
       _color == other._color &&
       _emoji == other._emoji &&
-      DeepCollectionEquality().equals(_Todos, other._Todos);
+      DeepCollectionEquality().equals(_Tasks, other._Tasks);
   }
   
   @override
@@ -98,13 +98,13 @@ class Project extends Model {
     return buffer.toString();
   }
   
-  Project copyWith({String? id, String? title, String? color, String? emoji, List<Todo>? Todos}) {
+  Project copyWith({String? id, String? title, String? color, String? emoji, List<Task>? Tasks}) {
     return Project(
       id: id ?? this.id,
       title: title ?? this.title,
       color: color ?? this.color,
       emoji: emoji ?? this.emoji,
-      Todos: Todos ?? this.Todos);
+      Tasks: Tasks ?? this.Tasks);
   }
   
   Project.fromJson(Map<String, dynamic> json)  
@@ -112,24 +112,24 @@ class Project extends Model {
       _title = json['title'],
       _color = json['color'],
       _emoji = json['emoji'],
-      _Todos = json['Todos'] is List
-        ? (json['Todos'] as List)
+      _Tasks = json['Tasks'] is List
+        ? (json['Tasks'] as List)
           .where((e) => e?['serializedData'] != null)
-          .map((e) => Todo.fromJson(new Map<String, dynamic>.from(e['serializedData'])))
+          .map((e) => Task.fromJson(new Map<String, dynamic>.from(e['serializedData'])))
           .toList()
         : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'title': _title, 'color': _color, 'emoji': _emoji, 'Todos': _Todos?.map((e) => e?.toJson())?.toList()
+    'id': id, 'title': _title, 'color': _color, 'emoji': _emoji, 'Tasks': _Tasks?.map((e) => e?.toJson())?.toList()
   };
 
   static final QueryField ID = QueryField(fieldName: "project.id");
   static final QueryField TITLE = QueryField(fieldName: "title");
   static final QueryField COLOR = QueryField(fieldName: "color");
   static final QueryField EMOJI = QueryField(fieldName: "emoji");
-  static final QueryField TODOS = QueryField(
-    fieldName: "Todos",
-    fieldType: ModelFieldType(ModelFieldTypeEnum.model, ofModelName: (Todo).toString()));
+  static final QueryField TASKS = QueryField(
+    fieldName: "Tasks",
+    fieldType: ModelFieldType(ModelFieldTypeEnum.model, ofModelName: (Task).toString()));
   static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "Project";
     modelSchemaDefinition.pluralName = "Projects";
@@ -166,10 +166,10 @@ class Project extends Model {
     ));
     
     modelSchemaDefinition.addField(ModelFieldDefinition.hasMany(
-      key: Project.TODOS,
+      key: Project.TASKS,
       isRequired: false,
-      ofModelName: (Todo).toString(),
-      associatedKey: Todo.PROJECTID
+      ofModelName: (Task).toString(),
+      associatedKey: Task.PROJECTID
     ));
   });
 }

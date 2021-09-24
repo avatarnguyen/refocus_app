@@ -1,0 +1,31 @@
+type Subtask @model @auth(rules: [{allow: public}]) @key(name: "byTask", fields: ["taskID"]) {
+  id: ID!
+  title: String
+  isCompleted: Boolean!
+  completedDate: AWSDate
+  priority: Int
+  taskID: ID
+}
+
+type Project @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  title: String
+  color: String
+  emoji: String
+  Tasks: [Task] @connection(keyName: "byProject", fields: ["id"])
+}
+
+type Task @model @auth(rules: [{allow: public}]) @key(name: "byProject", fields: ["projectID"]) {
+  id: ID!
+  title: String
+  description: String
+  isCompleted: Boolean!
+  completedDate: AWSDate
+  dueDate: AWSDate
+  startDateTime: AWSDateTime
+  endDateTime: AWSDateTime
+  isHabit: Boolean
+  priority: Int
+  projectID: ID
+  Subtasks: [Subtask] @connection(keyName: "byTask", fields: ["id"])
+}
