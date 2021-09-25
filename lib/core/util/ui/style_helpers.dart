@@ -74,6 +74,11 @@ const BoxShadow kShadowPrimary80 = BoxShadow(
   blurRadius: 16,
   offset: Offset(0, 8),
 );
+const BoxShadow kShadowPrimary100 = BoxShadow(
+  color: Color(0x191e90ff),
+  blurRadius: 24,
+  offset: Offset(0, 16),
+);
 
 // Secondary Shadow
 const BoxShadow kShadowSecondaryBase = BoxShadow(

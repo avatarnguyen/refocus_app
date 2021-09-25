@@ -22,7 +22,7 @@ class _OptionRowWidgetState extends State<OptionRowWidget> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-        height: 64,
+        height: 48,
         width: context.width,
         child: [
           _buildOptionItem(context, Icons.task_alt, 'Task', TodayEntryType.task)
@@ -30,19 +30,19 @@ class _OptionRowWidgetState extends State<OptionRowWidget> {
               .gestures(
                 onTap: () => _onIconPressed(TodayEntryType.task),
               ),
-          _buildOptionItem(
-                  context, Icons.alarm, 'Time Block', TodayEntryType.timeblock)
-              .ripple()
-              .gestures(
-                onTap: () => _onIconPressed(TodayEntryType.timeblock),
-              ),
+          // _buildOptionItem(
+          //         context, Icons.alarm, 'Time Block', TodayEntryType.timeblock)
+          //     .ripple()
+          //     .gestures(
+          //       onTap: () => _onIconPressed(TodayEntryType.timeblock),
+          //     ),
           _buildOptionItem(
                   context, Icons.calendar_today, 'Event', TodayEntryType.event)
               .ripple()
               .gestures(
                 onTap: () => _onIconPressed(TodayEntryType.event),
               ),
-        ].toRow(mainAxisAlignment: MainAxisAlignment.spaceAround));
+        ].toRow(mainAxisAlignment: MainAxisAlignment.spaceEvenly));
   }
 
   void _onIconPressed(TodayEntryType type) {

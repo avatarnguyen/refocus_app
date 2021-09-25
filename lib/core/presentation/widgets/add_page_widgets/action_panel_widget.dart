@@ -32,7 +32,7 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
 
   final _textStream = getIt<TextStream>();
   final _settingOption = getIt<SettingOption>();
-  bool _onSelectingProject = false;
+  // bool _onSelectingProject = false;
   bool _onSelectingDueDate = false;
   bool _onSelectingReminder = false;
   bool _onSelectingPrio = false;
@@ -52,35 +52,20 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
       stream: _textStream.getTextStream,
       builder: (context, AsyncSnapshot<String> textStream) {
         final _currentText = textStream.data;
+        final _key =
+            _onSelectingDueDate ? 'Due Date Widget' : 'Reminder Widget';
         return [
-          BlocBuilder<ProjectBloc, ProjectState>(
-            builder: (context, state) {
-              if (state is ProjectLoaded) {
-                final _projects = state.project;
-                if (_onSelectingProject) {
-                  return _buildSelectionListRow(
-                      context, _projects, _currentText);
-                } else if (_onSelectingPrio) {
-                  return _buildSelectionListRow(
-                      context, _prioList, _currentText);
-                } else if (_onSelectingDueDate || _onSelectingReminder) {
-                  final _key = _onSelectingDueDate
-                      ? 'Due Date Widget'
-                      : 'Reminder Widget';
-                  return DueDateTimeWidget(
-                    key: Key(_key),
-                    currentText: _currentText ?? '',
-                    onSelectingReminder: _onSelectingReminder,
-                    onSelectingDueDate: _onSelectingDueDate,
-                  );
-                } else {
-                  return const SizedBox();
-                }
-              } else {
-                return const SizedBox();
-              }
-            },
-          ),
+          if (_onSelectingPrio)
+            _buildSelectionListRow(context, _prioList, _currentText)
+          else if (_onSelectingDueDate || _onSelectingReminder)
+            DueDateTimeWidget(
+              key: Key(_key),
+              currentText: _currentText ?? '',
+              onSelectingReminder: _onSelectingReminder,
+              onSelectingDueDate: _onSelectingDueDate,
+            )
+          else
+            const SizedBox(),
           verticalSpaceRegular,
           _buildActionInputRow(_currentText, context)
         ].toColumn(
@@ -188,18 +173,18 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
         }),
         [
           // Adding project (default: Inbox)
-          _buildActionItem(Icons.folder,
-                  color: _onSelectingProject
-                      ? context.colorScheme.secondary
-                      : kcSecondary200)
-              .gestures(onTap: () {
-            setState(() {
-              _onSelectingDueDate = false;
-              _onSelectingReminder = false;
-              _onSelectingPrio = false;
-              _onSelectingProject = !_onSelectingProject;
-            });
-          }),
+          // _buildActionItem(Icons.folder,
+          //         color: _onSelectingProject
+          //             ? context.colorScheme.secondary
+          //             : kcSecondary200)
+          //     .gestures(onTap: () {
+          //   setState(() {
+          //     _onSelectingDueDate = false;
+          //     _onSelectingReminder = false;
+          //     _onSelectingPrio = false;
+          //     _onSelectingProject = !_onSelectingProject;
+          //   });
+          // }),
           //* Adding due dates and reminder
           _buildActionItem(Icons.calendar_today,
                   color: _onSelectingDueDate
@@ -207,7 +192,6 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
                       : kcSecondary200)
               .gestures(onTap: () {
             setState(() {
-              _onSelectingProject = false;
               _onSelectingReminder = false;
               _onSelectingPrio = false;
               _onSelectingDueDate = !_onSelectingDueDate;
@@ -220,7 +204,6 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
                 : kcSecondary200,
           ).gestures(onTap: () {
             setState(() {
-              _onSelectingProject = false;
               _onSelectingDueDate = false;
               _onSelectingPrio = false;
               _onSelectingReminder = !_onSelectingReminder;
@@ -238,7 +221,6 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
               _currentPrio = PrioType.low;
             }
             setState(() {
-              _onSelectingProject = false;
               _onSelectingReminder = false;
               _onSelectingDueDate = false;
               _onSelectingPrio = !_onSelectingPrio;

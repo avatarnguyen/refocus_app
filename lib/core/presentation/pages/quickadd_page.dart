@@ -41,11 +41,16 @@ class _QuickAddPageState extends State<QuickAddPage> {
         value: BlocProvider.of<ProjectBloc>(context),
         child: [
           [
-            verticalSpaceLarge,
+            // verticalSpaceLarge,
             const AddTextFieldWidget(),
-            const OptionRowWidget().padding(top: 24),
           ].toColumn().parent(textContainer),
-          const ActionPanelWidget(),
+          [
+            const OptionRowWidget().padding(top: 8),
+            const ActionPanelWidget(),
+          ].toColumn(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.end,
+          ),
         ]
             .toColumn(mainAxisAlignment: MainAxisAlignment.spaceBetween)
             .safeArea(),
