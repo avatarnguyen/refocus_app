@@ -22,22 +22,15 @@ class _OptionRowWidgetState extends State<OptionRowWidget> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-        height: 48,
+        height: 30,
         width: context.width,
         child: [
-          _buildOptionItem(context, Icons.task_alt, 'Task', TodayEntryType.task)
+          _buildOptionItem(context, 'Task', TodayEntryType.task)
               .ripple()
               .gestures(
                 onTap: () => _onIconPressed(TodayEntryType.task),
               ),
-          // _buildOptionItem(
-          //         context, Icons.alarm, 'Time Block', TodayEntryType.timeblock)
-          //     .ripple()
-          //     .gestures(
-          //       onTap: () => _onIconPressed(TodayEntryType.timeblock),
-          //     ),
-          _buildOptionItem(
-                  context, Icons.calendar_today, 'Event', TodayEntryType.event)
+          _buildOptionItem(context, 'Event', TodayEntryType.event)
               .ripple()
               .gestures(
                 onTap: () => _onIconPressed(TodayEntryType.event),
@@ -54,21 +47,15 @@ class _OptionRowWidgetState extends State<OptionRowWidget> {
 
   Widget _buildOptionItem(
     BuildContext context,
-    IconData? icon,
     String? text,
     TodayEntryType type,
   ) {
     return [
-      Icon(
-        icon,
-        size: 24,
-        color: entryType == type ? kcSecondary100 : Colors.white24,
-      ).padding(bottom: 8),
       Text(
         text ?? '',
         maxLines: 2,
         overflow: TextOverflow.fade,
-        style: context.textTheme.subtitle2!.copyWith(
+        style: context.h6.copyWith(
           color: entryType == type ? kcSecondary100 : Colors.white24,
         ),
       ).padding(horizontal: 2).flexible(),

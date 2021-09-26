@@ -41,6 +41,16 @@ const BoxShadow kShadowLightBase = BoxShadow(
   blurRadius: 1,
 );
 
+const BoxShadow kShadowLight20 = BoxShadow(
+  color: kcLightShadow,
+  blurRadius: 3,
+  offset: Offset(0, 1),
+);
+const BoxShadow kShadowLight40 = BoxShadow(
+  color: kcLightShadow,
+  blurRadius: 4,
+  offset: Offset(0, 2),
+);
 const BoxShadow kShadowLight60 = BoxShadow(
   color: kcLightShadow,
   blurRadius: 8,

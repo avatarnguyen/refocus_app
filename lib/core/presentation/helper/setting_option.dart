@@ -40,20 +40,31 @@ class SettingOption {
   DateTime? get dueDate => _dueDate;
   set dueDate(DateTime? entry) => _dueDate = entry;
 
-  //* Reminder DateTime Stream
-  final BehaviorSubject<DateTime?> _reminderSubject =
+  //* Reminder Start DateTime Stream
+  final BehaviorSubject<DateTime?> _startTimeSubject =
       BehaviorSubject<DateTime?>.seeded(null);
-  Stream<DateTime?> get reminderStream => _reminderSubject.stream;
+  Stream<DateTime?> get startTimeStream => _startTimeSubject.stream;
 
-  void broadCastCurrentReminderEntry(DateTime? entry) {
-    _reminderSubject.add(entry);
-    _remindDate = entry;
+  void broadCastCurrentStartTimeEntry(DateTime? entry) {
+    _startTimeSubject.add(entry);
+    _plannedStartDate = entry;
   }
 
-  DateTime? _remindDate;
-  DateTime? get remindDate => _remindDate;
-  set remindDate(DateTime? entry) => _remindDate = entry;
-  // TimeOfDay? _remindTime;
-  // TimeOfDay? get remindTime => _remindTime;
-  // set remindTime(TimeOfDay? entry) => _remindTime = entry;
+  //* Reminder End DateTime Stream
+  final BehaviorSubject<DateTime?> _endTimeSubject =
+      BehaviorSubject<DateTime?>.seeded(null);
+  Stream<DateTime?> get endTimeStream => _endTimeSubject.stream;
+
+  void broadCastCurrentEndTimeEntry(DateTime? entry) {
+    _endTimeSubject.add(entry);
+    _plannedEndDate = entry;
+  }
+
+  DateTime? _plannedStartDate;
+  DateTime? get plannedStartDate => _plannedStartDate;
+  set plannedStartDate(DateTime? entry) => _plannedStartDate = entry;
+
+  DateTime? _plannedEndDate;
+  DateTime? get plannedEndDate => _plannedEndDate;
+  set plannedEndDate(DateTime? entry) => _plannedEndDate = entry;
 }

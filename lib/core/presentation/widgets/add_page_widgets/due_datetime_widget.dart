@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:dartx/dartx.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
 import 'package:refocus_app/core/presentation/helper/setting_option.dart';
 import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
@@ -41,13 +43,17 @@ class _DueDateTimeWidgetState extends State<DueDateTimeWidget> {
   DueDateSelectionType? _currentSelectedDueDate;
 
   late DateTime _dueDate;
-  late DateTime _remindDate;
+  late DateTime _plannedStartDate;
+  late DateTime _plannedEndDate;
+  Duration _currentDuration = 1.hours;
+
   @override
   void initState() {
     super.initState();
 
     if (widget.onSelectingReminder) {
-      _remindDate = _settingOption.remindDate ?? DateTime.now();
+      _plannedStartDate = _settingOption.plannedStartDate ?? DateTime.now();
+      _plannedEndDate = _settingOption.plannedStartDate ?? 1.hours.fromNow;
     } else {
       _dueDate = _settingOption.dueDate ?? DateTime.now();
       _currentSelectedDueDate = _getCurrentDueDateSelectionType(_dueDate);
@@ -58,8 +64,9 @@ class _DueDateTimeWidgetState extends State<DueDateTimeWidget> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (widget.onSelectingReminder) {
-      if (_settingOption.remindDate == null) {
-        _settingOption.broadCastCurrentReminderEntry(_remindDate);
+      if (_settingOption.plannedStartDate == null) {
+        _settingOption.broadCastCurrentStartTimeEntry(_plannedStartDate);
+        _settingOption.broadCastCurrentEndTimeEntry(_plannedEndDate);
       }
     }
     if (widget.onSelectingDueDate) {
@@ -86,7 +93,7 @@ class _DueDateTimeWidgetState extends State<DueDateTimeWidget> {
   @override
   Widget build(BuildContext context) {
     if (widget.onSelectingDueDate) {
-      return _buildSetDueDate(context);
+      return _buildSetDueDate(context).padding(bottom: 4);
     } else {
       return _buildSetReminder(context);
     }
@@ -94,47 +101,99 @@ class _DueDateTimeWidgetState extends State<DueDateTimeWidget> {
 
   Widget _buildSetReminder(BuildContext context) {
     return SizedBox(
-      width: context.width,
-      child: [
-        Text(
-          _formatDateToHumanLang(_remindDate),
-          style: context.textTheme.headline3!
-              .copyWith(color: kcPrimary100, fontWeight: FontWeight.w400),
-        ).ripple().gestures(onTap: () {
-          _showDatePickerBottomSheet(context);
-        }),
-        verticalSpaceSmall,
-        [
+        width: context.width,
+        child: [
           Text(
-            CustomDateUtils.returnTime(_remindDate),
-            style: context.textTheme.headline6!.copyWith(
-              color: kcPrimary100,
-            ),
+            _formatDateToHumanLang(_plannedStartDate),
+            style: context.h3
+                .copyWith(color: kcPrimary100, fontWeight: FontWeight.w400),
           ).ripple().gestures(onTap: () {
-            Platform.isIOS
-                ? _cupertinoDateTimePicker(context, widget.currentText)
-                : _materialTimePicker(context, widget.currentText);
+            _showDatePickerBottomSheet(context);
           }),
-          Text(' - ',
-              style: context.textTheme.headline6!.copyWith(
-                color: kcPrimary100,
-              )),
-          Text(
-            CustomDateUtils.returnTime(_remindDate),
-            style: context.textTheme.headline6!.copyWith(
-              color: kcPrimary100,
+          verticalSpaceRegular,
+          [
+            TimePickerSpinner(
+              key: Key(_plannedStartDate.toIso8601String()),
+              is24HourMode: MediaQuery.of(context).alwaysUse24HourFormat,
+              alignment: Alignment.center,
+              time: _plannedStartDate,
+              normalTextStyle: context.subtitle1.copyWith(
+                color: Colors.white30,
+              ),
+              highlightedTextStyle: context.subtitle1.copyWith(
+                color: Colors.white,
+              ),
+              itemHeight: 32,
+              itemWidth: 36,
+              spacing: 0,
+              // ignore: unnecessary_lambdas
+              onTimeChange: (time) {
+                _settingOption.broadCastCurrentStartTimeEntry(time);
+                setState(() {
+                  _plannedStartDate = time;
+                  _plannedEndDate = time + _currentDuration;
+                });
+              },
             ),
-          ).ripple().gestures(onTap: () {
-            Platform.isIOS
-                ? _cupertinoDateTimePicker(context, widget.currentText)
-                : _materialTimePicker(context, widget.currentText);
-          }),
-        ].toRow(mainAxisAlignment: MainAxisAlignment.center),
-        verticalSpaceRegular,
-      ].toColumn(
-        mainAxisSize: MainAxisSize.min,
+            const Icon(
+              Icons.arrow_right_alt_rounded,
+              color: kcPrimary100,
+            ).padding(horizontal: 4),
+            TimePickerSpinner(
+              key: Key(_plannedEndDate.toIso8601String()),
+              is24HourMode: MediaQuery.of(context).alwaysUse24HourFormat,
+              alignment: Alignment.center,
+              time: _plannedEndDate,
+              normalTextStyle: context.subtitle1.copyWith(
+                color: Colors.white30,
+              ),
+              highlightedTextStyle: context.subtitle1.copyWith(
+                color: Colors.white,
+              ),
+              itemHeight: 32,
+              itemWidth: 36,
+              spacing: 0,
+              onTimeChange: (time) {
+                if (time.difference(_plannedStartDate) < 0.minutes) {
+                  time += 1.days;
+                }
+                _settingOption.broadCastCurrentEndTimeEntry(time);
+                setState(() {
+                  _currentDuration = time.difference(_plannedStartDate);
+                });
+              },
+            ),
+          ].toRow(mainAxisAlignment: MainAxisAlignment.center),
+          [
+            _buildSelectionMode(context, 'date range'),
+            _buildSelectionMode(context, 'all date'),
+            // _buildSelectionMode(context, 'recurrence'),
+          ]
+              .toRow(mainAxisAlignment: MainAxisAlignment.spaceEvenly)
+              .padding(vertical: 8),
+          // verticalSpaceMedium,
+        ].toColumn());
+  }
+
+  Widget _buildSelectionMode(BuildContext context, String title) {
+    return ChoiceChip(
+      backgroundColor: kcDarkBackground,
+      selectedColor: context.colorScheme.secondary,
+      shape: RoundedRectangleBorder(
+        side: const BorderSide(color: kcDarkBackground),
+        borderRadius: BorderRadius.circular(8),
       ),
-    );
+      label: Text(
+        title,
+        style: context.subtitle1.copyWith(
+          color: kcPrimary100,
+        ),
+      ),
+      selected: false,
+      onSelected: (bool selected) {
+        setState(() {});
+      },
+    ).flexible();
   }
 
   Widget _buildSetDueDate(BuildContext context) {
@@ -220,35 +279,14 @@ class _DueDateTimeWidgetState extends State<DueDateTimeWidget> {
     }
   }
 
-  // ignore: avoid_void_async
-  void _materialTimePicker(BuildContext context, String? text) async {
-    final picked = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-      builder: (context, child) => child ?? const SizedBox(),
-    );
-    if (picked != null) {
-      final _remindDateTime = _settingOption.remindDate ?? DateTime.now();
-      final _pickedDateTime = DateTime(
-        _remindDateTime.year,
-        _remindDateTime.month,
-        _remindDateTime.day,
-        picked.hour,
-        picked.minute,
-      );
-      _settingOption.broadCastCurrentReminderEntry(_pickedDateTime);
-      _remindDate = _pickedDateTime;
-    }
-  }
-
   dynamic _showDatePickerBottomSheet(
     BuildContext parentContext,
   ) async {
     final _currentDateTime =
-        widget.onSelectingReminder ? _remindDate : _dueDate;
-    if (_settingOption.remindDate == null && widget.onSelectingReminder) {
-      _settingOption.broadCastCurrentReminderEntry(_currentDateTime);
-    }
+        widget.onSelectingReminder ? _plannedStartDate : _dueDate;
+    // if (_settingOption.remindDate == null && widget.onSelectingReminder) {
+    //   _settingOption.broadCastCurrentReminderEntry([_currentDateTime]);
+    // }
     final dynamic result = await showSlidingBottomSheet<dynamic>(
       context,
       builder: (context) {
@@ -270,7 +308,7 @@ class _DueDateTimeWidgetState extends State<DueDateTimeWidget> {
               child: SizedBox(
                 height: 360,
                 child: SfDateRangePicker(
-                  initialSelectedDate: DateTime.now(),
+                  initialSelectedDate: _currentDateTime,
                   toggleDaySelection: true,
                   showActionButtons: true,
                   selectionColor: parentContext.colorScheme.secondary,
@@ -278,14 +316,19 @@ class _DueDateTimeWidgetState extends State<DueDateTimeWidget> {
                   cancelText: 'CLEAR',
                   onCancel: () {
                     if (widget.onSelectingReminder) {
-                      _settingOption.broadCastCurrentReminderEntry(null);
-                      _remindDate = DateTime.now();
+                      _settingOption.broadCastCurrentStartTimeEntry(null);
+                      _settingOption.broadCastCurrentEndTimeEntry(null);
+                      setState(() {
+                        _plannedStartDate = DateTime.now();
+                        _plannedEndDate = 1.hours.fromNow;
+                      });
                     } else {
                       _settingOption.broadCastCurrentDueDateEntry(null);
-                      _currentSelectedDueDate = null;
-                      _dueDate = DateTime.now();
+                      setState(() {
+                        _currentSelectedDueDate = null;
+                        _dueDate = DateTime.now();
+                      });
                     }
-                    setState(() {});
 
                     context.router.pop();
                   },
@@ -307,79 +350,19 @@ class _DueDateTimeWidgetState extends State<DueDateTimeWidget> {
     final dynamic picked = args.value;
     if (picked is DateTime) {
       if (widget.onSelectingReminder) {
-        _remindDate = picked;
-        _settingOption.broadCastCurrentReminderEntry(picked);
+        _plannedStartDate = picked.copyWith(
+          hour: _plannedStartDate.hour,
+          minute: _plannedStartDate.minute,
+          second: _plannedStartDate.second,
+        );
+        _settingOption.broadCastCurrentStartTimeEntry(_plannedStartDate);
+        _settingOption
+            .broadCastCurrentEndTimeEntry(_plannedStartDate + _currentDuration);
+        setState(() {});
       } else {
         _settingOption.broadCastCurrentDueDateEntry(picked);
         _dueDate = picked;
       }
     }
-  }
-
-  void _cupertinoDateTimePicker(BuildContext context, String? text) {
-    final _currentDateTime =
-        widget.onSelectingReminder ? _remindDate : _dueDate;
-    if (_settingOption.remindDate == null) {
-      _settingOption.broadCastCurrentReminderEntry(_currentDateTime);
-    }
-    showModalBottomSheet<dynamic>(
-      context: context,
-      backgroundColor: context.backgroundColor,
-      builder: (BuildContext builder) {
-        return [
-          Container(
-            height: context.height / 3,
-            color: Colors.white,
-            child: CupertinoDatePicker(
-              mode: CupertinoDatePickerMode.time,
-              onDateTimeChanged: (picked) {
-                if (picked != _currentDateTime) {
-                  if (widget.onSelectingReminder) {
-                    _remindDate = picked;
-                    _settingOption.broadCastCurrentReminderEntry(picked);
-                  } else {
-                    _settingOption.broadCastCurrentDueDateEntry(picked);
-                    _dueDate = picked;
-                  }
-                }
-              },
-              initialDateTime: _currentDateTime,
-              use24hFormat: MediaQuery.of(context).alwaysUse24HourFormat,
-              minimumYear: DateTime.now().year,
-              maximumYear: DateTime.now().year + 4,
-            ),
-          ).flexible(),
-          [
-            CupertinoButton(
-              onPressed: () {
-                if (widget.onSelectingReminder) {
-                  _settingOption.broadCastCurrentReminderEntry(null);
-                  _remindDate = DateTime.now();
-                } else {
-                  _settingOption.broadCastCurrentDueDateEntry(null);
-                  _currentSelectedDueDate = null;
-                  _dueDate = DateTime.now();
-                }
-                setState(() {});
-                context.router.pop();
-              },
-              child: Text(
-                'Clear',
-                style: context.bodyText2.copyWith(
-                  color: Colors.redAccent,
-                ),
-              ),
-            ),
-            CupertinoButton(
-              onPressed: () {
-                setState(() {});
-                context.router.pop();
-              },
-              child: const Text('Done'),
-            ),
-          ].toRow(mainAxisAlignment: MainAxisAlignment.spaceEvenly),
-        ].toColumn(mainAxisSize: MainAxisSize.min).safeArea();
-      },
-    );
   }
 }

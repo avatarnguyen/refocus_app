@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:refocus_app/core/presentation/widgets/add_page_widgets/due_datetime_widget.dart';
+import 'package:refocus_app/core/presentation/widgets/add_page_widgets/option_widget.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/prio_type.dart';
 import 'package:refocus_app/enum/today_entry_type.dart';
@@ -32,7 +33,6 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
 
   final _textStream = getIt<TextStream>();
   final _settingOption = getIt<SettingOption>();
-  // bool _onSelectingProject = false;
   bool _onSelectingDueDate = false;
   bool _onSelectingReminder = false;
   bool _onSelectingPrio = false;
@@ -56,17 +56,16 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
             _onSelectingDueDate ? 'Due Date Widget' : 'Reminder Widget';
         return [
           if (_onSelectingPrio)
-            _buildSelectionListRow(context, _prioList, _currentText)
-          else if (_onSelectingDueDate || _onSelectingReminder)
+            _buildSelectionListRow(context, _prioList, _currentText),
+          if (_onSelectingDueDate || _onSelectingReminder)
             DueDateTimeWidget(
               key: Key(_key),
               currentText: _currentText ?? '',
               onSelectingReminder: _onSelectingReminder,
               onSelectingDueDate: _onSelectingDueDate,
-            )
-          else
-            const SizedBox(),
-          verticalSpaceRegular,
+            ),
+          if (!_onSelectingReminder)
+            const OptionRowWidget().padding(bottom: 8, top: 4),
           _buildActionInputRow(_currentText, context)
         ].toColumn(
           mainAxisSize: MainAxisSize.min,
@@ -159,7 +158,7 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
   //* Action Row at the Bottom
   Container _buildActionInputRow(String? textData, BuildContext context) {
     return Container(
-      height: 44,
+      height: 40,
       color: kcPrimary900,
       child: [
         const Icon(
@@ -172,21 +171,16 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
           context.router.pop();
         }),
         [
-          // Adding project (default: Inbox)
-          // _buildActionItem(Icons.folder,
-          //         color: _onSelectingProject
-          //             ? context.colorScheme.secondary
-          //             : kcSecondary200)
-          //     .gestures(onTap: () {
-          //   setState(() {
-          //     _onSelectingDueDate = false;
-          //     _onSelectingReminder = false;
-          //     _onSelectingPrio = false;
-          //     _onSelectingProject = !_onSelectingProject;
-          //   });
-          // }),
+          //* Adding Event/Task Switch when selecting date
+          if (_onSelectingReminder)
+            _buildActionItem(
+              (_settingOption.type == TodayEntryType.event)
+                  ? Icons.task_alt_rounded
+                  : CupertinoIcons.calendar,
+            ),
+
           //* Adding due dates and reminder
-          _buildActionItem(Icons.calendar_today,
+          _buildActionItem(Icons.today_rounded,
                   color: _onSelectingDueDate
                       ? context.colorScheme.secondary
                       : kcSecondary200)
@@ -226,18 +220,10 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
               _onSelectingPrio = !_onSelectingPrio;
             });
           }),
-          // Adding Description or Notes
+          //* Adding Description or Notes
           _buildActionItem(Icons.notes).gestures(
             onTap: () {},
           ),
-          //* Adding Contact
-          // Text('@', style: context.bodyText1!.copyWith(
-          //   color: kcSecondary100,
-          // );)
-          //     .padding(horizontal: 8)
-          //     .gestures(
-          //         onTap: () => _textStream
-          //             .updateText('${textStream.data ?? ''}@')),
         ].toRow(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           mainAxisSize: MainAxisSize.min,
@@ -256,9 +242,8 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
               );
             }
             if (_settingOption.type == TodayEntryType.task) {
-              final _startDateTime = _settingOption.remindDate;
-              final _endDateTime =
-                  _settingOption.remindDate ?? _settingOption.dueDate;
+              final _startDateTime = _settingOption.plannedStartDate;
+              final _endDateTime = _settingOption.plannedEndDate;
               context.read<TaskBloc>().add(
                     CreateTaskEntriesEvent(
                       params: [
@@ -271,7 +256,7 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
                                 _settingOption.projectEntry?.id ?? 'inbox_2021',
                             title: textData,
                             startDateTime: _startDateTime,
-                            // endDateTime:
+                            endDateTime: _endDateTime,
                             //     _endDateTime != null ? [_endDateTime] : null,
                           ),
                         ),

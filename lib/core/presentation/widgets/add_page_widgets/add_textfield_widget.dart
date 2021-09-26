@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -84,21 +85,33 @@ class _AddTextFieldWidgetState extends State<AddTextFieldWidget> {
       if (state is ProjectLoaded) {
         final _projects = state.project;
         // log.d(_projects);
+        final _currentColor =
+            StyleUtils.getColorFromString(_currentProject?.color ?? '#8879FC');
         return SizedBox(
             width: context.width,
             child: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
-                  color: StyleUtils.getColorFromString(
-                      _currentProject?.color ?? '#8879FC'),
-                  boxShadow: const [kShadowPrimaryBase, kShadowPrimary100],
+                  color: _currentColor,
+                  boxShadow: [
+                    BoxShadow(
+                      color: _currentColor.withOpacity(0.1),
+                      blurRadius: 1,
+                    ),
+                    BoxShadow(
+                      color: _currentColor.withOpacity(0.1),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton<String>(
                     isDense: true,
                     focusColor: Colors.white,
+                    iconEnabledColor: Colors.white,
                     value: _currentProject?.title,
                     dropdownColor: kcPrimary500,
                     elevation: Platform.isIOS ? 0 : 8,
@@ -159,23 +172,39 @@ class _AddTextFieldWidgetState extends State<AddTextFieldWidget> {
                       ).padding(left: 8, right: 8);
                     }),
                 StreamBuilder<DateTime?>(
-                    stream: _settingsOption.reminderStream,
-                    builder: (context, snapshot) {
-                      final _reminder = snapshot.data;
-                      if (_reminder != null) {
-                        final _date =
-                            CustomDateUtils.returnDateWithDay(_reminder);
-                        final _time = CustomDateUtils.returnTime(_reminder);
-                        return Text(
-                          ' $_date $_time ',
-                          style: context.textTheme.subtitle2!.copyWith(
-                            color: kcSecondary700,
-                            backgroundColor: kcSecondary200,
-                          ),
-                        ).padding(right: 8);
-                      } else {
-                        return const SizedBox.shrink();
-                      }
+                    stream: _settingsOption.startTimeStream,
+                    builder: (context, snapshot1) {
+                      return StreamBuilder<DateTime?>(
+                          stream: _settingsOption.endTimeStream,
+                          builder: (context, snapshot2) {
+                            if (snapshot1.hasData && snapshot2.hasData) {
+                              final _startDateTime = snapshot1.data;
+                              final _endDateTime = snapshot2.data;
+                              if (_startDateTime != null &&
+                                  _endDateTime != null) {
+                                final _isSameDay =
+                                    _startDateTime.isAtSameDayAs(_endDateTime);
+                                final _startDate = _isSameDay
+                                    ? CustomDateUtils.returnDateWithDay(
+                                        _startDateTime)
+                                    : '${CustomDateUtils.returnDateAndMonth(_startDateTime)},';
+                                final _endDate =
+                                    '${CustomDateUtils.returnDateAndMonth(_endDateTime)},';
+                                final _startTime =
+                                    CustomDateUtils.returnTime(_startDateTime);
+                                final _endTime =
+                                    CustomDateUtils.returnTime(_endDateTime);
+                                return Text(
+                                  ' $_startDate $_startTime - ${_isSameDay ? '' : '$_endDate '}$_endTime ',
+                                  style: context.textTheme.subtitle2!.copyWith(
+                                    color: kcSecondary700,
+                                    backgroundColor: kcSecondary200,
+                                  ),
+                                ).padding(right: 8);
+                              }
+                            }
+                            return const SizedBox.shrink();
+                          });
                     }),
               ]
                   .toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween)
@@ -207,7 +236,7 @@ class _AddTextFieldWidgetState extends State<AddTextFieldWidget> {
         ),
       ),
       cupertino: (context, platform) => CupertinoTextFieldData(
-        placeholder: 'Enter ...',
+        placeholder: 'Enter...',
         placeholderStyle: context.h4.copyWith(color: Colors.white60),
         padding: const EdgeInsets.all(16),
         decoration: const BoxDecoration(

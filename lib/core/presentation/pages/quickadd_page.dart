@@ -28,7 +28,8 @@ class _QuickAddPageState extends State<QuickAddPage> {
   @override
   void dispose() {
     _settingOption.broadCastCurrentDueDateEntry(null);
-    _settingOption.broadCastCurrentReminderEntry(null);
+    _settingOption.broadCastCurrentStartTimeEntry(null);
+    _settingOption.broadCastCurrentEndTimeEntry(null);
 
     super.dispose();
   }
@@ -44,13 +45,7 @@ class _QuickAddPageState extends State<QuickAddPage> {
             // verticalSpaceLarge,
             const AddTextFieldWidget(),
           ].toColumn().parent(textContainer),
-          [
-            const OptionRowWidget().padding(top: 8),
-            const ActionPanelWidget(),
-          ].toColumn(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.end,
-          ),
+          const ActionPanelWidget(),
         ]
             .toColumn(mainAxisAlignment: MainAxisAlignment.spaceBetween)
             .safeArea(),
