@@ -172,40 +172,57 @@ class _AddTextFieldWidgetState extends State<AddTextFieldWidget> {
                       ).padding(left: 8, right: 8);
                     }),
                 StreamBuilder<DateTime?>(
-                    stream: _settingsOption.startTimeStream,
-                    builder: (context, snapshot1) {
+                  stream: _settingsOption.startTimeStream,
+                  builder: (context, snapshot1) {
+                    if (snapshot1.hasData) {
                       return StreamBuilder<DateTime?>(
-                          stream: _settingsOption.endTimeStream,
-                          builder: (context, snapshot2) {
-                            if (snapshot1.hasData && snapshot2.hasData) {
-                              final _startDateTime = snapshot1.data;
-                              final _endDateTime = snapshot2.data;
-                              if (_startDateTime != null &&
-                                  _endDateTime != null) {
-                                final _isSameDay =
-                                    _startDateTime.isAtSameDayAs(_endDateTime);
-                                final _startDate = _isSameDay
-                                    ? CustomDateUtils.returnDateWithDay(
-                                        _startDateTime)
-                                    : '${CustomDateUtils.returnDateAndMonth(_startDateTime)},';
-                                final _endDate =
-                                    '${CustomDateUtils.returnDateAndMonth(_endDateTime)},';
-                                final _startTime =
-                                    CustomDateUtils.returnTime(_startDateTime);
-                                final _endTime =
-                                    CustomDateUtils.returnTime(_endDateTime);
-                                return Text(
-                                  ' $_startDate $_startTime - ${_isSameDay ? '' : '$_endDate '}$_endTime ',
-                                  style: context.textTheme.subtitle2!.copyWith(
-                                    color: kcSecondary700,
-                                    backgroundColor: kcSecondary200,
-                                  ),
-                                ).padding(right: 8);
-                              }
+                        stream: _settingsOption.endTimeStream,
+                        builder: (context, snapshot2) {
+                          final _startDateTime = snapshot1.data;
+                          if (snapshot2.hasData) {
+                            final _endDateTime = snapshot2.data;
+                            if (_startDateTime != null &&
+                                _endDateTime != null) {
+                              final _isSameDay =
+                                  _startDateTime.isAtSameDayAs(_endDateTime);
+                              final _startDate = _isSameDay
+                                  ? CustomDateUtils.returnDateWithDay(
+                                      _startDateTime)
+                                  : '${CustomDateUtils.returnDateAndMonth(_startDateTime)},';
+                              final _endDate =
+                                  '${CustomDateUtils.returnDateAndMonth(_endDateTime)},';
+                              final _startTime =
+                                  CustomDateUtils.returnTime(_startDateTime);
+                              final _endTime =
+                                  CustomDateUtils.returnTime(_endDateTime);
+                              return Text(
+                                ' $_startDate $_startTime - ${_isSameDay ? '' : '$_endDate '}$_endTime ',
+                                style: context.textTheme.subtitle2!.copyWith(
+                                  color: kcSecondary700,
+                                  backgroundColor: kcSecondary200,
+                                ),
+                              ).padding(right: 8);
                             }
-                            return const SizedBox.shrink();
-                          });
-                    }),
+                          } else if (_startDateTime != null) {
+                            final _startDate =
+                                CustomDateUtils.returnDateWithDay(
+                                    _startDateTime);
+                            return Text(
+                              ' $_startDate ',
+                              style: context.textTheme.subtitle2!.copyWith(
+                                color: kcSecondary700,
+                                backgroundColor: kcSecondary200,
+                              ),
+                            ).padding(right: 8);
+                          }
+                          return const SizedBox.shrink();
+                        },
+                      );
+                    } else {
+                      return const SizedBox.shrink();
+                    }
+                  },
+                ),
               ]
                   .toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween)
                   .padding(bottom: 8, top: 4)

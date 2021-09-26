@@ -170,15 +170,14 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
           _settingOption.broadCastCurrentProjectEntry(null);
           context.router.pop();
         }),
+        //* Adding Event/Task Switch when selecting date
+        if (_onSelectingReminder)
+          _buildActionItem(
+            (_settingOption.type == TodayEntryType.event)
+                ? Icons.task_alt_rounded
+                : CupertinoIcons.calendar,
+          ),
         [
-          //* Adding Event/Task Switch when selecting date
-          if (_onSelectingReminder)
-            _buildActionItem(
-              (_settingOption.type == TodayEntryType.event)
-                  ? Icons.task_alt_rounded
-                  : CupertinoIcons.calendar,
-            ),
-
           //* Adding due dates and reminder
           _buildActionItem(Icons.today_rounded,
                   color: _onSelectingDueDate
@@ -220,8 +219,8 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
               _onSelectingPrio = !_onSelectingPrio;
             });
           }),
-          //* Adding Description or Notes
-          _buildActionItem(Icons.notes).gestures(
+          //* Adding Sub Tasks
+          _buildActionItem(Icons.add).gestures(
             onTap: () {},
           ),
         ].toRow(

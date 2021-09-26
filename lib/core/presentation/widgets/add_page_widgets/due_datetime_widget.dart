@@ -8,6 +8,7 @@ import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
 import 'package:refocus_app/core/presentation/helper/setting_option.dart';
 import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
+import 'package:refocus_app/enum/date_selection_type.dart';
 import 'package:refocus_app/enum/duedate_selection_type.dart';
 import 'package:refocus_app/injection.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
@@ -47,10 +48,14 @@ class _DueDateTimeWidgetState extends State<DueDateTimeWidget> {
   late DateTime _plannedEndDate;
   Duration _currentDuration = 1.hours;
 
+  bool _isAllDay = false;
+  bool _isDateRange = false;
+  late DateSelectionType _currentDateType;
+
   @override
   void initState() {
     super.initState();
-
+    _currentDateType = DateSelectionType.dateTime;
     if (widget.onSelectingReminder) {
       _plannedStartDate = _settingOption.plannedStartDate ?? DateTime.now();
       _plannedEndDate = _settingOption.plannedStartDate ?? 1.hours.fromNow;
@@ -101,16 +106,17 @@ class _DueDateTimeWidgetState extends State<DueDateTimeWidget> {
 
   Widget _buildSetReminder(BuildContext context) {
     return SizedBox(
-        width: context.width,
-        child: [
-          Text(
-            _formatDateToHumanLang(_plannedStartDate),
-            style: context.h3
-                .copyWith(color: kcPrimary100, fontWeight: FontWeight.w400),
-          ).ripple().gestures(onTap: () {
-            _showDatePickerBottomSheet(context);
-          }),
-          verticalSpaceRegular,
+      width: context.width,
+      child: [
+        Text(
+          _formatDateToHumanLang(_plannedStartDate),
+          style: context.h3
+              .copyWith(color: kcPrimary100, fontWeight: FontWeight.w400),
+        ).ripple().gestures(onTap: () {
+          _showDatePickerBottomSheet(context);
+        }),
+        verticalSpaceRegular,
+        if (!_isAllDay && !_isDateRange)
           [
             TimePickerSpinner(
               key: Key(_plannedStartDate.toIso8601String()),
@@ -126,7 +132,6 @@ class _DueDateTimeWidgetState extends State<DueDateTimeWidget> {
               itemHeight: 32,
               itemWidth: 36,
               spacing: 0,
-              // ignore: unnecessary_lambdas
               onTimeChange: (time) {
                 _settingOption.broadCastCurrentStartTimeEntry(time);
                 setState(() {
@@ -164,18 +169,31 @@ class _DueDateTimeWidgetState extends State<DueDateTimeWidget> {
               },
             ),
           ].toRow(mainAxisAlignment: MainAxisAlignment.center),
-          [
-            _buildSelectionMode(context, 'date range'),
-            _buildSelectionMode(context, 'all date'),
-            // _buildSelectionMode(context, 'recurrence'),
-          ]
-              .toRow(mainAxisAlignment: MainAxisAlignment.spaceEvenly)
-              .padding(vertical: 8),
-          // verticalSpaceMedium,
-        ].toColumn());
+        if (!_isAllDay && _isDateRange)
+          Text(
+            _formatDateToHumanLang(_plannedEndDate),
+            style: context.h3
+                .copyWith(color: kcPrimary100, fontWeight: FontWeight.w400),
+          ).ripple().gestures(onTap: () {
+            _showDatePickerBottomSheet(context, isEndDate: true);
+          }),
+
+        if (_isAllDay || _isDateRange) verticalSpaceMedium,
+
+        [
+          _buildSelectionMode(
+              context, 'date range', DateSelectionType.dateRange),
+          _buildSelectionMode(context, 'all date', DateSelectionType.allDate),
+        ]
+            .toRow(mainAxisAlignment: MainAxisAlignment.spaceEvenly)
+            .padding(vertical: 12),
+        // verticalSpaceMedium,
+      ].toColumn(),
+    );
   }
 
-  Widget _buildSelectionMode(BuildContext context, String title) {
+  Widget _buildSelectionMode(
+      BuildContext context, String title, DateSelectionType type) {
     return ChoiceChip(
       backgroundColor: kcDarkBackground,
       selectedColor: context.colorScheme.secondary,
@@ -189,9 +207,20 @@ class _DueDateTimeWidgetState extends State<DueDateTimeWidget> {
           color: kcPrimary100,
         ),
       ),
-      selected: false,
+      selected: type == DateSelectionType.allDate ? _isAllDay : _isDateRange,
       onSelected: (bool selected) {
-        setState(() {});
+        setState(() {
+          if (type == DateSelectionType.allDate) {
+            _isAllDay = !_isAllDay;
+            _isDateRange = false;
+          } else if (type == DateSelectionType.dateRange) {
+            _isDateRange = !_isDateRange;
+            _isAllDay = false;
+          } else {
+            _isAllDay = false;
+            _isDateRange = false;
+          }
+        });
       },
     ).flexible();
   }
@@ -279,14 +308,11 @@ class _DueDateTimeWidgetState extends State<DueDateTimeWidget> {
     }
   }
 
-  dynamic _showDatePickerBottomSheet(
-    BuildContext parentContext,
-  ) async {
+  dynamic _showDatePickerBottomSheet(BuildContext parentContext,
+      {bool isEndDate = false}) async {
     final _currentDateTime =
         widget.onSelectingReminder ? _plannedStartDate : _dueDate;
-    // if (_settingOption.remindDate == null && widget.onSelectingReminder) {
-    //   _settingOption.broadCastCurrentReminderEntry([_currentDateTime]);
-    // }
+
     final dynamic result = await showSlidingBottomSheet<dynamic>(
       context,
       builder: (context) {
@@ -300,8 +326,6 @@ class _DueDateTimeWidgetState extends State<DueDateTimeWidget> {
             snappings: [0.1, 0.7],
           ),
           minHeight: parentContext.height / 2.5,
-          // headerBuilder: (context, state) {
-          // },
           builder: (context, state) {
             return SafeArea(
               top: false,
@@ -329,10 +353,12 @@ class _DueDateTimeWidgetState extends State<DueDateTimeWidget> {
                         _dueDate = DateTime.now();
                       });
                     }
-
                     context.router.pop();
                   },
-                  onSelectionChanged: _onSelectionChanged,
+                  onSelectionChanged:
+                      (DateRangePickerSelectionChangedArgs args) {
+                    _onSelectionChanged(args, isEndDate);
+                  },
                   onSubmit: (Object value) {
                     context.router.pop();
                   },
@@ -346,23 +372,37 @@ class _DueDateTimeWidgetState extends State<DueDateTimeWidget> {
     return result;
   }
 
-  void _onSelectionChanged(DateRangePickerSelectionChangedArgs args) {
+  void _onSelectionChanged(
+      DateRangePickerSelectionChangedArgs args, bool isEndDate) {
     final dynamic picked = args.value;
     if (picked is DateTime) {
       if (widget.onSelectingReminder) {
-        _plannedStartDate = picked.copyWith(
-          hour: _plannedStartDate.hour,
-          minute: _plannedStartDate.minute,
-          second: _plannedStartDate.second,
-        );
-        _settingOption.broadCastCurrentStartTimeEntry(_plannedStartDate);
-        _settingOption
-            .broadCastCurrentEndTimeEntry(_plannedStartDate + _currentDuration);
-        setState(() {});
+        if (_isDateRange) {
+          if (isEndDate) {
+            _settingOption.broadCastCurrentEndTimeEntry(picked);
+            _plannedEndDate = picked;
+          } else {
+            _settingOption.broadCastCurrentStartTimeEntry(picked);
+            _plannedStartDate = picked;
+          }
+        } else if (_isAllDay) {
+          _settingOption.broadCastCurrentStartTimeEntry(picked);
+          _settingOption.broadCastCurrentEndTimeEntry(null);
+        } else {
+          _plannedStartDate = picked.copyWith(
+            hour: _plannedStartDate.hour,
+            minute: _plannedStartDate.minute,
+            second: _plannedStartDate.second,
+          );
+          _settingOption.broadCastCurrentStartTimeEntry(_plannedStartDate);
+          _settingOption.broadCastCurrentEndTimeEntry(
+              _plannedStartDate + _currentDuration);
+        }
       } else {
         _settingOption.broadCastCurrentDueDateEntry(picked);
         _dueDate = picked;
       }
+      setState(() {});
     }
   }
 }
