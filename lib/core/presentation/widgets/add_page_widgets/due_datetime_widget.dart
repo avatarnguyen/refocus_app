@@ -34,6 +34,7 @@ class _SetPlannedDateTimeWidgetState extends State<SetPlannedDateTimeWidget> {
   bool _isAllDay = false;
   bool _isDateRange = false;
   bool _isSomeday = false;
+  bool _isDifferenDate = false;
   // late DateSelectionType _currentDateType;
 
   @override
@@ -75,13 +76,23 @@ class _SetPlannedDateTimeWidgetState extends State<SetPlannedDateTimeWidget> {
                 .copyWith(color: kcPrimary100, fontWeight: FontWeight.w400),
           )
         else
-          Text(
-            _formatDateToHumanLang(_plannedStartDate),
-            style: context.h3
-                .copyWith(color: kcPrimary100, fontWeight: FontWeight.w400),
-          ).ripple().gestures(onTap: () {
-            _showDatePickerBottomSheet(context);
-          }),
+          [
+            Text(
+              _formatDateToHumanLang(_plannedStartDate),
+              style: context.h3
+                  .copyWith(color: kcPrimary100, fontWeight: FontWeight.w400),
+            ).ripple().gestures(onTap: () {
+              _showDatePickerBottomSheet(context);
+            }),
+            if (_isDifferenDate) ...[
+              const Icon(Icons.arrow_right_alt_rounded, color: kcPrimary100)
+                  .padding(horizontal: 8),
+              Text(
+                _formatDateToHumanLang(_plannedStartDate + 1.days),
+                style: context.h4.copyWith(color: kcPrimary100),
+              ),
+            ]
+          ].toRow(mainAxisAlignment: MainAxisAlignment.center),
         verticalSpaceRegular,
         if (!_isAllDay && !_isDateRange && !_isDateRange)
           [
@@ -126,8 +137,16 @@ class _SetPlannedDateTimeWidgetState extends State<SetPlannedDateTimeWidget> {
               itemWidth: 36,
               spacing: 0,
               onTimeChange: (time) {
-                if (time.difference(_plannedStartDate) < 0.minutes) {
+                // print('$_plannedStartDate --> $time');
+                // print(time.isBefore(_plannedStartDate));
+                final _timeDif = time.difference(_plannedStartDate);
+                debugPrint('Time Diff: $_timeDif');
+                //! Bug might occurs here
+                if (_timeDif < 0.minutes || _timeDif > 12.hours) {
                   time += 1.days;
+                  _isDifferenDate = true;
+                } else {
+                  _isDifferenDate = false;
                 }
                 _settingOption.broadCastCurrentEndTimeEntry(time);
                 setState(() {
