@@ -1,19 +1,26 @@
 import 'package:injectable/injectable.dart';
-import 'package:refocus_app/features/task/domain/entities/subtask_entry.dart';
 import 'package:rxdart/rxdart.dart';
 
 @lazySingleton
 class SubTaskStream {
-  List<SubTaskEntry>? _subTasks;
-  List<SubTaskEntry> get subTasks => _subTasks ?? <SubTaskEntry>[];
-  set subTasks(List<SubTaskEntry>? value) => _subTasks = value;
+  List<String>? _subTasks;
+  List<String> get subTasks => _subTasks ?? <String>[];
+  set subTasks(List<String>? value) => _subTasks = value;
 
-  final BehaviorSubject<List<SubTaskEntry>> _subTaskSubject =
-      BehaviorSubject<List<SubTaskEntry>>.seeded(<SubTaskEntry>[]);
-  Stream<List<SubTaskEntry>> get subTaskStream => _subTaskSubject.stream;
+  final BehaviorSubject<List<String>> _subTaskSubject =
+      BehaviorSubject<List<String>>.seeded(<String>[]);
+  Stream<List<String>> get subTaskStream => _subTaskSubject.stream;
 
-  void broadCastCurrentTypeEntry(List<SubTaskEntry> entry) {
+  void broadCastCurrentSubTaskListEntry(List<String> entry) {
     _subTaskSubject.add(entry);
     _subTasks = entry;
+  }
+
+  final BehaviorSubject<List<String>> _subTaskToSaveSubject =
+      BehaviorSubject<List<String>>.seeded(<String>[]);
+  Stream<List<String>> get subTaskToSaveStream => _subTaskToSaveSubject.stream;
+
+  void broadCastToSaveSubTaskListEntry(List<String> entry) {
+    _subTaskToSaveSubject.add(entry);
   }
 }

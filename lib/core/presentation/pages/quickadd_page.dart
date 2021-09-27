@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:refocus_app/core/presentation/helper/setting_option.dart';
+import 'package:refocus_app/core/presentation/helper/subtask_stream.dart';
 import 'package:refocus_app/core/presentation/widgets/add_page_widgets/action_panel_widget.dart';
 import 'package:refocus_app/core/presentation/widgets/add_page_widgets/add_textfield_widget.dart';
 import 'package:refocus_app/core/presentation/widgets/add_page_widgets/due_datetime_widget.dart';
-import 'package:refocus_app/core/util/ui/layout_helpers.dart';
 import 'package:refocus_app/core/util/ui/style_helpers.dart';
 import 'package:refocus_app/features/task/presentation/bloc/project_bloc.dart';
 import 'package:refocus_app/injection.dart';
@@ -19,6 +19,7 @@ class QuickAddPage extends StatefulWidget {
 
 class _QuickAddPageState extends State<QuickAddPage> {
   final _settingOption = getIt<SettingOption>();
+  final _subTaskStream = getIt<SubTaskStream>();
 
   @override
   void initState() {
@@ -30,6 +31,7 @@ class _QuickAddPageState extends State<QuickAddPage> {
     _settingOption.broadCastCurrentDueDateEntry(null);
     _settingOption.broadCastCurrentStartTimeEntry(null);
     _settingOption.broadCastCurrentEndTimeEntry(null);
+    _subTaskStream.broadCastCurrentSubTaskListEntry([]);
 
     super.dispose();
   }

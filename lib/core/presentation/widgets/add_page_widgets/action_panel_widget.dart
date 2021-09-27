@@ -1,12 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:refocus_app/core/presentation/widgets/add_page_widgets/due_datetime_widget.dart';
+import 'package:refocus_app/core/presentation/helper/subtask_stream.dart';
 import 'package:refocus_app/core/presentation/widgets/add_page_widgets/set_duedate_widget.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/prio_type.dart';
 import 'package:refocus_app/enum/today_entry_type.dart';
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
+import 'package:refocus_app/features/task/domain/entities/subtask_entry.dart';
 import 'package:refocus_app/features/task/domain/entities/task_entry.dart';
 import 'package:refocus_app/features/task/domain/usecases/helpers/project_params.dart';
 import 'package:refocus_app/features/task/domain/usecases/helpers/task_params.dart';
@@ -33,6 +34,8 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
 
   final _textStream = getIt<TextStream>();
   final _settingOption = getIt<SettingOption>();
+  final _subTaskStream = getIt<SubTaskStream>();
+
   bool _onSelectingDueDate = false;
   bool _onSelectingPrio = false;
   bool _onAddingNote = false;
@@ -47,9 +50,12 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
 
   int _currentSegmentedIdx = 0;
 
+  late String _taskID;
+
   @override
   void initState() {
     super.initState();
+    _taskID = uuid.v1();
     if (_settingOption.type == TodayEntryType.event) {
       _currentSegmentedIdx = 1;
     } else {
@@ -233,7 +239,11 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
             }),
             //* Adding Sub Tasks
             _buildActionItem(Icons.add).gestures(
-              onTap: () {},
+              onTap: () {
+                final newSubTasks = _subTaskStream.subTasks;
+                newSubTasks.add('');
+                _subTaskStream.broadCastCurrentSubTaskListEntry(newSubTasks);
+              },
             )
           ] else ...[
             _buildActionItem(Icons.pin_drop).gestures(
@@ -268,7 +278,7 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
                       params: [
                         TaskParams(
                           task: TaskEntry(
-                            id: uuid.v1(),
+                            id: _taskID,
                             isCompleted: false,
                             dueDate: _settingOption.dueDate,
                             projectID:

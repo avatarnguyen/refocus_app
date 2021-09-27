@@ -9,12 +9,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:refocus_app/core/presentation/helper/custom_text_controller.dart';
 import 'package:refocus_app/core/presentation/helper/setting_option.dart';
+import 'package:refocus_app/core/presentation/helper/subtask_stream.dart';
 import 'package:refocus_app/core/presentation/helper/text_stream.dart';
+import 'package:refocus_app/core/presentation/widgets/sub_task_item.dart';
 import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart';
 import 'package:refocus_app/core/util/helpers/regexp_matcher.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
+import 'package:refocus_app/features/task/domain/entities/subtask_entry.dart';
 import 'package:refocus_app/features/task/presentation/bloc/project_bloc.dart';
 import 'package:refocus_app/injection.dart';
 import 'package:styled_widget/styled_widget.dart';
@@ -27,12 +30,11 @@ class AddTextFieldWidget extends StatefulWidget {
 
 class _AddTextFieldWidgetState extends State<AddTextFieldWidget> {
   final _textStream = getIt<TextStream>();
-  final _settingsOption = getIt<SettingOption>();
+  final _settingOption = getIt<SettingOption>();
+  final _subTaskStream = getIt<SubTaskStream>();
   final log = logger(AddTextFieldWidget);
 
   late StreamSubscription _textSubscription;
-
-  final _settingOption = getIt<SettingOption>();
 
   late RichTextController _textController;
 
@@ -159,9 +161,70 @@ class _AddTextFieldWidgetState extends State<AddTextFieldWidget> {
                 ),
               ),
               verticalSpaceSmall,
+              //* Main Task Text Field
               _buildTextInput(context),
+              //* Adding SubTask
+              StreamBuilder<List<String>>(
+                stream: _subTaskStream.subTaskStream,
+                builder: (context, snapshot) {
+                  if (!snapshot.hasError && snapshot.hasData) {
+                    final _subTaskList = snapshot.data ?? [];
+                    if (_subTaskList.isNotEmpty) {
+                      final _subTextStyle = context.subtitle1.copyWith(
+                        color: kcPrimary100,
+                      );
+                      const _textfieldPadding = EdgeInsets.all(8);
+
+                      return Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          for (int i = 0; i < _subTaskList.length; i++)
+                            PlatformTextField(
+                              key: Key('sub_task_$i'),
+                              // controller:
+                              //     TextEditingController(text: _subTaskList[i]),
+                              textAlign: TextAlign.center,
+                              style: _subTextStyle,
+                              scrollPadding: const EdgeInsets.all(2),
+                              material: (context, platform) =>
+                                  MaterialTextFieldData(
+                                decoration: InputDecoration(
+                                  contentPadding: _textfieldPadding,
+                                  hintStyle: _subTextStyle.copyWith(
+                                      color: Colors.white60),
+                                  hintText: 'Enter new sub task ...',
+                                  border: const OutlineInputBorder(),
+                                ),
+                              ),
+                              cupertino: (context, platform) =>
+                                  CupertinoTextFieldData(
+                                placeholder: 'Enter new sub task ...',
+                                placeholderStyle: _subTextStyle.copyWith(
+                                    color: Colors.white60),
+                                padding: _textfieldPadding,
+                                decoration: const BoxDecoration(
+                                    color: Colors.transparent),
+                              ),
+                              onChanged: (value) {
+                                print('$i : $value');
+                                _subTaskList[i] = value;
+
+                                _subTaskStream.broadCastToSaveSubTaskListEntry(
+                                    _subTaskList);
+                              },
+                            )
+                        ],
+                      );
+                    } else {
+                      return const SizedBox.shrink();
+                    }
+                  } else {
+                    return const SizedBox.shrink();
+                  }
+                },
+              ),
               StreamBuilder<DateTime?>(
-                stream: _settingsOption.dueDateStream,
+                stream: _settingOption.dueDateStream,
                 builder: (context, snapshot) {
                   final _dueDate = snapshot.data;
                   return Text(
