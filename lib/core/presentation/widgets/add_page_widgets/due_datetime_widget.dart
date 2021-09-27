@@ -94,7 +94,7 @@ class _SetPlannedDateTimeWidgetState extends State<SetPlannedDateTimeWidget> {
             ]
           ].toRow(mainAxisAlignment: MainAxisAlignment.center),
         verticalSpaceRegular,
-        if (!_isAllDay && !_isDateRange && !_isDateRange)
+        if (!_isAllDay && !_isDateRange && !_isSomeday)
           [
             TimePickerSpinner(
               key: Key(_plannedStartDate.toIso8601String()),
@@ -155,7 +155,7 @@ class _SetPlannedDateTimeWidgetState extends State<SetPlannedDateTimeWidget> {
               },
             ),
           ].toRow(mainAxisAlignment: MainAxisAlignment.center),
-        if (!_isAllDay && _isDateRange && !_isDateRange)
+        if (!_isAllDay && _isDateRange && !_isSomeday)
           Text(
             _formatDateToHumanLang(_plannedEndDate),
             style: context.h3
@@ -164,7 +164,7 @@ class _SetPlannedDateTimeWidgetState extends State<SetPlannedDateTimeWidget> {
             _showDatePickerBottomSheet(context, isEndDate: true);
           }).padding(top: 8),
 
-        if (_isAllDay || _isDateRange) verticalSpaceRegular,
+        if (_isAllDay || _isDateRange || _isSomeday) verticalSpaceRegular,
 
         [
           _buildSelectionMode(context, 'all date', DateSelectionType.allDate),

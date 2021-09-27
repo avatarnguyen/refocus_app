@@ -166,7 +166,7 @@ class _AddTextFieldWidgetState extends State<AddTextFieldWidget> {
                   final _dueDate = snapshot.data;
                   return Text(
                     _dueDate != null
-                        ? ' ${CustomDateUtils.returnDateAndMonth(_dueDate)} '
+                        ? ' Due on ${CustomDateUtils.returnDateAndMonth(_dueDate)} '
                         : '',
                     style: context.textTheme.subtitle2!.copyWith(
                       color: kcPrimary700,
