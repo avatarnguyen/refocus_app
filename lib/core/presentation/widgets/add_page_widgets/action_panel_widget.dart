@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:refocus_app/core/presentation/widgets/add_page_widgets/due_datetime_widget.dart';
-import 'package:refocus_app/core/presentation/widgets/add_page_widgets/option_widget.dart';
+import 'package:refocus_app/core/presentation/widgets/add_page_widgets/set_duedate_widget.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/prio_type.dart';
 import 'package:refocus_app/enum/today_entry_type.dart';
@@ -34,7 +34,6 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
   final _textStream = getIt<TextStream>();
   final _settingOption = getIt<SettingOption>();
   bool _onSelectingDueDate = false;
-  bool _onSelectingReminder = false;
   bool _onSelectingPrio = false;
   bool _onAddingNote = false;
 
@@ -46,30 +45,31 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
 
   PrioType? _currentPrio;
 
+  int _currentSegmentedIdx = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    if (_settingOption.type == TodayEntryType.event) {
+      _currentSegmentedIdx = 1;
+    } else {
+      _currentSegmentedIdx = 0;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
       stream: _textStream.getTextStream,
       builder: (context, AsyncSnapshot<String> textStream) {
         final _currentText = textStream.data;
-        final _key =
-            _onSelectingDueDate ? 'Due Date Widget' : 'Reminder Widget';
         return [
           if (_onSelectingPrio)
             _buildSelectionListRow(context, _prioList, _currentText),
-          if (_onSelectingDueDate || _onSelectingReminder)
-            DueDateTimeWidget(
-              key: Key(_key),
-              currentText: _currentText ?? '',
-              onSelectingReminder: _onSelectingReminder,
-              onSelectingDueDate: _onSelectingDueDate,
-            ),
-          if (!_onSelectingReminder)
-            const OptionRowWidget().padding(bottom: 8, top: 4),
+          if (_onSelectingDueDate)
+            const SetDueDateWidget().padding(vertical: 4),
           _buildActionInputRow(_currentText, context)
-        ].toColumn(
-          mainAxisSize: MainAxisSize.min,
-        );
+        ].toColumn(mainAxisSize: MainAxisSize.min);
       },
     );
   }
@@ -140,7 +140,7 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
   }
 
   void _mapPrioTypeToAction(PrioType prio, String currentText) {
-    final _tmpStr = currentText.replaceAll(RegExp(r'!{1,3}'), '');
+    final _tmpStr = currentText.replaceAll(RegExp('!{1,3}'), '');
     switch (prio) {
       case PrioType.low:
         _textStream.updateText('$_tmpStr!');
@@ -171,58 +171,78 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
           context.router.pop();
         }),
         //* Adding Event/Task Switch when selecting date
-        if (_onSelectingReminder)
-          _buildActionItem(
-            (_settingOption.type == TodayEntryType.event)
-                ? Icons.task_alt_rounded
-                : CupertinoIcons.calendar,
-          ),
-        [
-          //* Adding due dates and reminder
-          _buildActionItem(Icons.today_rounded,
-                  color: _onSelectingDueDate
-                      ? context.colorScheme.secondary
-                      : kcSecondary200)
-              .gestures(onTap: () {
-            setState(() {
-              _onSelectingReminder = false;
-              _onSelectingPrio = false;
-              _onSelectingDueDate = !_onSelectingDueDate;
-            });
-          }),
-          _buildActionItem(
-            Icons.alarm_add,
-            color: _onSelectingReminder
-                ? context.colorScheme.secondary
-                : kcSecondary200,
-          ).gestures(onTap: () {
-            setState(() {
-              _onSelectingDueDate = false;
-              _onSelectingPrio = false;
-              _onSelectingReminder = !_onSelectingReminder;
-            });
-          }),
-          // Adding Priority
-          _buildActionItem(
-            Icons.flag,
-            color: _onSelectingPrio
-                ? context.colorScheme.secondary
-                : kcSecondary200,
-          ).gestures(onTap: () {
-            if (_currentPrio == null) {
-              _textStream.updateText('${textData ?? ''} !');
-              _currentPrio = PrioType.low;
+
+        CupertinoSlidingSegmentedControl<int>(
+          padding: const EdgeInsets.all(4),
+          groupValue: _currentSegmentedIdx,
+          thumbColor: kcPrimary100,
+          children: {
+            0: Icon(
+              Icons.task_alt_rounded,
+              color: _currentSegmentedIdx == 0 ? kcPrimary800 : kcPrimary100,
+            ),
+            1: Icon(
+              CupertinoIcons.calendar,
+              color: _currentSegmentedIdx == 1 ? kcPrimary800 : kcPrimary100,
+            ),
+          },
+          onValueChanged: (value) {
+            if (value != null) {
+              if (value == 0) {
+                _settingOption.broadCastCurrentTypeEntry(TodayEntryType.task);
+              } else {
+                _settingOption.broadCastCurrentTypeEntry(TodayEntryType.event);
+                _settingOption.broadCastCurrentDueDateEntry(null);
+              }
+
+              setState(() {
+                _currentSegmentedIdx = value;
+                _onSelectingPrio = false;
+                _onSelectingDueDate = false;
+              });
             }
-            setState(() {
-              _onSelectingReminder = false;
-              _onSelectingDueDate = false;
-              _onSelectingPrio = !_onSelectingPrio;
-            });
-          }),
-          //* Adding Sub Tasks
-          _buildActionItem(Icons.add).gestures(
-            onTap: () {},
-          ),
+          },
+        ),
+        [
+          if (_currentSegmentedIdx == 0) ...[
+            //* Adding due dates and reminder
+            _buildActionItem(Icons.today_rounded,
+                    color: _onSelectingDueDate
+                        ? context.colorScheme.secondary
+                        : kcSecondary200)
+                .gestures(onTap: () {
+              setState(() {
+                _onSelectingPrio = false;
+                _onSelectingDueDate = !_onSelectingDueDate;
+              });
+            }),
+            _buildActionItem(
+              Icons.flag,
+              color: _onSelectingPrio
+                  ? context.colorScheme.secondary
+                  : kcSecondary200,
+            ).gestures(onTap: () {
+              if (_currentPrio == null) {
+                _textStream.updateText('${textData ?? ''} !');
+                _currentPrio = PrioType.low;
+              }
+              setState(() {
+                _onSelectingDueDate = false;
+                _onSelectingPrio = !_onSelectingPrio;
+              });
+            }),
+            //* Adding Sub Tasks
+            _buildActionItem(Icons.add).gestures(
+              onTap: () {},
+            )
+          ] else ...[
+            _buildActionItem(Icons.pin_drop).gestures(
+              onTap: () {},
+            ),
+            _buildActionItem(Icons.note_add).gestures(
+              onTap: () {},
+            )
+          ]
         ].toRow(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           mainAxisSize: MainAxisSize.min,

@@ -135,7 +135,7 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
             color: kcSecondary100,
             size: 33,
           ).gestures(onTap: () {
-            Navigator.push(
+            Navigator.push<dynamic>(
               context,
               Platform.isIOS
                   ? CupertinoPageRoute<dynamic>(

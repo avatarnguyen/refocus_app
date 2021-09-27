@@ -12,6 +12,15 @@ class SettingOption {
   TodayEntryType get type => _type ?? TodayEntryType.task;
   set type(TodayEntryType? value) => _type = value;
 
+  final BehaviorSubject<TodayEntryType> _typeSubject =
+      BehaviorSubject<TodayEntryType>.seeded(TodayEntryType.task);
+  Stream<TodayEntryType> get typeStream => _typeSubject.stream;
+
+  void broadCastCurrentTypeEntry(TodayEntryType entry) {
+    _typeSubject.add(entry);
+    _type = entry;
+  }
+
   ProjectEntry? _projectEntry;
   ProjectEntry? get projectEntry => _projectEntry;
   set projectEntry(ProjectEntry? entry) {

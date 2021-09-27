@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -27,6 +29,8 @@ class _AddTextFieldWidgetState extends State<AddTextFieldWidget> {
   final _textStream = getIt<TextStream>();
   final _settingsOption = getIt<SettingOption>();
   final log = logger(AddTextFieldWidget);
+
+  late StreamSubscription _textSubscription;
 
   final _settingOption = getIt<SettingOption>();
 
@@ -59,14 +63,14 @@ class _AddTextFieldWidgetState extends State<AddTextFieldWidget> {
       },
     );
 
-    // _textSubscription = _textStream.getTextStream.listen((text) {
-    //   final _currentTxt = _textController.text;
-    //   if (_currentTxt != text) {
-    //     _textController.text = text;
-    //     _textController.selection = TextSelection.fromPosition(
-    //         TextPosition(offset: _textController.text.length));
-    //   }
-    // });
+    _textSubscription = _textStream.getTextStream.listen((text) {
+      final _currentTxt = _textController.text;
+      if (_currentTxt != text) {
+        _textController.text = text;
+        _textController.selection = TextSelection.fromPosition(
+            TextPosition(offset: _textController.text.length));
+      }
+    });
 
     super.initState();
 
@@ -75,7 +79,7 @@ class _AddTextFieldWidgetState extends State<AddTextFieldWidget> {
 
   @override
   void dispose() {
-    // _textSubscription.cancel();
+    _textSubscription.cancel();
     super.dispose();
   }
 
@@ -156,76 +160,74 @@ class _AddTextFieldWidgetState extends State<AddTextFieldWidget> {
               ),
               verticalSpaceSmall,
               _buildTextInput(context),
-              [
-                StreamBuilder<DateTime?>(
-                    stream: _settingsOption.dueDateStream,
-                    builder: (context, snapshot) {
-                      final _dueDate = snapshot.data;
-                      return Text(
-                        _dueDate != null
-                            ? ' ${CustomDateUtils.returnDateAndMonth(_dueDate)} '
-                            : '',
-                        style: context.textTheme.subtitle2!.copyWith(
-                          color: kcPrimary700,
-                          backgroundColor: kcPrimary200,
-                        ),
-                      ).padding(left: 8, right: 8);
-                    }),
-                StreamBuilder<DateTime?>(
-                  stream: _settingsOption.startTimeStream,
-                  builder: (context, snapshot1) {
-                    if (snapshot1.hasData) {
-                      return StreamBuilder<DateTime?>(
-                        stream: _settingsOption.endTimeStream,
-                        builder: (context, snapshot2) {
-                          final _startDateTime = snapshot1.data;
-                          if (snapshot2.hasData) {
-                            final _endDateTime = snapshot2.data;
-                            if (_startDateTime != null &&
-                                _endDateTime != null) {
-                              final _isSameDay =
-                                  _startDateTime.isAtSameDayAs(_endDateTime);
-                              final _startDate = _isSameDay
-                                  ? CustomDateUtils.returnDateWithDay(
-                                      _startDateTime)
-                                  : '${CustomDateUtils.returnDateAndMonth(_startDateTime)},';
-                              final _endDate =
-                                  '${CustomDateUtils.returnDateAndMonth(_endDateTime)},';
-                              final _startTime =
-                                  CustomDateUtils.returnTime(_startDateTime);
-                              final _endTime =
-                                  CustomDateUtils.returnTime(_endDateTime);
-                              return Text(
-                                ' $_startDate $_startTime - ${_isSameDay ? '' : '$_endDate '}$_endTime ',
-                                style: context.textTheme.subtitle2!.copyWith(
-                                  color: kcSecondary700,
-                                  backgroundColor: kcSecondary200,
-                                ),
-                              ).padding(right: 8);
-                            }
-                          } else if (_startDateTime != null) {
-                            final _startDate =
-                                CustomDateUtils.returnDateWithDay(
-                                    _startDateTime);
-                            return Text(
-                              ' $_startDate ',
-                              style: context.textTheme.subtitle2!.copyWith(
-                                color: kcSecondary700,
-                                backgroundColor: kcSecondary200,
-                              ),
-                            ).padding(right: 8);
-                          }
-                          return const SizedBox.shrink();
-                        },
-                      );
-                    } else {
-                      return const SizedBox.shrink();
-                    }
-                  },
-                ),
-              ]
-                  .toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween)
-                  .padding(bottom: 8, top: 4)
+
+              StreamBuilder<DateTime?>(
+                stream: _settingsOption.dueDateStream,
+                builder: (context, snapshot) {
+                  final _dueDate = snapshot.data;
+                  return Text(
+                    _dueDate != null
+                        ? ' ${CustomDateUtils.returnDateAndMonth(_dueDate)} '
+                        : '',
+                    style: context.textTheme.subtitle2!.copyWith(
+                      color: kcPrimary700,
+                      backgroundColor: kcPrimary200,
+                    ),
+                  ).padding(bottom: 16, top: 4).alignment(Alignment.center);
+                },
+              ),
+              // StreamBuilder<DateTime?>(
+              //   stream: _settingsOption.startTimeStream,
+              //   builder: (context, snapshot1) {
+              //     if (snapshot1.hasData) {
+              //       return StreamBuilder<DateTime?>(
+              //         stream: _settingsOption.endTimeStream,
+              //         builder: (context, snapshot2) {
+              //           final _startDateTime = snapshot1.data;
+              //           if (snapshot2.hasData) {
+              //             final _endDateTime = snapshot2.data;
+              //             if (_startDateTime != null &&
+              //                 _endDateTime != null) {
+              //               final _isSameDay =
+              //                   _startDateTime.isAtSameDayAs(_endDateTime);
+              //               final _startDate = _isSameDay
+              //                   ? CustomDateUtils.returnDateWithDay(
+              //                       _startDateTime)
+              //                   : '${CustomDateUtils.returnDateAndMonth(_startDateTime)},';
+              //               final _endDate =
+              //                   '${CustomDateUtils.returnDateAndMonth(_endDateTime)},';
+              //               final _startTime =
+              //                   CustomDateUtils.returnTime(_startDateTime);
+              //               final _endTime =
+              //                   CustomDateUtils.returnTime(_endDateTime);
+              //               return Text(
+              //                 ' $_startDate $_startTime - ${_isSameDay ? '' : '$_endDate '}$_endTime ',
+              //                 style: context.textTheme.subtitle2!.copyWith(
+              //                   color: kcSecondary700,
+              //                   backgroundColor: kcSecondary200,
+              //                 ),
+              //               ).padding(right: 8);
+              //             }
+              //           } else if (_startDateTime != null) {
+              //             final _startDate =
+              //                 CustomDateUtils.returnDateWithDay(
+              //                     _startDateTime);
+              //             return Text(
+              //               ' $_startDate ',
+              //               style: context.textTheme.subtitle2!.copyWith(
+              //                 color: kcSecondary700,
+              //                 backgroundColor: kcSecondary200,
+              //               ),
+              //             ).padding(right: 8);
+              //           }
+              //           return const SizedBox.shrink();
+              //         },
+              //       );
+              //     } else {
+              //       return const SizedBox.shrink();
+              //     }
+              //   },
+              // ),
             ].toColumn(mainAxisSize: MainAxisSize.min));
       } else {
         return progressIndicator;

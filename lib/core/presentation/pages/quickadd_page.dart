@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:refocus_app/core/presentation/helper/setting_option.dart';
 import 'package:refocus_app/core/presentation/widgets/add_page_widgets/action_panel_widget.dart';
 import 'package:refocus_app/core/presentation/widgets/add_page_widgets/add_textfield_widget.dart';
-import 'package:refocus_app/core/presentation/widgets/add_page_widgets/option_widget.dart';
+import 'package:refocus_app/core/presentation/widgets/add_page_widgets/due_datetime_widget.dart';
 import 'package:refocus_app/core/util/ui/layout_helpers.dart';
 import 'package:refocus_app/core/util/ui/style_helpers.dart';
 import 'package:refocus_app/features/task/presentation/bloc/project_bloc.dart';
@@ -42,9 +42,9 @@ class _QuickAddPageState extends State<QuickAddPage> {
         value: BlocProvider.of<ProjectBloc>(context),
         child: [
           [
-            // verticalSpaceLarge,
             const AddTextFieldWidget(),
-          ].toColumn().parent(textContainer),
+            const SetPlannedDateTimeWidget(),
+          ].toColumn().scrollable().expanded(), //.parent(textContainer),
           const ActionPanelWidget(),
         ]
             .toColumn(mainAxisAlignment: MainAxisAlignment.spaceBetween)
@@ -53,7 +53,7 @@ class _QuickAddPageState extends State<QuickAddPage> {
     );
   }
 
-  Widget textContainer({required Widget child}) => Container(
+  Widget _textContainer({required Widget child}) => Container(
         margin: const EdgeInsets.symmetric(horizontal: 8),
         child: Styled.widget(child: child),
       );
