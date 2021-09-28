@@ -166,6 +166,9 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
                           BlocProvider<TaskBloc>.value(
                             value: BlocProvider.of<TaskBloc>(context),
                           ),
+                          BlocProvider<CalendarListBloc>(
+                            create: (context) => getIt<CalendarListBloc>(),
+                          ),
                         ],
                         child: const QuickAddPage(),
                       ),
