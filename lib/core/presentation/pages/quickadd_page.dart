@@ -6,6 +6,7 @@ import 'package:refocus_app/core/presentation/widgets/add_page_widgets/action_pa
 import 'package:refocus_app/core/presentation/widgets/add_page_widgets/add_textfield_widget.dart';
 import 'package:refocus_app/core/presentation/widgets/add_page_widgets/due_datetime_widget.dart';
 import 'package:refocus_app/core/util/ui/style_helpers.dart';
+import 'package:refocus_app/enum/today_entry_type.dart';
 import 'package:refocus_app/features/task/presentation/bloc/project_bloc.dart';
 import 'package:refocus_app/injection.dart';
 import 'package:styled_widget/styled_widget.dart';
@@ -31,6 +32,7 @@ class _QuickAddPageState extends State<QuickAddPage> {
     _settingOption.broadCastCurrentDueDateEntry(null);
     _settingOption.broadCastCurrentStartTimeEntry(null);
     _settingOption.broadCastCurrentEndTimeEntry(null);
+    _settingOption.broadCastCurrentTypeEntry(TodayEntryType.task);
     _subTaskStream.broadCastCurrentSubTaskListEntry([]);
 
     super.dispose();
@@ -54,9 +56,4 @@ class _QuickAddPageState extends State<QuickAddPage> {
       ),
     );
   }
-
-  Widget _textContainer({required Widget child}) => Container(
-        margin: const EdgeInsets.symmetric(horizontal: 8),
-        child: Styled.widget(child: child),
-      );
 }

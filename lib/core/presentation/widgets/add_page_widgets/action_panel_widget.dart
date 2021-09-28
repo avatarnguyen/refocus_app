@@ -1,11 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:refocus_app/core/presentation/helper/setting_option.dart';
 import 'package:refocus_app/core/presentation/helper/subtask_stream.dart';
+import 'package:refocus_app/core/presentation/helper/text_stream.dart';
+import 'package:refocus_app/core/presentation/widgets/add_page_widgets/add_timeblock_widget.dart';
 import 'package:refocus_app/core/presentation/widgets/add_page_widgets/set_duedate_widget.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/prio_type.dart';
 import 'package:refocus_app/enum/today_entry_type.dart';
+import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
+import 'package:refocus_app/features/calendar/domain/usecases/helpers/event_params.dart';
+import 'package:refocus_app/features/calendar/presentation/bloc/calendar/calendar_bloc.dart';
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
 import 'package:refocus_app/features/task/domain/entities/subtask_entry.dart';
 import 'package:refocus_app/features/task/domain/entities/task_entry.dart';
@@ -13,12 +19,9 @@ import 'package:refocus_app/features/task/domain/usecases/helpers/project_params
 import 'package:refocus_app/features/task/domain/usecases/helpers/task_params.dart';
 import 'package:refocus_app/features/task/presentation/bloc/project_bloc.dart';
 import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
+import 'package:refocus_app/injection.dart';
 import 'package:styled_widget/styled_widget.dart';
 import 'package:uuid/uuid.dart';
-
-import '../../../../injection.dart';
-import '../../helper/setting_option.dart';
-import '../../helper/text_stream.dart';
 
 class ActionPanelWidget extends StatefulWidget {
   const ActionPanelWidget({
@@ -38,6 +41,7 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
 
   bool _onSelectingDueDate = false;
   bool _onSelectingPrio = false;
+  bool _onAddingTimeBlock = false;
   bool _onAddingNote = false;
 
   final _prioList = [
@@ -45,7 +49,6 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
     PrioType.medium,
     PrioType.high,
   ];
-
   PrioType? _currentPrio;
 
   int _currentSegmentedIdx = 0;
@@ -72,8 +75,14 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
         return [
           if (_onSelectingPrio)
             _buildSelectionListRow(context, _prioList, _currentText),
+
+          if (_onAddingTimeBlock)
+            const AddTimeBlockWidget().padding(vertical: 4),
+
           if (_onSelectingDueDate)
             const SetDueDateWidget().padding(vertical: 4),
+
+          // Action Bottom Panel
           _buildActionInputRow(_currentText, context)
         ].toColumn(mainAxisSize: MainAxisSize.min);
       },
@@ -205,13 +214,15 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
                 _currentSegmentedIdx = value;
                 _onSelectingPrio = false;
                 _onSelectingDueDate = false;
+                _onAddingTimeBlock = false;
+                _onAddingNote = false;
               });
             }
           },
         ),
         [
           if (_currentSegmentedIdx == 0) ...[
-            //* Adding due dates and reminder
+            //* Adding due dates
             _buildActionItem(Icons.today_rounded,
                     color: _onSelectingDueDate
                         ? context.colorScheme.secondary
@@ -219,6 +230,7 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
                 .gestures(onTap: () {
               setState(() {
                 _onSelectingPrio = false;
+                _onAddingTimeBlock = false;
                 _onSelectingDueDate = !_onSelectingDueDate;
               });
             }),
@@ -234,17 +246,27 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
               }
               setState(() {
                 _onSelectingDueDate = false;
+                _onAddingTimeBlock = false;
                 _onSelectingPrio = !_onSelectingPrio;
               });
             }),
             //* Adding Sub Tasks
+            _buildActionItem(Icons.bookmark_add).gestures(
+              onTap: () {
+                setState(() {
+                  _onSelectingDueDate = false;
+                  _onSelectingPrio = false;
+                  _onAddingTimeBlock = !_onAddingTimeBlock;
+                });
+              },
+            ),
             _buildActionItem(Icons.add).gestures(
               onTap: () {
                 final newSubTasks = _subTaskStream.subTasks;
                 newSubTasks.add('');
                 _subTaskStream.broadCastCurrentSubTaskListEntry(newSubTasks);
               },
-            )
+            ),
           ] else ...[
             _buildActionItem(Icons.pin_drop).gestures(
               onTap: () {},
@@ -264,15 +286,28 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
           color: context.primaryColor,
         ).gestures(
           onTap: () {
-            if (_settingOption.type == TodayEntryType.project) {
+            final _type = _settingOption.type;
+            if (_type == TodayEntryType.project) {
               BlocProvider.of<ProjectBloc>(context).add(
                 CreateProjectEntriesEvent(ProjectParams(
                     ProjectEntry(id: uuid.v1(), title: textData))),
               );
             }
-            if (_settingOption.type == TodayEntryType.task) {
+            if (_type == TodayEntryType.task) {
               final _startDateTime = _settingOption.plannedStartDate;
               final _endDateTime = _settingOption.plannedEndDate;
+              final _subtaskList = _subTaskStream.subTasks;
+
+              //TODO: Create Subtask
+              Future.forEach(_subtaskList, (String _title) {
+                final newSubTask = SubTaskEntry(
+                  id: uuid.v1(),
+                  isCompleted: false,
+                  todoID: _taskID,
+                  title: _title,
+                );
+              });
+
               context.read<TaskBloc>().add(
                     CreateTaskEntriesEvent(
                       params: [
@@ -286,12 +321,17 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
                             title: textData,
                             startDateTime: _startDateTime,
                             endDateTime: _endDateTime,
-                            //     _endDateTime != null ? [_endDateTime] : null,
+                            priority: 0,
+                            isHabit: false,
                           ),
                         ),
                       ],
                     ),
                   );
+            }
+            if (_type == TodayEntryType.timeblock ||
+                _type == TodayEntryType.timeblockPrivate) {
+              // context.read<CalendarBloc>().add(AddCalendarEvent(EventParams(eventEntry: CalendarEventEntry(subject: ))))
             }
             context.router.pop();
           },

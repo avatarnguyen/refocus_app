@@ -69,9 +69,9 @@ class _SetDueDateWidgetState extends State<SetDueDateWidget> {
             ),
             selected: _currentSelectedDueDate == _item,
             onSelected: (bool selected) {
+              _mapSelectionToStream(_item);
               setState(() {
                 _currentSelectedDueDate = _item;
-                _mapSelectionToStream(_item);
               });
             },
           ).paddingDirectional(horizontal: 4);

@@ -13,7 +13,6 @@ class SubTaskStream {
 
   void broadCastCurrentSubTaskListEntry(List<String> entry) {
     _subTaskSubject.add(entry);
-    _subTasks = entry;
   }
 
   final BehaviorSubject<List<String>> _subTaskToSaveSubject =
@@ -22,5 +21,6 @@ class SubTaskStream {
 
   void broadCastToSaveSubTaskListEntry(List<String> entry) {
     _subTaskToSaveSubject.add(entry);
+    _subTasks = entry;
   }
 }
