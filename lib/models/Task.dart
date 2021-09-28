@@ -35,8 +35,9 @@ class Task extends Model {
   final TemporalDateTime? _endDateTime;
   final bool? _isHabit;
   final int? _priority;
-  final String? _projectID;
+  final String? _calendarID;
   final List<Subtask>? _Subtasks;
+  final String? _projectID;
 
   @override
   getInstanceType() => classType;
@@ -86,17 +87,21 @@ class Task extends Model {
     return _priority;
   }
   
-  String? get projectID {
-    return _projectID;
+  String? get calendarID {
+    return _calendarID;
   }
   
   List<Subtask>? get Subtasks {
     return _Subtasks;
   }
   
-  const Task._internal({required this.id, title, description, required isCompleted, completedDate, dueDate, startDateTime, endDateTime, isHabit, priority, projectID, Subtasks}): _title = title, _description = description, _isCompleted = isCompleted, _completedDate = completedDate, _dueDate = dueDate, _startDateTime = startDateTime, _endDateTime = endDateTime, _isHabit = isHabit, _priority = priority, _projectID = projectID, _Subtasks = Subtasks;
+  String? get projectID {
+    return _projectID;
+  }
   
-  factory Task({String? id, String? title, String? description, required bool isCompleted, TemporalDate? completedDate, TemporalDate? dueDate, TemporalDateTime? startDateTime, TemporalDateTime? endDateTime, bool? isHabit, int? priority, String? projectID, List<Subtask>? Subtasks}) {
+  const Task._internal({required this.id, title, description, required isCompleted, completedDate, dueDate, startDateTime, endDateTime, isHabit, priority, calendarID, Subtasks, projectID}): _title = title, _description = description, _isCompleted = isCompleted, _completedDate = completedDate, _dueDate = dueDate, _startDateTime = startDateTime, _endDateTime = endDateTime, _isHabit = isHabit, _priority = priority, _calendarID = calendarID, _Subtasks = Subtasks, _projectID = projectID;
+  
+  factory Task({String? id, String? title, String? description, required bool isCompleted, TemporalDate? completedDate, TemporalDate? dueDate, TemporalDateTime? startDateTime, TemporalDateTime? endDateTime, bool? isHabit, int? priority, String? calendarID, List<Subtask>? Subtasks, String? projectID}) {
     return Task._internal(
       id: id == null ? UUID.getUUID() : id,
       title: title,
@@ -108,8 +113,9 @@ class Task extends Model {
       endDateTime: endDateTime,
       isHabit: isHabit,
       priority: priority,
-      projectID: projectID,
-      Subtasks: Subtasks != null ? List<Subtask>.unmodifiable(Subtasks) : Subtasks);
+      calendarID: calendarID,
+      Subtasks: Subtasks != null ? List<Subtask>.unmodifiable(Subtasks) : Subtasks,
+      projectID: projectID);
   }
   
   bool equals(Object other) {
@@ -130,8 +136,9 @@ class Task extends Model {
       _endDateTime == other._endDateTime &&
       _isHabit == other._isHabit &&
       _priority == other._priority &&
-      _projectID == other._projectID &&
-      DeepCollectionEquality().equals(_Subtasks, other._Subtasks);
+      _calendarID == other._calendarID &&
+      DeepCollectionEquality().equals(_Subtasks, other._Subtasks) &&
+      _projectID == other._projectID;
   }
   
   @override
@@ -152,13 +159,14 @@ class Task extends Model {
     buffer.write("endDateTime=" + (_endDateTime != null ? _endDateTime!.format() : "null") + ", ");
     buffer.write("isHabit=" + (_isHabit != null ? _isHabit!.toString() : "null") + ", ");
     buffer.write("priority=" + (_priority != null ? _priority!.toString() : "null") + ", ");
+    buffer.write("calendarID=" + "$_calendarID" + ", ");
     buffer.write("projectID=" + "$_projectID");
     buffer.write("}");
     
     return buffer.toString();
   }
   
-  Task copyWith({String? id, String? title, String? description, bool? isCompleted, TemporalDate? completedDate, TemporalDate? dueDate, TemporalDateTime? startDateTime, TemporalDateTime? endDateTime, bool? isHabit, int? priority, String? projectID, List<Subtask>? Subtasks}) {
+  Task copyWith({String? id, String? title, String? description, bool? isCompleted, TemporalDate? completedDate, TemporalDate? dueDate, TemporalDateTime? startDateTime, TemporalDateTime? endDateTime, bool? isHabit, int? priority, String? calendarID, List<Subtask>? Subtasks, String? projectID}) {
     return Task(
       id: id ?? this.id,
       title: title ?? this.title,
@@ -170,8 +178,9 @@ class Task extends Model {
       endDateTime: endDateTime ?? this.endDateTime,
       isHabit: isHabit ?? this.isHabit,
       priority: priority ?? this.priority,
-      projectID: projectID ?? this.projectID,
-      Subtasks: Subtasks ?? this.Subtasks);
+      calendarID: calendarID ?? this.calendarID,
+      Subtasks: Subtasks ?? this.Subtasks,
+      projectID: projectID ?? this.projectID);
   }
   
   Task.fromJson(Map<String, dynamic> json)  
@@ -185,16 +194,17 @@ class Task extends Model {
       _endDateTime = json['endDateTime'] != null ? TemporalDateTime.fromString(json['endDateTime']) : null,
       _isHabit = json['isHabit'],
       _priority = json['priority'],
-      _projectID = json['projectID'],
+      _calendarID = json['calendarID'],
       _Subtasks = json['Subtasks'] is List
         ? (json['Subtasks'] as List)
           .where((e) => e?['serializedData'] != null)
           .map((e) => Subtask.fromJson(new Map<String, dynamic>.from(e['serializedData'])))
           .toList()
-        : null;
+        : null,
+      _projectID = json['projectID'];
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'title': _title, 'description': _description, 'isCompleted': _isCompleted, 'completedDate': _completedDate?.format(), 'dueDate': _dueDate?.format(), 'startDateTime': _startDateTime?.format(), 'endDateTime': _endDateTime?.format(), 'isHabit': _isHabit, 'priority': _priority, 'projectID': _projectID, 'Subtasks': _Subtasks?.map((e) => e?.toJson())?.toList()
+    'id': id, 'title': _title, 'description': _description, 'isCompleted': _isCompleted, 'completedDate': _completedDate?.format(), 'dueDate': _dueDate?.format(), 'startDateTime': _startDateTime?.format(), 'endDateTime': _endDateTime?.format(), 'isHabit': _isHabit, 'priority': _priority, 'calendarID': _calendarID, 'Subtasks': _Subtasks?.map((e) => e?.toJson())?.toList(), 'projectID': _projectID
   };
 
   static final QueryField ID = QueryField(fieldName: "task.id");
@@ -207,10 +217,11 @@ class Task extends Model {
   static final QueryField ENDDATETIME = QueryField(fieldName: "endDateTime");
   static final QueryField ISHABIT = QueryField(fieldName: "isHabit");
   static final QueryField PRIORITY = QueryField(fieldName: "priority");
-  static final QueryField PROJECTID = QueryField(fieldName: "projectID");
+  static final QueryField CALENDARID = QueryField(fieldName: "calendarID");
   static final QueryField SUBTASKS = QueryField(
     fieldName: "Subtasks",
     fieldType: ModelFieldType(ModelFieldTypeEnum.model, ofModelName: (Subtask).toString()));
+  static final QueryField PROJECTID = QueryField(fieldName: "projectID");
   static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "Task";
     modelSchemaDefinition.pluralName = "Tasks";
@@ -283,7 +294,7 @@ class Task extends Model {
     ));
     
     modelSchemaDefinition.addField(ModelFieldDefinition.field(
-      key: Task.PROJECTID,
+      key: Task.CALENDARID,
       isRequired: false,
       ofType: ModelFieldType(ModelFieldTypeEnum.string)
     ));
@@ -293,6 +304,12 @@ class Task extends Model {
       isRequired: false,
       ofModelName: (Subtask).toString(),
       associatedKey: Subtask.TASKID
+    ));
+    
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
+      key: Task.PROJECTID,
+      isRequired: false,
+      ofType: ModelFieldType(ModelFieldTypeEnum.string)
     ));
   });
 }

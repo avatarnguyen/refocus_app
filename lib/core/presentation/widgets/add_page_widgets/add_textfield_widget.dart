@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
@@ -11,7 +10,6 @@ import 'package:refocus_app/core/presentation/helper/custom_text_controller.dart
 import 'package:refocus_app/core/presentation/helper/setting_option.dart';
 import 'package:refocus_app/core/presentation/helper/subtask_stream.dart';
 import 'package:refocus_app/core/presentation/helper/text_stream.dart';
-import 'package:refocus_app/core/presentation/widgets/sub_task_item.dart';
 import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart';
 import 'package:refocus_app/core/util/helpers/regexp_matcher.dart';
@@ -21,7 +19,6 @@ import 'package:refocus_app/features/calendar/domain/entities/calendar_entry.dar
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar_list/calendar_list_bloc.dart';
 import 'package:refocus_app/features/calendar/presentation/widgets/loading_widget.dart';
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
-import 'package:refocus_app/features/task/domain/entities/subtask_entry.dart';
 import 'package:refocus_app/features/task/presentation/bloc/project_bloc.dart';
 import 'package:refocus_app/injection.dart';
 import 'package:styled_widget/styled_widget.dart';
@@ -299,8 +296,6 @@ class _AddTextFieldWidgetState extends State<AddTextFieldWidget> {
                       for (int i = 0; i < _subTaskList.length; i++)
                         PlatformTextField(
                           key: Key('sub_task_$i'),
-                          // controller:
-                          //     TextEditingController(text: _subTaskList[i]),
                           textAlign: TextAlign.center,
                           style: _subTextStyle,
                           scrollPadding: const EdgeInsets.all(2),
@@ -367,24 +362,23 @@ class _AddTextFieldWidgetState extends State<AddTextFieldWidget> {
       autofocus: true,
       minLines: 1,
       maxLines: 4,
-      style: context.h4.copyWith(
-        color: kcPrimary100,
-      ),
+      style: context.h4.copyWith(color: kcPrimary100),
       material: (context, platform) => MaterialTextFieldData(
-        decoration: const InputDecoration(
-          contentPadding: EdgeInsets.all(16),
-          border: OutlineInputBorder(
+        decoration: InputDecoration(
+          hintText: _isEvent ? 'What is your plan?' : 'What is your task?',
+          hintStyle: context.h4.copyWith(color: Colors.white38),
+          contentPadding: const EdgeInsets.all(16),
+          border: const OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(8)),
           ),
         ),
       ),
       cupertino: (context, platform) => CupertinoTextFieldData(
         placeholder: _isEvent ? 'What is your plan?' : 'What is your task?',
-        placeholderStyle: context.h4.copyWith(color: Colors.white60),
+        placeholderStyle: context.h4.copyWith(color: Colors.white38),
         padding: const EdgeInsets.all(16),
         decoration: const BoxDecoration(
           color: Colors.transparent,
-          // borderRadius: BorderRadius.all(Radius.circular(8)),
         ),
       ),
     ).flexible();

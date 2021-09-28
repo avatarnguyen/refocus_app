@@ -26,6 +26,8 @@ type Task @model @auth(rules: [{allow: public}]) @key(name: "byProject", fields:
   endDateTime: AWSDateTime
   isHabit: Boolean
   priority: Int
-  projectID: ID
+  calendarID: String
   Subtasks: [Subtask] @connection(keyName: "byTask", fields: ["id"])
+  projectID: ID
 }
+ 

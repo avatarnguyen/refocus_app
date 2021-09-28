@@ -9,9 +9,6 @@ import 'package:refocus_app/core/presentation/widgets/add_page_widgets/set_dueda
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/prio_type.dart';
 import 'package:refocus_app/enum/today_entry_type.dart';
-import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
-import 'package:refocus_app/features/calendar/domain/usecases/helpers/event_params.dart';
-import 'package:refocus_app/features/calendar/presentation/bloc/calendar/calendar_bloc.dart';
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
 import 'package:refocus_app/features/task/domain/entities/subtask_entry.dart';
 import 'package:refocus_app/features/task/domain/entities/task_entry.dart';

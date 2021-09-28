@@ -12,6 +12,7 @@ class TaskEntry with _$TaskEntry {
     required String id,
     required bool isCompleted,
     required String projectID,
+    String? calendarID,
     String? title,
     String? description,
     @DateSerialiser() DateTime? dueDate,

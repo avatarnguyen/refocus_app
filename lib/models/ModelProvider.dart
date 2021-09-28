@@ -26,7 +26,7 @@ export 'Task.dart';
 
 class ModelProvider implements ModelProviderInterface {
   @override
-  String version = "46f4eb9ca179a7295b26bdc955cbfe76";
+  String version = "0219d3389bb9fadc7189fccc3db61a23";
   @override
   List<ModelSchema> modelSchemas = [Project.schema, Subtask.schema, Task.schema];
   static final ModelProvider _instance = ModelProvider();
