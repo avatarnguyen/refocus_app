@@ -55,7 +55,7 @@ class _SetDueDateWidgetState extends State<SetDueDateWidget> {
         itemBuilder: (context, index) {
           final _item = _dueDateSelectionItems[index];
           return ChoiceChip(
-            backgroundColor: kcPrimary800,
+            backgroundColor: context.colorScheme.primaryVariant,
             selectedColor: context.colorScheme.secondary,
             shape: RoundedRectangleBorder(
               side: const BorderSide(color: kcPrimary100),

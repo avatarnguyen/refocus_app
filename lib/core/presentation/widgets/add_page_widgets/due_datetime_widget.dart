@@ -188,12 +188,13 @@ class _SetPlannedDateTimeWidgetState extends State<SetPlannedDateTimeWidget> {
   Widget _buildSelectionMode(
       BuildContext context, String title, DateSelectionType type) {
     return ChoiceChip(
-      backgroundColor: kcDarkBackground,
+      backgroundColor: context.colorScheme.primaryVariant,
       selectedColor: context.colorScheme.secondary,
       shape: RoundedRectangleBorder(
-        side: const BorderSide(color: kcDarkBackground),
+        side: BorderSide(color: context.colorScheme.primaryVariant),
         borderRadius: BorderRadius.circular(8),
       ),
+      elevation: 0,
       label: Text(
         title,
         style: context.subtitle1.copyWith(

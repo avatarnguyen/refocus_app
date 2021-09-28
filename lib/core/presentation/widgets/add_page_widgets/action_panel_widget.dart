@@ -121,7 +121,7 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4),
             child: ChoiceChip(
-              backgroundColor: kcPrimary800,
+              backgroundColor: context.colorScheme.primaryVariant,
               selectedColor: context.colorScheme.secondary,
               shape: RoundedRectangleBorder(
                 side: const BorderSide(color: kcPrimary100),

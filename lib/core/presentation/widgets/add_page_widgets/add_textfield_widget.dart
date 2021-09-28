@@ -16,6 +16,10 @@ import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart';
 import 'package:refocus_app/core/util/helpers/regexp_matcher.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
+import 'package:refocus_app/enum/today_entry_type.dart';
+import 'package:refocus_app/features/calendar/domain/entities/calendar_entry.dart';
+import 'package:refocus_app/features/calendar/presentation/bloc/calendar_list/calendar_list_bloc.dart';
+import 'package:refocus_app/features/calendar/presentation/widgets/loading_widget.dart';
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
 import 'package:refocus_app/features/task/domain/entities/subtask_entry.dart';
 import 'package:refocus_app/features/task/presentation/bloc/project_bloc.dart';
@@ -39,6 +43,9 @@ class _AddTextFieldWidgetState extends State<AddTextFieldWidget> {
   late RichTextController _textController;
 
   ProjectEntry? _currentProject;
+  CalendarEntry? _currentCalendar;
+
+  bool _isEvent = false;
 
   final _matcherDueDate = StringMatcher.matcherDueDate;
   final _matcherRemindDate = StringMatcher.matcherRemindDate;
@@ -77,6 +84,9 @@ class _AddTextFieldWidgetState extends State<AddTextFieldWidget> {
     super.initState();
 
     _currentProject = _settingOption.projectEntry;
+
+    BlocProvider.of<CalendarListBloc>(context, listen: false)
+        .add(GetCalendarListEvent());
   }
 
   @override
@@ -87,162 +97,266 @@ class _AddTextFieldWidgetState extends State<AddTextFieldWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ProjectBloc, ProjectState>(builder: (context, state) {
-      if (state is ProjectLoaded) {
-        final _projects = state.project;
-        // log.d(_projects);
-        final _currentColor =
-            StyleUtils.getColorFromString(_currentProject?.color ?? '#8879FC');
-        return SizedBox(
-            width: context.width,
-            child: [
-              Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  color: _currentColor,
-                  boxShadow: [
-                    BoxShadow(
-                      color: _currentColor.withOpacity(0.1),
-                      blurRadius: 1,
-                    ),
-                    BoxShadow(
-                      color: _currentColor.withOpacity(0.1),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
+    return StreamBuilder<TodayEntryType>(
+        stream: _settingOption.typeStream,
+        builder: (context, snapshot) {
+          final _entryType = snapshot.data;
+          if (_entryType != null) {
+            _isEvent = _entryType == TodayEntryType.event;
+            if (_entryType == TodayEntryType.event) {
+              return BlocBuilder<CalendarListBloc, CalendarListState>(
+                  builder: (context, state) {
+                if (state is Loaded) {
+                  final calendars = state.calendarList;
+                  final _currentColor = StyleUtils.getColorFromString(
+                      _currentCalendar?.color ?? '#8879FC');
+                  return _buildEventElements(_currentColor, context, calendars);
+                } else {
+                  return const LoadingWidget();
+                }
+              });
+            } else {
+              return BlocBuilder<ProjectBloc, ProjectState>(
+                  builder: (context, state) {
+                if (state is ProjectLoaded) {
+                  final _projects = state.project;
+                  final _currentColor = StyleUtils.getColorFromString(
+                      _currentProject?.color ?? '#8879FC');
+                  return _buildTaskElements(context, _currentColor, _projects);
+                } else {
+                  return progressIndicator;
+                }
+              });
+            }
+          }
+          return const SizedBox.shrink();
+        });
+  }
+
+  Widget _buildEventElements(Color _currentColor, BuildContext context,
+      List<CalendarEntry> calendars) {
+    return SizedBox(
+      width: context.width,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              color: _currentColor,
+              boxShadow: [
+                BoxShadow(
+                  color: _currentColor.withOpacity(0.1),
+                  blurRadius: 1,
                 ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    isDense: true,
-                    focusColor: Colors.white,
-                    iconEnabledColor: Colors.white,
-                    value: _currentProject?.title,
-                    dropdownColor: kcPrimary500,
-                    elevation: Platform.isIOS ? 0 : 8,
-                    alignment: AlignmentDirectional.center,
-                    style: context.subtitle1.copyWith(
-                      color: Colors.white,
-                    ),
-                    items: _projects.map<DropdownMenuItem<String>>(
-                      (ProjectEntry project) {
-                        return DropdownMenuItem<String>(
-                          value: project.title,
-                          child: Text(
-                            project.title!,
-                            textAlign: TextAlign.center,
-                            style: context.subtitle1.copyWith(
-                              color: Colors.white,
-                            ),
-                          ),
-                        );
-                      },
-                    ).toList(),
-                    hint: Text(
-                      'Inbox',
-                      textAlign: TextAlign.center,
-                      style: context.subtitle1.copyWith(
-                        color: Colors.white,
+                BoxShadow(
+                  color: _currentColor.withOpacity(0.1),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                isDense: true,
+                focusColor: Colors.white,
+                iconEnabledColor: Colors.white,
+                value: _currentCalendar?.name,
+                dropdownColor: _currentColor,
+                elevation: Platform.isIOS ? 0 : 8,
+                alignment: AlignmentDirectional.center,
+                style: context.subtitle1.copyWith(
+                  color: Colors.white,
+                ),
+                items: calendars.map<DropdownMenuItem<String>>(
+                  (CalendarEntry _cal) {
+                    return DropdownMenuItem<String>(
+                      value: _cal.name,
+                      child: Text(
+                        _cal.name,
+                        textAlign: TextAlign.center,
+                        style: context.subtitle1.copyWith(
+                          color: Colors.white,
+                        ),
                       ),
-                    ),
-                    onChanged: (String? newValue) {
-                      final selectedProject = _projects.singleWhere(
-                        (element) => element.title == newValue,
-                      );
-                      _settingOption.projectEntry = selectedProject;
-                      _settingOption
-                          .broadCastCurrentProjectEntry(selectedProject);
-                      setState(() {
-                        _currentProject = selectedProject;
-                      });
-                    },
+                    );
+                  },
+                ).toList(),
+                hint: Text(
+                  'Select a calendars ...',
+                  textAlign: TextAlign.center,
+                  style: context.subtitle1.copyWith(
+                    color: Colors.white,
                   ),
                 ),
-              ),
-              verticalSpaceSmall,
-              //* Main Task Text Field
-              _buildTextInput(context),
-              //* Adding SubTask
-              StreamBuilder<List<String>>(
-                stream: _subTaskStream.subTaskStream,
-                builder: (context, snapshot) {
-                  if (!snapshot.hasError && snapshot.hasData) {
-                    final _subTaskList = snapshot.data ?? [];
-                    if (_subTaskList.isNotEmpty) {
-                      final _subTextStyle = context.subtitle1.copyWith(
-                        color: kcPrimary100,
-                      );
-                      const _textfieldPadding = EdgeInsets.all(8);
-
-                      return Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          for (int i = 0; i < _subTaskList.length; i++)
-                            PlatformTextField(
-                              key: Key('sub_task_$i'),
-                              // controller:
-                              //     TextEditingController(text: _subTaskList[i]),
-                              textAlign: TextAlign.center,
-                              style: _subTextStyle,
-                              scrollPadding: const EdgeInsets.all(2),
-                              material: (context, platform) =>
-                                  MaterialTextFieldData(
-                                decoration: InputDecoration(
-                                  contentPadding: _textfieldPadding,
-                                  hintStyle: _subTextStyle.copyWith(
-                                      color: Colors.white60),
-                                  hintText: 'Enter new sub task ...',
-                                  border: const OutlineInputBorder(),
-                                ),
-                              ),
-                              cupertino: (context, platform) =>
-                                  CupertinoTextFieldData(
-                                placeholder: 'Enter new sub task ...',
-                                placeholderStyle: _subTextStyle.copyWith(
-                                    color: Colors.white60),
-                                padding: _textfieldPadding,
-                                decoration: const BoxDecoration(
-                                    color: Colors.transparent),
-                              ),
-                              onChanged: (value) {
-                                print('$i : $value');
-                                _subTaskList[i] = value;
-
-                                _subTaskStream.broadCastToSaveSubTaskListEntry(
-                                    _subTaskList);
-                              },
-                            )
-                        ],
-                      );
-                    } else {
-                      return const SizedBox.shrink();
-                    }
-                  } else {
-                    return const SizedBox.shrink();
-                  }
+                onChanged: (String? newValue) {
+                  final selectedCal = calendars.singleWhere(
+                    (element) => element.name == newValue,
+                  );
+                  _settingOption.broadCastCurrentCalendarEntry(selectedCal);
+                  setState(() {
+                    _currentCalendar = selectedCal;
+                  });
                 },
               ),
-              StreamBuilder<DateTime?>(
-                stream: _settingOption.dueDateStream,
-                builder: (context, snapshot) {
-                  final _dueDate = snapshot.data;
-                  return Text(
-                    _dueDate != null
-                        ? ' Due on ${CustomDateUtils.returnDateAndMonth(_dueDate)} '
-                        : '',
-                    style: context.textTheme.subtitle2!.copyWith(
-                      color: kcPrimary700,
-                      backgroundColor: kcPrimary200,
-                    ),
-                  ).padding(bottom: 16, top: 4).alignment(Alignment.center);
+            ),
+          ),
+          verticalSpaceSmall,
+          //* Main Task Text Field
+          _buildTextInput(context),
+        ],
+      ),
+    );
+  }
+
+  SizedBox _buildTaskElements(
+      BuildContext context, Color _currentColor, List<ProjectEntry> _projects) {
+    return SizedBox(
+        width: context.width,
+        child: [
+          Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              color: _currentColor,
+              boxShadow: [
+                BoxShadow(
+                  color: _currentColor.withOpacity(0.1),
+                  blurRadius: 1,
+                ),
+                BoxShadow(
+                  color: _currentColor.withOpacity(0.1),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                isDense: true,
+                focusColor: Colors.white,
+                iconEnabledColor: Colors.white,
+                value: _currentProject?.title,
+                dropdownColor: _currentColor,
+                elevation: Platform.isIOS ? 0 : 8,
+                alignment: AlignmentDirectional.center,
+                style: context.subtitle1.copyWith(
+                  color: Colors.white,
+                ),
+                items: _projects.map<DropdownMenuItem<String>>(
+                  (ProjectEntry project) {
+                    return DropdownMenuItem<String>(
+                      value: project.title,
+                      child: Text(
+                        project.title!,
+                        textAlign: TextAlign.center,
+                        style: context.subtitle1.copyWith(
+                          color: Colors.white,
+                        ),
+                      ),
+                    );
+                  },
+                ).toList(),
+                hint: Text(
+                  'Inbox',
+                  textAlign: TextAlign.center,
+                  style: context.subtitle1.copyWith(
+                    color: Colors.white,
+                  ),
+                ),
+                onChanged: (String? newValue) {
+                  final selectedProject = _projects.singleWhere(
+                    (element) => element.title == newValue,
+                  );
+                  _settingOption.projectEntry = selectedProject;
+                  _settingOption.broadCastCurrentProjectEntry(selectedProject);
+                  setState(() {
+                    _currentProject = selectedProject;
+                  });
                 },
               ),
-            ].toColumn(mainAxisSize: MainAxisSize.min));
-      } else {
-        return progressIndicator;
-      }
-    });
+            ),
+          ),
+          verticalSpaceSmall,
+          //* Main Task Text Field
+          _buildTextInput(context),
+          //* Adding SubTask
+          StreamBuilder<List<String>>(
+            stream: _subTaskStream.subTaskStream,
+            builder: (context, snapshot) {
+              if (!snapshot.hasError && snapshot.hasData) {
+                final _subTaskList = snapshot.data ?? [];
+                if (_subTaskList.isNotEmpty) {
+                  final _subTextStyle = context.subtitle1.copyWith(
+                    color: kcPrimary100,
+                  );
+                  const _textfieldPadding = EdgeInsets.all(8);
+
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      for (int i = 0; i < _subTaskList.length; i++)
+                        PlatformTextField(
+                          key: Key('sub_task_$i'),
+                          // controller:
+                          //     TextEditingController(text: _subTaskList[i]),
+                          textAlign: TextAlign.center,
+                          style: _subTextStyle,
+                          scrollPadding: const EdgeInsets.all(2),
+                          material: (context, platform) =>
+                              MaterialTextFieldData(
+                            decoration: InputDecoration(
+                              contentPadding: _textfieldPadding,
+                              hintStyle:
+                                  _subTextStyle.copyWith(color: Colors.white60),
+                              hintText: 'Enter new sub task ...',
+                              border: const OutlineInputBorder(),
+                            ),
+                          ),
+                          cupertino: (context, platform) =>
+                              CupertinoTextFieldData(
+                            placeholder: 'Enter new sub task ...',
+                            placeholderStyle:
+                                _subTextStyle.copyWith(color: Colors.white60),
+                            padding: _textfieldPadding,
+                            decoration:
+                                const BoxDecoration(color: Colors.transparent),
+                          ),
+                          onChanged: (value) {
+                            print('$i : $value');
+                            _subTaskList[i] = value;
+
+                            _subTaskStream
+                                .broadCastToSaveSubTaskListEntry(_subTaskList);
+                          },
+                        )
+                    ],
+                  );
+                } else {
+                  return const SizedBox.shrink();
+                }
+              } else {
+                return const SizedBox.shrink();
+              }
+            },
+          ),
+          StreamBuilder<DateTime?>(
+            stream: _settingOption.dueDateStream,
+            builder: (context, snapshot) {
+              final _dueDate = snapshot.data;
+              return Text(
+                _dueDate != null
+                    ? ' Due on ${CustomDateUtils.returnDateAndMonth(_dueDate)} '
+                    : '',
+                style: context.textTheme.subtitle2!.copyWith(
+                  color: kcPrimary700,
+                  backgroundColor: kcPrimary200,
+                ),
+              ).padding(bottom: 16, top: 4).alignment(Alignment.center);
+            },
+          ),
+        ].toColumn(mainAxisSize: MainAxisSize.min));
   }
 
   Widget _buildTextInput(BuildContext context) {
@@ -265,7 +379,7 @@ class _AddTextFieldWidgetState extends State<AddTextFieldWidget> {
         ),
       ),
       cupertino: (context, platform) => CupertinoTextFieldData(
-        placeholder: 'Enter...',
+        placeholder: _isEvent ? 'What is your plan?' : 'What is your task?',
         placeholderStyle: context.h4.copyWith(color: Colors.white60),
         padding: const EdgeInsets.all(16),
         decoration: const BoxDecoration(

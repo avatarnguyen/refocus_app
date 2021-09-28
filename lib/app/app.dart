@@ -58,14 +58,13 @@ class _AppState extends State<App> {
       subtitle2: kXSmallStyleRegular,
     );
     final _materialThemeData = ThemeData(
-      // accentColor: kcTertiary500,
       appBarTheme: const AppBarTheme(color: kcPrimary500),
       backgroundColor: kcLightBackground,
       colorScheme: const ColorScheme(
         primary: kcPrimary500,
-        primaryVariant: kcPrimary200,
+        primaryVariant: kcPrimary600,
         secondary: kcSecondary500,
-        secondaryVariant: kcSecondary200,
+        secondaryVariant: kcSecondary600,
         surface: Colors.white70,
         background: kcLightBackground,
         error: kcError500,

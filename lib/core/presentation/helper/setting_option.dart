@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 import 'package:refocus_app/enum/today_entry_type.dart';
+import 'package:refocus_app/features/calendar/domain/entities/calendar_entry.dart';
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
 import 'package:rxdart/subjects.dart';
 
@@ -33,6 +34,20 @@ class SettingOption {
 
   void broadCastCurrentProjectEntry(ProjectEntry? entry) {
     _projectSubject.add(entry);
+  }
+
+  CalendarEntry? _calendarEntry;
+  CalendarEntry? get calendarEntry => _calendarEntry;
+  set calendarEntry(CalendarEntry? entry) {
+    _calendarEntry = entry;
+  }
+
+  final BehaviorSubject<CalendarEntry?> _calendarSubject =
+      BehaviorSubject<CalendarEntry?>.seeded(null);
+  Stream<CalendarEntry?> get calendarStream => _calendarSubject.stream;
+
+  void broadCastCurrentCalendarEntry(CalendarEntry? entry) {
+    _calendarSubject.add(entry);
   }
 
   //* Due Date Stream

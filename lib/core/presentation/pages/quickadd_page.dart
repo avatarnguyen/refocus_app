@@ -5,7 +5,7 @@ import 'package:refocus_app/core/presentation/helper/subtask_stream.dart';
 import 'package:refocus_app/core/presentation/widgets/add_page_widgets/action_panel_widget.dart';
 import 'package:refocus_app/core/presentation/widgets/add_page_widgets/add_textfield_widget.dart';
 import 'package:refocus_app/core/presentation/widgets/add_page_widgets/due_datetime_widget.dart';
-import 'package:refocus_app/core/util/ui/style_helpers.dart';
+import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/today_entry_type.dart';
 import 'package:refocus_app/features/task/presentation/bloc/project_bloc.dart';
 import 'package:refocus_app/injection.dart';
@@ -41,7 +41,7 @@ class _QuickAddPageState extends State<QuickAddPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: kcDarkBackground,
+      backgroundColor: context.colorScheme.primaryVariant,
       body: BlocProvider<ProjectBloc>.value(
         value: BlocProvider.of<ProjectBloc>(context),
         child: [
