@@ -81,9 +81,8 @@ class _TodayPageState extends State<TodayPage> {
                   border: null,
                   backgroundColor: kcLightBackground,
                   padding: const EdgeInsetsDirectional.all(8),
-                  largeTitle: !isAtTop
-                      ? Text(_getGreeting())
-                      : const Icon(CupertinoIcons.sun_max_fill),
+                  largeTitle: Text(_getGreeting()),
+                  // : const Icon(CupertinoIcons.sun_max_fill),
                   leading: CupertinoButton(
                     padding: EdgeInsets.zero,
                     child: const Icon(CupertinoIcons.calendar),
@@ -180,14 +179,13 @@ class _TodayPageState extends State<TodayPage> {
                       ),
                     ],
                     flexibleSpace: FlexibleSpaceBar(
-                      centerTitle: isAtTop,
-                      titlePadding: !isAtTop
-                          ? const EdgeInsets.only(left: 16, bottom: 4)
-                          : const EdgeInsets.only(bottom: 16),
-                      title: !isAtTop
-                          ? Text(_getGreeting())
-                          : const Icon(CupertinoIcons.sun_max_fill),
-                    ),
+                        centerTitle: isAtTop,
+                        titlePadding: !isAtTop
+                            ? const EdgeInsets.only(left: 16, bottom: 4)
+                            : const EdgeInsets.only(bottom: 16),
+                        title: Text(_getGreeting())
+                        // : const Icon(CupertinoIcons.sun_max_fill),
+                        ),
                   ),
                   SliverPersistentHeader(
                     pinned: true,
