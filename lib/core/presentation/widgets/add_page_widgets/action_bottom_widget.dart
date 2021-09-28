@@ -307,14 +307,15 @@ class _ActionBottomWidgetState extends State<ActionBottomWidget> {
                   _type == TodayEntryType.timeblock ||
                   _type == TodayEntryType.timeblockPrivate) {
                 final _selectedCal = _settingOption.calendarEntry;
-                if (_selectedCal != null && _startDateTime != null) {
+                if (_startDateTime != null) {
                   final _event = EventParams(
+                    calendarId: _selectedCal?.id,
                     eventEntry: CalendarEventEntry(
                       id: _calEventID,
                       subject: _type == TodayEntryType.timeblockPrivate
                           ? 'Blocked'
                           : textData,
-                      calendarId: _selectedCal.name,
+                      calendarId: _selectedCal?.id,
                       startDateTime:
                           CustomDateUtils.toGoogleRFCDateTime(_startDateTime),
                       endDateTime: CustomDateUtils.toGoogleRFCDateTime(
@@ -323,9 +324,7 @@ class _ActionBottomWidgetState extends State<ActionBottomWidget> {
                   );
                   print('Add New Event: $_event');
 
-                  context.read<CalendarBloc>().add(
-                        AddCalendarEvent(_event),
-                      );
+                  context.read<CalendarBloc>().add(AddCalendarEvent(_event));
                 }
               }
               context.router.pop();
