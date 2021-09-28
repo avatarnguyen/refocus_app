@@ -1,3 +1,4 @@
+import 'package:dartx/dartx.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -5,10 +6,14 @@ import 'package:refocus_app/core/presentation/helper/action_stream.dart';
 import 'package:refocus_app/core/presentation/helper/setting_option.dart';
 import 'package:refocus_app/core/presentation/helper/subtask_stream.dart';
 import 'package:refocus_app/core/presentation/helper/text_stream.dart';
+import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/action_selection_type.dart';
 import 'package:refocus_app/enum/prio_type.dart';
 import 'package:refocus_app/enum/today_entry_type.dart';
+import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
+import 'package:refocus_app/features/calendar/domain/usecases/helpers/event_params.dart';
+import 'package:refocus_app/features/calendar/presentation/bloc/calendar/calendar_bloc.dart';
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
 import 'package:refocus_app/features/task/domain/entities/subtask_entry.dart';
 import 'package:refocus_app/features/task/domain/entities/task_entry.dart';
@@ -137,7 +142,6 @@ class _ActionBottomWidgetState extends State<ActionBottomWidget> {
       builder: (context, snapshot) {
         final _currentText = snapshot.data;
 
-        //! Background refresh (visible off) when switching between event/ task
         return Container(
           height: 40,
           color: kcPrimary900,
@@ -245,56 +249,89 @@ class _ActionBottomWidgetState extends State<ActionBottomWidget> {
         ).gestures(
           onTap: () {
             final _type = _settingOption.type;
-            if (_type == TodayEntryType.project) {
-              BlocProvider.of<ProjectBloc>(context).add(
-                CreateProjectEntriesEvent(ProjectParams(
-                    ProjectEntry(id: uuid.v1(), title: textData))),
-              );
-            }
-            if (_type == TodayEntryType.task) {
+
+            final _calEventID = uuid.v4().replaceAll('-', '');
+            print('Calendar Event ID $_calEventID');
+
+            if (textData != null) {
               final _startDateTime = _settingOption.plannedStartDate;
               final _endDateTime = _settingOption.plannedEndDate;
-              final _subtaskList = _subTaskStream.subTasks;
 
-              //TODO: Create Subtask
-              Future.forEach(_subtaskList, (String _title) {
-                final newSubTask = SubTaskEntry(
-                  id: uuid.v1(),
-                  isCompleted: false,
-                  todoID: _taskID,
-                  title: _title,
-                );
-              });
+              // if (_type == TodayEntryType.project) {
+              //   BlocProvider.of<ProjectBloc>(context).add(
+              //     CreateProjectEntriesEvent(
+              //       ProjectParams(ProjectEntry(id: uuid.v1(), title: textData)),
+              //     ),
+              //   );
+              // }
+              print('Current Type: $_type');
 
-              context.read<TaskBloc>().add(
-                    CreateTaskEntriesEvent(
-                      params: [
-                        TaskParams(
-                          task: TaskEntry(
-                            id: _taskID,
-                            isCompleted: false,
-                            dueDate: _settingOption.dueDate,
-                            projectID:
-                                _settingOption.projectEntry?.id ?? 'inbox_2021',
-                            title: textData,
-                            startDateTime: _startDateTime,
-                            endDateTime: _endDateTime,
-                            priority: 0,
-                            isHabit: false,
+              if (_type == TodayEntryType.task ||
+                  _type == TodayEntryType.timeblock ||
+                  _type == TodayEntryType.timeblockPrivate) {
+                final _subtaskList = _subTaskStream.subTasks;
+
+                //TODO: Create Subtask
+                Future.forEach(_subtaskList, (String _title) {
+                  final newSubTask = SubTaskEntry(
+                    id: uuid.v4(),
+                    isCompleted: false,
+                    todoID: _taskID,
+                    title: _title,
+                  );
+                });
+
+                context.read<TaskBloc>().add(
+                      CreateTaskEntriesEvent(
+                        params: [
+                          TaskParams(
+                            task: TaskEntry(
+                              id: _taskID,
+                              isCompleted: false,
+                              dueDate: _settingOption.dueDate,
+                              projectID: _settingOption.projectEntry?.id ??
+                                  'inbox_2021',
+                              title: textData,
+                              startDateTime: _startDateTime,
+                              endDateTime: _endDateTime,
+                              priority: 0,
+                              isHabit: false,
+                              calendarID: _calEventID,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
+                    );
+              }
+              if (_type == TodayEntryType.event ||
+                  _type == TodayEntryType.timeblock ||
+                  _type == TodayEntryType.timeblockPrivate) {
+                final _selectedCal = _settingOption.calendarEntry;
+                if (_selectedCal != null && _startDateTime != null) {
+                  final _event = EventParams(
+                    eventEntry: CalendarEventEntry(
+                      id: _calEventID,
+                      subject: _type == TodayEntryType.timeblockPrivate
+                          ? 'Blocked'
+                          : textData,
+                      calendarId: _selectedCal.name,
+                      startDateTime:
+                          CustomDateUtils.toGoogleRFCDateTime(_startDateTime),
+                      endDateTime: CustomDateUtils.toGoogleRFCDateTime(
+                          _endDateTime ?? _startDateTime + 1.hours),
                     ),
                   );
+                  print('Add New Event: $_event');
+
+                  context.read<CalendarBloc>().add(
+                        AddCalendarEvent(_event),
+                      );
+                }
+              }
+              context.router.pop();
             }
-            if (_type == TodayEntryType.timeblock ||
-                _type == TodayEntryType.timeblockPrivate) {
-              // context.read<CalendarBloc>().add(AddCalendarEvent(EventParams(eventEntry: CalendarEventEntry(subject: ))))
-            }
-            context.router.pop();
           },
         ),
-        // horizontalSpaceTiny,
       ],
     );
   }

@@ -11,6 +11,7 @@ import 'package:refocus_app/core/presentation/helper/page_stream.dart';
 import 'package:refocus_app/core/presentation/helper/sliding_body_stream.dart';
 import 'package:refocus_app/core/presentation/pages/quickadd_page.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
+import 'package:refocus_app/features/calendar/presentation/bloc/calendar/calendar_bloc.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar/datetime_stream.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar_list/calendar_list_bloc.dart';
 import 'package:refocus_app/features/task/presentation/bloc/project_bloc.dart';
@@ -152,6 +153,9 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
                           BlocProvider<CalendarListBloc>(
                             create: (context) => getIt<CalendarListBloc>(),
                           ),
+                          BlocProvider<CalendarBloc>(
+                            create: (context) => getIt<CalendarBloc>(),
+                          ),
                         ],
                         child: const QuickAddPage(),
                       ),
@@ -168,6 +172,9 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
                           ),
                           BlocProvider<CalendarListBloc>(
                             create: (context) => getIt<CalendarListBloc>(),
+                          ),
+                          BlocProvider<CalendarBloc>(
+                            create: (context) => getIt<CalendarBloc>(),
                           ),
                         ],
                         child: const QuickAddPage(),

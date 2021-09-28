@@ -48,6 +48,7 @@ class SettingOption {
 
   void broadCastCurrentCalendarEntry(CalendarEntry? entry) {
     _calendarSubject.add(entry);
+    _calendarEntry = entry;
   }
 
   //* Due Date Stream

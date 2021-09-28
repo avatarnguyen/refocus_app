@@ -26,13 +26,7 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
   Uuid uuid = const Uuid();
 
   final _textStream = getIt<TextStream>();
-  // final _settingOption = getIt<SettingOption>();
   final _actionStream = getIt<ActionStream>();
-
-  // bool _onSelectingDueDate = false;
-  // bool _onSelectingPrio = false;
-  // bool _onAddingTimeBlock = false;
-  // bool _onAddingNote = false;
 
   final _prioList = [
     PrioType.low,
@@ -51,14 +45,14 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
     return [
       StreamBuilder<ActionSelectionType>(
         stream: _actionStream.actionTypeStream,
-        builder: (context, snapshot) {
-          final _currentAction = snapshot.data;
+        builder: (context, snapshot1) {
+          final _currentAction = snapshot1.data;
 
           if (_currentAction == ActionSelectionType.prio) {
             return StreamBuilder<String>(
               stream: _textStream.getTextStream,
-              builder: (context, snapshot) {
-                final _currentText = snapshot.data;
+              builder: (context, snapshot2) {
+                final _currentText = snapshot2.data;
 
                 return _buildSelectionListRow(context, _prioList, _currentText);
               },

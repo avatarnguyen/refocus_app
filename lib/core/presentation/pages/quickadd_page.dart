@@ -10,6 +10,7 @@ import 'package:refocus_app/core/presentation/widgets/add_page_widgets/due_datet
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/action_selection_type.dart';
 import 'package:refocus_app/enum/today_entry_type.dart';
+import 'package:refocus_app/features/calendar/presentation/bloc/calendar/calendar_bloc.dart';
 import 'package:refocus_app/features/task/presentation/bloc/project_bloc.dart';
 import 'package:refocus_app/injection.dart';
 import 'package:styled_widget/styled_widget.dart';
@@ -55,7 +56,10 @@ class _QuickAddPageState extends State<QuickAddPage> {
           ),
           const SetPlannedDateTimeWidget(),
         ].toColumn().scrollable().expanded(),
-        const ActionPanelWidget(key: Key('action_panel_widget')),
+        BlocProvider<CalendarBloc>.value(
+          value: BlocProvider.of<CalendarBloc>(context),
+          child: const ActionPanelWidget(),
+        ),
       ].toColumn(mainAxisAlignment: MainAxisAlignment.spaceBetween).safeArea(),
     );
   }

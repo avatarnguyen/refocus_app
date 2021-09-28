@@ -48,6 +48,8 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
     if (event is AddCalendarEvent) {
       yield Loading();
       final failureOrSuccess = await addEvent(event.params);
+      print(failureOrSuccess);
+
       yield* failureOrSuccess.fold(
         (failure) async* {
           yield Error(message: _mapFailureToMessage(failure));
