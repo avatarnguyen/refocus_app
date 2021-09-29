@@ -127,7 +127,7 @@ class _ProjectItemState extends State<ProjectItem> {
   }
 
   //TODO: Change to 'customBuilder' when sliding sheet release new version
-  void showTaskBottomSheet(
+  dynamic showTaskBottomSheet(
     BuildContext parentContext,
     ProjectEntry project,
   ) async {

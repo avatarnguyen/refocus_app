@@ -17,6 +17,16 @@ class GetTaskEntriesEvent extends TaskEvent {
   List<Object?> get props => [project];
 }
 
+class GetSingleTaskEntryEvent extends TaskEvent {
+  const GetSingleTaskEntryEvent({
+    required this.taskID,
+  });
+
+  final String taskID;
+  @override
+  List<Object?> get props => [taskID];
+}
+
 class CreateTaskEntriesEvent extends TaskEvent {
   const CreateTaskEntriesEvent({
     required this.params,

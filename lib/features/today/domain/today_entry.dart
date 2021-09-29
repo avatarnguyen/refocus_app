@@ -12,7 +12,6 @@ class TodayEntry extends Equatable {
     this.startDateTime,
     this.endDateTime,
     this.calendarEventID,
-    this.taskID,
     this.projectOrCal,
   });
 
@@ -24,7 +23,6 @@ class TodayEntry extends Equatable {
   final DateTime? startDateTime;
   final DateTime? endDateTime;
   final String? calendarEventID;
-  final String? taskID;
   final String? projectOrCal;
 
   @override
@@ -37,7 +35,6 @@ class TodayEntry extends Equatable {
         startDateTime,
         endDateTime,
         calendarEventID,
-        taskID,
         projectOrCal,
       ];
 
@@ -50,7 +47,6 @@ class TodayEntry extends Equatable {
     DateTime? startDateTime,
     DateTime? endDateTime,
     String? calendarEventID,
-    String? taskID,
     String? projectOrCal,
   }) {
     return TodayEntry(
@@ -62,7 +58,6 @@ class TodayEntry extends Equatable {
       startDateTime: startDateTime ?? this.startDateTime,
       endDateTime: endDateTime ?? this.endDateTime,
       calendarEventID: calendarEventID ?? this.calendarEventID,
-      taskID: taskID ?? this.taskID,
       projectOrCal: projectOrCal ?? this.projectOrCal,
     );
   }

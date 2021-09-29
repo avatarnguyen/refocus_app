@@ -1,11 +1,18 @@
+import 'dart:developer';
+
+import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:refocus_app/core/presentation/widgets/edit_task_view.dart';
 import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/today_entry_type.dart';
+import 'package:refocus_app/features/task/domain/entities/task_entry.dart';
 import 'package:refocus_app/features/task/domain/usecases/helpers/task_params.dart';
 import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
+import 'package:refocus_app/features/task/presentation/pages/project_page.dart';
+import 'package:sliding_sheet/sliding_sheet.dart';
 import 'package:styled_widget/styled_widget.dart';
 
 import 'sub_task_item.dart';
@@ -38,7 +45,6 @@ class ListItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final _isEvent = type == TodayEntryType.event;
     final _isTask = type == TodayEntryType.task;
-    final _isTimeblock = type == TodayEntryType.timeblock;
     final _isPassed =
         endDateTime != null && endDateTime!.compareTo(DateTime.now()) <= 0;
 
@@ -90,7 +96,7 @@ class ListItemWidget extends StatelessWidget {
               Text(
                 startDateTime != null
                     ? CustomDateUtils.returnTime(startDateTime!.toLocal())
-                    : 'all day',
+                    : 'due today',
                 overflow: TextOverflow.clip,
                 textAlign: TextAlign.right,
                 maxLines: 1,
@@ -131,32 +137,24 @@ class ListItemWidget extends StatelessWidget {
               ),
               child: [
                 [
-                  if (_isTask)
-                    Material(
-                      color: Colors.transparent,
-                      child: Checkbox(
-                        tristate: true,
-                        visualDensity: const VisualDensity(
-                          horizontal: VisualDensity.minimumDensity,
-                          vertical: VisualDensity.minimumDensity,
-                        ),
-                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        fillColor: MaterialStateProperty.resolveWith(getColor),
-                        value: false,
-                        shape: const CircleBorder(
-                            side: BorderSide(width: 8, color: Colors.blue)),
-                        onChanged: (bool? selected) => context
-                            .read<TaskBloc>()
-                            .add(
-                                const EditTaskEntryEvent(params: TaskParams())),
-                      ).padding(right: 8),
-                    )
-                  else
-                    Icon(Icons.calendar_today, color: _textColor, size: 22)
-                        .padding(right: 10, left: 2)
-                        .gestures(onTap: () {
-                      print('Select Time Block');
-                    }),
+                  Material(
+                    color: Colors.transparent,
+                    child: Checkbox(
+                      tristate: true,
+                      visualDensity: const VisualDensity(
+                        horizontal: VisualDensity.minimumDensity,
+                        vertical: VisualDensity.minimumDensity,
+                      ),
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      fillColor: MaterialStateProperty.resolveWith(getColor),
+                      value: false,
+                      shape: const CircleBorder(
+                          side: BorderSide(width: 8, color: Colors.blue)),
+                      onChanged: (bool? selected) => context
+                          .read<TaskBloc>()
+                          .add(const EditTaskEntryEvent(params: TaskParams())),
+                    ).padding(right: 8),
+                  ),
                   Text(
                     title ?? '',
                     overflow: TextOverflow.ellipsis,
@@ -173,10 +171,51 @@ class ListItemWidget extends StatelessWidget {
                 // verticalSpaceTiny,
                 // const InsideTaskItem(),
               ].toColumn(mainAxisSize: MainAxisSize.min),
-            ),
+            ).ripple().gestures(onTap: () {
+              print('Task ID: $taskID');
+              if (taskID != null) {
+                showTaskBottomSheet(context, taskID!);
+              }
+            }),
           ]
             .toRow(crossAxisAlignment: CrossAxisAlignment.start)
             .padding(all: 6); //.marginAll(6);
+  }
+
+  dynamic showTaskBottomSheet(
+    BuildContext parentContext,
+    String taskID,
+  ) async {
+    SlidingSheetDialog? _taskSheetDialog;
+    final dynamic result = await showSlidingBottomSheet<dynamic>(
+      parentContext,
+      builder: (context) {
+        return _taskSheetDialog ??= SlidingSheetDialog(
+          elevation: 8,
+          cornerRadius: 16,
+          duration: 500.milliseconds,
+          color: context.colorScheme.primaryVariant,
+          snapSpec: const SnapSpec(
+            initialSnap: 0.5,
+            snappings: [0.5, 0.89],
+            positioning: SnapPositioning.relativeToSheetHeight,
+          ),
+          minHeight: context.height - 56,
+          headerBuilder: (context, state) {
+            return const TaskPageHeaderWidget();
+          },
+          builder: (context, state) {
+            log(taskID);
+            return BlocProvider<TaskBloc>.value(
+              value: BlocProvider.of<TaskBloc>(parentContext),
+              child: EditTaskView(taskID: taskID),
+            );
+          },
+        );
+      },
+    );
+
+    print(result); // This is the result.
   }
 
   // Get Checkbox color, depends on state

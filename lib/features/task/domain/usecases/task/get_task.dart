@@ -15,7 +15,9 @@ class GetTasks implements UseCase<List<TaskEntry>, TaskParams> {
 
   @override
   Future<Either<Failure, List<TaskEntry>>> call(TaskParams params) async {
-    if (params.project != null) {
+    if (params.taskID != null) {
+      return repository.getFilteredTask(taskID: params.taskID);
+    } else if (params.project != null) {
       return repository.getTaskOfSpecificProject(params.project!);
     } else if (params.endDate != null) {
       return repository.getFilteredTask(

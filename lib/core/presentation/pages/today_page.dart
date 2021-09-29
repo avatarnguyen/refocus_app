@@ -90,42 +90,11 @@ class _TodayPageState extends State<TodayPage> {
                       widget.changePage();
                     },
                   ),
-                  // [
-                  //   CupertinoButton(
-                  //     padding: EdgeInsets.zero,
-                  //     child: const Icon(CupertinoIcons.calendar),
-                  //     onPressed: () {
-                  //       widget.changePage();
-                  //     },
-                  //   ),
-                  //   CupertinoButton(
-                  //     padding: EdgeInsets.zero,
-                  //     child: const Icon(CupertinoIcons.search),
-                  //     onPressed: () {
-                  //       widget.changePage();
-                  //     },
-                  //   )
-                  // ].toRow(mainAxisSize: MainAxisSize.min),
                   trailing: CupertinoButton(
                     padding: EdgeInsets.zero,
                     child: const Icon(CupertinoIcons.person_fill),
                     onPressed: () {},
                   ),
-
-                  // SizedBox(
-                  //   child: [
-                  //     CupertinoButton(
-                  //       padding: EdgeInsets.zero,
-                  //       child: const Icon(CupertinoIcons.archivebox_fill),
-                  //       onPressed: () {},
-                  //     ),
-                  //     CupertinoButton(
-                  //       padding: EdgeInsets.zero,
-                  //       child: const Icon(CupertinoIcons.person_fill),
-                  //       onPressed: () {},
-                  //     ),
-                  //   ].toRow(mainAxisSize: MainAxisSize.min),
-                  // ),
                 ),
                 SliverPersistentHeader(
                   pinned: true,
@@ -137,11 +106,7 @@ class _TodayPageState extends State<TodayPage> {
                 ),
               ],
               body: const TodayListWidget().padding(horizontal: 8),
-            )
-              // .parent(
-              //   ({required child}) => todayPage(context, child: child),
-              // ),
-              )
+            ))
           : Scaffold(
               body: NestedScrollView(
                 controller: _sController,

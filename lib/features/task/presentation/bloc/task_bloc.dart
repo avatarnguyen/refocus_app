@@ -37,7 +37,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   Stream<TaskState> mapEventToState(
     TaskEvent event,
   ) async* {
-    print(state);
+    // print(state);
     if (event is GetTaskEntriesEvent) {
       log('Get Tasks Event');
 
@@ -56,6 +56,12 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       log('Edit Task');
 
       yield* _mapTaskEditToState(event);
+    } else if (event is GetSingleTaskEntryEvent) {
+      yield TaskLoading();
+      final failureOrEntry = await getTasks(
+        TaskParams(taskID: event.taskID),
+      );
+      yield* _eitherTaskLoadedOrErrorState(failureOrEntry);
     }
   }
 
@@ -80,6 +86,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     });
   }
 
+  // Stream for getting task
   Stream<TaskState> _eitherTaskLoadedOrErrorState(
       Either<Failure, List<TaskEntry>> failureOrEntry) async* {
     yield failureOrEntry.fold(

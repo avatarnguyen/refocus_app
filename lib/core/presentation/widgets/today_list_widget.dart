@@ -13,6 +13,7 @@ import 'package:refocus_app/core/presentation/widgets/persistent_header_delegate
 import 'package:refocus_app/core/presentation/widgets/today_list_item.dart';
 import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
+import 'package:refocus_app/enum/today_entry_type.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar/datetime_stream.dart';
 import 'package:refocus_app/features/calendar/presentation/widgets/widgets.dart';
 import 'package:refocus_app/injection.dart';
@@ -136,7 +137,8 @@ class _TodayListWidgetState extends State<TodayListWidget> {
               type: _entry.type,
               startDateTime: _entry.startDateTime,
               endDateTime: _entry.endDateTime,
-              eventID: _entry.calendarEventID,
+              eventID: _entry.type == TodayEntryType.event ? _entry.id : null,
+              taskID: _entry.type == TodayEntryType.task ? _entry.id : null,
               projectOrCal: _entry.projectOrCal,
             );
           }, childCount: state.todayEntries.length),
@@ -161,6 +163,7 @@ class _TodayListWidgetState extends State<TodayListWidget> {
                 startDateTime: _entry.startDateTime,
                 endDateTime: _entry.endDateTime,
                 eventID: _entry.calendarEventID,
+                taskID: _entry.id,
                 projectOrCal: _entry.projectOrCal,
               );
             }, childCount: state.tomorrowEntries!.length),
@@ -184,6 +187,7 @@ class _TodayListWidgetState extends State<TodayListWidget> {
                 startDateTime: _entry.startDateTime,
                 endDateTime: _entry.endDateTime,
                 eventID: _entry.calendarEventID,
+                taskID: _entry.id,
                 projectOrCal: _entry.projectOrCal,
               );
             }, childCount: state.upcomingTasks!.length),

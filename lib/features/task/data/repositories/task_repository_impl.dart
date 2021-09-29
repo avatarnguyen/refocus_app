@@ -162,10 +162,15 @@ class TaskRepositoryImpl implements TaskRepository {
   }
 
   @override
-  Future<dartz.Either<Failure, List<TaskEntry>>> getFilteredTask(
-      {DateTime? dueDate, DateTime? startDate, DateTime? endDate}) async {
+  Future<dartz.Either<Failure, List<TaskEntry>>> getFilteredTask({
+    String? taskID,
+    DateTime? dueDate,
+    DateTime? startDate,
+    DateTime? endDate,
+  }) async {
     try {
       final _todos = await remoteDataSource.getRemoteTask(
+        todoID: taskID,
         startTime: startDate,
         dueDate: dueDate,
         endTime: endDate,
