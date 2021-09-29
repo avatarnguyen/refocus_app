@@ -68,15 +68,18 @@ class _HomePageWidgetState extends State<HomePageWidget> {
 
   final log = logger(HomePage);
   bool amplifyConfigured = false;
-  // bool _drawerClosed = true;
+
+  late SheetController _sheetController;
 
   @override
   void initState() {
-    _configureAmplify();
+    _configureAmplifyAndGoogleSignIn();
     _slidingBodySub = _slidingStream.pageStream.listen(_slidingPageReceived);
 
-    _googleSignIn.signInSilently();
+    // _googleSignIn.signInSilently();
     super.initState();
+
+    _sheetController = SheetController();
   }
 
   void _slidingPageReceived(int newPage) {
@@ -85,7 +88,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
     });
   }
 
-  Future _configureAmplify() async {
+  Future _configureAmplifyAndGoogleSignIn() async {
     try {
       await Future.wait([
         Amplify.addPlugin(AmplifyAPI()),
@@ -95,10 +98,13 @@ class _HomePageWidgetState extends State<HomePageWidget> {
       ]);
       // Once Plugins are added, configure Amplify
       await Amplify.configure(amplifyconfig);
+
+      // Sign in google calendar api
+      await _googleSignIn.signInSilently();
+
       setState(() {
         amplifyConfigured = true;
       });
-      // await Amplify.DataStore.clear();
     } catch (e) {
       log.e(e);
     }
@@ -130,15 +136,21 @@ class _HomePageWidgetState extends State<HomePageWidget> {
         cornerRadius: 16,
         shadowColor: kcPrimary100,
         backdropColor: Colors.black26,
-        // addTopViewPaddingOnFullscreen: true,
         snapSpec: const SnapSpec(
           initialSnap: 0.09,
           snappings: [0.09, 0.5, 0.89],
         ),
         // parallaxSpec: ParallaxSpec(),
         minHeight: context.height * 0.9,
+        closeOnBackdropTap: true,
         closeOnBackButtonPressed: Platform.isAndroid,
-        headerBuilder: (context, state) => const SlidingHeaderWidget(),
+        headerBuilder: (context, state) => SheetListenerBuilder(
+          buildWhen: (oldState, newState) =>
+              oldState.isExpanded != newState.isExpanded,
+          builder: (context, state) {
+            return SlidingHeaderWidget(sheetState: state);
+          },
+        ),
         builder: (context, state) {
           if (amplifyConfigured) {
             if (_currentSlidingBodyPage == 0) {

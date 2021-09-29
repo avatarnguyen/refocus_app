@@ -40,6 +40,7 @@ class _ProjectPageState extends State<ProjectPage> {
           return ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
+            padding: const EdgeInsets.only(top: 16),
             itemCount: _projects.length + 1,
             itemBuilder: (context, index) {
               if (index == 0) {
@@ -114,8 +115,8 @@ class _ProjectItemState extends State<ProjectItem> {
             horizontal: 16,
             vertical: 8,
           ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(8)),
           ),
         )
         .gestures(

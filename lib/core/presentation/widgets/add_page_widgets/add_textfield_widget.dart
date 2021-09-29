@@ -275,7 +275,7 @@ class _AddTextFieldWidgetState extends State<AddTextFieldWidget> {
             },
           ).toList(),
           hint: Text(
-            'Select a calendars ...',
+            'Select a calendar ...',
             textAlign: TextAlign.center,
             style: context.subtitle1.copyWith(
               color: Colors.white,

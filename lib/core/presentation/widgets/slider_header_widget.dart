@@ -23,7 +23,10 @@ import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 class SlidingHeaderWidget extends StatefulWidget {
   const SlidingHeaderWidget({
     Key? key,
+    required this.sheetState,
   }) : super(key: key);
+
+  final SheetState sheetState;
 
   @override
   _SlidingHeaderWidgetState createState() => _SlidingHeaderWidgetState();
@@ -106,13 +109,20 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
       height: 136,
       child: [
         [
-          const Icon(
-            Icons.calendar_today,
-            color: kcSecondary100,
-            size: 24,
-          ).gestures(onTap: () {
-            showDatePickerBottomSheet(context);
-          }),
+          if (widget.sheetState.isExpanded)
+            const Icon(
+              Icons.close_rounded,
+              color: kcSecondary100,
+              size: 24,
+            ).gestures(onTap: () {})
+          else
+            const Icon(
+              Icons.calendar_today,
+              color: kcSecondary100,
+              size: 24,
+            ).gestures(onTap: () {
+              showDatePickerBottomSheet(context);
+            }),
           [
             Text(
               _titleText,
@@ -121,14 +131,6 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
                 decoration: TextDecoration.underline,
               ),
             ),
-            // horizontalSpaceMedium,
-            // Text(
-            //   'Personal',
-            //   style: context.textTheme.bodyText2!.copyWith(
-            //     color: kcSecondary100,
-            //   ),
-            // ),
-            // horizontalSpaceMedium,
           ].toRow(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start),
@@ -181,28 +183,41 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
                       ),
                     ),
             );
-            // context.navigateTo(const QuickAddRoute());
           }),
+        ].toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween),
+        [
+          CupertinoSlidingSegmentedControl<int>(
+            padding: const EdgeInsets.all(4),
+            groupValue: _currentSegmentedIdx,
+            thumbColor: kcPrimary100,
+            children: {
+              0: _buildSegment('Calendars', 0),
+              1: _buildSegment('Projects', 1),
+            },
+            onValueChanged: (value) {
+              if (value != null) {
+                _slidingStream.broadCastCurrentPage(value);
+                setState(() {
+                  _currentSegmentedIdx = value;
+                });
+              }
+            },
+          ),
+          if (_currentSegmentedIdx == 1) ...[
+            horizontalSpaceRegular,
+            const Icon(
+              Icons.add,
+              color: kcSecondary100,
+              size: 28,
+            ).gestures(onTap: () {
+              print('Create New Project');
+            }),
+          ]
         ].toRow(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        ),
-        CupertinoSlidingSegmentedControl<int>(
-          padding: const EdgeInsets.all(4),
-          groupValue: _currentSegmentedIdx,
-          thumbColor: kcPrimary100,
-          children: {
-            0: _buildSegment('Calendars', 0),
-            1: _buildSegment('Projects', 1),
-          },
-          onValueChanged: (value) {
-            if (value != null) {
-              _slidingStream.broadCastCurrentPage(value);
-              setState(() {
-                _currentSegmentedIdx = value;
-              });
-            }
-          },
-        ),
+          mainAxisAlignment: _currentSegmentedIdx == 1
+              ? MainAxisAlignment.end
+              : MainAxisAlignment.center,
+        )
       ].toColumn(mainAxisAlignment: MainAxisAlignment.spaceBetween),
     );
   }

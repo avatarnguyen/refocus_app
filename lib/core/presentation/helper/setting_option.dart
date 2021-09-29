@@ -92,4 +92,8 @@ class SettingOption {
   DateTime? _plannedEndDate;
   DateTime? get plannedEndDate => _plannedEndDate;
   set plannedEndDate(DateTime? entry) => _plannedEndDate = entry;
+
+  // void resetAllSettingOptions() {
+
+  // }
 }

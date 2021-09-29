@@ -45,6 +45,7 @@ class _CalendarListWidgetState extends State<CalendarListWidget> {
           return ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
+            padding: const EdgeInsets.only(top: 16),
             itemCount: calendars.length,
             itemBuilder: (context, index) =>
                 CheckBoxListItem(calendar: calendars[index]),
