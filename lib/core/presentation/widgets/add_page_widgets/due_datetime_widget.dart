@@ -16,7 +16,10 @@ import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 class SetPlannedDateTimeWidget extends StatefulWidget {
   const SetPlannedDateTimeWidget({
     Key? key,
+    this.textColor,
   }) : super(key: key);
+
+  final Color? textColor;
 
   @override
   _SetPlannedDateTimeWidgetState createState() =>
@@ -42,7 +45,7 @@ class _SetPlannedDateTimeWidgetState extends State<SetPlannedDateTimeWidget> {
     super.initState();
     // _currentDateType = DateSelectionType.dateTime;
     _plannedStartDate = _settingOption.plannedStartDate ?? DateTime.now();
-    _plannedEndDate = _settingOption.plannedStartDate ?? 1.hours.fromNow;
+    _plannedEndDate = _settingOption.plannedEndDate ?? 1.hours.fromNow;
   }
 
   @override
@@ -65,31 +68,33 @@ class _SetPlannedDateTimeWidgetState extends State<SetPlannedDateTimeWidget> {
   }
 
   Widget _buildSetReminder(BuildContext context) {
+    final _textColor = widget.textColor ?? kcPrimary100;
+
     return SizedBox(
       width: context.width,
-      height: 224,
+      height: 234,
       child: [
         if (_isSomeday)
           Text(
             'Someday',
             style: context.h3
-                .copyWith(color: kcPrimary100, fontWeight: FontWeight.w400),
+                .copyWith(color: _textColor, fontWeight: FontWeight.w400),
           )
         else
           [
             Text(
               _formatDateToHumanLang(_plannedStartDate),
               style: context.h3
-                  .copyWith(color: kcPrimary100, fontWeight: FontWeight.w400),
+                  .copyWith(color: _textColor, fontWeight: FontWeight.w400),
             ).ripple().gestures(onTap: () {
               _showDatePickerBottomSheet(context);
             }),
             if (_isDifferenDate) ...[
-              const Icon(Icons.arrow_right_alt_rounded, color: kcPrimary100)
+              Icon(Icons.arrow_right_alt_rounded, color: _textColor)
                   .padding(horizontal: 8),
               Text(
                 _formatDateToHumanLang(_plannedStartDate + 1.days),
-                style: context.h4.copyWith(color: kcPrimary100),
+                style: context.h4.copyWith(color: _textColor),
               ),
             ]
           ].toRow(mainAxisAlignment: MainAxisAlignment.center),
@@ -102,12 +107,12 @@ class _SetPlannedDateTimeWidgetState extends State<SetPlannedDateTimeWidget> {
               alignment: Alignment.center,
               time: _plannedStartDate,
               normalTextStyle: context.subtitle1.copyWith(
-                color: Colors.white30,
+                color: widget.textColor?.withOpacity(0.4) ?? Colors.white30,
               ),
               highlightedTextStyle: context.subtitle1.copyWith(
-                color: Colors.white,
+                color: _textColor,
               ),
-              itemHeight: 32,
+              itemHeight: 36,
               itemWidth: 36,
               spacing: 0,
               onTimeChange: (time) {
@@ -118,48 +123,50 @@ class _SetPlannedDateTimeWidgetState extends State<SetPlannedDateTimeWidget> {
                 });
               },
             ),
-            const Icon(
+            Icon(
               Icons.arrow_right_alt_rounded,
-              color: kcPrimary100,
+              color: _textColor,
             ).padding(horizontal: 4),
-            TimePickerSpinner(
-              key: Key(_plannedEndDate.toIso8601String()),
-              is24HourMode: MediaQuery.of(context).alwaysUse24HourFormat,
-              alignment: Alignment.center,
-              time: _plannedEndDate,
-              normalTextStyle: context.subtitle1.copyWith(
-                color: Colors.white30,
+            SizedBox(
+              child: TimePickerSpinner(
+                key: Key(_plannedEndDate.toIso8601String()),
+                is24HourMode: MediaQuery.of(context).alwaysUse24HourFormat,
+                alignment: Alignment.center,
+                time: _plannedEndDate,
+                normalTextStyle: context.subtitle1.copyWith(
+                  color: widget.textColor?.withOpacity(0.4) ?? Colors.white30,
+                ),
+                highlightedTextStyle: context.subtitle1.copyWith(
+                  color: _textColor,
+                ),
+                itemHeight: 36,
+                itemWidth: 36,
+                spacing: 0,
+                onTimeChange: (time) {
+                  // print('$_plannedStartDate --> $time');
+                  // print(time.isBefore(_plannedStartDate));
+                  final _timeDif = time.difference(_plannedStartDate);
+                  debugPrint('Time Diff: $_timeDif');
+                  //! Bug might occurs here
+                  if (_timeDif < 0.minutes || _timeDif > 12.hours) {
+                    time += 1.days;
+                    _isDifferenDate = true;
+                  } else {
+                    _isDifferenDate = false;
+                  }
+                  _settingOption.broadCastCurrentEndTimeEntry(time);
+                  setState(() {
+                    _currentDuration = time.difference(_plannedStartDate);
+                  });
+                },
               ),
-              highlightedTextStyle: context.subtitle1.copyWith(
-                color: Colors.white,
-              ),
-              itemHeight: 32,
-              itemWidth: 36,
-              spacing: 0,
-              onTimeChange: (time) {
-                // print('$_plannedStartDate --> $time');
-                // print(time.isBefore(_plannedStartDate));
-                final _timeDif = time.difference(_plannedStartDate);
-                debugPrint('Time Diff: $_timeDif');
-                //! Bug might occurs here
-                if (_timeDif < 0.minutes || _timeDif > 12.hours) {
-                  time += 1.days;
-                  _isDifferenDate = true;
-                } else {
-                  _isDifferenDate = false;
-                }
-                _settingOption.broadCastCurrentEndTimeEntry(time);
-                setState(() {
-                  _currentDuration = time.difference(_plannedStartDate);
-                });
-              },
             ),
           ].toRow(mainAxisAlignment: MainAxisAlignment.center),
         if (!_isAllDay && _isDateRange && !_isSomeday)
           Text(
             _formatDateToHumanLang(_plannedEndDate),
             style: context.h3
-                .copyWith(color: kcPrimary100, fontWeight: FontWeight.w400),
+                .copyWith(color: _textColor, fontWeight: FontWeight.w400),
           ).ripple().gestures(onTap: () {
             _showDatePickerBottomSheet(context, isEndDate: true);
           }).padding(top: 8),
@@ -198,7 +205,7 @@ class _SetPlannedDateTimeWidgetState extends State<SetPlannedDateTimeWidget> {
       label: Text(
         title,
         style: context.subtitle1.copyWith(
-          color: kcPrimary100,
+          color: widget.textColor ?? kcPrimary100,
         ),
       ),
       selected: type == DateSelectionType.allDate
