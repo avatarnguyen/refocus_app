@@ -194,7 +194,7 @@ class ListItemWidget extends StatelessWidget {
           elevation: 8,
           cornerRadius: 16,
           duration: 500.milliseconds,
-          color: context.colorScheme.primaryVariant,
+          color: context.backgroundColor,
           snapSpec: const SnapSpec(
             initialSnap: 0.5,
             snappings: [0.5, 0.89],
