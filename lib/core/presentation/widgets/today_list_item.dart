@@ -4,6 +4,7 @@ import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:refocus_app/core/presentation/widgets/edit_task_header.dart';
 import 'package:refocus_app/core/presentation/widgets/edit_task_view.dart';
 import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
@@ -202,7 +203,7 @@ class ListItemWidget extends StatelessWidget {
           ),
           minHeight: context.height - 56,
           headerBuilder: (context, state) {
-            return const TaskPageHeaderWidget();
+            return const EditTaskHeader();
           },
           builder: (context, state) {
             log(taskID);

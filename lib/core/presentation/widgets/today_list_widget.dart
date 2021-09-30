@@ -48,7 +48,7 @@ class _TodayListWidgetState extends State<TodayListWidget> {
         context.read<TodayBloc>()
           ..add(GetTodayEntries(DateTime.now()))
           ..add(GetTomorrowEntries(1.days.fromNow))
-          ..add(GetUpcomingTask(2.days.fromNow, 5.days.fromNow));
+          ..add(GetUpcomingTask(1.days.fromNow, 5.days.fromNow));
       }
     } else {
       _selectedDate = CustomDateUtils.returnDateWithDay(newDate);
@@ -67,7 +67,7 @@ class _TodayListWidgetState extends State<TodayListWidget> {
     context.read<TodayBloc>()
       ..add(GetTodayEntries(DateTime.now()))
       ..add(GetTomorrowEntries(1.days.fromNow))
-      ..add(GetUpcomingTask(2.days.fromNow, 5.days.fromNow));
+      ..add(GetUpcomingTask(1.days.fromNow, 5.days.fromNow));
     await Future<dynamic>.delayed(1000.milliseconds);
   }
 
