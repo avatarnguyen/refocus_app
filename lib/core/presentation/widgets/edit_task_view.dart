@@ -8,6 +8,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:refocus_app/core/presentation/helper/edit_task_stream.dart';
+import 'package:refocus_app/core/presentation/helper/setting_option.dart';
+import 'package:refocus_app/core/presentation/widgets/add_page_widgets/due_datetime_widget.dart';
 import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/features/calendar/presentation/widgets/widgets.dart';
@@ -103,40 +105,8 @@ class _EditTaskViewState extends State<EditTaskView> {
                               ),
                             ].toColumn(),
                           verticalSpaceMedium,
-                          PlatformTextField(
-                            controller: TextEditingController(
-                                text: 'sub task 1')
-                              ..selection = TextSelection.fromPosition(
-                                TextPosition(offset: 'sub task 1'.length ?? 0),
-                              ),
-                            textAlignVertical: TextAlignVertical.center,
-                            textAlign: TextAlign.center,
-                            material: (context, platform) =>
-                                materialTextField(),
-                            cupertino: (context, platform) =>
-                                cupertinoTextField(),
-                            style: context.caption.copyWith(
-                              // fontWeight: FontWeight.w500,
-                              color: _textColor,
-                            ),
-                          ).padding(vertical: 4),
-                          PlatformTextField(
-                            controller: TextEditingController(
-                                text: 'sub task 2')
-                              ..selection = TextSelection.fromPosition(
-                                TextPosition(offset: 'sub task 1'.length ?? 0),
-                              ),
-                            textAlignVertical: TextAlignVertical.center,
-                            textAlign: TextAlign.center,
-                            material: (context, platform) =>
-                                materialTextField(),
-                            cupertino: (context, platform) =>
-                                cupertinoTextField(),
-                            style: context.caption.copyWith(
-                              // fontWeight: FontWeight.w500,
-                              color: _textColor,
-                            ),
-                          ).padding(vertical: 4),
+                          _buildSubTaskTextField(context, 'sub task 1'),
+                          _buildSubTaskTextField(context, 'sub task 2'),
                           verticalSpaceRegular,
                           PlatformButton(
                             padding: const EdgeInsets.symmetric(
@@ -195,6 +165,22 @@ class _EditTaskViewState extends State<EditTaskView> {
                           title: 'Sub Task 1',
                         ),
                       ),
+                      verticalSpaceSmall,
+                      PlatformIconButton(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 8, horizontal: 32),
+                        materialIcon: Icon(
+                          Icons.add,
+                          color: _textColor,
+                        ),
+                        cupertinoIcon: Icon(
+                          CupertinoIcons.add,
+                          color: _textColor,
+                        ),
+                        onPressed: () {
+                          print('Add new sub task');
+                        },
+                      ),
                     ],
                   );
                 });
@@ -206,6 +192,25 @@ class _EditTaskViewState extends State<EditTaskView> {
         }
       },
     );
+  }
+
+  Widget _buildSubTaskTextField(BuildContext context, String title) {
+    final _textColor = kcPrimary500;
+
+    return PlatformTextField(
+      controller: TextEditingController(text: title)
+        ..selection = TextSelection.fromPosition(
+          TextPosition(offset: title.length),
+        ),
+      textAlignVertical: TextAlignVertical.center,
+      textAlign: TextAlign.center,
+      material: (context, platform) => materialTextField(),
+      cupertino: (context, platform) => cupertinoTextField(),
+      style: context.caption.copyWith(
+        // fontWeight: FontWeight.w500,
+        color: _textColor,
+      ),
+    ).padding(vertical: 4);
   }
 
   CupertinoTextFieldData cupertinoTextField() {
@@ -294,17 +299,12 @@ class EditDateTimeCell extends StatefulWidget {
 }
 
 class _EditDateTimeCellState extends State<EditDateTimeCell> {
-  Widget _parentCell({required Widget child}) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: SizedBox(
-          width: context.width,
-          child: Styled.widget(child: child),
-        ),
-      );
+  final _settingOption = getIt<SettingOption>();
 
   @override
   Widget build(BuildContext context) {
     final _textColor = kcPrimary500;
+    final _currentTask = widget.fetchedTask;
 
     final _timeTextStyle = context.h6.copyWith(
       color: _textColor,
@@ -313,45 +313,64 @@ class _EditDateTimeCellState extends State<EditDateTimeCell> {
     final _dateTextStyle = context.subtitle1.copyWith(
       color: _textColor,
     );
-    return SizedBox(
-        child: [
-      [
-        if (widget.fetchedTask.startDateTime != null)
-          Text(
-            CustomDateUtils.returnTime(widget.fetchedTask.startDateTime!),
-            style: _timeTextStyle,
-          ),
-        if (widget.fetchedTask.endDateTime != null) ...[
-          Icon(
-            Icons.arrow_right_alt_rounded,
-            color: _textColor,
-          ).padding(horizontal: 4),
-          Text(
-            CustomDateUtils.returnTime(widget.fetchedTask.endDateTime!),
-            style: _timeTextStyle,
-          ),
-        ]
-      ].toRow(mainAxisAlignment: MainAxisAlignment.center).parent(_parentCell),
-      [
-        if (widget.fetchedTask.startDateTime != null)
-          Text(
-            CustomDateUtils.returnDateAndMonth(
-                widget.fetchedTask.startDateTime!),
-            style: _dateTextStyle,
-          ),
-        if (widget.fetchedTask.endDateTime != null &&
-            !widget.fetchedTask.endDateTime!
-                .isAtSameDayAs(widget.fetchedTask.startDateTime!)) ...[
-          Icon(
-            Icons.arrow_right_alt_rounded,
-            color: _textColor,
-          ).padding(horizontal: 4),
-          Text(
-            CustomDateUtils.returnDateAndMonth(widget.fetchedTask.endDateTime!),
-            style: _dateTextStyle,
-          ),
-        ]
-      ].toRow(mainAxisAlignment: MainAxisAlignment.center).parent(_parentCell),
-    ].toColumn());
+    return AnimatedContainer(
+      duration: 400.milliseconds,
+      child: [
+        [
+          if (widget.fetchedTask.startDateTime != null)
+            Text(
+              CustomDateUtils.returnTime(widget.fetchedTask.startDateTime!),
+              style: _timeTextStyle,
+            ),
+          if (widget.fetchedTask.endDateTime != null) ...[
+            Icon(
+              Icons.arrow_right_alt_rounded,
+              color: _textColor,
+            ).padding(horizontal: 4),
+            Text(
+              CustomDateUtils.returnTime(widget.fetchedTask.endDateTime!),
+              style: _timeTextStyle,
+            ),
+          ]
+        ].toRow(mainAxisAlignment: MainAxisAlignment.center),
+        [
+          if (widget.fetchedTask.startDateTime != null)
+            Text(
+              CustomDateUtils.returnDateAndMonth(
+                  widget.fetchedTask.startDateTime!),
+              style: _dateTextStyle,
+            ),
+          if (widget.fetchedTask.endDateTime != null &&
+              !widget.fetchedTask.endDateTime!
+                  .isAtSameDayAs(widget.fetchedTask.startDateTime!)) ...[
+            Icon(
+              Icons.arrow_right_alt_rounded,
+              color: _textColor,
+            ).padding(horizontal: 4),
+            Text(
+              CustomDateUtils.returnDateAndMonth(
+                  widget.fetchedTask.endDateTime!),
+              style: _dateTextStyle,
+            ),
+          ]
+        ].toRow(mainAxisAlignment: MainAxisAlignment.center),
+      ].toColumn(mainAxisSize: MainAxisSize.min),
+    ).gestures(onTap: () {
+      // before open setting
+      // _settingOption
+      //     .broadCastCurrentStartTimeEntry(_currentTask.startDateTime);
+      // _settingOption.broadCastCurrentEndTimeEntry(_currentTask.endDateTime);
+    });
+  }
+
+  @override
+  void dispose() {
+    _resetStream();
+    super.dispose();
+  }
+
+  void _resetStream() {
+    _settingOption.broadCastCurrentStartTimeEntry(null);
+    _settingOption.broadCastCurrentEndTimeEntry(null);
   }
 }
