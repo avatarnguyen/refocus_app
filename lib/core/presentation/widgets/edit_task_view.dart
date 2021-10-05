@@ -153,17 +153,17 @@ class _EditTaskViewState extends State<EditTaskView> {
                   )
                 : _materialDateTimePicker(context);
           },
-        ).padding(bottom: 8),
+        ),
+        Text('Until', style: _dateTextStyle)
+            .alignment(Alignment.center)
+            .padding(vertical: 4),
         _buildEditDateTimeCell(
                 endDateTime!, _editTimeTextStyle, DateTimeSelected.end)
             .gestures(
           onTap: () {
             Platform.isIOS
                 ? _cupertinoDateTimePicker(
-                    context,
-                    endDateTime!,
-                    DateTimeSelected.end,
-                  )
+                    context, endDateTime!, DateTimeSelected.end)
                 : _materialDateTimePicker(context);
           },
         ),
@@ -178,10 +178,7 @@ class _EditTaskViewState extends State<EditTaskView> {
               onTap: () {
                 Platform.isIOS
                     ? _cupertinoDateTimePicker(
-                        context,
-                        endDateTime!,
-                        DateTimeSelected.due,
-                      )
+                        context, endDateTime!, DateTimeSelected.due)
                     : _materialDateTimePicker(context);
               },
             ),
@@ -303,14 +300,8 @@ class _EditTaskViewState extends State<EditTaskView> {
         PlatformIconButton(
           color: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-          materialIcon: Icon(
-            Icons.add,
-            color: _textColor,
-          ),
-          cupertinoIcon: Icon(
-            CupertinoIcons.add,
-            color: _textColor,
-          ),
+          materialIcon: Icon(Icons.add, color: _textColor),
+          cupertinoIcon: Icon(CupertinoIcons.add, color: _textColor),
           onPressed: () {
             setState(() {
               newSubTask.add('');
@@ -339,9 +330,7 @@ class _EditTaskViewState extends State<EditTaskView> {
           materialTextField(customPadding: const EdgeInsets.all(16)),
       cupertino: (context, platform) =>
           cupertinoTextField(customPadding: const EdgeInsets.all(16)),
-      style: context.subtitle1.copyWith(
-        color: _textColor,
-      ),
+      style: context.subtitle1.copyWith(color: _textColor),
     ).padding(vertical: 4);
   }
 
