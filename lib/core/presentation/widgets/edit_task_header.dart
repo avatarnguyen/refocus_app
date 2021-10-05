@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:refocus_app/core/presentation/helper/edit_task_stream.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/injection.dart';
@@ -18,6 +19,10 @@ class _EditTaskHeaderState extends State<EditTaskHeader> {
 
   @override
   Widget build(BuildContext context) {
+    final _textBtnStyle = context.bodyText2.copyWith(
+      fontWeight: FontWeight.w600,
+      color: kcPrimary500,
+    );
     return Container(
       color: context.backgroundColor,
       height: 56,
@@ -34,12 +39,21 @@ class _EditTaskHeaderState extends State<EditTaskHeader> {
             .ripple()
             .padding(left: 16)
             .gestures(onTap: context.router.pop),
+        if (isEdit) ...[
+          horizontalSpaceMedium.expanded(),
+          PlatformTextButton(
+            child: Text('Cancel', style: _textBtnStyle),
+            onPressed: () {
+              _editStream.broadCastCurrentPage(!isEdit);
+              setState(() {
+                isEdit = !isEdit;
+              });
+            },
+          ),
+        ],
         Text(
           isEdit ? 'Done' : 'Edit',
-          style: context.bodyText2.copyWith(
-            fontWeight: FontWeight.w600,
-            color: kcPrimary500,
-          ),
+          style: _textBtnStyle,
         )
             .padding(vertical: 8, horizontal: 10)
             .decorated(
@@ -51,6 +65,7 @@ class _EditTaskHeaderState extends State<EditTaskHeader> {
           setState(() {
             isEdit = !isEdit;
           });
+          //TODO: save new task
         }),
       ].toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween),
     );
