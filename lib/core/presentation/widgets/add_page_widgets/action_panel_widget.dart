@@ -57,8 +57,8 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
                 return _buildSelectionListRow(context, _prioList, _currentText);
               },
             );
-          } else if (_currentAction == ActionSelectionType.timeBlock) {
-            return const AddTimeBlockWidget().padding(vertical: 4);
+            // } else if (_currentAction == ActionSelectionType.timeBlock) {
+            //   return const AddTimeBlockWidget().padding(vertical: 4);
           } else if (_currentAction == ActionSelectionType.dueDate) {
             return const SetDueDateWidget().padding(vertical: 4);
           } else {

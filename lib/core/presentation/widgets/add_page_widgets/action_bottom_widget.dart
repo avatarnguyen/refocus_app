@@ -14,12 +14,9 @@ import 'package:refocus_app/enum/today_entry_type.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/helpers/event_params.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar/calendar_bloc.dart';
-import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
 import 'package:refocus_app/features/task/domain/entities/subtask_entry.dart';
 import 'package:refocus_app/features/task/domain/entities/task_entry.dart';
-import 'package:refocus_app/features/task/domain/usecases/helpers/project_params.dart';
 import 'package:refocus_app/features/task/domain/usecases/helpers/task_params.dart';
-import 'package:refocus_app/features/task/presentation/bloc/project_bloc.dart';
 import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
 import 'package:refocus_app/injection.dart';
 import 'package:styled_widget/styled_widget.dart';
@@ -92,19 +89,19 @@ class _ActionBottomWidgetState extends State<ActionBottomWidget> {
           _onSelectingDueDate = false;
         });
         break;
-      case ActionSelectionType.timeBlock:
-        if (_onAddingTimeBlock) {
-          _actionStream.broadCastCurrentActionType(ActionSelectionType.task);
-        } else {
-          _actionStream.broadCastCurrentActionType(type);
-        }
-        setState(() {
-          _onSelectingPrio = false;
-          _onSelectingDueDate = false;
-          _onAddingNote = false;
-          _onAddingTimeBlock = !_onAddingTimeBlock;
-        });
-        break;
+      // case ActionSelectionType.timeBlock:
+      //   if (_onAddingTimeBlock) {
+      //     _actionStream.broadCastCurrentActionType(ActionSelectionType.task);
+      //   } else {
+      //     _actionStream.broadCastCurrentActionType(type);
+      //   }
+      //   setState(() {
+      //     _onSelectingPrio = false;
+      //     _onSelectingDueDate = false;
+      //     _onAddingNote = false;
+      //     _onAddingTimeBlock = !_onAddingTimeBlock;
+      //   });
+      //   break;
       case ActionSelectionType.note:
         if (_onAddingNote) {
           _actionStream.broadCastCurrentActionType(ActionSelectionType.event);
@@ -217,12 +214,12 @@ class _ActionBottomWidgetState extends State<ActionBottomWidget> {
               }
               _onChangingSelection(ActionSelectionType.prio);
             }),
+            // _buildActionItem(Icons.bookmark_add).gestures(
+            //   onTap: () {
+            //     _onChangingSelection(ActionSelectionType.timeBlock);
+            //   },
+            // ),
             //* Adding Sub Tasks
-            _buildActionItem(Icons.bookmark_add).gestures(
-              onTap: () {
-                _onChangingSelection(ActionSelectionType.timeBlock);
-              },
-            ),
             _buildActionItem(Icons.add).gestures(
               onTap: () {
                 final newSubTasks = _subTaskStream.subTasks;

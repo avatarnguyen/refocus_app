@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
 import 'package:refocus_app/core/presentation/helper/setting_option.dart';
+import 'package:refocus_app/core/presentation/widgets/add_page_widgets/add_timeblock_widget.dart';
 import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/date_selection_type.dart';
@@ -72,7 +73,7 @@ class _SetPlannedDateTimeWidgetState extends State<SetPlannedDateTimeWidget> {
 
     return SizedBox(
       width: context.width,
-      height: 234,
+      height: 280,
       child: [
         if (_isSomeday)
           Text(
@@ -170,9 +171,7 @@ class _SetPlannedDateTimeWidgetState extends State<SetPlannedDateTimeWidget> {
           ).ripple().gestures(onTap: () {
             _showDatePickerBottomSheet(context, isEndDate: true);
           }).padding(top: 8),
-
         if (_isAllDay || _isDateRange || _isSomeday) verticalSpaceRegular,
-
         [
           _buildSelectionMode(context, 'all date', DateSelectionType.allDate),
           StreamBuilder<TodayEntryType>(
@@ -186,8 +185,13 @@ class _SetPlannedDateTimeWidgetState extends State<SetPlannedDateTimeWidget> {
           ),
         ]
             .toRow(mainAxisAlignment: MainAxisAlignment.spaceEvenly)
-            .padding(vertical: 12),
-        // verticalSpaceMedium,
+            .padding(top: 8),
+        StreamBuilder<TodayEntryType>(
+          stream: _settingOption.typeStream,
+          builder: (context, snapshot) => snapshot.data != TodayEntryType.event
+              ? const AddTimeBlockWidget().padding(bottom: 4)
+              : const SizedBox.shrink(),
+        ),
       ].toColumn(mainAxisAlignment: MainAxisAlignment.end),
     );
   }

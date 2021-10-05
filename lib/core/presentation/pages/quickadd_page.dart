@@ -6,6 +6,7 @@ import 'package:refocus_app/core/presentation/helper/setting_option.dart';
 import 'package:refocus_app/core/presentation/helper/subtask_stream.dart';
 import 'package:refocus_app/core/presentation/widgets/add_page_widgets/action_panel_widget.dart';
 import 'package:refocus_app/core/presentation/widgets/add_page_widgets/add_textfield_widget.dart';
+import 'package:refocus_app/core/presentation/widgets/add_page_widgets/add_timeblock_widget.dart';
 import 'package:refocus_app/core/presentation/widgets/add_page_widgets/due_datetime_widget.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/action_selection_type.dart';
@@ -55,7 +56,14 @@ class _QuickAddPageState extends State<QuickAddPage> {
             child: const AddTextFieldWidget(),
           ),
           const SetPlannedDateTimeWidget(),
-        ].toColumn().scrollable().expanded(),
+          // if (_settingOption.type != TodayEntryType.event)
+          //   const AddTimeBlockWidget(),
+        ]
+            .toColumn(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.spaceAround)
+            .scrollable()
+            .expanded(),
         BlocProvider<CalendarBloc>.value(
           value: BlocProvider.of<CalendarBloc>(context),
           child: const ActionPanelWidget(),

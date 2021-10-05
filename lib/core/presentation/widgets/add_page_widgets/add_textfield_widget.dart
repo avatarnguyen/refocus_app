@@ -194,17 +194,13 @@ class _AddTextFieldWidgetState extends State<AddTextFieldWidget> {
                               )
                           ],
                         );
-                      } else {
-                        return const SizedBox.shrink();
                       }
-                    } else {
-                      return const SizedBox.shrink();
                     }
+                    return const SizedBox.shrink();
                   },
                 );
-              } else {
-                return const SizedBox.shrink();
               }
+              return const SizedBox.shrink();
             },
           ),
 
