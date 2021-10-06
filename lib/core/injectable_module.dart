@@ -7,7 +7,6 @@ import 'package:refocus_app/features/calendar/data/datasources/gcal_local_data_s
 import 'package:refocus_app/features/calendar/domain/entities/calendar_entry.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
 import 'package:refocus_app/features/task/data/datasources/task_local_data_source.dart';
-import 'package:refocus_app/models/ModelProvider.dart';
 
 @module
 abstract class RegisterModule {
@@ -26,7 +25,7 @@ abstract class RegisterModule {
       Hive.openBox(cachedCalendarList);
 
   @preResolve
-  Future<Box<Project>> get projectsBox => Hive.openBox(cachedProjects);
+  Future<Box<String>> get projectColorBox => Hive.openBox(cachedProjectsColor);
 
   @lazySingleton
   InternetConnectionChecker get internetChecker => InternetConnectionChecker();

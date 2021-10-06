@@ -5,28 +5,27 @@ import 'package:refocus_app/core/error/exceptions.dart';
 import 'package:refocus_app/models/ModelProvider.dart';
 
 abstract class TaskLocalDataSource {
-  Future<List<Project>> getLastCachedProjects();
-  Future<Project?> getCachedProjectWithID(String projectID);
-  Future<void> cacheRemoteProjects(List<Project> projects);
+  Future<String?> getCachedProjectColorWithID(String projectID);
+  Future<void> cacheRemoteProjectColors(List<Project> projects);
 }
 
-const cachedProjects = 'CACHED_PROJECS';
+const cachedProjectsColor = 'CACHED_PROJECS_COLOR';
 
 @LazySingleton(as: TaskLocalDataSource)
 class HiveTaskLocalDataSource implements TaskLocalDataSource {
   HiveTaskLocalDataSource({
-    required this.projectsBox,
+    required this.projectColorBox,
   });
 
-  final Box<Project> projectsBox;
+  final Box<String> projectColorBox;
 
   @override
-  Future<void> cacheRemoteProjects(List<Project> projects) async {
+  Future<void> cacheRemoteProjectColors(List<Project> projects) async {
     try {
       await Future.forEach(projects, (Project project) {
-        projectsBox.put(
+        projectColorBox.put(
           project.id,
-          project,
+          project.color ?? '#115FFB',
         );
       });
     } catch (e) {
@@ -37,20 +36,7 @@ class HiveTaskLocalDataSource implements TaskLocalDataSource {
   }
 
   @override
-  Future<List<Project>> getLastCachedProjects() {
-    final projectList = <Project>[];
-
-    for (var i = 0; i < projectsBox.length; i++) {
-      final entry = projectsBox.getAt(i);
-      if (entry != null) {
-        projectList.add(entry);
-      }
-    }
-    return Future.value(projectList);
-  }
-
-  @override
-  Future<Project?> getCachedProjectWithID(String projectID) async {
-    return projectsBox.get(projectID);
+  Future<String?> getCachedProjectColorWithID(String projectID) async {
+    return projectColorBox.get(projectID);
   }
 }

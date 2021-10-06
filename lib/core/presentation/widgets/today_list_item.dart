@@ -48,6 +48,8 @@ class ListItemWidget extends StatelessWidget {
     final _isPassed =
         endDateTime != null && endDateTime!.compareTo(DateTime.now()) <= 0;
 
+    print('Color: $color - $type');
+
     final _color = _isPassed
         ? Colors.grey.shade600
         : StyleUtils.getColorFromString(color ?? '#115FFB');
@@ -156,9 +158,8 @@ class ListItemWidget extends StatelessWidget {
                   value: false,
                   shape: const CircleBorder(
                       side: BorderSide(width: 8, color: Colors.blue)),
-                  onChanged: (bool? selected) => context
-                      .read<TaskBloc>()
-                      .add(const EditTaskEntryEvent(params: TaskParams())),
+                  onChanged: (bool? selected) => context.read<TaskBloc>().add(
+                      const EditTaskEntryEvent(params: TaskParams())), //TODO
                 ).padding(right: 8),
               ),
               Text(

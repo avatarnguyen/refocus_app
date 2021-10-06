@@ -95,7 +95,8 @@ class TaskRepositoryImpl implements TaskRepository {
           .map((project) => ProjectEntry.fromMap(project.toJson()))
           .toList();
 
-      await localDataSource.cacheRemoteProjects(_projects);
+      //Cache Color of Projects to add to task locally
+      await localDataSource.cacheRemoteProjectColors(_projects);
 
       return dartz.Right(_projectsEntry);
     } on ServerException {
@@ -185,10 +186,13 @@ class TaskRepositoryImpl implements TaskRepository {
       final _tasks = <TaskEntry>[];
 
       await Future.forEach(_todos, (Task todo) async {
-        final _project =
-            await localDataSource.getCachedProjectWithID(todo.calendarID ?? '');
-        final _task = TaskEntry.fromJson(todo.toJson())
-          ..copyWith(colorID: _project?.id ?? '#115FFB');
+        final _projectColor = await localDataSource
+            .getCachedProjectColorWithID(todo.projectID ?? '');
+        log.d('Project Color: $_projectColor');
+
+        final _tmpTask = TaskEntry.fromJson(todo.toJson());
+        final _task = _tmpTask.copyWith(colorID: _projectColor ?? '#115FFB');
+        log.d('Task Color: ${_task.colorID}');
         _tasks.add(_task);
       });
       return dartz.Right(_tasks);
