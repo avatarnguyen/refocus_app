@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:dartx/dartx.dart';
@@ -11,13 +12,14 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:refocus_app/core/presentation/helper/edit_task_stream.dart';
 import 'package:refocus_app/core/presentation/helper/setting_option.dart';
-import 'package:refocus_app/core/presentation/widgets/edit_datetime_cell.dart';
+import 'package:refocus_app/core/presentation/widgets/edit_page_widgets/edit_datetime_cell.dart';
 import 'package:refocus_app/core/presentation/widgets/slidable_subtask_item.dart';
 import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/features/calendar/presentation/widgets/widgets.dart';
 import 'package:refocus_app/features/task/domain/entities/subtask_entry.dart';
 import 'package:refocus_app/features/task/domain/entities/task_entry.dart';
+import 'package:refocus_app/features/task/domain/usecases/helpers/task_params.dart';
 import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
 import 'package:refocus_app/injection.dart';
 
@@ -34,26 +36,76 @@ class EditTaskView extends StatefulWidget {
 
 class _EditTaskViewState extends State<EditTaskView> {
   final EditTaskStream _editStream = getIt<EditTaskStream>();
+  late StreamSubscription<bool> _editSub;
+
+  String? title;
+  DateTime? startDateTime;
+  DateTime? endDateTime;
+  DateTime? dueDateTime;
+
+  List<String> subtasks = [];
+
+  TaskEntry? currentTask;
 
   @override
   void initState() {
     super.initState();
-    context.read<TaskBloc>().add(
-          GetSingleTaskEntryEvent(taskID: widget.taskID),
-        );
+    context
+        .read<TaskBloc>()
+        .add(GetSingleTaskEntryEvent(taskID: widget.taskID));
+    _editSub = _editStream.editStateStream.listen(_editSettingReceived);
   }
 
   @override
   void dispose() {
     _editStream.broadCastCurrentPage(false);
+    _editSub.cancel();
     super.dispose();
   }
 
-  DateTime? startDateTime;
-  DateTime? endDateTime;
-  DateTime? dueDateTime;
+  void _editSettingReceived(bool currentEdit) {
+    print('Is Edit: $currentEdit');
 
-  List<String> newSubTask = [];
+    if (currentTask != null && !currentEdit) {
+      var shouldUpdateTask = false;
+
+      if (title != null && currentTask!.title != title) {
+        shouldUpdateTask = true;
+
+        currentTask = currentTask!.copyWith(title: title);
+      }
+      if (subtasks.isNotEmpty) {
+        //TODO: Add new Subtask here
+        shouldUpdateTask = true;
+      }
+
+      if (currentTask!.dueDate != dueDateTime ||
+          currentTask!.startDateTime != startDateTime ||
+          currentTask!.endDateTime != endDateTime) {
+        shouldUpdateTask = true;
+
+        currentTask = currentTask!.copyWith(
+          startDateTime: startDateTime,
+          endDateTime: endDateTime,
+          dueDate: dueDateTime,
+        );
+      }
+      if (shouldUpdateTask) {
+        context.read<TaskBloc>().add(
+              EditTaskEntryEvent(
+                params: TaskParams(
+                  task: currentTask,
+                  taskID: currentTask!.id,
+                ),
+              ),
+            );
+        print('Reload Task');
+        context
+            .read<TaskBloc>()
+            .add(GetSingleTaskEntryEvent(taskID: widget.taskID));
+      }
+    }
+  }
 
   final _textfieldPadding = const EdgeInsets.all(8);
 
@@ -79,18 +131,15 @@ class _EditTaskViewState extends State<EditTaskView> {
           if (state.tasks.isNotEmpty) {
             final _fetchedTask = state.tasks.first;
 
-            // ignore: prefer_conditional_assignment
-            if (startDateTime == null) {
-              startDateTime = _fetchedTask.startDateTime;
-            }
-            // ignore: prefer_conditional_assignment
-            if (endDateTime == null) {
-              endDateTime = _fetchedTask.endDateTime;
-            }
-            // ignore: prefer_conditional_assignment
-            if (dueDateTime == null) {
-              dueDateTime = _fetchedTask.dueDate;
-            }
+            currentTask ??= _fetchedTask;
+            startDateTime ??= _fetchedTask.startDateTime;
+
+            endDateTime ??= _fetchedTask.endDateTime;
+
+            dueDateTime ??= _fetchedTask.dueDate;
+
+            //TODO: Fetch Subtasks
+            if (subtasks.isEmpty) {}
 
             return StreamBuilder<bool>(
                 stream: _editStream.editStateStream,
@@ -130,6 +179,9 @@ class _EditTaskViewState extends State<EditTaskView> {
             ..selection = TextSelection.fromPosition(
               TextPosition(offset: _fetchedTask.title?.length ?? 0),
             ),
+          onChanged: (text) {
+            title = text;
+          },
           textAlignVertical: TextAlignVertical.center,
           textAlign: TextAlign.center,
           material: (context, platform) => materialTextField(),
@@ -187,9 +239,9 @@ class _EditTaskViewState extends State<EditTaskView> {
         verticalSpaceMedium,
         _buildSubTaskEditTextField(context, 'sub task 1', 0),
         _buildSubTaskEditTextField(context, 'sub task 2', 0),
-        newSubTask
+        subtasks
             .map((text) => _buildSubTaskEditTextField(
-                context, text, newSubTask.indexOf(text)))
+                context, text, subtasks.indexOf(text)))
             .toList()
             .toColumn(),
         verticalSpaceRegular,
@@ -288,11 +340,11 @@ class _EditTaskViewState extends State<EditTaskView> {
           ),
         ),
         //Adding new Subtask
-        if (newSubTask.isNotEmpty) verticalSpaceTiny,
-        if (newSubTask.isNotEmpty)
-          newSubTask
+        if (subtasks.isNotEmpty) verticalSpaceTiny,
+        if (subtasks.isNotEmpty)
+          subtasks
               .map((text) => _buildSubTaskViewTextField(
-                  context, text, newSubTask.indexOf(text)))
+                  context, text, subtasks.indexOf(text)))
               .toList()
               .toColumn()
               .padding(horizontal: 8),
@@ -304,7 +356,7 @@ class _EditTaskViewState extends State<EditTaskView> {
           cupertinoIcon: Icon(CupertinoIcons.add, color: _textColor),
           onPressed: () {
             setState(() {
-              newSubTask.add('');
+              subtasks.add('');
             });
           },
         ).paddingDirectional(horizontal: 8)
@@ -324,7 +376,7 @@ class _EditTaskViewState extends State<EditTaskView> {
       textAlignVertical: TextAlignVertical.center,
       textAlign: TextAlign.center,
       onChanged: (text) {
-        newSubTask[elementIdx] = text;
+        subtasks[elementIdx] = text;
       },
       material: (context, platform) =>
           materialTextField(customPadding: const EdgeInsets.all(16)),

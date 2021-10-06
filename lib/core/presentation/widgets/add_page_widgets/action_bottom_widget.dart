@@ -89,19 +89,6 @@ class _ActionBottomWidgetState extends State<ActionBottomWidget> {
           _onSelectingDueDate = false;
         });
         break;
-      // case ActionSelectionType.timeBlock:
-      //   if (_onAddingTimeBlock) {
-      //     _actionStream.broadCastCurrentActionType(ActionSelectionType.task);
-      //   } else {
-      //     _actionStream.broadCastCurrentActionType(type);
-      //   }
-      //   setState(() {
-      //     _onSelectingPrio = false;
-      //     _onSelectingDueDate = false;
-      //     _onAddingNote = false;
-      //     _onAddingTimeBlock = !_onAddingTimeBlock;
-      //   });
-      //   break;
       case ActionSelectionType.note:
         if (_onAddingNote) {
           _actionStream.broadCastCurrentActionType(ActionSelectionType.event);
@@ -254,13 +241,6 @@ class _ActionBottomWidgetState extends State<ActionBottomWidget> {
               final _startDateTime = _settingOption.plannedStartDate;
               final _endDateTime = _settingOption.plannedEndDate;
 
-              // if (_type == TodayEntryType.project) {
-              //   BlocProvider.of<ProjectBloc>(context).add(
-              //     CreateProjectEntriesEvent(
-              //       ProjectParams(ProjectEntry(id: uuid.v1(), title: textData)),
-              //     ),
-              //   );
-              // }
               print('Current Type: $_type');
 
               if (_type == TodayEntryType.task ||

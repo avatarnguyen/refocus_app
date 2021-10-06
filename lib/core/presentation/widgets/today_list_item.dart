@@ -4,19 +4,15 @@ import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:refocus_app/core/presentation/widgets/edit_task_header.dart';
-import 'package:refocus_app/core/presentation/widgets/edit_task_view.dart';
+import 'package:refocus_app/core/presentation/widgets/edit_page_widgets/edit_task_header.dart';
+import 'package:refocus_app/core/presentation/widgets/edit_page_widgets/edit_task_view.dart';
 import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/today_entry_type.dart';
-import 'package:refocus_app/features/task/domain/entities/task_entry.dart';
 import 'package:refocus_app/features/task/domain/usecases/helpers/task_params.dart';
 import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
-import 'package:refocus_app/features/task/presentation/pages/project_page.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
 import 'package:styled_widget/styled_widget.dart';
-
-import 'sub_task_item.dart';
 
 const timeLineWidth = 48.0;
 
@@ -45,7 +41,6 @@ class ListItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final _isEvent = type == TodayEntryType.event;
-    final _isTask = type == TodayEntryType.task;
     final _isPassed =
         endDateTime != null && endDateTime!.compareTo(DateTime.now()) <= 0;
 
@@ -53,7 +48,6 @@ class ListItemWidget extends StatelessWidget {
         ? Colors.grey.shade600
         : StyleUtils.getColorFromString(color ?? '#115FFB');
     final _backgroudColor = StyleUtils.lighten(_color, 0.32).withOpacity(0.4);
-    // final _chipColor = StyleUtils.lighten(_color, 0.32);
     final _textColor = StyleUtils.darken(_color, 0.32);
 
     final _timelineTextStyle = context.subtitle2.copyWith(
@@ -76,11 +70,7 @@ class ListItemWidget extends StatelessWidget {
                 style: _timelineTextStyle,
               ),
             ),
-            Icon(
-              Icons.arrow_right,
-              size: 24,
-              color: _textColor,
-            ),
+            Icon(Icons.arrow_right, size: 24, color: _textColor),
             // horizontalSpaceTiny,
             Text(
               title ?? '',
@@ -128,10 +118,7 @@ class ListItemWidget extends StatelessWidget {
             Container(
               width: context.width - (6 + 28 + timeLineWidth),
               margin: const EdgeInsets.only(left: 6),
-              padding: const EdgeInsets.symmetric(
-                vertical: 8,
-                horizontal: 10,
-              ),
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
               decoration: BoxDecoration(
                 color: _backgroudColor,
                 borderRadius: const BorderRadius.all(Radius.circular(8)),

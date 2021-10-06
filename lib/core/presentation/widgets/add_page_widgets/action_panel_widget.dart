@@ -67,7 +67,7 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
         },
       ),
 
-      // Action Bottom Panel
+      //* Action Bottom Panel
       const ActionBottomWidget()
     ].toColumn(mainAxisSize: MainAxisSize.min);
   }
