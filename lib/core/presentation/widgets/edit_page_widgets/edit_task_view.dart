@@ -15,7 +15,6 @@ import 'package:refocus_app/core/presentation/widgets/edit_page_widgets/slidable
 import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/edit_task_state.dart';
-import 'package:refocus_app/features/calendar/presentation/widgets/widgets.dart';
 import 'package:refocus_app/features/task/domain/entities/subtask_entry.dart';
 import 'package:refocus_app/features/task/domain/entities/task_entry.dart';
 import 'package:refocus_app/features/task/domain/usecases/helpers/task_params.dart';
@@ -25,9 +24,11 @@ import 'package:refocus_app/injection.dart';
 enum DateTimeSelected { start, end, due }
 
 class EditTaskView extends StatefulWidget {
-  const EditTaskView({Key? key, required this.taskID}) : super(key: key);
+  const EditTaskView({Key? key, required this.taskID, this.colorID})
+      : super(key: key);
 
   final String taskID;
+  final String? colorID;
 
   @override
   State<EditTaskView> createState() => _EditTaskViewState();
@@ -125,7 +126,9 @@ class _EditTaskViewState extends State<EditTaskView> {
 
   @override
   Widget build(BuildContext context) {
-    final _textColor = kcPrimary500;
+    final _color = StyleUtils.getColorFromString(widget.colorID ?? '#115FFB');
+    final _backgroudColor = StyleUtils.lighten(_color, 0.32);
+    final _textColor = StyleUtils.darken(_color, colorDarken1);
 
     final _timeTextStyle = context.h6.copyWith(
       color: _textColor,
@@ -243,11 +246,11 @@ class _EditTaskViewState extends State<EditTaskView> {
             Text('Due Date', style: _dateTextStyle).padding(top: 4),
           ].toColumn(mainAxisSize: MainAxisSize.min).padding(top: 24),
         verticalSpaceMedium,
-        _buildSubTaskEditTextField(context, 'sub task 1', 0),
-        _buildSubTaskEditTextField(context, 'sub task 2', 0),
+        _buildSubTaskEditTextField(context, 'sub task 1', 0, _textColor),
+        _buildSubTaskEditTextField(context, 'sub task 2', 0, _textColor),
         subtasks
             .map((text) => _buildSubTaskEditTextField(
-                context, text, subtasks.indexOf(text)))
+                context, text, subtasks.indexOf(text), _textColor))
             .toList()
             .toColumn(),
         verticalSpaceRegular,
@@ -262,9 +265,7 @@ class _EditTaskViewState extends State<EditTaskView> {
   }
 
   Widget _buildSubTaskEditTextField(
-      BuildContext context, String title, int elementIdx) {
-    final _textColor = kcPrimary500;
-
+      BuildContext context, String title, int elementIdx, Color? textColor) {
     return PlatformTextField(
       controller: TextEditingController(text: title)
         ..selection = TextSelection.fromPosition(
@@ -274,7 +275,7 @@ class _EditTaskViewState extends State<EditTaskView> {
       textAlign: TextAlign.center,
       material: (context, platform) => materialTextField(),
       cupertino: (context, platform) => cupertinoTextField(),
-      style: context.caption.copyWith(color: _textColor),
+      style: context.caption.copyWith(color: textColor),
     ).padding(vertical: 4);
   }
 
@@ -284,12 +285,14 @@ class _EditTaskViewState extends State<EditTaskView> {
     final _time = type != DateTimeSelected.due
         ? ' at ${CustomDateUtils.returnTime(dateTime)}'
         : '';
+    final _color = StyleUtils.getColorFromString(widget.colorID ?? '#115FFB');
+    final _backgroudColor = StyleUtils.lighten(_color, 0.32);
 
     return Container(
       padding: const EdgeInsets.all(8),
-      decoration: const BoxDecoration(
-        color: kcPrimary100,
-        borderRadius: BorderRadius.all(Radius.circular(8)),
+      decoration: BoxDecoration(
+        color: _backgroudColor,
+        borderRadius: const BorderRadius.all(Radius.circular(8)),
       ),
       child: Text(
         '$_date$_time',
@@ -317,7 +320,10 @@ class _EditTaskViewState extends State<EditTaskView> {
         ).alignment(Alignment.center),
         verticalSpaceMedium,
         //Start and End DateTime
-        EditDateTimeCell(fetchedTask: _fetchedTask),
+        EditDateTimeCell(
+          fetchedTask: _fetchedTask,
+          colorID: widget.colorID,
+        ),
         if (_fetchedTask.dueDate != null)
           [
             Text(
@@ -330,6 +336,7 @@ class _EditTaskViewState extends State<EditTaskView> {
         verticalSpaceRegular,
         SlidableSubTaskItem(
           key: const Key('slide_subtask_1'),
+          colorID: widget.colorID,
           subTask: SubTaskEntry(
             id: '12345',
             isCompleted: false,
@@ -339,6 +346,7 @@ class _EditTaskViewState extends State<EditTaskView> {
         ),
         SlidableSubTaskItem(
           key: const Key('slide_subtask_2'),
+          colorID: widget.colorID,
           subTask: SubTaskEntry(
             id: '2134',
             isCompleted: true,
@@ -472,11 +480,14 @@ class _EditTaskViewState extends State<EditTaskView> {
 
   CupertinoTextFieldData cupertinoTextField(
       {EdgeInsetsGeometry? customPadding}) {
+    final _color = StyleUtils.getColorFromString(widget.colorID ?? '#115FFB');
+    final _backgroudColor = StyleUtils.lighten(_color, 0.32);
+
     return CupertinoTextFieldData(
       padding: customPadding ?? _textfieldPadding,
-      decoration: const BoxDecoration(
-        color: kcPrimary100,
-        borderRadius: BorderRadius.all(Radius.circular(8)),
+      decoration: BoxDecoration(
+        color: _backgroudColor,
+        borderRadius: const BorderRadius.all(Radius.circular(8)),
       ),
     );
   }

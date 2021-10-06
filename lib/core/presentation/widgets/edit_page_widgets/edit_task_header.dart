@@ -7,7 +7,9 @@ import 'package:refocus_app/injection.dart';
 import 'package:styled_widget/styled_widget.dart';
 
 class EditTaskHeader extends StatefulWidget {
-  const EditTaskHeader({Key? key}) : super(key: key);
+  const EditTaskHeader({Key? key, this.colorID}) : super(key: key);
+
+  final String? colorID;
 
   @override
   State<EditTaskHeader> createState() => _EditTaskHeaderState();
@@ -20,23 +22,27 @@ class _EditTaskHeaderState extends State<EditTaskHeader> {
 
   @override
   Widget build(BuildContext context) {
+    final _color = StyleUtils.getColorFromString(widget.colorID ?? '#115FFB');
+    final _backgroudColor = StyleUtils.lighten(_color, 0.28);
+    final _textColor = StyleUtils.darken(_color, colorDarken1);
+
     final _textBtnStyle = context.bodyText2.copyWith(
       fontWeight: FontWeight.w600,
-      color: kcPrimary500,
+      color: _textColor,
     );
     return Container(
       color: context.backgroundColor,
       height: 56,
       width: double.infinity,
       child: [
-        const Icon(
+        Icon(
           Icons.clear,
-          color: kcPrimary500,
+          color: _textColor,
           size: 28,
         )
             .padding(all: 4)
             .decorated(
-                color: kcPrimary100, borderRadius: BorderRadius.circular(12))
+                color: _backgroudColor, borderRadius: BorderRadius.circular(12))
             .ripple()
             .padding(left: 16)
             .gestures(onTap: context.router.pop),
@@ -58,7 +64,7 @@ class _EditTaskHeaderState extends State<EditTaskHeader> {
         )
             .padding(vertical: 8, horizontal: 10)
             .decorated(
-                color: kcPrimary100, borderRadius: BorderRadius.circular(12))
+                color: _backgroudColor, borderRadius: BorderRadius.circular(12))
             .ripple()
             .padding(right: 16)
             .gestures(onTap: () {

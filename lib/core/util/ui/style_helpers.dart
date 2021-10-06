@@ -35,6 +35,8 @@ class StyleUtils {
   }
 }
 
+const double colorDarken1 = 0.24;
+
 const Color kcLightShadow = Color(0x19303133);
 const BoxShadow kShadowLightBase = BoxShadow(
   color: Color(0x0c303133),

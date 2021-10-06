@@ -52,7 +52,7 @@ class ListItemWidget extends StatelessWidget {
         ? Colors.grey.shade600
         : StyleUtils.getColorFromString(color ?? '#115FFB');
     final _backgroudColor = StyleUtils.lighten(_color, 0.24);
-    final _textColor = StyleUtils.darken(_color, 0.4);
+    final _textColor = StyleUtils.darken(_color, 0.28);
 
     final _timelineTextStyle = context.subtitle2.copyWith(
       color: kcPrimary800,
@@ -179,7 +179,7 @@ class ListItemWidget extends StatelessWidget {
         ).ripple().gestures(onTap: () {
           print('Task ID: $taskID');
           if (taskID != null) {
-            showTaskBottomSheet(context, taskID!);
+            showTaskBottomSheet(context, taskID!, color);
           }
         }),
       ].toRow(crossAxisAlignment: CrossAxisAlignment.start).padding(all: 6);
@@ -189,6 +189,7 @@ class ListItemWidget extends StatelessWidget {
   dynamic showTaskBottomSheet(
     BuildContext parentContext,
     String taskID,
+    String? colorID,
   ) async {
     SlidingSheetDialog? _taskSheetDialog;
     final dynamic result = await showSlidingBottomSheet<dynamic>(
@@ -206,13 +207,13 @@ class ListItemWidget extends StatelessWidget {
           ),
           minHeight: context.height - 56,
           headerBuilder: (context, state) {
-            return const EditTaskHeader();
+            return EditTaskHeader(colorID: colorID);
           },
           builder: (context, state) {
             log(taskID);
             return BlocProvider<TaskBloc>.value(
               value: BlocProvider.of<TaskBloc>(parentContext),
-              child: EditTaskView(taskID: taskID),
+              child: EditTaskView(taskID: taskID, colorID: colorID),
             );
           },
         );

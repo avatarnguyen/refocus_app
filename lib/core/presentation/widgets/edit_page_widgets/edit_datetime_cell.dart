@@ -5,10 +5,11 @@ import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/features/task/domain/entities/task_entry.dart';
 
 class EditDateTimeCell extends StatefulWidget {
-  const EditDateTimeCell({Key? key, required this.fetchedTask})
+  const EditDateTimeCell({Key? key, required this.fetchedTask, this.colorID})
       : super(key: key);
 
   final TaskEntry fetchedTask;
+  final String? colorID;
 
   @override
   State<EditDateTimeCell> createState() => _EditDateTimeCellState();
@@ -19,8 +20,12 @@ class _EditDateTimeCellState extends State<EditDateTimeCell> {
 
   @override
   Widget build(BuildContext context) {
-    final _textColor = kcPrimary500;
-    // final _currentTask = widget.fetchedTask;
+    final _textColor = widget.colorID != null
+        ? StyleUtils.darken(
+            StyleUtils.getColorFromString(widget.colorID!),
+            colorDarken1,
+          )
+        : kcPrimary500;
 
     final _timeTextStyle = context.h6.copyWith(
       color: _textColor,

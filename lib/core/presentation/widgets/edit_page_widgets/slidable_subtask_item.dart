@@ -7,12 +7,17 @@ class SlidableSubTaskItem extends StatelessWidget {
   const SlidableSubTaskItem({
     Key? key,
     required this.subTask,
+    this.colorID,
   }) : super(key: key);
 
   final SubTaskEntry subTask;
+  final String? colorID;
 
   @override
   Widget build(BuildContext context) {
+    final _color = StyleUtils.getColorFromString(colorID ?? '#115FFB');
+    final _backgroudColor = StyleUtils.darken(_color, colorDarken1);
+
     return Slidable.builder(
         key: key ?? const Key('subtask_value'),
         actionPane: const SlidableStrechActionPane(),
@@ -27,7 +32,7 @@ class SlidableSubTaskItem extends StatelessWidget {
             return Icon(
               Icons.check,
               size: 40 * animation.value,
-              color: animation.value > 0.5 ? kcPrimary500 : Colors.grey,
+              color: animation.value > 0.5 ? _backgroudColor : Colors.grey,
             ).alignment(Alignment.centerRight).padding(right: 16);
           },
           actionCount: 1,
@@ -37,7 +42,7 @@ class SlidableSubTaskItem extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           width: context.width - 16,
           decoration: BoxDecoration(
-              color: context.colorScheme.primary,
+              color: _backgroudColor,
               borderRadius: const BorderRadius.all(Radius.circular(8)),
               boxShadow: const [
                 kShadowLightBase,
