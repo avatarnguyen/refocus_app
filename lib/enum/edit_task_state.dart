@@ -1,5 +1,5 @@
 enum EditTaskState {
   view,
   edit,
-  edited,
+  editing,
 }

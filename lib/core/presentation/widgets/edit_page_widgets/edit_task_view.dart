@@ -14,6 +14,7 @@ import 'package:refocus_app/core/presentation/widgets/edit_page_widgets/edit_dat
 import 'package:refocus_app/core/presentation/widgets/edit_page_widgets/slidable_subtask_item.dart';
 import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
+import 'package:refocus_app/enum/edit_task_state.dart';
 import 'package:refocus_app/features/calendar/presentation/widgets/widgets.dart';
 import 'package:refocus_app/features/task/domain/entities/subtask_entry.dart';
 import 'package:refocus_app/features/task/domain/entities/task_entry.dart';
@@ -34,7 +35,7 @@ class EditTaskView extends StatefulWidget {
 
 class _EditTaskViewState extends State<EditTaskView> {
   final EditTaskStream _editStream = getIt<EditTaskStream>();
-  late StreamSubscription<bool> _editSub;
+  late StreamSubscription<EditTaskState> _editSub;
 
   String? title;
   DateTime? startDateTime;
@@ -44,6 +45,8 @@ class _EditTaskViewState extends State<EditTaskView> {
   List<String> subtasks = [];
 
   TaskEntry? currentTask;
+
+  EditTaskState _currentEditState = EditTaskState.view;
 
   @override
   void initState() {
@@ -56,52 +59,65 @@ class _EditTaskViewState extends State<EditTaskView> {
 
   @override
   void dispose() {
-    _editStream.broadCastCurrentPage(false);
     _editSub.cancel();
+    _editStream.broadCastCurrentPage(EditTaskState.view);
     super.dispose();
   }
 
-  void _editSettingReceived(bool currentEdit) {
-    print('Is Edit: $currentEdit');
+  void _editSettingReceived(EditTaskState state) {
+    switch (state) {
+      case EditTaskState.editing:
+        if (currentTask != null) {
+          var shouldUpdateTask = false;
 
-    if (currentTask != null && !currentEdit) {
-      var shouldUpdateTask = false;
+          if (title != null && currentTask!.title != title) {
+            shouldUpdateTask = true;
 
-      if (title != null && currentTask!.title != title) {
-        shouldUpdateTask = true;
+            currentTask = currentTask!.copyWith(title: title);
+          }
+          if (subtasks.isNotEmpty) {
+            //TODO: Add new Subtask here
+            shouldUpdateTask = true;
+          }
 
-        currentTask = currentTask!.copyWith(title: title);
-      }
-      if (subtasks.isNotEmpty) {
-        //TODO: Add new Subtask here
-        shouldUpdateTask = true;
-      }
+          if (currentTask!.dueDate != dueDateTime ||
+              currentTask!.startDateTime != startDateTime ||
+              currentTask!.endDateTime != endDateTime) {
+            shouldUpdateTask = true;
 
-      if (currentTask!.dueDate != dueDateTime ||
-          currentTask!.startDateTime != startDateTime ||
-          currentTask!.endDateTime != endDateTime) {
-        shouldUpdateTask = true;
-
-        currentTask = currentTask!.copyWith(
-          startDateTime: startDateTime,
-          endDateTime: endDateTime,
-          dueDate: dueDateTime,
-        );
-      }
-      if (shouldUpdateTask) {
-        context.read<TaskBloc>().add(
-              EditTaskEntryEvent(
-                params: TaskParams(
-                  task: currentTask,
-                  taskID: currentTask!.id,
-                ),
-              ),
+            currentTask = currentTask!.copyWith(
+              startDateTime: startDateTime,
+              endDateTime: endDateTime,
+              dueDate: dueDateTime,
             );
-        print('Reload Task');
-        context
-            .read<TaskBloc>()
-            .add(GetSingleTaskEntryEvent(taskID: widget.taskID));
-      }
+          }
+          if (shouldUpdateTask) {
+            context.read<TaskBloc>().add(
+                  EditTaskEntryEvent(
+                    params: TaskParams(
+                      task: currentTask,
+                      taskID: currentTask!.id,
+                    ),
+                  ),
+                );
+            print('Reload Task');
+            context
+                .read<TaskBloc>()
+                .add(GetSingleTaskEntryEvent(taskID: widget.taskID));
+          }
+          _editStream.broadCastCurrentPage(EditTaskState.view);
+        }
+        break;
+      case EditTaskState.edit:
+        setState(() {
+          _currentEditState = state;
+        });
+        break;
+      default:
+        setState(() {
+          _currentEditState = EditTaskState.view;
+        });
+        break;
     }
   }
 
@@ -131,32 +147,23 @@ class _EditTaskViewState extends State<EditTaskView> {
 
             currentTask ??= _fetchedTask;
             startDateTime ??= _fetchedTask.startDateTime;
-
             endDateTime ??= _fetchedTask.endDateTime;
-
             dueDateTime ??= _fetchedTask.dueDate;
 
             //TODO: Fetch Subtasks
             if (subtasks.isEmpty) {}
 
-            return StreamBuilder<bool>(
-                stream: _editStream.editStateStream,
-                builder: (context, snapshot) {
-                  if (snapshot.data != null && snapshot.data!) {
-                    //* Edit Mode
-                    return _buildEditModeElements(_fetchedTask, context,
-                        _textColor, _editTimeTextStyle, _dateTextStyle);
-                  }
-                  //* View Mode
-                  return _buildViewModeElements(_fetchedTask, context,
-                      _textColor, _timeTextStyle, _dateTextStyle);
-                });
-          } else {
-            return const MessageDisplay(message: '');
+            if (_currentEditState == EditTaskState.view) {
+              //* View Mode
+              return _buildViewModeElements(_fetchedTask, context, _textColor,
+                  _timeTextStyle, _dateTextStyle);
+            }
+            //* Edit Mode
+            return _buildEditModeElements(_fetchedTask, context, _textColor,
+                _editTimeTextStyle, _dateTextStyle);
           }
-        } else {
-          return progressIndicator;
         }
+        return progressIndicator;
       },
     );
   }
@@ -172,8 +179,9 @@ class _EditTaskViewState extends State<EditTaskView> {
       physics: const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.all(16),
       children: [
+        //TODO: seperate TextEditingControoler
         PlatformTextField(
-          controller: TextEditingController(text: _fetchedTask.title)
+          controller: TextEditingController(text: title ?? _fetchedTask.title)
             ..selection = TextSelection.fromPosition(
               TextPosition(offset: _fetchedTask.title?.length ?? 0),
             ),

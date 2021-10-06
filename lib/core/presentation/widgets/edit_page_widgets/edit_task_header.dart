@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:refocus_app/core/presentation/helper/edit_task_stream.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
+import 'package:refocus_app/enum/edit_task_state.dart';
 import 'package:refocus_app/injection.dart';
 import 'package:styled_widget/styled_widget.dart';
 
@@ -44,7 +45,7 @@ class _EditTaskHeaderState extends State<EditTaskHeader> {
           PlatformTextButton(
             child: Text('Cancel', style: _textBtnStyle),
             onPressed: () {
-              _editStream.broadCastCurrentPage(!isEdit);
+              _editStream.broadCastCurrentPage(EditTaskState.view);
               setState(() {
                 isEdit = !isEdit;
               });
@@ -61,7 +62,8 @@ class _EditTaskHeaderState extends State<EditTaskHeader> {
             .ripple()
             .padding(right: 16)
             .gestures(onTap: () {
-          _editStream.broadCastCurrentPage(!isEdit);
+          _editStream.broadCastCurrentPage(
+              isEdit ? EditTaskState.editing : EditTaskState.edit);
           setState(() {
             isEdit = !isEdit;
           });

@@ -1,10 +1,8 @@
 import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
-import 'package:refocus_app/core/presentation/helper/setting_option.dart';
 import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/features/task/domain/entities/task_entry.dart';
-import 'package:refocus_app/injection.dart';
 
 class EditDateTimeCell extends StatefulWidget {
   const EditDateTimeCell({Key? key, required this.fetchedTask})
@@ -17,12 +15,12 @@ class EditDateTimeCell extends StatefulWidget {
 }
 
 class _EditDateTimeCellState extends State<EditDateTimeCell> {
-  final _settingOption = getIt<SettingOption>();
+  // final _settingOption = getIt<SettingOption>();
 
   @override
   Widget build(BuildContext context) {
     final _textColor = kcPrimary500;
-    final _currentTask = widget.fetchedTask;
+    // final _currentTask = widget.fetchedTask;
 
     final _timeTextStyle = context.h6.copyWith(
       color: _textColor,

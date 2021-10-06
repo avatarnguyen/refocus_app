@@ -1,14 +1,15 @@
 import 'package:injectable/injectable.dart';
+import 'package:refocus_app/enum/edit_task_state.dart';
 import 'package:rxdart/rxdart.dart';
 
 @singleton
 class EditTaskStream {
-  final BehaviorSubject<bool> _editTaskSubject =
-      BehaviorSubject<bool>.seeded(false);
+  final BehaviorSubject<EditTaskState> _editTaskSubject =
+      BehaviorSubject<EditTaskState>.seeded(EditTaskState.view);
 
-  Stream<bool> get editStateStream => _editTaskSubject.stream;
+  Stream<EditTaskState> get editStateStream => _editTaskSubject.stream;
 
-  void broadCastCurrentPage(bool isEdit) {
-    _editTaskSubject.add(isEdit);
+  void broadCastCurrentPage(EditTaskState state) {
+    _editTaskSubject.add(state);
   }
 }
