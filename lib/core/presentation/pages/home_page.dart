@@ -36,8 +36,8 @@ class HomePage extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<ProjectBloc>(
-          create: (context) => getIt<ProjectBloc>(),
-        ),
+            create: (context) =>
+                getIt<ProjectBloc>()..add(GetProjectEntriesEvent())),
         BlocProvider<TaskBloc>(
           create: (context) => getIt<TaskBloc>(),
         ),

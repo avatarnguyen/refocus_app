@@ -1,11 +1,13 @@
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:googleapis/calendar/v3.dart' as google_api;
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:injectable/injectable.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:refocus_app/features/calendar/data/datasources/gcal_local_data_source.dart';
-import 'package:googleapis/calendar/v3.dart' as google_api;
 import 'package:refocus_app/features/calendar/domain/entities/calendar_entry.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
+import 'package:refocus_app/features/task/data/datasources/task_local_data_source.dart';
+import 'package:refocus_app/models/ModelProvider.dart';
 
 @module
 abstract class RegisterModule {
@@ -22,6 +24,9 @@ abstract class RegisterModule {
   @preResolve
   Future<Box<CalendarEntry>> get calendarBox =>
       Hive.openBox(cachedCalendarList);
+
+  @preResolve
+  Future<Box<Project>> get projectsBox => Hive.openBox(cachedProjects);
 
   @lazySingleton
   InternetConnectionChecker get internetChecker => InternetConnectionChecker();

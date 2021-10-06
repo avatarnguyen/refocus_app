@@ -27,7 +27,7 @@ class _ProjectPageState extends State<ProjectPage> {
   @override
   void initState() {
     super.initState();
-    context.read<ProjectBloc>().add(GetProjectEntriesEvent());
+    // context.read<ProjectBloc>().add(GetProjectEntriesEvent());
   }
 
   @override

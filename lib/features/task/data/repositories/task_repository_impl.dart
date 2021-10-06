@@ -5,6 +5,7 @@ import 'package:refocus_app/core/error/exceptions.dart';
 import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart';
 import 'package:refocus_app/features/task/data/datasources/aws_data_source.dart';
+import 'package:refocus_app/features/task/data/datasources/task_local_data_source.dart';
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
 import 'package:refocus_app/features/task/domain/entities/task_entry.dart';
 import 'package:refocus_app/features/task/domain/repositories/task_repository.dart';
@@ -14,9 +15,11 @@ import 'package:refocus_app/models/ModelProvider.dart';
 class TaskRepositoryImpl implements TaskRepository {
   TaskRepositoryImpl({
     required this.remoteDataSource,
+    required this.localDataSource,
   });
 
   final TaskRemoteDataSource remoteDataSource;
+  final TaskLocalDataSource localDataSource;
   final log = logger(TaskRepositoryImpl);
 
   @override
@@ -91,6 +94,8 @@ class TaskRepositoryImpl implements TaskRepository {
       final _projectsEntry = _projects
           .map((project) => ProjectEntry.fromMap(project.toJson()))
           .toList();
+
+      await localDataSource.cacheRemoteProjects(_projects);
 
       return dartz.Right(_projectsEntry);
     } on ServerException {
@@ -177,13 +182,15 @@ class TaskRepositoryImpl implements TaskRepository {
       );
       log.v('getFilteredTask - Task: $_todos');
 
-      final _tasks = _todos
-          .map(
-            (todo) => TaskEntry.fromJson(
-              todo.toJson(),
-            ),
-          )
-          .toList();
+      final _tasks = <TaskEntry>[];
+
+      await Future.forEach(_todos, (Task todo) async {
+        final _project =
+            await localDataSource.getCachedProjectWithID(todo.calendarID ?? '');
+        final _task = TaskEntry.fromJson(todo.toJson())
+          ..copyWith(colorID: _project?.id ?? '#115FFB');
+        _tasks.add(_task);
+      });
       return dartz.Right(_tasks);
     } on ServerException catch (e) {
       log.e(e);

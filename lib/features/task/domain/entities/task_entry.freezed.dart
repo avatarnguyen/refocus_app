@@ -26,6 +26,7 @@ class _$TaskEntryTearOff {
       required bool isCompleted,
       required String projectID,
       String? calendarID,
+      String? colorID,
       String? title,
       String? description,
       @DateSerialiser() DateTime? dueDate,
@@ -39,6 +40,7 @@ class _$TaskEntryTearOff {
       isCompleted: isCompleted,
       projectID: projectID,
       calendarID: calendarID,
+      colorID: colorID,
       title: title,
       description: description,
       dueDate: dueDate,
@@ -64,6 +66,7 @@ mixin _$TaskEntry {
   bool get isCompleted => throw _privateConstructorUsedError;
   String get projectID => throw _privateConstructorUsedError;
   String? get calendarID => throw _privateConstructorUsedError;
+  String? get colorID => throw _privateConstructorUsedError;
   String? get title => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
   @DateSerialiser()
@@ -92,6 +95,7 @@ abstract class $TaskEntryCopyWith<$Res> {
       bool isCompleted,
       String projectID,
       String? calendarID,
+      String? colorID,
       String? title,
       String? description,
       @DateSerialiser() DateTime? dueDate,
@@ -116,6 +120,7 @@ class _$TaskEntryCopyWithImpl<$Res> implements $TaskEntryCopyWith<$Res> {
     Object? isCompleted = freezed,
     Object? projectID = freezed,
     Object? calendarID = freezed,
+    Object? colorID = freezed,
     Object? title = freezed,
     Object? description = freezed,
     Object? dueDate = freezed,
@@ -141,6 +146,10 @@ class _$TaskEntryCopyWithImpl<$Res> implements $TaskEntryCopyWith<$Res> {
       calendarID: calendarID == freezed
           ? _value.calendarID
           : calendarID // ignore: cast_nullable_to_non_nullable
+              as String?,
+      colorID: colorID == freezed
+          ? _value.colorID
+          : colorID // ignore: cast_nullable_to_non_nullable
               as String?,
       title: title == freezed
           ? _value.title
@@ -189,6 +198,7 @@ abstract class _$TaskEntryCopyWith<$Res> implements $TaskEntryCopyWith<$Res> {
       bool isCompleted,
       String projectID,
       String? calendarID,
+      String? colorID,
       String? title,
       String? description,
       @DateSerialiser() DateTime? dueDate,
@@ -214,6 +224,7 @@ class __$TaskEntryCopyWithImpl<$Res> extends _$TaskEntryCopyWithImpl<$Res>
     Object? isCompleted = freezed,
     Object? projectID = freezed,
     Object? calendarID = freezed,
+    Object? colorID = freezed,
     Object? title = freezed,
     Object? description = freezed,
     Object? dueDate = freezed,
@@ -239,6 +250,10 @@ class __$TaskEntryCopyWithImpl<$Res> extends _$TaskEntryCopyWithImpl<$Res>
       calendarID: calendarID == freezed
           ? _value.calendarID
           : calendarID // ignore: cast_nullable_to_non_nullable
+              as String?,
+      colorID: colorID == freezed
+          ? _value.colorID
+          : colorID // ignore: cast_nullable_to_non_nullable
               as String?,
       title: title == freezed
           ? _value.title
@@ -284,6 +299,7 @@ class _$_TaskEntry implements _TaskEntry {
       required this.isCompleted,
       required this.projectID,
       this.calendarID,
+      this.colorID,
       this.title,
       this.description,
       @DateSerialiser() this.dueDate,
@@ -304,6 +320,8 @@ class _$_TaskEntry implements _TaskEntry {
   final String projectID;
   @override
   final String? calendarID;
+  @override
+  final String? colorID;
   @override
   final String? title;
   @override
@@ -327,7 +345,7 @@ class _$_TaskEntry implements _TaskEntry {
 
   @override
   String toString() {
-    return 'TaskEntry(id: $id, isCompleted: $isCompleted, projectID: $projectID, calendarID: $calendarID, title: $title, description: $description, dueDate: $dueDate, completedDate: $completedDate, startDateTime: $startDateTime, endDateTime: $endDateTime, priority: $priority, isHabit: $isHabit)';
+    return 'TaskEntry(id: $id, isCompleted: $isCompleted, projectID: $projectID, calendarID: $calendarID, colorID: $colorID, title: $title, description: $description, dueDate: $dueDate, completedDate: $completedDate, startDateTime: $startDateTime, endDateTime: $endDateTime, priority: $priority, isHabit: $isHabit)';
   }
 
   @override
@@ -345,6 +363,9 @@ class _$_TaskEntry implements _TaskEntry {
             (identical(other.calendarID, calendarID) ||
                 const DeepCollectionEquality()
                     .equals(other.calendarID, calendarID)) &&
+            (identical(other.colorID, colorID) ||
+                const DeepCollectionEquality()
+                    .equals(other.colorID, colorID)) &&
             (identical(other.title, title) ||
                 const DeepCollectionEquality().equals(other.title, title)) &&
             (identical(other.description, description) ||
@@ -376,6 +397,7 @@ class _$_TaskEntry implements _TaskEntry {
       const DeepCollectionEquality().hash(isCompleted) ^
       const DeepCollectionEquality().hash(projectID) ^
       const DeepCollectionEquality().hash(calendarID) ^
+      const DeepCollectionEquality().hash(colorID) ^
       const DeepCollectionEquality().hash(title) ^
       const DeepCollectionEquality().hash(description) ^
       const DeepCollectionEquality().hash(dueDate) ^
@@ -402,6 +424,7 @@ abstract class _TaskEntry implements TaskEntry {
       required bool isCompleted,
       required String projectID,
       String? calendarID,
+      String? colorID,
       String? title,
       String? description,
       @DateSerialiser() DateTime? dueDate,
@@ -422,6 +445,8 @@ abstract class _TaskEntry implements TaskEntry {
   String get projectID => throw _privateConstructorUsedError;
   @override
   String? get calendarID => throw _privateConstructorUsedError;
+  @override
+  String? get colorID => throw _privateConstructorUsedError;
   @override
   String? get title => throw _privateConstructorUsedError;
   @override
