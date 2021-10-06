@@ -48,13 +48,11 @@ class ListItemWidget extends StatelessWidget {
     final _isPassed =
         endDateTime != null && endDateTime!.compareTo(DateTime.now()) <= 0;
 
-    print('Color: $color - $type');
-
     final _color = _isPassed
         ? Colors.grey.shade600
         : StyleUtils.getColorFromString(color ?? '#115FFB');
-    final _backgroudColor = StyleUtils.lighten(_color, 0.32).withOpacity(0.4);
-    final _textColor = StyleUtils.darken(_color, 0.32);
+    final _backgroudColor = StyleUtils.lighten(_color, 0.24);
+    final _textColor = StyleUtils.darken(_color, 0.4);
 
     final _timelineTextStyle = context.subtitle2.copyWith(
       color: kcPrimary800,
