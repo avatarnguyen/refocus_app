@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:refocus_app/core/presentation/helper/edit_task_stream.dart';
-import 'package:refocus_app/core/presentation/helper/setting_option.dart';
-import 'package:refocus_app/core/presentation/helper/text_stream.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
-import 'package:refocus_app/features/task/domain/usecases/helpers/task_params.dart';
-import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
 import 'package:refocus_app/injection.dart';
 import 'package:styled_widget/styled_widget.dart';
 
