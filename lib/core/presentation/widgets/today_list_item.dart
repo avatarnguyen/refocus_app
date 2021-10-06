@@ -23,6 +23,8 @@ class ListItemWidget extends StatelessWidget {
     required this.type,
     this.startDateTime,
     this.endDateTime,
+    this.dueDateTime,
+    this.selectedDate,
     this.color,
     this.eventID,
     this.taskID,
@@ -33,6 +35,8 @@ class ListItemWidget extends StatelessWidget {
   final TodayEntryType type;
   final DateTime? startDateTime;
   final DateTime? endDateTime;
+  final DateTime? dueDateTime;
+  final DateTime? selectedDate;
   final String? color;
   final String? eventID;
   final String? taskID;
@@ -54,120 +58,133 @@ class ListItemWidget extends StatelessWidget {
       color: kcPrimary800,
     );
 
-    return _isEvent
-        ? [
-            SizedBox(
-              width: timeLineWidth,
-              child: Text(
-                startDateTime != null
-                    ? CustomDateUtils.returnTime(startDateTime!.toLocal())
-                    : 'all day',
-                // 'ganztätig',
-                overflow: TextOverflow.clip,
-                textAlign: TextAlign.right,
-                maxLines: 1,
-                textScaleFactor: context.textScaleFactor,
-                style: _timelineTextStyle,
-              ),
-            ),
-            Icon(Icons.arrow_right, size: 24, color: _textColor),
-            // horizontalSpaceTiny,
+    var _startTitle = '';
+    String? _endTitle;
+
+    if (selectedDate != null) {
+      if (dueDateTime != null && selectedDate!.day == dueDateTime!.day) {
+        _startTitle = 'due today';
+      } else if (startDateTime != null) {
+        final _startDateTimeStr =
+            CustomDateUtils.returnTime(startDateTime!.toLocal());
+        _startTitle = _startDateTimeStr;
+        if (endDateTime != null) {
+          final _endTime = endDateTime!.toLocal();
+          _endTitle = CustomDateUtils.returnTime(_endTime);
+        }
+      }
+    }
+    if (_isEvent) {
+      return [
+        SizedBox(
+          width: timeLineWidth,
+          child: Text(
+            startDateTime != null
+                ? CustomDateUtils.returnTime(startDateTime!.toLocal())
+                : 'all day',
+            // 'ganztätig',
+            overflow: TextOverflow.clip,
+            textAlign: TextAlign.right,
+            maxLines: 1,
+            textScaleFactor: context.textScaleFactor,
+            style: _timelineTextStyle,
+          ),
+        ),
+        Icon(Icons.arrow_right, size: 24, color: _textColor),
+        // horizontalSpaceTiny,
+        Text(
+          title ?? '',
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
+          textScaleFactor: context.textScaleFactor,
+          style: context.caption.copyWith(
+            color: _textColor,
+          ),
+        ).expanded(),
+      ].toRow().opacity(_isPassed ? 0.6 : 1.0).padding(all: 6);
+    } else {
+      return [
+        [
+          Text(
+            _startTitle,
+            overflow: TextOverflow.clip,
+            textAlign: TextAlign.right,
+            maxLines: 2,
+            textScaleFactor: context.textScaleFactor,
+            style: startDateTime != null
+                ? context.textTheme.subtitle2!.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: kcPrimary800,
+                  )
+                : _timelineTextStyle,
+          ).padding(top: 4),
+          if (endDateTime != null && _endTitle != null)
             Text(
-              title ?? '',
-              overflow: TextOverflow.ellipsis,
+              _endTitle,
+              overflow: TextOverflow.clip,
+              textAlign: TextAlign.right,
               maxLines: 1,
               textScaleFactor: context.textScaleFactor,
-              style: context.caption.copyWith(
-                color: _textColor,
-              ),
-            ).expanded(),
-          ].toRow().opacity(_isPassed ? 0.6 : 1.0).padding(all: 6)
-        : [
+              style: _timelineTextStyle,
+            )
+        ]
+            .toColumn(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            )
+            .expanded(),
+        Container(
+          width: context.width - (6 + 28 + timeLineWidth),
+          margin: const EdgeInsets.only(left: 6),
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+          decoration: BoxDecoration(
+            color: _backgroudColor,
+            borderRadius: const BorderRadius.all(Radius.circular(8)),
+          ),
+          child: [
             [
-              Text(
-                startDateTime != null
-                    ? CustomDateUtils.returnTime(startDateTime!.toLocal())
-                    : 'due today',
-                overflow: TextOverflow.clip,
-                textAlign: TextAlign.right,
-                maxLines: 1,
-                textScaleFactor: context.textScaleFactor,
-                style: startDateTime != null
-                    ? context.textTheme.subtitle2!.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: kcPrimary800,
-                      )
-                    : _timelineTextStyle,
-              ).padding(top: 4),
-              if (endDateTime != null)
-                Text(
-                  CustomDateUtils.returnTime(
-                      endDateTime!.toLocal()), // 'ganztätig',
-                  overflow: TextOverflow.clip,
-                  textAlign: TextAlign.right,
-                  maxLines: 1,
-                  textScaleFactor: context.textScaleFactor,
-                  style: _timelineTextStyle,
-                )
-            ]
-                .toColumn(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                )
-                .expanded(),
-            Container(
-              width: context.width - (6 + 28 + timeLineWidth),
-              margin: const EdgeInsets.only(left: 6),
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-              decoration: BoxDecoration(
-                color: _backgroudColor,
-                borderRadius: const BorderRadius.all(Radius.circular(8)),
-              ),
-              child: [
-                [
-                  Material(
-                    color: Colors.transparent,
-                    child: Checkbox(
-                      tristate: true,
-                      visualDensity: const VisualDensity(
-                        horizontal: VisualDensity.minimumDensity,
-                        vertical: VisualDensity.minimumDensity,
-                      ),
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      fillColor: MaterialStateProperty.resolveWith(getColor),
-                      value: false,
-                      shape: const CircleBorder(
-                          side: BorderSide(width: 8, color: Colors.blue)),
-                      onChanged: (bool? selected) => context
-                          .read<TaskBloc>()
-                          .add(const EditTaskEntryEvent(params: TaskParams())),
-                    ).padding(right: 8),
+              Material(
+                color: Colors.transparent,
+                child: Checkbox(
+                  tristate: true,
+                  visualDensity: const VisualDensity(
+                    horizontal: VisualDensity.minimumDensity,
+                    vertical: VisualDensity.minimumDensity,
                   ),
-                  Text(
-                    title ?? '',
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 2,
-                    textScaleFactor: context.textScaleFactor,
-                    style: context.bodyText1.copyWith(
-                      color: _textColor,
-                      fontSize: kSmallTextSize,
-                    ),
-                  ).expanded(),
-                ].toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween),
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  fillColor: MaterialStateProperty.resolveWith(getColor),
+                  value: false,
+                  shape: const CircleBorder(
+                      side: BorderSide(width: 8, color: Colors.blue)),
+                  onChanged: (bool? selected) => context
+                      .read<TaskBloc>()
+                      .add(const EditTaskEntryEvent(params: TaskParams())),
+                ).padding(right: 8),
+              ),
+              Text(
+                title ?? '',
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+                textScaleFactor: context.textScaleFactor,
+                style: context.bodyText1.copyWith(
+                  color: _textColor,
+                  fontSize: kSmallTextSize,
+                ),
+              ).expanded(),
+            ].toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween),
 
-                //* Subtask
-                // verticalSpaceTiny,
-                // const InsideTaskItem(),
-              ].toColumn(mainAxisSize: MainAxisSize.min),
-            ).ripple().gestures(onTap: () {
-              print('Task ID: $taskID');
-              if (taskID != null) {
-                showTaskBottomSheet(context, taskID!);
-              }
-            }),
-          ]
-            .toRow(crossAxisAlignment: CrossAxisAlignment.start)
-            .padding(all: 6); //.marginAll(6);
+            //* Subtask
+            // verticalSpaceTiny,
+            // const InsideTaskItem(),
+          ].toColumn(mainAxisSize: MainAxisSize.min),
+        ).ripple().gestures(onTap: () {
+          print('Task ID: $taskID');
+          if (taskID != null) {
+            showTaskBottomSheet(context, taskID!);
+          }
+        }),
+      ].toRow(crossAxisAlignment: CrossAxisAlignment.start).padding(all: 6);
+    }
   }
 
   dynamic showTaskBottomSheet(

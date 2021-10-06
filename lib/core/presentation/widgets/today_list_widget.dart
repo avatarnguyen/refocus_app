@@ -31,7 +31,7 @@ class _TodayListWidgetState extends State<TodayListWidget> {
   final DateTimeStream _dateTimeStream = getIt<DateTimeStream>();
   StreamSubscription<DateTime>? _dateTimeSubscription;
 
-  String? _selectedDate;
+  DateTime? _selectedDate;
 
   @override
   void initState() {
@@ -51,7 +51,7 @@ class _TodayListWidgetState extends State<TodayListWidget> {
           ..add(GetUpcomingTask(1.days.fromNow, 5.days.fromNow));
       }
     } else {
-      _selectedDate = CustomDateUtils.returnDateWithDay(newDate);
+      _selectedDate = newDate;
       context.read<TodayBloc>().add(GetTodayEntries(newDate));
     }
   }
@@ -122,7 +122,9 @@ class _TodayListWidgetState extends State<TodayListWidget> {
           padding: const EdgeInsets.only(top: 8),
           sliver: SliverPersistentHeader(
             delegate: PersistentHeaderDelegate(
-              _selectedDate ?? 'Today',
+              _selectedDate != null
+                  ? CustomDateUtils.returnDateWithDay(_selectedDate!)
+                  : 'Today',
               contentPadding: _headerPadding,
               textStyle: _headerTextStyle,
             ),
@@ -137,6 +139,8 @@ class _TodayListWidgetState extends State<TodayListWidget> {
               type: _entry.type,
               startDateTime: _entry.startDateTime,
               endDateTime: _entry.endDateTime,
+              dueDateTime: _entry.dueDateTime,
+              selectedDate: _selectedDate ?? DateTime.now(),
               eventID: _entry.type == TodayEntryType.event ? _entry.id : null,
               taskID: _entry.type == TodayEntryType.task ? _entry.id : null,
               projectOrCal: _entry.projectOrCal,
@@ -162,6 +166,8 @@ class _TodayListWidgetState extends State<TodayListWidget> {
                 type: _entry.type,
                 startDateTime: _entry.startDateTime,
                 endDateTime: _entry.endDateTime,
+                dueDateTime: _entry.dueDateTime,
+                selectedDate: 1.days.fromNow,
                 eventID: _entry.calendarEventID,
                 taskID: _entry.id,
                 projectOrCal: _entry.projectOrCal,
@@ -186,6 +192,8 @@ class _TodayListWidgetState extends State<TodayListWidget> {
                 type: _entry.type,
                 startDateTime: _entry.startDateTime,
                 endDateTime: _entry.endDateTime,
+                dueDateTime: _entry.dueDateTime,
+                selectedDate: 2.days.fromNow,
                 eventID: _entry.calendarEventID,
                 taskID: _entry.id,
                 projectOrCal: _entry.projectOrCal,

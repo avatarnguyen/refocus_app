@@ -193,14 +193,14 @@ class _EditTaskViewState extends State<EditTaskView> {
         ),
         verticalSpaceMedium,
         //* Edit Start & End DateTime
-        _buildEditDateTimeCell(
-                startDateTime!, _editTimeTextStyle, DateTimeSelected.start)
+        _buildEditDateTimeCell(startDateTime!.toLocal(), _editTimeTextStyle,
+                DateTimeSelected.start)
             .gestures(
           onTap: () {
             Platform.isIOS
                 ? _cupertinoDateTimePicker(
                     context,
-                    startDateTime!,
+                    startDateTime!.toLocal(),
                     DateTimeSelected.start,
                   )
                 : _materialDateTimePicker(context);
@@ -209,13 +209,13 @@ class _EditTaskViewState extends State<EditTaskView> {
         Text('Until', style: _dateTextStyle)
             .alignment(Alignment.center)
             .padding(vertical: 4),
-        _buildEditDateTimeCell(
-                endDateTime!, _editTimeTextStyle, DateTimeSelected.end)
+        _buildEditDateTimeCell(endDateTime!.toLocal(), _editTimeTextStyle,
+                DateTimeSelected.end)
             .gestures(
           onTap: () {
             Platform.isIOS
                 ? _cupertinoDateTimePicker(
-                    context, endDateTime!, DateTimeSelected.end)
+                    context, endDateTime!.toLocal(), DateTimeSelected.end)
                 : _materialDateTimePicker(context);
           },
         ),
@@ -315,7 +315,8 @@ class _EditTaskViewState extends State<EditTaskView> {
         if (_fetchedTask.dueDate != null)
           [
             Text(
-              CustomDateUtils.returnDateAndMonth(_fetchedTask.dueDate!),
+              CustomDateUtils.returnDateAndMonth(
+                  _fetchedTask.dueDate!.toLocal()),
               style: _timeTextStyle,
             ),
             Text('Due Date', style: _dateTextStyle),

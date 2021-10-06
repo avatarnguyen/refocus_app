@@ -88,12 +88,9 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
                     id: task.id,
                     type: TodayEntryType.task,
                     title: task.title,
-                    startDateTime: (task.startDateTime != null)
-                        ? task.startDateTime!
-                        : null,
-                    endDateTime: (task.startDateTime != null)
-                        ? task.startDateTime! + 1.hours
-                        : null,
+                    startDateTime: task.startDateTime,
+                    endDateTime: task.endDateTime,
+                    dueDateTime: task.dueDate,
                     // color: task.projectID
                   ))
               .toList();
@@ -149,9 +146,8 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
                 title: task.title,
                 startDateTime:
                     (task.startDateTime != null) ? task.startDateTime! : null,
-                endDateTime: (task.startDateTime != null)
-                    ? task.startDateTime! + 1.hours
-                    : null,
+                endDateTime: task.endDateTime,
+                dueDateTime: task.dueDate,
                 projectOrCal: task.projectID,
                 calendarEventID: task.calendarID,
                 //TODO: Save all project color locally and then read color code from local storage

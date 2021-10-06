@@ -11,6 +11,7 @@ class TodayEntry extends Equatable {
     this.color,
     this.startDateTime,
     this.endDateTime,
+    this.dueDateTime,
     this.calendarEventID,
     this.projectOrCal,
   });
@@ -22,6 +23,7 @@ class TodayEntry extends Equatable {
   final String? color;
   final DateTime? startDateTime;
   final DateTime? endDateTime;
+  final DateTime? dueDateTime;
   final String? calendarEventID;
   final String? projectOrCal;
 
@@ -34,6 +36,7 @@ class TodayEntry extends Equatable {
         color,
         startDateTime,
         endDateTime,
+        dueDateTime,
         calendarEventID,
         projectOrCal,
       ];
@@ -57,6 +60,7 @@ class TodayEntry extends Equatable {
       color: color ?? this.color,
       startDateTime: startDateTime ?? this.startDateTime,
       endDateTime: endDateTime ?? this.endDateTime,
+      dueDateTime: dueDateTime ?? this.dueDateTime,
       calendarEventID: calendarEventID ?? this.calendarEventID,
       projectOrCal: projectOrCal ?? this.projectOrCal,
     );

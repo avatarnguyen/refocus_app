@@ -37,7 +37,8 @@ class _EditDateTimeCellState extends State<EditDateTimeCell> {
         [
           if (widget.fetchedTask.startDateTime != null)
             Text(
-              CustomDateUtils.returnTime(widget.fetchedTask.startDateTime!),
+              CustomDateUtils.returnTime(
+                  widget.fetchedTask.startDateTime!.toLocal()),
               style: _timeTextStyle,
             ),
           if (widget.fetchedTask.endDateTime != null) ...[
@@ -46,7 +47,8 @@ class _EditDateTimeCellState extends State<EditDateTimeCell> {
               color: _textColor,
             ).padding(horizontal: 4),
             Text(
-              CustomDateUtils.returnTime(widget.fetchedTask.endDateTime!),
+              CustomDateUtils.returnTime(
+                  widget.fetchedTask.endDateTime!.toLocal()),
               style: _timeTextStyle,
             ),
           ]
@@ -55,7 +57,7 @@ class _EditDateTimeCellState extends State<EditDateTimeCell> {
           if (widget.fetchedTask.startDateTime != null)
             Text(
               CustomDateUtils.returnDateAndMonth(
-                  widget.fetchedTask.startDateTime!),
+                  widget.fetchedTask.startDateTime!.toLocal()),
               style: _dateTextStyle,
             ),
           if (widget.fetchedTask.endDateTime != null &&
@@ -67,7 +69,7 @@ class _EditDateTimeCellState extends State<EditDateTimeCell> {
             ).padding(horizontal: 4),
             Text(
               CustomDateUtils.returnDateAndMonth(
-                  widget.fetchedTask.endDateTime!),
+                  widget.fetchedTask.endDateTime!.toLocal()),
               style: _dateTextStyle,
             ),
           ]
