@@ -83,7 +83,8 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
         yield* _upcomingTask.fold((failure) async* {
           yield TodayError(_mapFailureToMessage(failure));
         }, (tasks) async* {
-          final _taskEntries = tasks
+          final _filteredTask = tasks.distinctBy((element) => element.id);
+          final _taskEntries = _filteredTask
               .map((task) => TodayEntry(
                     id: task.id,
                     type: TodayEntryType.task,
@@ -138,7 +139,8 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
               .toList();
           _items.addAll(_entries);
         });
-        final _taskEntries = tasks
+        final _filteredTask = tasks.distinctBy((element) => element.id);
+        final _taskEntries = _filteredTask
             .map(
               (task) => TodayEntry(
                 id: task.id,
