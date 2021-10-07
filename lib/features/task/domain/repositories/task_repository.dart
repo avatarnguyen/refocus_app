@@ -1,9 +1,11 @@
 import 'package:dartz/dartz.dart';
 import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
+import 'package:refocus_app/features/task/domain/entities/subtask_entry.dart';
 import 'package:refocus_app/features/task/domain/entities/task_entry.dart';
 
 abstract class TaskRepository {
+  //* Project
   /// Create Project
   Future<Either<Failure, ProjectEntry>> createProject(ProjectEntry project);
 
@@ -16,6 +18,7 @@ abstract class TaskRepository {
   /// Query All Projects
   Future<Either<Failure, List<ProjectEntry>>> getAllProjects();
 
+  //* Task
   /// Create Task
   Future<Either<Failure, Unit>> createTasks(List<TaskEntry> tasks);
 
@@ -37,4 +40,19 @@ abstract class TaskRepository {
     DateTime? startDate,
     DateTime? endDate,
   });
+
+  //*Subtask
+  /// Create SubTask
+  Future<Either<Failure, SubTaskEntry>> createSubTask(
+      SubTaskEntry subTaskEntry);
+
+  /// Update SubTask
+  Future<Either<Failure, SubTaskEntry>> updateSubTask(
+      SubTaskEntry subTaskEntry);
+
+  /// Delete SubTask and all its tasks
+  Future<Either<Failure, Unit>> deleteSubTask(SubTaskEntry subTaskEntry);
+
+  /// Query All SubTasks
+  Future<Either<Failure, List<SubTaskEntry>>> getSubTasksOfTask(String taskID);
 }

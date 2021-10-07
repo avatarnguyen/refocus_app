@@ -11,9 +11,9 @@ import 'package:injectable/injectable.dart' as _i2;
 import 'package:internet_connection_checker/internet_connection_checker.dart'
     as _i12;
 
-import 'core/injectable_module.dart' as _i47;
+import 'core/injectable_module.dart' as _i51;
 import 'core/network/network_info.dart' as _i13;
-import 'core/presentation/bloc/today_bloc.dart' as _i41;
+import 'core/presentation/bloc/today_bloc.dart' as _i45;
 import 'core/presentation/helper/action_stream.dart' as _i3;
 import 'core/presentation/helper/edit_task_stream.dart' as _i9;
 import 'core/presentation/helper/notes_stream.dart' as _i14;
@@ -24,41 +24,45 @@ import 'core/presentation/helper/subtask_stream.dart' as _i18;
 import 'core/presentation/helper/text_stream.dart' as _i23;
 import 'features/calendar/data/datasources/gcal_local_data_source.dart' as _i10;
 import 'features/calendar/data/datasources/gcal_remote_data_source.dart'
-    as _i30;
+    as _i34;
 import 'features/calendar/data/repositories/calendar_repository_impl.dart'
-    as _i36;
+    as _i40;
 import 'features/calendar/domain/entities/calendar_entry.dart' as _i7;
 import 'features/calendar/domain/entities/calendar_event_entry.dart' as _i6;
-import 'features/calendar/domain/repositories/calendar_repository.dart' as _i35;
-import 'features/calendar/domain/usecases/add_event.dart' as _i44;
-import 'features/calendar/domain/usecases/delete_event.dart' as _i37;
-import 'features/calendar/domain/usecases/get_calendar_list.dart' as _i38;
-import 'features/calendar/domain/usecases/get_events.dart' as _i39;
-import 'features/calendar/domain/usecases/get_events_between.dart' as _i40;
-import 'features/calendar/domain/usecases/update_calendar_list.dart' as _i42;
-import 'features/calendar/domain/usecases/update_event.dart' as _i43;
+import 'features/calendar/domain/repositories/calendar_repository.dart' as _i39;
+import 'features/calendar/domain/usecases/add_event.dart' as _i48;
+import 'features/calendar/domain/usecases/delete_event.dart' as _i41;
+import 'features/calendar/domain/usecases/get_calendar_list.dart' as _i42;
+import 'features/calendar/domain/usecases/get_events.dart' as _i43;
+import 'features/calendar/domain/usecases/get_events_between.dart' as _i44;
+import 'features/calendar/domain/usecases/update_calendar_list.dart' as _i46;
+import 'features/calendar/domain/usecases/update_event.dart' as _i47;
 import 'features/calendar/presentation/bloc/calendar/calendar_bloc.dart'
-    as _i45;
+    as _i49;
 import 'features/calendar/presentation/bloc/calendar/datetime_stream.dart'
     as _i8;
 import 'features/calendar/presentation/bloc/calendar_list/calendar_list_bloc.dart'
-    as _i46;
+    as _i50;
 import 'features/task/data/datasources/aws_data_source.dart' as _i20;
 import 'features/task/data/datasources/aws_stream.dart' as _i4;
 import 'features/task/data/datasources/task_local_data_source.dart' as _i19;
 import 'features/task/data/repositories/task_repository_impl.dart' as _i22;
 import 'features/task/domain/repositories/task_repository.dart' as _i21;
 import 'features/task/domain/usecases/project/create_project.dart' as _i26;
-import 'features/task/domain/usecases/project/delete_project.dart' as _i28;
-import 'features/task/domain/usecases/project/get_projects.dart' as _i31;
+import 'features/task/domain/usecases/project/delete_project.dart' as _i32;
+import 'features/task/domain/usecases/project/get_projects.dart' as _i35;
 import 'features/task/domain/usecases/project/update_project.dart' as _i24;
+import 'features/task/domain/usecases/subtask/create_subtask.dart' as _i28;
+import 'features/task/domain/usecases/subtask/delete_subtask.dart' as _i30;
+import 'features/task/domain/usecases/subtask/get_subtasks.dart' as _i29;
+import 'features/task/domain/usecases/subtask/update_subtask.dart' as _i31;
 import 'features/task/domain/usecases/task/create_tasks.dart' as _i27;
-import 'features/task/domain/usecases/task/delete_task.dart' as _i29;
-import 'features/task/domain/usecases/task/get_task.dart' as _i32;
+import 'features/task/domain/usecases/task/delete_task.dart' as _i33;
+import 'features/task/domain/usecases/task/get_task.dart' as _i36;
 import 'features/task/domain/usecases/task/update_task.dart' as _i25;
-import 'features/task/presentation/bloc/project_bloc.dart' as _i33;
+import 'features/task/presentation/bloc/project_bloc.dart' as _i37;
 import 'features/task/presentation/bloc/task_bloc.dart'
-    as _i34; // ignore_for_file: unnecessary_lambdas
+    as _i38; // ignore_for_file: unnecessary_lambdas
 
 // ignore_for_file: lines_longer_than_80_chars
 /// initializes the registration of provided dependencies inside of [GetIt]
@@ -107,57 +111,65 @@ Future<_i1.GetIt> $initGetIt(_i1.GetIt get,
       () => _i26.CreateProject(get<_i21.TaskRepository>()));
   gh.lazySingleton<_i27.CreateTasks>(
       () => _i27.CreateTasks(get<_i21.TaskRepository>()));
-  gh.lazySingleton<_i28.DeleteProject>(
-      () => _i28.DeleteProject(get<_i21.TaskRepository>()));
-  gh.lazySingleton<_i29.DeleteTask>(
-      () => _i29.DeleteTask(get<_i21.TaskRepository>()));
-  gh.lazySingleton<_i30.GCalRemoteDataSource>(() =>
-      _i30.GoogleAPIGCalRemoteDataSoure(gCalSignIn: get<_i11.GoogleSignIn>()));
-  gh.lazySingleton<_i31.GetProjects>(
-      () => _i31.GetProjects(get<_i21.TaskRepository>()));
-  gh.lazySingleton<_i32.GetTasks>(
-      () => _i32.GetTasks(get<_i21.TaskRepository>()));
-  gh.factory<_i33.ProjectBloc>(() => _i33.ProjectBloc(
-      getProjects: get<_i31.GetProjects>(),
+  gh.lazySingleton<_i28.CreateTasks>(
+      () => _i28.CreateTasks(get<_i21.TaskRepository>()));
+  gh.lazySingleton<_i29.CreateTasks>(
+      () => _i29.CreateTasks(get<_i21.TaskRepository>()));
+  gh.lazySingleton<_i30.CreateTasks>(
+      () => _i30.CreateTasks(get<_i21.TaskRepository>()));
+  gh.lazySingleton<_i31.CreateTasks>(
+      () => _i31.CreateTasks(get<_i21.TaskRepository>()));
+  gh.lazySingleton<_i32.DeleteProject>(
+      () => _i32.DeleteProject(get<_i21.TaskRepository>()));
+  gh.lazySingleton<_i33.DeleteTask>(
+      () => _i33.DeleteTask(get<_i21.TaskRepository>()));
+  gh.lazySingleton<_i34.GCalRemoteDataSource>(() =>
+      _i34.GoogleAPIGCalRemoteDataSoure(gCalSignIn: get<_i11.GoogleSignIn>()));
+  gh.lazySingleton<_i35.GetProjects>(
+      () => _i35.GetProjects(get<_i21.TaskRepository>()));
+  gh.lazySingleton<_i36.GetTasks>(
+      () => _i36.GetTasks(get<_i21.TaskRepository>()));
+  gh.factory<_i37.ProjectBloc>(() => _i37.ProjectBloc(
+      getProjects: get<_i35.GetProjects>(),
       updateProject: get<_i24.UpdateProject>(),
-      deleteProject: get<_i28.DeleteProject>(),
+      deleteProject: get<_i32.DeleteProject>(),
       createProject: get<_i26.CreateProject>()));
-  gh.factory<_i34.TaskBloc>(() => _i34.TaskBloc(
-      getTasks: get<_i32.GetTasks>(),
+  gh.factory<_i38.TaskBloc>(() => _i38.TaskBloc(
+      getTasks: get<_i36.GetTasks>(),
       updateTask: get<_i25.UpdateTask>(),
-      deleteTask: get<_i29.DeleteTask>(),
+      deleteTask: get<_i33.DeleteTask>(),
       createTasks: get<_i27.CreateTasks>()));
-  gh.lazySingleton<_i35.CalendarRepository>(() => _i36.CalendarRepositoryImpl(
-      remoteCalDataSource: get<_i30.GCalRemoteDataSource>(),
+  gh.lazySingleton<_i39.CalendarRepository>(() => _i40.CalendarRepositoryImpl(
+      remoteCalDataSource: get<_i34.GCalRemoteDataSource>(),
       localCalDataSource: get<_i10.GCalLocalDataSource>(),
       networkInfo: get<_i13.NetworkInfo>()));
-  gh.lazySingleton<_i37.DeleteEvent>(
-      () => _i37.DeleteEvent(repository: get<_i35.CalendarRepository>()));
-  gh.lazySingleton<_i38.GetCalendarList>(
-      () => _i38.GetCalendarList(repository: get<_i35.CalendarRepository>()));
-  gh.lazySingleton<_i39.GetEvents>(
-      () => _i39.GetEvents(get<_i35.CalendarRepository>()));
-  gh.lazySingleton<_i40.GetEventsBetween>(
-      () => _i40.GetEventsBetween(get<_i35.CalendarRepository>()));
-  gh.factory<_i41.TodayBloc>(() => _i41.TodayBloc(
-      getEventEntry: get<_i40.GetEventsBetween>(),
-      getTasks: get<_i32.GetTasks>()));
-  gh.lazySingleton<_i42.UpdateCalendarList>(() =>
-      _i42.UpdateCalendarList(repository: get<_i35.CalendarRepository>()));
-  gh.lazySingleton<_i43.UpdateEvent>(
-      () => _i43.UpdateEvent(repository: get<_i35.CalendarRepository>()));
-  gh.lazySingleton<_i44.AddEvent>(
-      () => _i44.AddEvent(repository: get<_i35.CalendarRepository>()));
-  gh.factory<_i45.CalendarBloc>(() => _i45.CalendarBloc(
-      getCalendarEntry: get<_i39.GetEvents>(),
-      addEvent: get<_i44.AddEvent>(),
-      deleteEvent: get<_i37.DeleteEvent>(),
-      updateEvent: get<_i43.UpdateEvent>(),
-      getCalendarList: get<_i38.GetCalendarList>()));
-  gh.factory<_i46.CalendarListBloc>(() => _i46.CalendarListBloc(
-      getCalendarList: get<_i38.GetCalendarList>(),
-      updateCalendarList: get<_i42.UpdateCalendarList>()));
+  gh.lazySingleton<_i41.DeleteEvent>(
+      () => _i41.DeleteEvent(repository: get<_i39.CalendarRepository>()));
+  gh.lazySingleton<_i42.GetCalendarList>(
+      () => _i42.GetCalendarList(repository: get<_i39.CalendarRepository>()));
+  gh.lazySingleton<_i43.GetEvents>(
+      () => _i43.GetEvents(get<_i39.CalendarRepository>()));
+  gh.lazySingleton<_i44.GetEventsBetween>(
+      () => _i44.GetEventsBetween(get<_i39.CalendarRepository>()));
+  gh.factory<_i45.TodayBloc>(() => _i45.TodayBloc(
+      getEventEntry: get<_i44.GetEventsBetween>(),
+      getTasks: get<_i36.GetTasks>()));
+  gh.lazySingleton<_i46.UpdateCalendarList>(() =>
+      _i46.UpdateCalendarList(repository: get<_i39.CalendarRepository>()));
+  gh.lazySingleton<_i47.UpdateEvent>(
+      () => _i47.UpdateEvent(repository: get<_i39.CalendarRepository>()));
+  gh.lazySingleton<_i48.AddEvent>(
+      () => _i48.AddEvent(repository: get<_i39.CalendarRepository>()));
+  gh.factory<_i49.CalendarBloc>(() => _i49.CalendarBloc(
+      getCalendarEntry: get<_i43.GetEvents>(),
+      addEvent: get<_i48.AddEvent>(),
+      deleteEvent: get<_i41.DeleteEvent>(),
+      updateEvent: get<_i47.UpdateEvent>(),
+      getCalendarList: get<_i42.GetCalendarList>()));
+  gh.factory<_i50.CalendarListBloc>(() => _i50.CalendarListBloc(
+      getCalendarList: get<_i42.GetCalendarList>(),
+      updateCalendarList: get<_i46.UpdateCalendarList>()));
   return get;
 }
 
-class _$RegisterModule extends _i47.RegisterModule {}
+class _$RegisterModule extends _i51.RegisterModule {}

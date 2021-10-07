@@ -7,12 +7,14 @@ import 'package:refocus_app/core/util/helpers/logging.dart';
 import 'package:refocus_app/models/ModelProvider.dart';
 
 abstract class TaskRemoteDataSource {
+  //* Project
   Future<void> createOrUpdateRemoteProject(Project project);
   Future<void> deleteRemoteProject(Project project);
 
   /// Get All Project from AWS
   Future<List<Project>> getRemoteProject();
 
+  //* Task
   Future<void> createOrUpdateRemoteTask(Task task);
   Future<void> deleteRemoteTask(Task task);
 
@@ -24,6 +26,13 @@ abstract class TaskRemoteDataSource {
     DateTime? endTime,
     DateTime? dueDate,
   });
+
+  //* Subtask
+  Future<void> createOrUpdateRemoteSubTask(Subtask subtask);
+  Future<void> deleteRemoteSubTask(Subtask subtask);
+
+  /// Get All SubTask with given Task ID
+  Future<List<Subtask>> getRemoteSubTask(String taskID);
 }
 
 @LazySingleton(as: TaskRemoteDataSource)
@@ -115,7 +124,6 @@ class AWSTaskRemoteDataSource implements TaskRemoteDataSource {
               .and(Task.ISCOMPLETED.eq(false)),
         );
 
-        // _todos = await Amplify.DataStore.query(Task.classType);
         log.i('$_todos');
         log.d('AWS Tasks: ${_todos.length}');
       } else if (startTime != null && endTime != null) {
@@ -186,6 +194,40 @@ class AWSTaskRemoteDataSource implements TaskRemoteDataSource {
         }
       }
       return _todos;
+    } catch (e) {
+      log.e(e);
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<void> createOrUpdateRemoteSubTask(Subtask subtask) async {
+    try {
+      await Amplify.DataStore.save(subtask);
+    } catch (e) {
+      log.e(e);
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<void> deleteRemoteSubTask(Subtask subtask) async {
+    try {
+      await Amplify.DataStore.delete(subtask);
+    } catch (e) {
+      log.e(e);
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<List<Subtask>> getRemoteSubTask(String taskID) async {
+    try {
+      final subtasks = await Amplify.DataStore.query(
+        Subtask.classType,
+        where: Subtask.TASKID.eq(taskID),
+      );
+      return subtasks;
     } catch (e) {
       log.e(e);
       throw ServerException();

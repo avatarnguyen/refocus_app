@@ -7,6 +7,7 @@ import 'package:refocus_app/core/util/helpers/logging.dart';
 import 'package:refocus_app/features/task/data/datasources/aws_data_source.dart';
 import 'package:refocus_app/features/task/data/datasources/task_local_data_source.dart';
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
+import 'package:refocus_app/features/task/domain/entities/subtask_entry.dart';
 import 'package:refocus_app/features/task/domain/entities/task_entry.dart';
 import 'package:refocus_app/features/task/domain/repositories/task_repository.dart';
 import 'package:refocus_app/models/ModelProvider.dart';
@@ -198,6 +199,57 @@ class TaskRepositoryImpl implements TaskRepository {
       return dartz.Right(_tasks);
     } on ServerException catch (e) {
       log.e(e);
+      return dartz.Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<dartz.Either<Failure, SubTaskEntry>> createSubTask(
+      SubTaskEntry subTaskEntry) {
+    return updateSubTask(subTaskEntry);
+  }
+
+  @override
+  Future<dartz.Either<Failure, dartz.Unit>> deleteSubTask(
+      SubTaskEntry subTaskEntry) async {
+    try {
+      final _subtask = Subtask.fromJson(subTaskEntry.toJson());
+
+      log.i('Delete Subtask: ${_subtask.toJson()}');
+
+      await remoteDataSource.deleteRemoteSubTask(_subtask);
+      return const dartz.Right(dartz.unit);
+    } on ServerException {
+      return dartz.Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<dartz.Either<Failure, List<SubTaskEntry>>> getSubTasksOfTask(
+      String taskID) async {
+    try {
+      final _subtasks = await remoteDataSource.getRemoteSubTask(taskID);
+      log.v('Fetched Subtasks: $_subtasks');
+
+      final _subTaskEntry = _subtasks
+          .map((subtask) => SubTaskEntry.fromJson(subtask.toJson()))
+          .toList();
+
+      return dartz.Right(_subTaskEntry);
+    } on ServerException catch (e) {
+      log.e(e);
+      return dartz.Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<dartz.Either<Failure, SubTaskEntry>> updateSubTask(
+      SubTaskEntry subTaskEntry) async {
+    try {
+      final _subtask = Subtask.fromJson(subTaskEntry.toJson());
+      await remoteDataSource.createOrUpdateRemoteSubTask(_subtask);
+      return dartz.Right(subTaskEntry);
+    } on ServerException {
       return dartz.Left(ServerFailure());
     }
   }

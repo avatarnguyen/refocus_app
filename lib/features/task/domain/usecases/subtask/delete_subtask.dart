@@ -3,18 +3,18 @@ import 'package:injectable/injectable.dart';
 import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/core/usecases/usecase.dart';
 import 'package:refocus_app/features/task/domain/repositories/task_repository.dart';
-import 'package:refocus_app/features/task/domain/usecases/helpers/task_params.dart';
+import 'package:refocus_app/features/task/domain/usecases/helpers/subtask_params.dart';
 
 @lazySingleton
-class DeleteTask implements UseCase<Unit, TaskParams> {
-  DeleteTask(this.repository);
+class CreateTasks implements UseCase<Unit, SubTaskParams> {
+  CreateTasks(this.repository);
 
   final TaskRepository repository;
 
   @override
-  Future<Either<Failure, Unit>> call(TaskParams params) async {
-    if (params.task != null) {
-      return repository.deleteTask(params.task!);
+  Future<Either<Failure, Unit>> call(SubTaskParams params) async {
+    if (params.subTaskEntry != null) {
+      return repository.deleteSubTask(params.subTaskEntry!);
     } else {
       return Left(ArgumentFailure());
     }
