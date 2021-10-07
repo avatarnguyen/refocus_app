@@ -15,11 +15,14 @@ import 'package:refocus_app/core/presentation/widgets/edit_page_widgets/slidable
 import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/edit_task_state.dart';
+import 'package:refocus_app/features/calendar/presentation/widgets/message_widget.dart';
 import 'package:refocus_app/features/task/domain/entities/subtask_entry.dart';
 import 'package:refocus_app/features/task/domain/entities/task_entry.dart';
 import 'package:refocus_app/features/task/domain/usecases/helpers/task_params.dart';
+import 'package:refocus_app/features/task/presentation/bloc/cubit/subtask_cubit.dart';
 import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
 import 'package:refocus_app/injection.dart';
+import 'package:uuid/uuid.dart';
 
 enum DateTimeSelected { start, end, due }
 
@@ -43,11 +46,14 @@ class _EditTaskViewState extends State<EditTaskView> {
   DateTime? endDateTime;
   DateTime? dueDateTime;
 
-  List<String> subtasks = [];
+  List<SubTaskEntry> currentSubtask = [];
+  List<String> newSubtaskTitle = [];
 
   TaskEntry? currentTask;
 
   EditTaskState _currentEditState = EditTaskState.view;
+
+  final Uuid _uuid = const Uuid();
 
   @override
   void initState() {
@@ -55,6 +61,9 @@ class _EditTaskViewState extends State<EditTaskView> {
     context
         .read<TaskBloc>()
         .add(GetSingleTaskEntryEvent(taskID: widget.taskID));
+
+    context.read<SubtaskCubit>().getSubTasksFromTask(widget.taskID);
+
     _editSub = _editStream.editStateStream.listen(_editSettingReceived);
   }
 
@@ -76,7 +85,7 @@ class _EditTaskViewState extends State<EditTaskView> {
 
             currentTask = currentTask!.copyWith(title: title);
           }
-          if (subtasks.isNotEmpty) {
+          if (newSubtaskTitle.isNotEmpty) {
             //TODO: Add new Subtask here
             shouldUpdateTask = true;
           }
@@ -154,7 +163,7 @@ class _EditTaskViewState extends State<EditTaskView> {
             dueDateTime ??= _fetchedTask.dueDate;
 
             //TODO: Fetch Subtasks
-            if (subtasks.isEmpty) {}
+            if (currentSubtask.isEmpty) {}
 
             if (_currentEditState == EditTaskState.view) {
               //* View Mode
@@ -248,9 +257,14 @@ class _EditTaskViewState extends State<EditTaskView> {
         verticalSpaceMedium,
         _buildSubTaskEditTextField(context, 'sub task 1', 0, _textColor),
         _buildSubTaskEditTextField(context, 'sub task 2', 0, _textColor),
-        subtasks
-            .map((text) => _buildSubTaskEditTextField(
-                context, text, subtasks.indexOf(text), _textColor))
+
+        //* Subtask Text Field
+        currentSubtask
+            .map((subtask) => _buildSubTaskEditTextField(
+                context,
+                subtask.title ?? '',
+                currentSubtask.indexOf(subtask),
+                _textColor))
             .toList()
             .toColumn(),
         verticalSpaceRegular,
@@ -334,32 +348,44 @@ class _EditTaskViewState extends State<EditTaskView> {
             Text('Due Date', style: _dateTextStyle),
           ].toColumn(mainAxisSize: MainAxisSize.min).padding(top: 16),
         verticalSpaceRegular,
-        SlidableSubTaskItem(
-          key: const Key('slide_subtask_1'),
-          colorID: widget.colorID,
-          subTask: SubTaskEntry(
-            id: '12345',
-            isCompleted: false,
-            todoID: _fetchedTask.id,
-            title: 'Sub Task 1',
-          ),
+        BlocBuilder<SubtaskCubit, SubtaskState>(
+          builder: (context, state) {
+            return state.when<Widget>(
+              initial: () => progressIndicator,
+              loaded: (subtasks) {
+                if (subtasks.isNotEmpty) {
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: subtasks
+                        .map(
+                          (subtask) => SlidableSubTaskItem(
+                            key: Key(subtask.id),
+                            colorID: widget.colorID,
+                            subTask: SubTaskEntry(
+                              id: subtask.id,
+                              isCompleted: subtask.isCompleted,
+                              taskID: subtask.taskID,
+                              title: subtask.title,
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  );
+                } else {
+                  return const SizedBox.shrink();
+                }
+              },
+              error: (errorMessage) => MessageDisplay(message: errorMessage),
+            );
+          },
         ),
-        SlidableSubTaskItem(
-          key: const Key('slide_subtask_2'),
-          colorID: widget.colorID,
-          subTask: SubTaskEntry(
-            id: '2134',
-            isCompleted: true,
-            todoID: _fetchedTask.id,
-            title: 'Sub Task 1',
-          ),
-        ),
-        //Adding new Subtask
-        if (subtasks.isNotEmpty) verticalSpaceTiny,
-        if (subtasks.isNotEmpty)
-          subtasks
+
+        //* Adding new Subtask
+        if (newSubtaskTitle.isNotEmpty) verticalSpaceTiny,
+        if (newSubtaskTitle.isNotEmpty)
+          newSubtaskTitle
               .map((text) => _buildSubTaskViewTextField(
-                  context, text, subtasks.indexOf(text)))
+                  context, text, newSubtaskTitle.indexOf(text)))
               .toList()
               .toColumn()
               .padding(horizontal: 8),
@@ -371,9 +397,16 @@ class _EditTaskViewState extends State<EditTaskView> {
           cupertinoIcon: Icon(CupertinoIcons.add, color: _textColor),
           onPressed: () {
             setState(() {
-              subtasks.add('');
+              newSubtaskTitle.add('');
             });
           },
+        ).paddingDirectional(horizontal: 8),
+        verticalSpaceSmall,
+        PlatformButton(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 32),
+          onPressed: () {},
+          child: Text('Mark Task as Completed',
+              style: context.bodyText2.copyWith(color: kcSuccess500)),
         ).paddingDirectional(horizontal: 8)
       ],
     );
@@ -391,7 +424,7 @@ class _EditTaskViewState extends State<EditTaskView> {
       textAlignVertical: TextAlignVertical.center,
       textAlign: TextAlign.center,
       onChanged: (text) {
-        subtasks[elementIdx] = text;
+        newSubtaskTitle[elementIdx] = text;
       },
       material: (context, platform) =>
           materialTextField(customPadding: const EdgeInsets.all(16)),

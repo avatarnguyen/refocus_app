@@ -24,14 +24,14 @@ class _$SubTaskEntryTearOff {
   _SubTaskEntry call(
       {required String id,
       required bool isCompleted,
-      required String todoID,
+      required String taskID,
       String? title,
       @DateSerialiser() DateTime? completedDate,
       int? priority}) {
     return _SubTaskEntry(
       id: id,
       isCompleted: isCompleted,
-      todoID: todoID,
+      taskID: taskID,
       title: title,
       completedDate: completedDate,
       priority: priority,
@@ -50,7 +50,7 @@ const $SubTaskEntry = _$SubTaskEntryTearOff();
 mixin _$SubTaskEntry {
   String get id => throw _privateConstructorUsedError;
   bool get isCompleted => throw _privateConstructorUsedError;
-  String get todoID => throw _privateConstructorUsedError;
+  String get taskID => throw _privateConstructorUsedError;
   String? get title => throw _privateConstructorUsedError;
   @DateSerialiser()
   DateTime? get completedDate => throw _privateConstructorUsedError;
@@ -70,7 +70,7 @@ abstract class $SubTaskEntryCopyWith<$Res> {
   $Res call(
       {String id,
       bool isCompleted,
-      String todoID,
+      String taskID,
       String? title,
       @DateSerialiser() DateTime? completedDate,
       int? priority});
@@ -88,7 +88,7 @@ class _$SubTaskEntryCopyWithImpl<$Res> implements $SubTaskEntryCopyWith<$Res> {
   $Res call({
     Object? id = freezed,
     Object? isCompleted = freezed,
-    Object? todoID = freezed,
+    Object? taskID = freezed,
     Object? title = freezed,
     Object? completedDate = freezed,
     Object? priority = freezed,
@@ -102,9 +102,9 @@ class _$SubTaskEntryCopyWithImpl<$Res> implements $SubTaskEntryCopyWith<$Res> {
           ? _value.isCompleted
           : isCompleted // ignore: cast_nullable_to_non_nullable
               as bool,
-      todoID: todoID == freezed
-          ? _value.todoID
-          : todoID // ignore: cast_nullable_to_non_nullable
+      taskID: taskID == freezed
+          ? _value.taskID
+          : taskID // ignore: cast_nullable_to_non_nullable
               as String,
       title: title == freezed
           ? _value.title
@@ -132,7 +132,7 @@ abstract class _$SubTaskEntryCopyWith<$Res>
   $Res call(
       {String id,
       bool isCompleted,
-      String todoID,
+      String taskID,
       String? title,
       @DateSerialiser() DateTime? completedDate,
       int? priority});
@@ -152,7 +152,7 @@ class __$SubTaskEntryCopyWithImpl<$Res> extends _$SubTaskEntryCopyWithImpl<$Res>
   $Res call({
     Object? id = freezed,
     Object? isCompleted = freezed,
-    Object? todoID = freezed,
+    Object? taskID = freezed,
     Object? title = freezed,
     Object? completedDate = freezed,
     Object? priority = freezed,
@@ -166,9 +166,9 @@ class __$SubTaskEntryCopyWithImpl<$Res> extends _$SubTaskEntryCopyWithImpl<$Res>
           ? _value.isCompleted
           : isCompleted // ignore: cast_nullable_to_non_nullable
               as bool,
-      todoID: todoID == freezed
-          ? _value.todoID
-          : todoID // ignore: cast_nullable_to_non_nullable
+      taskID: taskID == freezed
+          ? _value.taskID
+          : taskID // ignore: cast_nullable_to_non_nullable
               as String,
       title: title == freezed
           ? _value.title
@@ -192,7 +192,7 @@ class _$_SubTaskEntry implements _SubTaskEntry {
   _$_SubTaskEntry(
       {required this.id,
       required this.isCompleted,
-      required this.todoID,
+      required this.taskID,
       this.title,
       @DateSerialiser() this.completedDate,
       this.priority});
@@ -205,7 +205,7 @@ class _$_SubTaskEntry implements _SubTaskEntry {
   @override
   final bool isCompleted;
   @override
-  final String todoID;
+  final String taskID;
   @override
   final String? title;
   @override
@@ -216,7 +216,7 @@ class _$_SubTaskEntry implements _SubTaskEntry {
 
   @override
   String toString() {
-    return 'SubTaskEntry(id: $id, isCompleted: $isCompleted, todoID: $todoID, title: $title, completedDate: $completedDate, priority: $priority)';
+    return 'SubTaskEntry(id: $id, isCompleted: $isCompleted, taskID: $taskID, title: $title, completedDate: $completedDate, priority: $priority)';
   }
 
   @override
@@ -228,8 +228,8 @@ class _$_SubTaskEntry implements _SubTaskEntry {
             (identical(other.isCompleted, isCompleted) ||
                 const DeepCollectionEquality()
                     .equals(other.isCompleted, isCompleted)) &&
-            (identical(other.todoID, todoID) ||
-                const DeepCollectionEquality().equals(other.todoID, todoID)) &&
+            (identical(other.taskID, taskID) ||
+                const DeepCollectionEquality().equals(other.taskID, taskID)) &&
             (identical(other.title, title) ||
                 const DeepCollectionEquality().equals(other.title, title)) &&
             (identical(other.completedDate, completedDate) ||
@@ -245,7 +245,7 @@ class _$_SubTaskEntry implements _SubTaskEntry {
       runtimeType.hashCode ^
       const DeepCollectionEquality().hash(id) ^
       const DeepCollectionEquality().hash(isCompleted) ^
-      const DeepCollectionEquality().hash(todoID) ^
+      const DeepCollectionEquality().hash(taskID) ^
       const DeepCollectionEquality().hash(title) ^
       const DeepCollectionEquality().hash(completedDate) ^
       const DeepCollectionEquality().hash(priority);
@@ -265,7 +265,7 @@ abstract class _SubTaskEntry implements SubTaskEntry {
   factory _SubTaskEntry(
       {required String id,
       required bool isCompleted,
-      required String todoID,
+      required String taskID,
       String? title,
       @DateSerialiser() DateTime? completedDate,
       int? priority}) = _$_SubTaskEntry;
@@ -278,7 +278,7 @@ abstract class _SubTaskEntry implements SubTaskEntry {
   @override
   bool get isCompleted => throw _privateConstructorUsedError;
   @override
-  String get todoID => throw _privateConstructorUsedError;
+  String get taskID => throw _privateConstructorUsedError;
   @override
   String? get title => throw _privateConstructorUsedError;
   @override

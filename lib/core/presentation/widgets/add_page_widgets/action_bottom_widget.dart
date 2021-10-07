@@ -253,7 +253,7 @@ class _ActionBottomWidgetState extends State<ActionBottomWidget> {
                   final newSubTask = SubTaskEntry(
                     id: uuid.v4(),
                     isCompleted: false,
-                    todoID: _taskID,
+                    taskID: _taskID,
                     title: _title,
                   );
                 });

@@ -19,6 +19,7 @@ import 'package:refocus_app/core/util/helpers/logging.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/features/calendar/presentation/pages/calendar_list_page.dart';
 import 'package:refocus_app/features/calendar/presentation/pages/calendar_page.dart';
+import 'package:refocus_app/features/task/presentation/bloc/cubit/subtask_cubit.dart';
 import 'package:refocus_app/features/task/presentation/bloc/project_bloc.dart';
 import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
 import 'package:refocus_app/features/task/presentation/pages/project_page.dart';
@@ -40,6 +41,9 @@ class HomePage extends StatelessWidget {
                 getIt<ProjectBloc>()..add(GetProjectEntriesEvent())),
         BlocProvider<TaskBloc>(
           create: (context) => getIt<TaskBloc>(),
+        ),
+        BlocProvider(
+          create: (context) => getIt<SubtaskCubit>(),
         ),
       ],
       child: const HomePageWidget(),

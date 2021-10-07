@@ -11,7 +11,7 @@ class SubTaskEntry with _$SubTaskEntry {
   factory SubTaskEntry({
     required String id,
     required bool isCompleted,
-    required String todoID,
+    required String taskID,
     String? title,
     @DateSerialiser() DateTime? completedDate,
     int? priority,

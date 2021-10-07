@@ -10,6 +10,7 @@ import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/today_entry_type.dart';
 import 'package:refocus_app/features/task/domain/usecases/helpers/task_params.dart';
+import 'package:refocus_app/features/task/presentation/bloc/cubit/subtask_cubit.dart';
 import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
 import 'package:styled_widget/styled_widget.dart';
@@ -177,7 +178,6 @@ class ListItemWidget extends StatelessWidget {
             // const InsideTaskItem(),
           ].toColumn(mainAxisSize: MainAxisSize.min),
         ).ripple().gestures(onTap: () {
-          print('Task ID: $taskID');
           if (taskID != null) {
             showTaskBottomSheet(context, taskID!, color);
           }
@@ -211,8 +211,15 @@ class ListItemWidget extends StatelessWidget {
           },
           builder: (context, state) {
             log(taskID);
-            return BlocProvider<TaskBloc>.value(
-              value: BlocProvider.of<TaskBloc>(parentContext),
+            return MultiBlocProvider(
+              providers: [
+                BlocProvider<TaskBloc>.value(
+                  value: BlocProvider.of<TaskBloc>(parentContext),
+                ),
+                BlocProvider<SubtaskCubit>.value(
+                  value: BlocProvider.of<SubtaskCubit>(parentContext),
+                ),
+              ],
               child: EditTaskView(taskID: taskID, colorID: colorID),
             );
           },

@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:injectable/injectable.dart';
 import 'package:refocus_app/constants/failure_message.dart';
 import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart';
@@ -13,6 +14,7 @@ import 'package:refocus_app/features/task/domain/usecases/subtask/update_subtask
 part 'subtask_state.dart';
 part 'subtask_cubit.freezed.dart';
 
+@injectable
 class SubtaskCubit extends Cubit<SubtaskState> {
   SubtaskCubit({
     required this.getSubTasks,
@@ -52,7 +54,7 @@ class SubtaskCubit extends Cubit<SubtaskState> {
       );
 
       final _fetchedSubTasks =
-          await getSubTasks(SubTaskParams(taskID: subTaskEntry.todoID));
+          await getSubTasks(SubTaskParams(taskID: subTaskEntry.taskID));
       _fetchedSubTasks.fold(
         (failure) => emit(SubtaskState.error(_mapFailureToMessage(failure))),
         (entries) => emit(SubtaskState.loaded(entries)),
@@ -72,7 +74,7 @@ class SubtaskCubit extends Cubit<SubtaskState> {
       );
 
       final _fetchedSubTasks =
-          await getSubTasks(SubTaskParams(taskID: subTaskEntry.todoID));
+          await getSubTasks(SubTaskParams(taskID: subTaskEntry.taskID));
       _fetchedSubTasks.fold(
         (failure) => emit(SubtaskState.error(_mapFailureToMessage(failure))),
         (entries) => emit(SubtaskState.loaded(entries)),
@@ -92,7 +94,7 @@ class SubtaskCubit extends Cubit<SubtaskState> {
       );
 
       final _fetchedSubTasks =
-          await getSubTasks(SubTaskParams(taskID: subTaskEntry.todoID));
+          await getSubTasks(SubTaskParams(taskID: subTaskEntry.taskID));
       _fetchedSubTasks.fold(
         (failure) => emit(SubtaskState.error(_mapFailureToMessage(failure))),
         (entries) => emit(SubtaskState.loaded(entries)),
