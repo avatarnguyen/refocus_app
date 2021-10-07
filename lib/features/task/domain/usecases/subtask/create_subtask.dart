@@ -7,8 +7,8 @@ import 'package:refocus_app/features/task/domain/repositories/task_repository.da
 import 'package:refocus_app/features/task/domain/usecases/helpers/subtask_params.dart';
 
 @lazySingleton
-class CreateTasks implements UseCase<SubTaskEntry, SubTaskParams> {
-  CreateTasks(this.repository);
+class CreateSubTask implements UseCase<SubTaskEntry, SubTaskParams> {
+  CreateSubTask(this.repository);
 
   final TaskRepository repository;
 
