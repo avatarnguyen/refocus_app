@@ -11,7 +11,7 @@ class StyleUtils {
           hsl.withLightness((hsl.lightness - amount).clamp(0.0, 1.0));
       return hslDark.toColor();
     } else {
-      return hsl.withLightness((0.2).clamp(0.0, 1.0)).toColor();
+      return hsl.withLightness(0.2.clamp(0.0, 1.0)).toColor();
     }
   }
 
@@ -19,12 +19,12 @@ class StyleUtils {
     assert(amount >= 0 && amount <= 1);
     final hsl = HSLColor.fromColor(color);
 
-    if (hsl.lightness + amount < 0.98) {
+    if ((hsl.lightness + amount) < 0.91) {
       final hslLight =
           hsl.withLightness((hsl.lightness + amount).clamp(0.0, 1.0));
       return hslLight.toColor();
     } else {
-      return hsl.withLightness((0.97).clamp(0.0, 1.0)).toColor();
+      return hsl.withLightness(0.90.clamp(0.0, 1.0)).toColor();
     }
   }
 

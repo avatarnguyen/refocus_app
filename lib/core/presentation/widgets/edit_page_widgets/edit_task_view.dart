@@ -401,7 +401,7 @@ class _EditTaskViewState extends State<EditTaskView> {
             });
           },
         ).paddingDirectional(horizontal: 8),
-        verticalSpaceSmall,
+        verticalSpaceMedium,
         PlatformButton(
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 32),
           onPressed: () {},
