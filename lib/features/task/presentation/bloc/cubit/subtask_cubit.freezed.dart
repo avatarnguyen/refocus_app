@@ -27,8 +27,10 @@ class _$SubtaskStateTearOff {
     );
   }
 
-  _SubTaskError error() {
-    return const _SubTaskError();
+  _SubTaskError error(String errorMessage) {
+    return _SubTaskError(
+      errorMessage,
+    );
   }
 }
 
@@ -41,21 +43,21 @@ mixin _$SubtaskState {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function(List<SubTaskEntry> subtasks) loaded,
-    required TResult Function() error,
+    required TResult Function(String errorMessage) error,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function(List<SubTaskEntry> subtasks)? loaded,
-    TResult Function()? error,
+    TResult Function(String errorMessage)? error,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function(List<SubTaskEntry> subtasks)? loaded,
-    TResult Function()? error,
+    TResult Function(String errorMessage)? error,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -138,7 +140,7 @@ class _$_Initial implements _Initial {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function(List<SubTaskEntry> subtasks) loaded,
-    required TResult Function() error,
+    required TResult Function(String errorMessage) error,
   }) {
     return initial();
   }
@@ -148,7 +150,7 @@ class _$_Initial implements _Initial {
   TResult? whenOrNull<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function(List<SubTaskEntry> subtasks)? loaded,
-    TResult Function()? error,
+    TResult Function(String errorMessage)? error,
   }) {
     return initial?.call();
   }
@@ -158,7 +160,7 @@ class _$_Initial implements _Initial {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function(List<SubTaskEntry> subtasks)? loaded,
-    TResult Function()? error,
+    TResult Function(String errorMessage)? error,
     required TResult orElse(),
   }) {
     if (initial != null) {
@@ -274,7 +276,7 @@ class _$_SubTaskLoaded implements _SubTaskLoaded {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function(List<SubTaskEntry> subtasks) loaded,
-    required TResult Function() error,
+    required TResult Function(String errorMessage) error,
   }) {
     return loaded(subtasks);
   }
@@ -284,7 +286,7 @@ class _$_SubTaskLoaded implements _SubTaskLoaded {
   TResult? whenOrNull<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function(List<SubTaskEntry> subtasks)? loaded,
-    TResult Function()? error,
+    TResult Function(String errorMessage)? error,
   }) {
     return loaded?.call(subtasks);
   }
@@ -294,7 +296,7 @@ class _$_SubTaskLoaded implements _SubTaskLoaded {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function(List<SubTaskEntry> subtasks)? loaded,
-    TResult Function()? error,
+    TResult Function(String errorMessage)? error,
     required TResult orElse(),
   }) {
     if (loaded != null) {
@@ -352,6 +354,7 @@ abstract class _$SubTaskErrorCopyWith<$Res> {
   factory _$SubTaskErrorCopyWith(
           _SubTaskError value, $Res Function(_SubTaskError) then) =
       __$SubTaskErrorCopyWithImpl<$Res>;
+  $Res call({String errorMessage});
 }
 
 /// @nodoc
@@ -363,34 +366,59 @@ class __$SubTaskErrorCopyWithImpl<$Res> extends _$SubtaskStateCopyWithImpl<$Res>
 
   @override
   _SubTaskError get _value => super._value as _SubTaskError;
+
+  @override
+  $Res call({
+    Object? errorMessage = freezed,
+  }) {
+    return _then(_SubTaskError(
+      errorMessage == freezed
+          ? _value.errorMessage
+          : errorMessage // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
 }
 
 /// @nodoc
 
 class _$_SubTaskError implements _SubTaskError {
-  const _$_SubTaskError();
+  const _$_SubTaskError(this.errorMessage);
+
+  @override
+  final String errorMessage;
 
   @override
   String toString() {
-    return 'SubtaskState.error()';
+    return 'SubtaskState.error(errorMessage: $errorMessage)';
   }
 
   @override
   bool operator ==(dynamic other) {
-    return identical(this, other) || (other is _SubTaskError);
+    return identical(this, other) ||
+        (other is _SubTaskError &&
+            (identical(other.errorMessage, errorMessage) ||
+                const DeepCollectionEquality()
+                    .equals(other.errorMessage, errorMessage)));
   }
 
   @override
-  int get hashCode => runtimeType.hashCode;
+  int get hashCode =>
+      runtimeType.hashCode ^ const DeepCollectionEquality().hash(errorMessage);
+
+  @JsonKey(ignore: true)
+  @override
+  _$SubTaskErrorCopyWith<_SubTaskError> get copyWith =>
+      __$SubTaskErrorCopyWithImpl<_SubTaskError>(this, _$identity);
 
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function(List<SubTaskEntry> subtasks) loaded,
-    required TResult Function() error,
+    required TResult Function(String errorMessage) error,
   }) {
-    return error();
+    return error(errorMessage);
   }
 
   @override
@@ -398,9 +426,9 @@ class _$_SubTaskError implements _SubTaskError {
   TResult? whenOrNull<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function(List<SubTaskEntry> subtasks)? loaded,
-    TResult Function()? error,
+    TResult Function(String errorMessage)? error,
   }) {
-    return error?.call();
+    return error?.call(errorMessage);
   }
 
   @override
@@ -408,11 +436,11 @@ class _$_SubTaskError implements _SubTaskError {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function(List<SubTaskEntry> subtasks)? loaded,
-    TResult Function()? error,
+    TResult Function(String errorMessage)? error,
     required TResult orElse(),
   }) {
     if (error != null) {
-      return error();
+      return error(errorMessage);
     }
     return orElse();
   }
@@ -453,5 +481,10 @@ class _$_SubTaskError implements _SubTaskError {
 }
 
 abstract class _SubTaskError implements SubtaskState {
-  const factory _SubTaskError() = _$_SubTaskError;
+  const factory _SubTaskError(String errorMessage) = _$_SubTaskError;
+
+  String get errorMessage => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  _$SubTaskErrorCopyWith<_SubTaskError> get copyWith =>
+      throw _privateConstructorUsedError;
 }
