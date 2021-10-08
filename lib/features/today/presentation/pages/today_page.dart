@@ -41,7 +41,7 @@ class _TodayPageState extends State<TodayPage> {
     _sController = ScrollController();
     _sController.addListener(() {
       // log.i(_sController.offset);
-      if (_sController.offset > 38) {
+      if (_sController.offset > 37) {
         if (!isAtTop) {
           setState(() {
             isAtTop = true;
@@ -78,7 +78,13 @@ class _TodayPageState extends State<TodayPage> {
                   border: null,
                   backgroundColor: kcLightBackground,
                   padding: const EdgeInsetsDirectional.all(8),
-                  largeTitle: Text(_getGreeting()),
+                  stretch: true,
+                  largeTitle: Text(
+                    _getGreeting(),
+                    // style: isAtTop
+                    //     ? null
+                    //     : context.h2.copyWith(color: kcPrimary600),
+                  ),
                   // : const Icon(CupertinoIcons.sun_max_fill),
                   leading: CupertinoButton(
                     padding: EdgeInsets.zero,

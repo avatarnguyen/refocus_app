@@ -111,23 +111,32 @@ class ListItemWidget extends StatelessWidget {
               foregroundColor: _textColor,
               color: Colors.transparent,
             ),
-            IconSlideAction(
-              icon: Icons.calendar_today_rounded,
-              foregroundColor: context.colorScheme.primary,
-              color: Colors.transparent,
-            )
+            // IconSlideAction(
+            //   icon: Icons.calendar_today_rounded,
+            //   foregroundColor: context.colorScheme.primary,
+            //   color: Colors.transparent,
+            // )
           ],
           dismissal: SlidableDismissal(
             onDismissed: (actionTyp) {
               if (actionTyp == SlideActionType.primary) {
                 // Mark Task as Done
+                final _isCompleted = !(entry.isCompleted ?? false);
                 context.read<TaskBloc>().add(EditTaskEntryEvent(
-                    params: TaskParams(task: returnTaskFromTodayEntry(entry))));
-                //TODO: This also fetch calendar events, need to optimize
-                context.read<TodayBloc>().add(const GetTodayEntries());
+                    params: TaskParams(
+                        task: returnTaskFromTodayEntry(entry,
+                            isCompleted: _isCompleted))));
               } else {
                 // Postpone Task to next day
+                final _currentDate =
+                    entry.startDateTime ?? entry.dueDateTime ?? DateTime.now();
+                context.read<TaskBloc>().add(EditTaskEntryEvent(
+                    params: TaskParams(
+                        task: returnTaskFromTodayEntry(entry,
+                            newDate: _currentDate + 1.days))));
               }
+              //TODO: This also fetch calendar events, need to optimize
+              context.read<TodayBloc>().add(const GetTodayEntries());
             },
             dismissThresholds: const <SlideActionType, double>{
               SlideActionType.primary: .4,
@@ -170,11 +179,8 @@ class ListItemWidget extends StatelessWidget {
                       : _taskTimeTextStyle,
                 ),
                 if (entry.endDateTime != null && _endTitle != null) ...[
-                  Icon(
-                    Icons.arrow_right_alt_rounded,
-                    size: 22,
-                    color: _textColor,
-                  ).padding(horizontal: 2),
+                  Icon(Icons.arrow_right, size: 24, color: _textColor),
+                  // .padding(horizontal: 2),
                   Text(
                     _endTitle,
                     overflow: TextOverflow.clip,
@@ -204,19 +210,44 @@ class ListItemWidget extends StatelessWidget {
     }
   }
 
-  TaskEntry returnTaskFromTodayEntry(TodayEntry todayEntry) {
-    final _isCompleted = !(todayEntry.isCompleted ?? false);
+  TaskEntry returnTaskFromTodayEntry(TodayEntry todayEntry,
+      {bool? isCompleted, DateTime? newDate}) {
+    final _startDateTime = newDate != null && todayEntry.startDateTime != null
+        ? todayEntry.startDateTime!.copyWith(
+            day: newDate.day,
+            month: newDate.month,
+            year: newDate.year,
+          )
+        : todayEntry.startDateTime;
+
+    final _endDateTime = newDate != null && todayEntry.endDateTime != null
+        ? todayEntry.endDateTime!.copyWith(
+            day: newDate.day,
+            month: newDate.month,
+            year: newDate.year,
+          )
+        : todayEntry.endDateTime;
+
+    final _dueDate = newDate != null && todayEntry.dueDateTime != null
+        ? todayEntry.dueDateTime!.copyWith(
+            day: newDate.day,
+            month: newDate.month,
+            year: newDate.year,
+          )
+        : todayEntry.dueDateTime;
+
     return TaskEntry(
       id: todayEntry.id,
-      isCompleted: _isCompleted,
-      completedDate: _isCompleted ? DateTime.now() : null,
+      isCompleted: isCompleted ?? todayEntry.isCompleted ?? false,
+      completedDate:
+          (isCompleted != null && isCompleted) ? DateTime.now() : null,
       projectID: todayEntry.projectOrCalID!,
       calendarID: todayEntry.calendarEventID,
       colorID: todayEntry.color,
       title: todayEntry.title,
-      dueDate: todayEntry.dueDateTime,
-      startDateTime: todayEntry.startDateTime,
-      endDateTime: todayEntry.dueDateTime,
+      dueDate: _dueDate,
+      startDateTime: _startDateTime,
+      endDateTime: _endDateTime,
       description: todayEntry.description,
       priority: todayEntry.priority,
       isHabit: todayEntry.type == TodayEntryType.habit,

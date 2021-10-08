@@ -35,7 +35,9 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
     TodayEvent event,
   ) async* {
     if (event is GetTodayEntries) {
-      yield TodayLoading();
+      if (state is! TodayLoaded) {
+        yield TodayLoading();
+      }
 
       final _today = DateTime.now();
       final _tomorrow = _today + 1.days;
@@ -121,9 +123,9 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
     Either<Failure, List<TaskEntry>>? tomorrowTask,
     Either<Failure, List<TaskEntry>>? upcomingTask,
   }) async* {
-    final _todayItems = <TodayEntry>[];
-    final _tomorrowItems = <TodayEntry>[];
-    final _upcomingItems = <TodayEntry>[];
+    var _todayItems = <TodayEntry>[];
+    var _tomorrowItems = <TodayEntry>[];
+    var _upcomingItems = <TodayEntry>[];
 
     yield* todayTask.fold(
       (failure) async* {
@@ -152,6 +154,8 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
           _todayItems.add(_entry);
         }
 
+        _todayItems = sortTodayEntries(_todayItems);
+
         if (tomorrowTask != null && upcomingTask != null) {
           //? Handling Tomorrow Tasks
           final _tomorrowResult = tomorrowTask.fold((failure) {
@@ -163,6 +167,7 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
           });
           if (_tomorrowResult is List) {
             _tomorrowItems.addAll(_tomorrowResult as List<TodayEntry>);
+            _tomorrowItems = sortTodayEntries(_tomorrowItems);
           }
 
           //? Handling Upcoming Tasks
@@ -177,6 +182,7 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
           });
           if (_upcomingResult is List) {
             _upcomingItems.addAll(_upcomingResult as List<TodayEntry>);
+            _upcomingItems = sortTodayEntries(_upcomingItems);
           }
         }
 
@@ -185,17 +191,21 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
           tomorrowEntries: _tomorrowItems,
           upcomingTasks: _upcomingItems,
         );
-        // _items.sortedWith((a, b) {
-        //   if (a.startDateTime != null && b.startDateTime != null) {
-        //     return a.startDateTime!.compareTo(b.startDateTime!);
-        //   } else if (a.dueDateTime != null && b.dueDateTime != null) {
-        //     return a.dueDateTime!.compareTo(b.dueDateTime!);
-        //   } else {
-        //     return a.title!.compareTo(b.title!);
-        //   }
-        // });
       },
     );
+  }
+
+  List<TodayEntry> sortTodayEntries(List<TodayEntry> entries) {
+    entries.sort((a, b) {
+      if (a.startDateTime != null && b.startDateTime != null) {
+        return a.startDateTime!.compareTo(b.startDateTime!);
+      } else if (a.dueDateTime != null && b.dueDateTime != null) {
+        return a.dueDateTime!.compareTo(b.dueDateTime!);
+      } else {
+        return a.title!.compareTo(b.title!);
+      }
+    });
+    return entries;
   }
 
   String _mapFailureToMessage(Failure failure) {
