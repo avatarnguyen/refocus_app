@@ -45,14 +45,13 @@ class _TodayListWidgetState extends State<TodayListWidget> {
     if (newDate.isToday) {
       if (_selectedDate != null) {
         _selectedDate = null;
-        context.read<TodayBloc>()
-          ..add(GetTodayEntries(DateTime.now()))
-          ..add(GetTomorrowEntries(1.days.fromNow))
-          ..add(GetUpcomingTask(1.days.fromNow, 5.days.fromNow));
+        context.read<TodayBloc>().add(const GetTodayEntries());
       }
     } else {
       _selectedDate = newDate;
-      context.read<TodayBloc>().add(GetTodayEntries(newDate));
+      context
+          .read<TodayBloc>()
+          .add(GetTodayEntriesOfSpecificDate(_selectedDate!));
     }
   }
 
@@ -64,10 +63,7 @@ class _TodayListWidgetState extends State<TodayListWidget> {
 
   // final _log = logger(TodayListWidget);
   Future<void> _pullToRefresh(BuildContext context) async {
-    context.read<TodayBloc>()
-      ..add(GetTodayEntries(DateTime.now()))
-      ..add(GetTomorrowEntries(1.days.fromNow))
-      ..add(GetUpcomingTask(1.days.fromNow, 5.days.fromNow));
+    context.read<TodayBloc>().add(const GetTodayEntries());
     await Future<dynamic>.delayed(1000.milliseconds);
   }
 
@@ -91,11 +87,15 @@ class _TodayListWidgetState extends State<TodayListWidget> {
                       context, _headerPadding, _headerTextStyle, state),
                 );
         } else if (state is TodayLoading) {
-          return const FullScreenLoadingWidget();
-        } else if (state is TodayError) {
-          return MessageDisplay(
-            message: state.message,
+          return const Align(
+            alignment: Alignment.topCenter,
+            child: Padding(
+              padding: EdgeInsets.only(top: 32),
+              child: progressIndicator,
+            ),
           );
+        } else if (state is TodayError) {
+          return MessageDisplay(message: state.message);
         } else {
           return const MessageDisplay(message: 'Unexpected State');
         }

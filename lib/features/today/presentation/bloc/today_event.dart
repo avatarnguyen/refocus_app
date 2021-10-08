@@ -8,30 +8,18 @@ abstract class TodayEvent extends Equatable {
 }
 
 /// BLoC Event: Fetch Calendar and Timeblock Entries for a specific day
+class GetTodayEntriesOfSpecificDate extends TodayEvent {
+  const GetTodayEntriesOfSpecificDate(this.date);
+
+  final DateTime date;
+
+  @override
+  List<Object> get props => [date];
+}
+
 class GetTodayEntries extends TodayEvent {
-  const GetTodayEntries(this.date);
-
-  final DateTime date;
+  const GetTodayEntries();
 
   @override
-  List<Object> get props => [date];
-}
-
-class GetTomorrowEntries extends TodayEvent {
-  const GetTomorrowEntries(this.date);
-
-  final DateTime date;
-
-  @override
-  List<Object> get props => [date];
-}
-
-class GetUpcomingTask extends TodayEvent {
-  const GetUpcomingTask(this.startDate, this.endDate);
-
-  final DateTime startDate;
-  final DateTime endDate;
-
-  @override
-  List<Object> get props => [startDate, endDate];
+  List<Object> get props => [];
 }

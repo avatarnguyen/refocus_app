@@ -15,6 +15,7 @@ import 'package:refocus_app/features/task/domain/usecases/helpers/task_params.da
 import 'package:refocus_app/features/task/presentation/bloc/cubit/subtask_cubit.dart';
 import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
 import 'package:refocus_app/features/today/domain/today_entry.dart';
+import 'package:refocus_app/features/today/presentation/bloc/today_bloc.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
 import 'package:styled_widget/styled_widget.dart';
 
@@ -44,6 +45,8 @@ class ListItemWidget extends StatelessWidget {
     final _timelineTextStyle = context.subtitle2.copyWith(
       color: kcPrimary800,
     );
+
+    final _taskTimeTextStyle = context.subtitle2.copyWith(color: _textColor);
 
     var _startTitle = '';
     String? _endTitle;
@@ -92,35 +95,6 @@ class ListItemWidget extends StatelessWidget {
       ].toRow().opacity(_isPassed ? 0.6 : 1.0).padding(all: 6);
     } else {
       return [
-        [
-          Text(
-            _startTitle,
-            overflow: TextOverflow.clip,
-            textAlign: TextAlign.right,
-            maxLines: 2,
-            textScaleFactor: context.textScaleFactor,
-            style: entry.startDateTime != null
-                ? context.textTheme.subtitle2!.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: kcPrimary800,
-                  )
-                : _timelineTextStyle,
-          ).padding(top: 4),
-          if (entry.endDateTime != null && _endTitle != null)
-            Text(
-              _endTitle,
-              overflow: TextOverflow.clip,
-              textAlign: TextAlign.right,
-              maxLines: 1,
-              textScaleFactor: context.textScaleFactor,
-              style: _timelineTextStyle,
-            )
-        ]
-            .toColumn(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            )
-            .expanded(),
         Slidable(
           key: Key(entry.id),
           actionPane: const SlidableStrechActionPane(),
@@ -136,6 +110,11 @@ class ListItemWidget extends StatelessWidget {
               icon: Icons.arrow_forward_outlined,
               foregroundColor: _textColor,
               color: Colors.transparent,
+            ),
+            IconSlideAction(
+              icon: Icons.calendar_today_rounded,
+              foregroundColor: context.colorScheme.primary,
+              color: Colors.transparent,
             )
           ],
           dismissal: SlidableDismissal(
@@ -144,18 +123,20 @@ class ListItemWidget extends StatelessWidget {
                 // Mark Task as Done
                 context.read<TaskBloc>().add(EditTaskEntryEvent(
                     params: TaskParams(task: returnTaskFromTodayEntry(entry))));
+                //TODO: This also fetch calendar events, need to optimize
+                context.read<TodayBloc>().add(const GetTodayEntries());
               } else {
                 // Postpone Task to next day
               }
             },
             dismissThresholds: const <SlideActionType, double>{
               SlideActionType.primary: .4,
-              SlideActionType.secondary: .4,
+              SlideActionType.secondary: .6,
             },
             child: const SlidableDrawerDismissal(),
           ),
           child: Container(
-            width: context.width - (6 + 28 + timeLineWidth),
+            width: context.width - (8 + 28), //8 is hori padding
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: _backgroudColor,
@@ -174,6 +155,36 @@ class ListItemWidget extends StatelessWidget {
                   ),
                 ).expanded(),
               ].toRow(),
+              [
+                Text(
+                  _startTitle,
+                  overflow: TextOverflow.clip,
+                  textAlign: TextAlign.right,
+                  maxLines: 2,
+                  textScaleFactor: context.textScaleFactor,
+                  style: entry.startDateTime != null
+                      ? context.textTheme.subtitle2!.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: _textColor,
+                        )
+                      : _taskTimeTextStyle,
+                ),
+                if (entry.endDateTime != null && _endTitle != null) ...[
+                  Icon(
+                    Icons.arrow_right_alt_rounded,
+                    size: 22,
+                    color: _textColor,
+                  ).padding(horizontal: 2),
+                  Text(
+                    _endTitle,
+                    overflow: TextOverflow.clip,
+                    textAlign: TextAlign.right,
+                    maxLines: 1,
+                    textScaleFactor: context.textScaleFactor,
+                    style: _taskTimeTextStyle,
+                  )
+                ]
+              ].toRow()
 
               //* Subtask
               // verticalSpaceTiny,
@@ -187,7 +198,7 @@ class ListItemWidget extends StatelessWidget {
           )
               .gestures(onTap: () {
             showTaskBottomSheet(context, entry.id, entry.color);
-          }).padding(left: 6),
+          }).padding(horizontal: 4),
         ),
       ].toRow(crossAxisAlignment: CrossAxisAlignment.start).padding(all: 6);
     }

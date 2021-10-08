@@ -243,6 +243,8 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
           cornerRadius: 16,
           duration: 500.milliseconds,
           color: context.backgroundColor,
+          backdropColor: Colors.black12,
+          isBackdropInteractable: true,
           snapSpec: const SnapSpec(
             initialSnap: 0.5,
             snappings: [0.1, 0.7],

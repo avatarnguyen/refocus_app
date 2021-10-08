@@ -68,11 +68,7 @@ class _TodayPageState extends State<TodayPage> {
     final today = DateTime.now();
 
     return BlocProvider<TodayBloc>(
-      create: (context) => getIt<TodayBloc>()
-        ..add(GetTodayEntries(DateTime.now()))
-        ..add(GetTomorrowEntries(1.days.fromNow))
-        ..add(GetUpcomingTask(1.days.fromNow,
-            5.days.fromNow)), //! Not sure why it should be 1.days.fromnow?
+      create: (context) => getIt<TodayBloc>()..add(const GetTodayEntries()),
       child: Platform.isIOS
           ? CupertinoPageScaffold(
               child: NestedScrollView(

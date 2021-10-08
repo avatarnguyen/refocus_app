@@ -35,6 +35,44 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
     TodayEvent event,
   ) async* {
     if (event is GetTodayEntries) {
+      yield TodayLoading();
+
+      final _today = DateTime.now();
+      final _tomorrow = _today + 1.days;
+      final _startDateTime = CustomDateUtils.getBeginngOfDay(_today);
+      final _endDateTime = CustomDateUtils.getEndOfDay(_tomorrow);
+
+      // Get Events of Today and Tomorrow
+      final _events = await getEventEntry(
+        DateRangeParams(
+          startDate: _startDateTime,
+          endDate: _endDateTime,
+        ),
+      );
+
+      final _todayTask = await getTasks(TaskParams(
+        dueDate: _today,
+        startDate: _today,
+      ));
+
+      final _tomorrowTask = await getTasks(TaskParams(
+        dueDate: _tomorrow,
+        startDate: _tomorrow,
+      ));
+
+      // Get Task of the next 7 days
+      final _fromDate = CustomDateUtils.getBeginngOfDay(_today + 2.days);
+      final _untilDate = CustomDateUtils.getEndOfDay(_today + 6.days);
+      final _upcomingTask = await getTasks(TaskParams(
+        startDate: _fromDate,
+        endDate: _untilDate,
+      ));
+
+      yield* _eitherTodayLoadedOrErrorState(_events, _todayTask,
+          tomorrowTask: _tomorrowTask, upcomingTask: _upcomingTask);
+    } else if (event is GetTodayEntriesOfSpecificDate) {
+      yield TodayLoading();
+
       final _startDateTime = CustomDateUtils.getBeginngOfDay(event.date);
       final _endDateTime = CustomDateUtils.getEndOfDay(event.date);
       final _events = await getEventEntry(
@@ -43,126 +81,119 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
           endDate: _endDateTime,
         ),
       );
-      final _task = await getTasks(TaskParams(
+      final _tasks = await getTasks(TaskParams(
         dueDate: event.date,
         startDate: event.date,
       ));
-
-      yield* _eitherTodayLoadedOrErrorState(_events, _task);
-      // yield* _mapTodayLoadedToState(event);
-    } else if (event is GetTomorrowEntries) {
-      if (state is TodayLoaded) {
-        final _startDateTime = CustomDateUtils.getBeginngOfDay(event.date);
-        final _endDateTime = CustomDateUtils.getEndOfDay(event.date);
-        final _events = await getEventEntry(
-          DateRangeParams(
-            startDate: _startDateTime,
-            endDate: _endDateTime,
-          ),
-        );
-        final _task = await getTasks(TaskParams(
-          dueDate: event.date,
-          startDate: event.date,
-        ));
-
-        final _currentState = state as TodayLoaded;
-
-        yield* _eitherTodayLoadedOrErrorState(_events, _task,
-            todayEntries: _currentState.todayEntries);
-      }
-    } else if (event is GetUpcomingTask) {
-      if (state is TodayLoaded) {
-        final _items = <TodayEntry>[];
-
-        final _startDate = event.startDate;
-        final _endDate = event.endDate;
-
-        final _upcomingTask = await getTasks(
-            TaskParams(startDate: _startDate, endDate: _endDate));
-
-        yield* _upcomingTask.fold((failure) async* {
-          yield TodayError(_mapFailureToMessage(failure));
-        }, (tasks) async* {
-          final _filteredTask = tasks.distinctBy((element) => element.id);
-          final _taskEntries = _filteredTask
-              .map((task) => TodayEntry(
-                    id: task.id,
-                    type: TodayEntryType.task,
-                    title: task.title,
-                    startDateTime: task.startDateTime,
-                    endDateTime: task.endDateTime,
-                    dueDateTime: task.dueDate,
-                    color: task.colorID,
-                  ))
-              .toList();
-          _items.addAll(_taskEntries);
-
-          final _currentState = state as TodayLoaded;
-
-          yield TodayLoaded(
-            todayEntries: _currentState.todayEntries,
-            tomorrowEntries: _currentState.tomorrowEntries,
-            upcomingTasks: _items,
-          );
-        });
-      }
+      yield* _eitherTodayLoadedOrErrorState(_events, _tasks);
     }
   }
 
-  Stream<TodayState> _eitherTodayLoadedOrErrorState(
-      Either<Failure, List<CalendarEventEntry>> calendar,
-      Either<Failure, List<TaskEntry>> tasks,
-      {List<TodayEntry>? todayEntries}) async* {
-    final _items = <TodayEntry>[];
+  TodayEntry returnEntryFromCalendarEvent(CalendarEventEntry eventEntry) {
+    return TodayEntry(
+      id: eventEntry.id!,
+      type: TodayEntryType.event,
+      title: eventEntry.subject,
+      startDateTime: eventEntry.startDateTime,
+      endDateTime: eventEntry.endDateTime,
+      color: eventEntry.colorId,
+      projectOrCalID: eventEntry.calendarId,
+    );
+  }
 
-    yield* tasks.fold(
+  TodayEntry returnEntryFromTaskEntry(TaskEntry taskEntry) {
+    return TodayEntry(
+      id: taskEntry.id,
+      type: TodayEntryType.task,
+      title: taskEntry.title,
+      startDateTime: taskEntry.startDateTime,
+      endDateTime: taskEntry.endDateTime,
+      dueDateTime: taskEntry.dueDate,
+      projectOrCalID: taskEntry.projectID,
+      calendarEventID: taskEntry.calendarID,
+      color: taskEntry.colorID,
+    );
+  }
+
+  Stream<TodayState> _eitherTodayLoadedOrErrorState(
+    Either<Failure, List<CalendarEventEntry>> calendar,
+    Either<Failure, List<TaskEntry>> todayTask, {
+    Either<Failure, List<TaskEntry>>? tomorrowTask,
+    Either<Failure, List<TaskEntry>>? upcomingTask,
+  }) async* {
+    final _todayItems = <TodayEntry>[];
+    final _tomorrowItems = <TodayEntry>[];
+    final _upcomingItems = <TodayEntry>[];
+
+    yield* todayTask.fold(
       (failure) async* {
         yield TodayError(_mapFailureToMessage(failure));
       },
       (tasks) async* {
-        // Calendar Fold
+        //* Handling Calendar Fold
         yield* calendar.fold((failure) async* {
           yield TodayError(_mapFailureToMessage(failure));
         }, (events) async* {
-          // print('[Today Bloc] $events');
-          final _entries = events
-              .map((event) => TodayEntry(
-                    id: event.id!,
-                    type: TodayEntryType.event,
-                    title: event.subject,
-                    startDateTime: event.startDateTime,
-                    endDateTime: event.endDateTime,
-                    // calendarEventID: event.calendarId,
-                    color: event.colorId,
-                    projectOrCalID: event.calendarId,
-                  ))
-              .toList();
-          _items.addAll(_entries);
+          for (final event in events) {
+            final _currentEvent = returnEntryFromCalendarEvent(event);
+            if (event.startDateTime != null && event.startDateTime!.isToday) {
+              _todayItems.add(_currentEvent);
+            } else {
+              _tomorrowItems.add(_currentEvent);
+            }
+          }
         });
+
+        //* Handling Today or Selected Date Tasks
         final _filteredTask = tasks.distinctBy((element) => element.id);
-        final _taskEntries = _filteredTask
-            .map(
-              (task) => TodayEntry(
-                id: task.id,
-                type: TodayEntryType.task,
-                title: task.title,
-                startDateTime:
-                    (task.startDateTime != null) ? task.startDateTime! : null,
-                endDateTime: task.endDateTime,
-                dueDateTime: task.dueDate,
-                projectOrCalID: task.projectID,
-                calendarEventID: task.calendarID,
-                color: task.colorID,
-              ),
-            )
-            .toList();
-        _items.addAll(_taskEntries);
-        if (todayEntries != null) {
-          yield TodayLoaded(
-              todayEntries: todayEntries, tomorrowEntries: _items);
-        } else {
-          yield TodayLoaded(todayEntries: _items);
+
+        for (final currentTask in _filteredTask) {
+          final _entry = returnEntryFromTaskEntry(currentTask);
+          _todayItems.add(_entry);
         }
+
+        if (tomorrowTask != null && upcomingTask != null) {
+          //? Handling Tomorrow Tasks
+          final _tomorrowResult = tomorrowTask.fold((failure) {
+            return failure;
+          }, (tmrTasks) {
+            final _filteredTmrTask =
+                tmrTasks.distinctBy((element) => element.id);
+            return _filteredTmrTask.map(returnEntryFromTaskEntry).toList();
+          });
+          if (_tomorrowResult is List) {
+            _tomorrowItems.addAll(_tomorrowResult as List<TodayEntry>);
+          }
+
+          //? Handling Upcoming Tasks
+          final _upcomingResult = upcomingTask.fold((failure) {
+            return failure;
+          }, (upcomingTasks) {
+            final _filteredUpcomingTasks =
+                upcomingTasks.distinctBy((element) => element.id);
+            return _filteredUpcomingTasks
+                .map(returnEntryFromTaskEntry)
+                .toList();
+          });
+          if (_upcomingResult is List) {
+            _upcomingItems.addAll(_upcomingResult as List<TodayEntry>);
+          }
+        }
+
+        yield TodayLoaded(
+          todayEntries: _todayItems,
+          tomorrowEntries: _tomorrowItems,
+          upcomingTasks: _upcomingItems,
+        );
+        // _items.sortedWith((a, b) {
+        //   if (a.startDateTime != null && b.startDateTime != null) {
+        //     return a.startDateTime!.compareTo(b.startDateTime!);
+        //   } else if (a.dueDateTime != null && b.dueDateTime != null) {
+        //     return a.dueDateTime!.compareTo(b.dueDateTime!);
+        //   } else {
+        //     return a.title!.compareTo(b.title!);
+        //   }
+        // });
       },
     );
   }
