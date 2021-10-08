@@ -2,19 +2,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-const Widget horizontalSpaceTiny = SizedBox(width: 4.0);
-const Widget horizontalSpaceSmall = SizedBox(width: 8.0);
-const Widget horizontalSpaceRegular = SizedBox(width: 16.0);
-const Widget horizontalSpaceMedium = SizedBox(width: 24.0);
-const Widget horizontalSpaceLarge = SizedBox(width: 48.0);
+const Widget horizontalSpaceTiny = SizedBox(width: 4);
+const Widget horizontalSpaceSmall = SizedBox(width: 8);
+const Widget horizontalSpaceRegular = SizedBox(width: 16);
+const Widget horizontalSpaceMedium = SizedBox(width: 24);
+const Widget horizontalSpaceLarge = SizedBox(width: 48);
 
 // Vertical Spacing
-const Widget verticalSpaceTiny = SizedBox(height: 4.0);
-const Widget verticalSpaceSmall = SizedBox(height: 8.0);
-const Widget verticalSpaceRegular = SizedBox(height: 16.0);
-const Widget verticalSpaceMedium = SizedBox(height: 24);
-const Widget verticalSpaceLarge = SizedBox(height: 48.0);
-const Widget verticalSpaceMassive = SizedBox(height: 120.0);
+const Widget verticalSpaceTiny = SizedBox(height: 4);
+const Widget verticalSpaceSmall = SizedBox(height: 8);
+const Widget verticalSpaceRegular = SizedBox(height: 16);
+const verticalSpaceMedium = SizedBox(height: 24);
+const Widget verticalSpaceLarge = SizedBox(height: 48);
+const Widget verticalSpaceMassive = SizedBox(height: 120);
 
 const Widget progressIndicator = SizedBox(
   height: 40,

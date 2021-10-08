@@ -191,6 +191,7 @@ class TaskRepositoryImpl implements TaskRepository {
             .getCachedProjectColorWithID(todo.projectID ?? '');
         log.d('Project Color: $_projectColor');
 
+        //! Error occur when there are no project connected to the task
         final _tmpTask = TaskEntry.fromJson(todo.toJson());
         final _task = _tmpTask.copyWith(colorID: _projectColor ?? '#115FFB');
         log.d('Task Color: ${_task.colorID}');

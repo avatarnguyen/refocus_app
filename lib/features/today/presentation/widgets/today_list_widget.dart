@@ -97,9 +97,7 @@ class _TodayListWidgetState extends State<TodayListWidget> {
             message: state.message,
           );
         } else {
-          return const MessageDisplay(
-            message: 'Unexpected State',
-          );
+          return const MessageDisplay(message: 'Unexpected State');
         }
       },
     );
@@ -134,16 +132,8 @@ class _TodayListWidgetState extends State<TodayListWidget> {
           delegate: SliverChildBuilderDelegate((context, index) {
             final _entry = state.todayEntries[index];
             return ListItemWidget(
-              title: _entry.title,
-              color: _entry.color,
-              type: _entry.type,
-              startDateTime: _entry.startDateTime,
-              endDateTime: _entry.endDateTime,
-              dueDateTime: _entry.dueDateTime,
+              entry: _entry,
               selectedDate: _selectedDate ?? DateTime.now(),
-              eventID: _entry.type == TodayEntryType.event ? _entry.id : null,
-              taskID: _entry.type == TodayEntryType.task ? _entry.id : null,
-              projectOrCal: _entry.projectOrCal,
             );
           }, childCount: state.todayEntries.length),
         ),
@@ -161,16 +151,8 @@ class _TodayListWidgetState extends State<TodayListWidget> {
               final _entries = state.tomorrowEntries!;
               final _entry = _entries[index];
               return ListItemWidget(
-                title: _entry.title,
-                color: _entry.color,
-                type: _entry.type,
-                startDateTime: _entry.startDateTime,
-                endDateTime: _entry.endDateTime,
-                dueDateTime: _entry.dueDateTime,
+                entry: _entry,
                 selectedDate: 1.days.fromNow,
-                eventID: _entry.calendarEventID,
-                taskID: _entry.id,
-                projectOrCal: _entry.projectOrCal,
               );
             }, childCount: state.tomorrowEntries!.length),
           ),
@@ -187,16 +169,8 @@ class _TodayListWidgetState extends State<TodayListWidget> {
             delegate: SliverChildBuilderDelegate((context, index) {
               final _entry = state.upcomingTasks![index];
               return ListItemWidget(
-                title: _entry.title,
-                color: _entry.color,
-                type: _entry.type,
-                startDateTime: _entry.startDateTime,
-                endDateTime: _entry.endDateTime,
-                dueDateTime: _entry.dueDateTime,
+                entry: _entry,
                 selectedDate: 2.days.fromNow,
-                eventID: _entry.calendarEventID,
-                taskID: _entry.id,
-                projectOrCal: _entry.projectOrCal,
               );
             }, childCount: state.upcomingTasks!.length),
           ),

@@ -4,54 +4,38 @@ import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:refocus_app/core/presentation/widgets/edit_page_widgets/edit_task_header.dart';
 import 'package:refocus_app/core/presentation/widgets/edit_page_widgets/edit_task_view.dart';
 import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/today_entry_type.dart';
+import 'package:refocus_app/features/task/domain/entities/task_entry.dart';
 import 'package:refocus_app/features/task/domain/usecases/helpers/task_params.dart';
 import 'package:refocus_app/features/task/presentation/bloc/cubit/subtask_cubit.dart';
 import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
+import 'package:refocus_app/features/today/domain/today_entry.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
 import 'package:styled_widget/styled_widget.dart';
 
 const timeLineWidth = 48.0;
 
 class ListItemWidget extends StatelessWidget {
-  const ListItemWidget({
-    Key? key,
-    this.title,
-    required this.type,
-    this.startDateTime,
-    this.endDateTime,
-    this.dueDateTime,
-    this.selectedDate,
-    this.color,
-    this.eventID,
-    this.taskID,
-    this.projectOrCal,
-  }) : super(key: key);
+  const ListItemWidget({Key? key, required this.entry, this.selectedDate})
+      : super(key: key);
 
-  final String? title;
-  final TodayEntryType type;
-  final DateTime? startDateTime;
-  final DateTime? endDateTime;
-  final DateTime? dueDateTime;
+  final TodayEntry entry;
   final DateTime? selectedDate;
-  final String? color;
-  final String? eventID;
-  final String? taskID;
-  final String? projectOrCal;
 
   @override
   Widget build(BuildContext context) {
-    final _isEvent = type == TodayEntryType.event;
-    final _isPassed =
-        endDateTime != null && endDateTime!.compareTo(DateTime.now()) <= 0;
+    final _isEvent = entry.type == TodayEntryType.event;
+    final _isPassed = entry.endDateTime != null &&
+        entry.endDateTime!.compareTo(DateTime.now()) <= 0;
 
     final _color = _isPassed && _isEvent
         ? Colors.grey.shade600
-        : StyleUtils.getColorFromString(color ?? '#115FFB');
+        : StyleUtils.getColorFromString(entry.color ?? '#115FFB');
     final _backgroudColor = StyleUtils.lighten(_color, 0.28);
     final _textColor = StyleUtils.darken(_color, colorDarken1);
 
@@ -65,14 +49,15 @@ class ListItemWidget extends StatelessWidget {
     String? _endTitle;
 
     if (selectedDate != null) {
-      if (dueDateTime != null && selectedDate!.day == dueDateTime!.day) {
+      if (entry.dueDateTime != null &&
+          selectedDate!.day == entry.dueDateTime!.day) {
         _startTitle = 'due today';
-      } else if (startDateTime != null) {
+      } else if (entry.startDateTime != null) {
         final _startDateTimeStr =
-            CustomDateUtils.returnTime(startDateTime!.toLocal());
+            CustomDateUtils.returnTime(entry.startDateTime!.toLocal());
         _startTitle = _startDateTimeStr;
-        if (endDateTime != null) {
-          final _endTime = endDateTime!.toLocal();
+        if (entry.endDateTime != null) {
+          final _endTime = entry.endDateTime!.toLocal();
           _endTitle = CustomDateUtils.returnTime(_endTime);
         }
       }
@@ -82,8 +67,8 @@ class ListItemWidget extends StatelessWidget {
         SizedBox(
           width: timeLineWidth,
           child: Text(
-            startDateTime != null
-                ? CustomDateUtils.returnTime(startDateTime!.toLocal())
+            entry.startDateTime != null
+                ? CustomDateUtils.returnTime(entry.startDateTime!.toLocal())
                 : 'all day',
             // 'ganztätig',
             overflow: TextOverflow.clip,
@@ -93,10 +78,10 @@ class ListItemWidget extends StatelessWidget {
             style: _timelineTextStyle,
           ),
         ),
-        Icon(Icons.arrow_right, size: 24, color: _textColor),
         // horizontalSpaceTiny,
+        Icon(Icons.arrow_right, size: 24, color: _textColor),
         Text(
-          title ?? '',
+          entry.title ?? '',
           overflow: TextOverflow.ellipsis,
           maxLines: 1,
           textScaleFactor: context.textScaleFactor,
@@ -114,14 +99,14 @@ class ListItemWidget extends StatelessWidget {
             textAlign: TextAlign.right,
             maxLines: 2,
             textScaleFactor: context.textScaleFactor,
-            style: startDateTime != null
+            style: entry.startDateTime != null
                 ? context.textTheme.subtitle2!.copyWith(
                     fontWeight: FontWeight.bold,
                     color: kcPrimary800,
                   )
                 : _timelineTextStyle,
           ).padding(top: 4),
-          if (endDateTime != null && _endTitle != null)
+          if (entry.endDateTime != null && _endTitle != null)
             Text(
               _endTitle,
               overflow: TextOverflow.clip,
@@ -136,56 +121,95 @@ class ListItemWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
             )
             .expanded(),
-        Container(
-          width: context.width - (6 + 28 + timeLineWidth),
-          margin: const EdgeInsets.only(left: 6),
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-          decoration: BoxDecoration(
-            color: _backgroudColor,
-            borderRadius: const BorderRadius.all(Radius.circular(8)),
+        Slidable(
+          key: Key(entry.id),
+          actionPane: const SlidableStrechActionPane(),
+          actions: [
+            IconSlideAction(
+              icon: Icons.check_circle_outline,
+              foregroundColor: _textColor,
+              color: Colors.transparent,
+            )
+          ],
+          secondaryActions: [
+            IconSlideAction(
+              icon: Icons.arrow_forward_outlined,
+              foregroundColor: _textColor,
+              color: Colors.transparent,
+            )
+          ],
+          dismissal: SlidableDismissal(
+            onDismissed: (actionTyp) {
+              if (actionTyp == SlideActionType.primary) {
+                // Mark Task as Done
+                context.read<TaskBloc>().add(EditTaskEntryEvent(
+                    params: TaskParams(task: returnTaskFromTodayEntry(entry))));
+              } else {
+                // Postpone Task to next day
+              }
+            },
+            dismissThresholds: const <SlideActionType, double>{
+              SlideActionType.primary: .4,
+              SlideActionType.secondary: .4,
+            },
+            child: const SlidableDrawerDismissal(),
           ),
-          child: [
-            [
-              Material(
-                color: Colors.transparent,
-                child: Checkbox(
-                  tristate: true,
-                  visualDensity: const VisualDensity(
-                    horizontal: VisualDensity.minimumDensity,
-                    vertical: VisualDensity.minimumDensity,
+          child: Container(
+            width: context.width - (6 + 28 + timeLineWidth),
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: _backgroudColor,
+              borderRadius: const BorderRadius.all(Radius.circular(8)),
+            ),
+            child: [
+              [
+                Text(
+                  entry.title ?? '',
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
+                  textScaleFactor: context.textScaleFactor,
+                  style: context.bodyText1.copyWith(
+                    color: _textColor,
+                    fontSize: kSmallTextSize,
                   ),
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  fillColor: MaterialStateProperty.resolveWith(getColor),
-                  value: false,
-                  shape: const CircleBorder(
-                      side: BorderSide(width: 8, color: Colors.blue)),
-                  onChanged: (bool? selected) => context.read<TaskBloc>().add(
-                      const EditTaskEntryEvent(params: TaskParams())), //TODO
-                ).padding(right: 8),
-              ),
-              Text(
-                title ?? '',
-                overflow: TextOverflow.ellipsis,
-                maxLines: 2,
-                textScaleFactor: context.textScaleFactor,
-                style: context.bodyText1.copyWith(
-                  color: _textColor,
-                  fontSize: kSmallTextSize,
-                ),
-              ).expanded(),
-            ].toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween),
+                ).expanded(),
+              ].toRow(),
 
-            //* Subtask
-            // verticalSpaceTiny,
-            // const InsideTaskItem(),
-          ].toColumn(mainAxisSize: MainAxisSize.min),
-        ).ripple().gestures(onTap: () {
-          if (taskID != null) {
-            showTaskBottomSheet(context, taskID!, color);
-          }
-        }),
+              //* Subtask
+              // verticalSpaceTiny,
+              // const InsideTaskItem(),
+            ].toColumn(mainAxisSize: MainAxisSize.min),
+          )
+              .ripple(
+            customBorder: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(16)),
+            ),
+          )
+              .gestures(onTap: () {
+            showTaskBottomSheet(context, entry.id, entry.color);
+          }).padding(left: 6),
+        ),
       ].toRow(crossAxisAlignment: CrossAxisAlignment.start).padding(all: 6);
     }
+  }
+
+  TaskEntry returnTaskFromTodayEntry(TodayEntry todayEntry) {
+    final _isCompleted = !(todayEntry.isCompleted ?? false);
+    return TaskEntry(
+      id: todayEntry.id,
+      isCompleted: _isCompleted,
+      completedDate: _isCompleted ? DateTime.now() : null,
+      projectID: todayEntry.projectOrCalID!,
+      calendarID: todayEntry.calendarEventID,
+      colorID: todayEntry.color,
+      title: todayEntry.title,
+      dueDate: todayEntry.dueDateTime,
+      startDateTime: todayEntry.startDateTime,
+      endDateTime: todayEntry.dueDateTime,
+      description: todayEntry.description,
+      priority: todayEntry.priority,
+      isHabit: todayEntry.type == TodayEntryType.habit,
+    );
   }
 
   dynamic showTaskBottomSheet(

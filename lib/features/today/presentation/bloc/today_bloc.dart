@@ -134,7 +134,7 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
                     endDateTime: event.endDateTime,
                     // calendarEventID: event.calendarId,
                     color: event.colorId,
-                    projectOrCal: event.calendarId,
+                    projectOrCalID: event.calendarId,
                   ))
               .toList();
           _items.addAll(_entries);
@@ -150,7 +150,7 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
                     (task.startDateTime != null) ? task.startDateTime! : null,
                 endDateTime: task.endDateTime,
                 dueDateTime: task.dueDate,
-                projectOrCal: task.projectID,
+                projectOrCalID: task.projectID,
                 calendarEventID: task.calendarID,
                 color: task.colorID,
               ),
