@@ -8,11 +8,11 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:refocus_app/core/presentation/bloc/today_bloc.dart';
-import 'package:refocus_app/core/presentation/widgets/persistent_header_delegate.dart';
-import 'package:refocus_app/core/presentation/widgets/today_list_widget.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart' as custom_log;
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
+import 'package:refocus_app/features/today/presentation/bloc/today_bloc.dart';
+import 'package:refocus_app/features/today/presentation/widgets/persistent_header_delegate.dart';
+import 'package:refocus_app/features/today/presentation/widgets/today_list_widget.dart';
 import 'package:refocus_app/injection.dart';
 
 class TodayPage extends StatefulWidget {

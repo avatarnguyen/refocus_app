@@ -9,7 +9,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/intl.dart';
 import 'package:refocus_app/config/routes/router.dart';
 import 'package:refocus_app/core/presentation/helper/page_stream.dart';
-import 'package:refocus_app/core/presentation/widgets/persistent_header_delegate.dart';
+import 'package:refocus_app/features/today/presentation/widgets/persistent_header_delegate.dart';
 import 'package:refocus_app/core/util/helpers/date_utils.dart'
     as custom_date_tils;
 import 'package:refocus_app/core/util/helpers/logging.dart' as custom_log;

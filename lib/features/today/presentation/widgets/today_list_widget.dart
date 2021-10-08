@@ -8,14 +8,14 @@ import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:refocus_app/core/presentation/bloc/today_bloc.dart';
-import 'package:refocus_app/core/presentation/widgets/persistent_header_delegate.dart';
-import 'package:refocus_app/core/presentation/widgets/today_list_item.dart';
 import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/today_entry_type.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar/datetime_stream.dart';
 import 'package:refocus_app/features/calendar/presentation/widgets/widgets.dart';
+import 'package:refocus_app/features/today/presentation/bloc/today_bloc.dart';
+import 'package:refocus_app/features/today/presentation/widgets/persistent_header_delegate.dart';
+import 'package:refocus_app/features/today/presentation/widgets/today_list_item.dart';
 import 'package:refocus_app/injection.dart';
 
 class TodayListWidget extends StatefulWidget {

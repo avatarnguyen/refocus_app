@@ -13,7 +13,6 @@ import 'package:internet_connection_checker/internet_connection_checker.dart'
 
 import 'core/injectable_module.dart' as _i52;
 import 'core/network/network_info.dart' as _i13;
-import 'core/presentation/bloc/today_bloc.dart' as _i46;
 import 'core/presentation/helper/action_stream.dart' as _i3;
 import 'core/presentation/helper/edit_task_stream.dart' as _i9;
 import 'core/presentation/helper/notes_stream.dart' as _i14;
@@ -62,8 +61,9 @@ import 'features/task/domain/usecases/task/get_task.dart' as _i36;
 import 'features/task/domain/usecases/task/update_task.dart' as _i26;
 import 'features/task/presentation/bloc/cubit/subtask_cubit.dart' as _i38;
 import 'features/task/presentation/bloc/project_bloc.dart' as _i37;
-import 'features/task/presentation/bloc/task_bloc.dart'
-    as _i39; // ignore_for_file: unnecessary_lambdas
+import 'features/task/presentation/bloc/task_bloc.dart' as _i39;
+import 'features/today/presentation/bloc/today_bloc.dart'
+    as _i46; // ignore_for_file: unnecessary_lambdas
 
 // ignore_for_file: lines_longer_than_80_chars
 /// initializes the registration of provided dependencies inside of [GetIt]
