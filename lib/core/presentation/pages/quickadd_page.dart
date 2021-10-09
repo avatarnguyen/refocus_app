@@ -12,6 +12,7 @@ import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/action_selection_type.dart';
 import 'package:refocus_app/enum/today_entry_type.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar/calendar_bloc.dart';
+import 'package:refocus_app/features/task/presentation/bloc/cubit/subtask_cubit.dart';
 import 'package:refocus_app/features/task/presentation/bloc/project_bloc.dart';
 import 'package:refocus_app/injection.dart';
 import 'package:styled_widget/styled_widget.dart';
@@ -64,8 +65,15 @@ class _QuickAddPageState extends State<QuickAddPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround)
             .scrollable()
             .expanded(),
-        BlocProvider<CalendarBloc>.value(
-          value: BlocProvider.of<CalendarBloc>(context),
+        MultiBlocProvider(
+          providers: [
+            BlocProvider<CalendarBloc>.value(
+              value: BlocProvider.of<CalendarBloc>(context),
+            ),
+            BlocProvider<SubtaskCubit>.value(
+              value: BlocProvider.of<SubtaskCubit>(context),
+            ),
+          ],
           child: const ActionPanelWidget(),
         ),
       ].toColumn(mainAxisAlignment: MainAxisAlignment.spaceBetween).safeArea(),

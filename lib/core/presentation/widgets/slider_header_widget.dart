@@ -14,6 +14,7 @@ import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar/calendar_bloc.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar/datetime_stream.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar_list/calendar_list_bloc.dart';
+import 'package:refocus_app/features/task/presentation/bloc/cubit/subtask_cubit.dart';
 import 'package:refocus_app/features/task/presentation/bloc/project_bloc.dart';
 import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
 import 'package:refocus_app/injection.dart';
@@ -152,6 +153,9 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
                           BlocProvider<TaskBloc>.value(
                             value: BlocProvider.of<TaskBloc>(context),
                           ),
+                          BlocProvider<SubtaskCubit>.value(
+                            value: BlocProvider.of<SubtaskCubit>(context),
+                          ),
                           BlocProvider<CalendarListBloc>(
                             create: (context) => getIt<CalendarListBloc>(),
                           ),
@@ -171,6 +175,9 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
                           ),
                           BlocProvider<TaskBloc>.value(
                             value: BlocProvider.of<TaskBloc>(context),
+                          ),
+                          BlocProvider<SubtaskCubit>.value(
+                            value: BlocProvider.of<SubtaskCubit>(context),
                           ),
                           BlocProvider<CalendarListBloc>(
                             create: (context) => getIt<CalendarListBloc>(),

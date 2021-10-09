@@ -146,7 +146,7 @@ class ListItemWidget extends StatelessWidget {
           ),
           child: Container(
             width: context.width - (8 + 28), //8 is hori padding
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
               color: _backgroudColor,
               borderRadius: const BorderRadius.all(Radius.circular(8)),
@@ -206,7 +206,9 @@ class ListItemWidget extends StatelessWidget {
             showTaskBottomSheet(context, entry.id, entry.color);
           }).padding(horizontal: 4),
         ),
-      ].toRow(crossAxisAlignment: CrossAxisAlignment.start).padding(all: 6);
+      ]
+          .toRow(crossAxisAlignment: CrossAxisAlignment.start)
+          .padding(horizontal: 6, vertical: 4);
     }
   }
 

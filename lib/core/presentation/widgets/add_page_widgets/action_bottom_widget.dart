@@ -17,6 +17,7 @@ import 'package:refocus_app/features/calendar/presentation/bloc/calendar/calenda
 import 'package:refocus_app/features/task/domain/entities/subtask_entry.dart';
 import 'package:refocus_app/features/task/domain/entities/task_entry.dart';
 import 'package:refocus_app/features/task/domain/usecases/helpers/task_params.dart';
+import 'package:refocus_app/features/task/presentation/bloc/cubit/subtask_cubit.dart';
 import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
 import 'package:refocus_app/injection.dart';
 import 'package:styled_widget/styled_widget.dart';
@@ -248,16 +249,6 @@ class _ActionBottomWidgetState extends State<ActionBottomWidget> {
                   _type == TodayEntryType.timeblockPrivate) {
                 final _subtaskList = _subTaskStream.subTasks;
 
-                //TODO: Create Subtask
-                Future.forEach(_subtaskList, (String _title) {
-                  final newSubTask = SubTaskEntry(
-                    id: uuid.v4(),
-                    isCompleted: false,
-                    taskID: _taskID,
-                    title: _title,
-                  );
-                });
-
                 context.read<TaskBloc>().add(
                       CreateTaskEntriesEvent(
                         params: [
@@ -279,6 +270,18 @@ class _ActionBottomWidgetState extends State<ActionBottomWidget> {
                         ],
                       ),
                     );
+                if (_subtaskList.isNotEmpty) {
+                  for (final title in _subtaskList) {
+                    final newSubTask = SubTaskEntry(
+                      id: uuid.v4(),
+                      isCompleted: false,
+                      taskID: _taskID,
+                      title: title,
+                      priority: 0,
+                    );
+                    context.read<SubtaskCubit>().createNewSubtask(newSubTask);
+                  }
+                }
               }
               if (_type == TodayEntryType.event ||
                   _type == TodayEntryType.timeblock ||
