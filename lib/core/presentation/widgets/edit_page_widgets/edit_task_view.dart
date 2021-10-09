@@ -209,10 +209,8 @@ class _EditTaskViewState extends State<EditTaskView> {
           textAlign: TextAlign.center,
           material: (context, platform) => materialTextField(),
           cupertino: (context, platform) => cupertinoTextField(),
-          style: context.h4.copyWith(
-            fontWeight: FontWeight.w500,
-            color: _textColor,
-          ),
+          style: context.h4
+              .copyWith(fontWeight: FontWeight.w500, color: _textColor),
         ),
         verticalSpaceMedium,
         //* Edit Start & End DateTime

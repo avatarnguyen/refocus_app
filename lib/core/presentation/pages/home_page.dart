@@ -13,7 +13,6 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:refocus_app/amplifyconfiguration.dart';
 import 'package:refocus_app/core/presentation/helper/page_stream.dart';
 import 'package:refocus_app/core/presentation/helper/sliding_body_stream.dart';
-import 'package:refocus_app/features/today/presentation/pages/today_page.dart';
 import 'package:refocus_app/core/presentation/widgets/slider_header_widget.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
@@ -23,6 +22,7 @@ import 'package:refocus_app/features/task/presentation/bloc/cubit/subtask_cubit.
 import 'package:refocus_app/features/task/presentation/bloc/project_bloc.dart';
 import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
 import 'package:refocus_app/features/task/presentation/pages/project_page.dart';
+import 'package:refocus_app/features/today/presentation/pages/today_page.dart';
 import 'package:refocus_app/injection.dart';
 import 'package:refocus_app/models/ModelProvider.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
