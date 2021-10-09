@@ -9,6 +9,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:http/http.dart';
 import 'package:refocus_app/core/presentation/helper/edit_task_stream.dart';
 import 'package:refocus_app/core/presentation/widgets/edit_page_widgets/edit_datetime_cell.dart';
 import 'package:refocus_app/core/presentation/widgets/edit_page_widgets/slidable_subtask_item.dart';
@@ -46,8 +47,9 @@ class _EditTaskViewState extends State<EditTaskView> {
   DateTime? endDateTime;
   DateTime? dueDateTime;
 
-  List<SubTaskEntry> currentSubtask = [];
-  List<String> newSubtaskTitle = [];
+  Map<String, SubTaskEntry> editedSubTasks = {};
+  // List<String> newSubtaskTitle = [];
+  String? newSubTask;
 
   TaskEntry? currentTask;
 
@@ -76,7 +78,7 @@ class _EditTaskViewState extends State<EditTaskView> {
 
   void _editSettingReceived(EditTaskState state) {
     switch (state) {
-      case EditTaskState.editing:
+      case EditTaskState.edited:
         if (currentTask != null) {
           var shouldUpdateTask = false;
 
@@ -84,10 +86,6 @@ class _EditTaskViewState extends State<EditTaskView> {
             shouldUpdateTask = true;
 
             currentTask = currentTask!.copyWith(title: title);
-          }
-          if (newSubtaskTitle.isNotEmpty) {
-            //TODO: Add new Subtask here
-            shouldUpdateTask = true;
           }
 
           if (currentTask!.dueDate != dueDateTime ||
@@ -101,6 +99,14 @@ class _EditTaskViewState extends State<EditTaskView> {
               dueDate: dueDateTime,
             );
           }
+
+          if (editedSubTasks.isNotEmpty) {
+            editedSubTasks.forEach((key, subtask) {
+              context.read<SubtaskCubit>().createNewSubtask(subtask);
+            });
+            editedSubTasks.clear();
+          }
+
           if (shouldUpdateTask) {
             context.read<TaskBloc>().add(
                   EditTaskEntryEvent(
@@ -118,7 +124,7 @@ class _EditTaskViewState extends State<EditTaskView> {
           _editStream.broadCastCurrentPage(EditTaskState.view);
         }
         break;
-      case EditTaskState.edit:
+      case EditTaskState.editing:
         setState(() {
           _currentEditState = state;
         });
@@ -133,6 +139,8 @@ class _EditTaskViewState extends State<EditTaskView> {
 
   final _textfieldPadding = const EdgeInsets.all(8);
 
+  Widget? _editModeWidget;
+  Widget? _viewModeWidget;
   @override
   Widget build(BuildContext context) {
     final _color = StyleUtils.getColorFromString(widget.colorID ?? '#115FFB');
@@ -162,17 +170,14 @@ class _EditTaskViewState extends State<EditTaskView> {
             endDateTime ??= _fetchedTask.endDateTime;
             dueDateTime ??= _fetchedTask.dueDate;
 
-            //TODO: Fetch Subtasks
-            if (currentSubtask.isEmpty) {}
-
             if (_currentEditState == EditTaskState.view) {
               //* View Mode
-              return _buildViewModeElements(_fetchedTask, context, _textColor,
-                  _timeTextStyle, _dateTextStyle);
+              return _viewModeWidget ??= _buildViewModeElements(_fetchedTask,
+                  context, _textColor, _timeTextStyle, _dateTextStyle);
             }
             //* Edit Mode
-            return _buildEditModeElements(_fetchedTask, context, _textColor,
-                _editTimeTextStyle, _dateTextStyle);
+            return _editModeWidget ??= _buildEditModeElements(_fetchedTask,
+                context, _textColor, _editTimeTextStyle, _dateTextStyle);
           }
         }
         return progressIndicator;
@@ -255,19 +260,52 @@ class _EditTaskViewState extends State<EditTaskView> {
             Text('Due Date', style: _dateTextStyle).padding(top: 4),
           ].toColumn(mainAxisSize: MainAxisSize.min).padding(top: 24),
         verticalSpaceMedium,
-        _buildSubTaskEditTextField(context, 'sub task 1', 0, _textColor),
-        _buildSubTaskEditTextField(context, 'sub task 2', 0, _textColor),
 
-        //* Subtask Text Field
-        currentSubtask
-            .map((subtask) => _buildSubTaskEditTextField(
-                context,
-                subtask.title ?? '',
-                currentSubtask.indexOf(subtask),
-                _textColor))
-            .toList()
-            .toColumn(),
+        //* Get SubTasks
+        BlocBuilder<SubtaskCubit, SubtaskState>(
+          builder: (context, state) {
+            return state.when<Widget>(
+              initial: () => progressIndicator,
+              loaded: (subtasks) {
+                if (subtasks.isNotEmpty) {
+                  return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: subtasks
+                          .map((subtask) => _buildSubTaskEditTextField(
+                                context,
+                                subtask,
+                                _textColor,
+                              ))
+                          .toList());
+                } else {
+                  return const SizedBox.shrink();
+                }
+              },
+              error: (errorMessage) => MessageDisplay(message: errorMessage),
+            );
+          },
+        ),
+
         verticalSpaceRegular,
+        if (newSubTask != null) ...[
+          _buildCreateSubTaskTextField(context, newSubTask!).padding(
+              horizontal: _currentEditState == EditTaskState.view ? 8 : 0),
+          verticalSpaceTiny,
+        ],
+        verticalSpaceSmall,
+        if (newSubTask == null)
+          PlatformIconButton(
+            color: Colors.white,
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+            materialIcon: Icon(Icons.add, color: _textColor),
+            cupertinoIcon: Icon(CupertinoIcons.add, color: _textColor),
+            onPressed: () {
+              setState(() {
+                newSubTask = '';
+              });
+            },
+          ).paddingDirectional(horizontal: 8),
+        verticalSpaceMedium,
         PlatformButton(
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 32),
           onPressed: () {},
@@ -279,17 +317,21 @@ class _EditTaskViewState extends State<EditTaskView> {
   }
 
   Widget _buildSubTaskEditTextField(
-      BuildContext context, String title, int elementIdx, Color? textColor) {
+      BuildContext context, SubTaskEntry subTaskEntry, Color? textColor) {
     return PlatformTextField(
-      controller: TextEditingController(text: title)
+      controller: TextEditingController(text: subTaskEntry.title)
         ..selection = TextSelection.fromPosition(
-          TextPosition(offset: title.length),
+          TextPosition(offset: subTaskEntry.title?.length ?? 0),
         ),
       textAlignVertical: TextAlignVertical.center,
       textAlign: TextAlign.center,
       material: (context, platform) => materialTextField(),
       cupertino: (context, platform) => cupertinoTextField(),
       style: context.caption.copyWith(color: textColor),
+      onChanged: (text) {
+        final _subTaskID = subTaskEntry.id;
+        editedSubTasks[_subTaskID] = subTaskEntry.copyWith(title: text);
+      },
     ).padding(vertical: 4);
   }
 
@@ -347,7 +389,10 @@ class _EditTaskViewState extends State<EditTaskView> {
             ),
             Text('Due Date', style: _dateTextStyle),
           ].toColumn(mainAxisSize: MainAxisSize.min).padding(top: 16),
-        verticalSpaceRegular,
+
+        verticalSpaceLarge,
+
+        //* Get SubTasks
         BlocBuilder<SubtaskCubit, SubtaskState>(
           builder: (context, state) {
             return state.when<Widget>(
@@ -381,26 +426,20 @@ class _EditTaskViewState extends State<EditTaskView> {
         ),
 
         //* Adding new Subtask
-        if (newSubtaskTitle.isNotEmpty) verticalSpaceTiny,
-        if (newSubtaskTitle.isNotEmpty)
-          newSubtaskTitle
-              .map((text) => _buildSubTaskViewTextField(
-                  context, text, newSubtaskTitle.indexOf(text)))
-              .toList()
-              .toColumn()
+        if (newSubTask != null) ...[
+          _buildCreateSubTaskTextField(context, newSubTask!)
               .padding(horizontal: 8),
+          verticalSpaceTiny,
+        ],
         verticalSpaceSmall,
-        PlatformIconButton(
-          color: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-          materialIcon: Icon(Icons.add, color: _textColor),
-          cupertinoIcon: Icon(CupertinoIcons.add, color: _textColor),
-          onPressed: () {
-            setState(() {
-              newSubtaskTitle.add('');
-            });
-          },
-        ).paddingDirectional(horizontal: 8),
+        if (newSubTask == null)
+          PlatformIconButton(
+            color: Colors.white,
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+            materialIcon: Icon(Icons.add, color: _textColor),
+            cupertinoIcon: Icon(CupertinoIcons.add, color: _textColor),
+            onPressed: () => setState(() => newSubTask = ''),
+          ).paddingDirectional(horizontal: 8),
         verticalSpaceMedium,
         PlatformButton(
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 32),
@@ -412,10 +451,7 @@ class _EditTaskViewState extends State<EditTaskView> {
     );
   }
 
-  Widget _buildSubTaskViewTextField(
-      BuildContext context, String title, int elementIdx) {
-    final _textColor = kcPrimary500;
-
+  Widget _buildCreateSubTaskTextField(BuildContext context, String title) {
     return PlatformTextField(
       controller: TextEditingController(text: title)
         ..selection = TextSelection.fromPosition(
@@ -424,14 +460,84 @@ class _EditTaskViewState extends State<EditTaskView> {
       textAlignVertical: TextAlignVertical.center,
       textAlign: TextAlign.center,
       onChanged: (text) {
-        newSubtaskTitle[elementIdx] = text;
+        if (newSubTask != null) {
+          newSubTask = text;
+        }
       },
-      material: (context, platform) =>
-          materialTextField(customPadding: const EdgeInsets.all(16)),
-      cupertino: (context, platform) =>
-          cupertinoTextField(customPadding: const EdgeInsets.all(16)),
-      style: context.subtitle1.copyWith(color: _textColor),
+      material: (context, platform) => materialTextField(
+        customPadding: const EdgeInsets.all(16),
+        shouldShowIcon: newSubTask != null,
+      ),
+      cupertino: (context, platform) => cupertinoTextField(
+        customPadding: const EdgeInsets.all(16),
+        shouldShowIcon: newSubTask != null,
+      ),
     ).padding(vertical: 4);
+  }
+
+  CupertinoTextFieldData cupertinoTextField(
+      {EdgeInsetsGeometry? customPadding, bool? shouldShowIcon}) {
+    final _color = StyleUtils.getColorFromString(widget.colorID ?? '#115FFB');
+    final _backgroudColor = StyleUtils.lighten(_color, 0.32);
+    final _textColor = StyleUtils.darken(_color, 0.32);
+
+    return CupertinoTextFieldData(
+      padding: customPadding ?? _textfieldPadding,
+      decoration: BoxDecoration(
+        color: _backgroudColor,
+        borderRadius: const BorderRadius.all(Radius.circular(8)),
+      ),
+      style: context.subtitle1.copyWith(color: _textColor),
+      suffix: shouldShowIcon != null && shouldShowIcon
+          ? Icon(
+              Icons.send,
+              color: _textColor,
+            ).padding(right: 8).gestures(onTap: () {
+              context.read<SubtaskCubit>().createNewSubtask(SubTaskEntry(
+                    id: _uuid.v1(),
+                    isCompleted: false,
+                    taskID: widget.taskID,
+                    title: newSubTask,
+                    priority: 0,
+                  ));
+              newSubTask = null;
+              FocusScope.of(context).unfocus();
+            })
+          : null,
+    );
+  }
+
+  MaterialTextFieldData materialTextField(
+      {EdgeInsetsGeometry? customPadding, bool? shouldShowIcon}) {
+    final _color = StyleUtils.getColorFromString(widget.colorID ?? '#115FFB');
+    final _backgroudColor = StyleUtils.lighten(_color, 0.32);
+    final _textColor = StyleUtils.darken(_color, 0.32);
+
+    return MaterialTextFieldData(
+        style: context.subtitle1.copyWith(color: _textColor),
+        decoration: InputDecoration(
+          contentPadding: customPadding ?? _textfieldPadding,
+          border: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(8)),
+          ),
+          fillColor: _backgroudColor,
+          suffix: shouldShowIcon != null && shouldShowIcon
+              ? Icon(
+                  Icons.send,
+                  color: _textColor,
+                ).padding(right: 8).gestures(onTap: () {
+                  context.read<SubtaskCubit>().createNewSubtask(SubTaskEntry(
+                        id: _uuid.v1(),
+                        isCompleted: false,
+                        taskID: widget.taskID,
+                        title: newSubTask,
+                        priority: 0,
+                      ));
+                  newSubTask = null;
+                  FocusScope.of(context).unfocus();
+                })
+              : null,
+        ));
   }
 
   Widget _materialDateTimePicker(BuildContext context) {
@@ -508,31 +614,6 @@ class _EditTaskViewState extends State<EditTaskView> {
           ],
         );
       },
-    );
-  }
-
-  CupertinoTextFieldData cupertinoTextField(
-      {EdgeInsetsGeometry? customPadding}) {
-    final _color = StyleUtils.getColorFromString(widget.colorID ?? '#115FFB');
-    final _backgroudColor = StyleUtils.lighten(_color, 0.32);
-
-    return CupertinoTextFieldData(
-      padding: customPadding ?? _textfieldPadding,
-      decoration: BoxDecoration(
-        color: _backgroudColor,
-        borderRadius: const BorderRadius.all(Radius.circular(8)),
-      ),
-    );
-  }
-
-  MaterialTextFieldData materialTextField({EdgeInsetsGeometry? customPadding}) {
-    return MaterialTextFieldData(
-      decoration: InputDecoration(
-        contentPadding: customPadding ?? _textfieldPadding,
-        border: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(8)),
-        ),
-      ),
     );
   }
 }

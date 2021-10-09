@@ -140,6 +140,7 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
             color: kcSecondary100,
             size: 33,
           ).gestures(onTap: () {
+            //TODO: Refactor this to and use auto_route instead!!!
             Navigator.push<dynamic>(
               context,
               Platform.isIOS

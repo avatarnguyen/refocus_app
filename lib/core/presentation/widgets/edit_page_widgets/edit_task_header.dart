@@ -69,7 +69,7 @@ class _EditTaskHeaderState extends State<EditTaskHeader> {
             .padding(right: 16)
             .gestures(onTap: () {
           _editStream.broadCastCurrentPage(
-              isEdit ? EditTaskState.editing : EditTaskState.edit);
+              isEdit ? EditTaskState.edited : EditTaskState.editing);
           setState(() {
             isEdit = !isEdit;
           });
