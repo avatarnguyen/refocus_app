@@ -172,18 +172,24 @@ class _EditTaskViewState extends State<EditTaskView> {
 
             if (_currentEditState == EditTaskState.view) {
               //* View Mode
-              return _viewModeWidget ??= _buildViewModeElements(_fetchedTask,
-                  context, _textColor, _timeTextStyle, _dateTextStyle);
+              return _buildViewModeElements(_fetchedTask, context, _textColor,
+                  _timeTextStyle, _dateTextStyle);
             }
             //* Edit Mode
-            return _editModeWidget ??= _buildEditModeElements(_fetchedTask,
-                context, _textColor, _editTimeTextStyle, _dateTextStyle);
+            return _buildEditModeElements(_fetchedTask, context, _textColor,
+                _editTimeTextStyle, _dateTextStyle);
           }
         }
         return progressIndicator;
       },
     );
   }
+
+  Widget? _editTitleWidget;
+  Widget? _editStartDateTimeWidget;
+  Widget? _editEndDateTimeWidget;
+  Widget? _editDueDateWidget;
+  Widget? _editSubtaskWidget;
 
   Widget _buildEditModeElements(
       TaskEntry _fetchedTask,
@@ -197,7 +203,7 @@ class _EditTaskViewState extends State<EditTaskView> {
       padding: const EdgeInsets.all(16),
       children: [
         //TODO: seperate TextEditingControoler
-        PlatformTextField(
+        _editTitleWidget ??= PlatformTextField(
           controller: TextEditingController(text: title ?? _fetchedTask.title)
             ..selection = TextSelection.fromPosition(
               TextPosition(offset: _fetchedTask.title?.length ?? 0),
@@ -214,7 +220,9 @@ class _EditTaskViewState extends State<EditTaskView> {
         ),
         verticalSpaceMedium,
         //* Edit Start & End DateTime
-        _buildEditDateTimeCell(startDateTime!.toLocal(), _editTimeTextStyle,
+        _editStartDateTimeWidget ??= _buildEditDateTimeCell(
+                startDateTime!.toLocal(),
+                _editTimeTextStyle,
                 DateTimeSelected.start)
             .gestures(
           onTap: () {
@@ -230,7 +238,9 @@ class _EditTaskViewState extends State<EditTaskView> {
         Text('Until', style: _dateTextStyle)
             .alignment(Alignment.center)
             .padding(vertical: 4),
-        _buildEditDateTimeCell(endDateTime!.toLocal(), _editTimeTextStyle,
+        _editEndDateTimeWidget ??= _buildEditDateTimeCell(
+                endDateTime!.toLocal(),
+                _editTimeTextStyle,
                 DateTimeSelected.end)
             .gestures(
           onTap: () {
@@ -242,7 +252,7 @@ class _EditTaskViewState extends State<EditTaskView> {
         ),
         //* Edit Due Date
         if (_fetchedTask.dueDate != null)
-          [
+          _editDueDateWidget ??= [
             _buildEditDateTimeCell(
               dueDateTime!,
               _editTimeTextStyle,
@@ -260,7 +270,7 @@ class _EditTaskViewState extends State<EditTaskView> {
         verticalSpaceMedium,
 
         //* Get SubTasks
-        BlocBuilder<SubtaskCubit, SubtaskState>(
+        _editSubtaskWidget ??= BlocBuilder<SubtaskCubit, SubtaskState>(
           builder: (context, state) {
             return state.when<Widget>(
               initial: () => progressIndicator,
@@ -297,11 +307,9 @@ class _EditTaskViewState extends State<EditTaskView> {
             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
             materialIcon: Icon(Icons.add, color: _textColor),
             cupertinoIcon: Icon(CupertinoIcons.add, color: _textColor),
-            onPressed: () {
-              setState(() {
-                newSubTask = '';
-              });
-            },
+            onPressed: () => setState(() {
+              newSubTask = '';
+            }),
           ).paddingDirectional(horizontal: 8),
         verticalSpaceMedium,
         PlatformButton(
@@ -356,6 +364,11 @@ class _EditTaskViewState extends State<EditTaskView> {
     );
   }
 
+  Widget? _viewTextWidget;
+  Widget? _viewDateTimeWidget;
+  Widget? _viewDueDateWidget;
+  Widget? _viewSubtaskWidget;
+
   Widget _buildViewModeElements(TaskEntry _fetchedTask, BuildContext context,
       Color _textColor, TextStyle _timeTextStyle, TextStyle _dateTextStyle) {
     return ListView(
@@ -363,7 +376,7 @@ class _EditTaskViewState extends State<EditTaskView> {
       physics: const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.all(16),
       children: [
-        Text(
+        _viewTextWidget ??= Text(
           _fetchedTask.title ?? '',
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
@@ -374,12 +387,12 @@ class _EditTaskViewState extends State<EditTaskView> {
         ).alignment(Alignment.center),
         verticalSpaceMedium,
         //Start and End DateTime
-        EditDateTimeCell(
+        _viewDateTimeWidget ??= EditDateTimeCell(
           fetchedTask: _fetchedTask,
           colorID: widget.colorID,
         ),
         if (_fetchedTask.dueDate != null)
-          [
+          _viewDueDateWidget ??= [
             Text(
               CustomDateUtils.returnDateAndMonth(
                   _fetchedTask.dueDate!.toLocal()),
@@ -391,7 +404,7 @@ class _EditTaskViewState extends State<EditTaskView> {
         verticalSpaceLarge,
 
         //* Get SubTasks
-        BlocBuilder<SubtaskCubit, SubtaskState>(
+        _viewSubtaskWidget ??= BlocBuilder<SubtaskCubit, SubtaskState>(
           builder: (context, state) {
             return state.when<Widget>(
               initial: () => progressIndicator,
