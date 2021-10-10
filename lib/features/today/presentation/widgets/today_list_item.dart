@@ -137,18 +137,22 @@ class _ListItemWidgetState extends State<ListItemWidget> {
               ].toRow(),
 
               //* Subtask
-              if (!_isEvent) ...[
+              if (!_isEvent &&
+                  widget.entry.subTaskEntries != null &&
+                  widget.entry.subTaskEntries!.isNotEmpty) ...[
                 verticalSpaceTiny,
                 SubTaskItem(
-                  text: 'Sub Task 1',
-                  priority: 0,
+                  text: widget.entry.subTaskEntries?.first.title ?? '',
+                  priority: widget.entry.subTaskEntries?.first.priority ?? 0,
                   backgroundColor: _color,
                 ),
-                SubTaskItem(
-                  text: 'Sub Task 1',
-                  priority: 0,
-                  backgroundColor: _color,
-                ),
+                if (widget.entry.subTaskEntries!.length > 1)
+                  SubTaskItem(
+                    text: widget.entry.subTaskEntries?.second?.title ?? '',
+                    priority:
+                        widget.entry.subTaskEntries?.second?.priority ?? 0,
+                    backgroundColor: _color,
+                  ),
               ]
             ].toColumn(mainAxisSize: MainAxisSize.min))
         .gestures(onTap: () {

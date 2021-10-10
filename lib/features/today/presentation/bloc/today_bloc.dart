@@ -8,12 +8,16 @@ import 'package:injectable/injectable.dart';
 import 'package:refocus_app/constants/failure_message.dart';
 import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/core/util/helpers/date_utils.dart';
+import 'package:refocus_app/core/util/helpers/logging.dart';
 import 'package:refocus_app/enum/today_entry_type.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/get_events_between.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/helpers/date_range_query_params.dart';
+import 'package:refocus_app/features/task/domain/entities/subtask_entry.dart';
 import 'package:refocus_app/features/task/domain/entities/task_entry.dart';
+import 'package:refocus_app/features/task/domain/usecases/helpers/subtask_params.dart';
 import 'package:refocus_app/features/task/domain/usecases/helpers/task_params.dart';
+import 'package:refocus_app/features/task/domain/usecases/subtask/get_subtasks.dart';
 import 'package:refocus_app/features/task/domain/usecases/task/get_task.dart';
 import 'package:refocus_app/features/today/domain/today_entry.dart';
 
@@ -25,10 +29,12 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
   TodayBloc({
     required this.getEventEntry,
     required this.getTasks,
+    required this.getSubTasks,
   }) : super(TodayLoading());
 
   final GetEventsBetween getEventEntry;
   final GetTasks getTasks;
+  final GetSubTasks getSubTasks;
 
   @override
   Stream<TodayState> mapEventToState(
@@ -103,7 +109,8 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
     );
   }
 
-  TodayEntry returnEntryFromTaskEntry(TaskEntry taskEntry) {
+  TodayEntry returnEntryFromTaskEntry(
+      TaskEntry taskEntry, List<SubTaskEntry> subtasks) {
     return TodayEntry(
       id: taskEntry.id,
       type: TodayEntryType.task,
@@ -114,6 +121,7 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
       projectOrCalID: taskEntry.projectID,
       calendarEventID: taskEntry.calendarID,
       color: taskEntry.colorID,
+      subTaskEntries: subtasks,
     );
   }
 
@@ -126,6 +134,8 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
     var _todayItems = <TodayEntry>[];
     var _tomorrowItems = <TodayEntry>[];
     var _upcomingItems = <TodayEntry>[];
+
+    final _log = logger(TodayBloc);
 
     yield* todayTask.fold(
       (failure) async* {
@@ -150,7 +160,14 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
         final _filteredTask = tasks.distinctBy((element) => element.id);
 
         for (final currentTask in _filteredTask) {
-          final _entry = returnEntryFromTaskEntry(currentTask);
+          final _fetchedSubTasks =
+              await getSubTasks(SubTaskParams(taskID: currentTask.id));
+          final _resultSubTask = _fetchedSubTasks.foldRight<List<SubTaskEntry>>(
+              [], (entries, previous) => entries);
+
+          _log.d('Fold Result: $_resultSubTask');
+
+          final _entry = returnEntryFromTaskEntry(currentTask, _resultSubTask);
           _todayItems.add(_entry);
         }
 
@@ -158,32 +175,32 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
 
         if (tomorrowTask != null && upcomingTask != null) {
           //? Handling Tomorrow Tasks
-          final _tomorrowResult = tomorrowTask.fold((failure) {
-            return failure;
-          }, (tmrTasks) {
-            final _filteredTmrTask =
-                tmrTasks.distinctBy((element) => element.id);
-            return _filteredTmrTask.map(returnEntryFromTaskEntry).toList();
-          });
-          if (_tomorrowResult is List) {
-            _tomorrowItems.addAll(_tomorrowResult as List<TodayEntry>);
-            _tomorrowItems = sortTodayEntries(_tomorrowItems);
+          final _tomorrowTasks = tomorrowTask
+              .foldRight<List<TaskEntry>>([], (entries, previous) => entries);
+          for (final _task in _tomorrowTasks) {
+            final _fetchedSubTasks =
+                await getSubTasks(SubTaskParams(taskID: _task.id));
+            final _resultSubTask = _fetchedSubTasks
+                .foldRight<List<SubTaskEntry>>(
+                    [], (entries, previous) => entries);
+            final _todayEntry = returnEntryFromTaskEntry(_task, _resultSubTask);
+            _tomorrowItems.add(_todayEntry);
           }
+          _tomorrowItems = sortTodayEntries(_tomorrowItems);
 
           //? Handling Upcoming Tasks
-          final _upcomingResult = upcomingTask.fold((failure) {
-            return failure;
-          }, (upcomingTasks) {
-            final _filteredUpcomingTasks =
-                upcomingTasks.distinctBy((element) => element.id);
-            return _filteredUpcomingTasks
-                .map(returnEntryFromTaskEntry)
-                .toList();
-          });
-          if (_upcomingResult is List) {
-            _upcomingItems.addAll(_upcomingResult as List<TodayEntry>);
-            _upcomingItems = sortTodayEntries(_upcomingItems);
+          final _upcomingTask = upcomingTask
+              .foldRight<List<TaskEntry>>([], (entries, previous) => entries);
+          for (final _task in _upcomingTask) {
+            final _fetchedSubTasks =
+                await getSubTasks(SubTaskParams(taskID: _task.id));
+            final _resultSubTask = _fetchedSubTasks
+                .foldRight<List<SubTaskEntry>>(
+                    [], (entries, previous) => entries);
+            final _todayEntry = returnEntryFromTaskEntry(_task, _resultSubTask);
+            _upcomingItems.add(_todayEntry);
           }
+          _upcomingItems = sortTodayEntries(_upcomingItems);
         }
 
         yield TodayLoaded(

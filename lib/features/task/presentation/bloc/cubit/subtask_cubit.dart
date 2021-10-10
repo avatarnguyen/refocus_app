@@ -85,6 +85,16 @@ class SubtaskCubit extends Cubit<SubtaskState> {
     }
   }
 
+  Future<void> updateSubtaskWithoutReload(SubTaskEntry subTaskEntry) async {
+    try {
+      await updateSubTask(
+        SubTaskParams(subTaskEntry: subTaskEntry),
+      );
+    } catch (e) {
+      log.e(e);
+    }
+  }
+
   Future<void> deleteSubtask(SubTaskEntry subTaskEntry) async {
     try {
       emit(const SubtaskState.initial());

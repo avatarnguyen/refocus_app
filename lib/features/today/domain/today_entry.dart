@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 import 'package:refocus_app/enum/today_entry_type.dart';
+import 'package:refocus_app/features/task/domain/entities/subtask_entry.dart';
 
 class TodayEntry extends Equatable {
   const TodayEntry({
@@ -17,6 +18,7 @@ class TodayEntry extends Equatable {
     this.projectOrCalID,
     this.isCompleted,
     this.priority,
+    this.subTaskEntries,
   });
 
   final String id;
@@ -32,6 +34,7 @@ class TodayEntry extends Equatable {
   final String? projectOrCalID;
   final bool? isCompleted;
   final int? priority;
+  final List<SubTaskEntry>? subTaskEntries;
 
   @override
   List<Object?> get props => [
@@ -48,6 +51,7 @@ class TodayEntry extends Equatable {
         projectOrCalID,
         isCompleted,
         priority,
+        subTaskEntries,
       ];
 
   TodayEntry copyWith({
@@ -64,6 +68,7 @@ class TodayEntry extends Equatable {
     String? projectOrCalID,
     bool? isCompleted,
     int? priority,
+    List<SubTaskEntry>? subTaskEntries,
   }) {
     return TodayEntry(
       id: id ?? this.id,
@@ -79,6 +84,7 @@ class TodayEntry extends Equatable {
       projectOrCalID: projectOrCalID ?? this.projectOrCalID,
       isCompleted: isCompleted ?? this.isCompleted,
       priority: priority ?? this.priority,
+      subTaskEntries: subTaskEntries ?? this.subTaskEntries,
     );
   }
 }

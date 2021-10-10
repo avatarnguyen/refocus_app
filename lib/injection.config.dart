@@ -159,7 +159,8 @@ Future<_i1.GetIt> $initGetIt(_i1.GetIt get,
       () => _i45.GetEventsBetween(get<_i40.CalendarRepository>()));
   gh.factory<_i46.TodayBloc>(() => _i46.TodayBloc(
       getEventEntry: get<_i45.GetEventsBetween>(),
-      getTasks: get<_i36.GetTasks>()));
+      getTasks: get<_i36.GetTasks>(),
+      getSubTasks: get<_i35.GetSubTasks>()));
   gh.lazySingleton<_i47.UpdateCalendarList>(() =>
       _i47.UpdateCalendarList(repository: get<_i40.CalendarRepository>()));
   gh.lazySingleton<_i48.UpdateEvent>(
