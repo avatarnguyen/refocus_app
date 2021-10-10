@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:dartx/dartx.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
@@ -11,6 +12,7 @@ import 'package:refocus_app/core/presentation/widgets/edit_page_widgets/edit_tas
 import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/today_entry_type.dart';
+import 'package:refocus_app/enum/today_event_type.dart';
 import 'package:refocus_app/features/task/domain/entities/task_entry.dart';
 import 'package:refocus_app/features/task/domain/usecases/helpers/task_params.dart';
 import 'package:refocus_app/features/task/presentation/bloc/cubit/subtask_cubit.dart';
@@ -47,9 +49,8 @@ class _ListItemWidgetState extends State<ListItemWidget> {
     final _isPassed = widget.entry.endDateTime != null &&
         widget.entry.endDateTime!.compareTo(DateTime.now()) <= 0;
 
-    final _color = _isPassed && _isEvent
-        ? Colors.grey.shade600
-        : StyleUtils.getColorFromString(widget.entry.color ?? '#115FFB');
+    final _color =
+        StyleUtils.getColorFromString(widget.entry.color ?? '#115FFB');
     final _backgroudColor = StyleUtils.lighten(_color, 0.32);
     final _textColor = StyleUtils.darken(_color, colorDarken1);
 
@@ -59,15 +60,28 @@ class _ListItemWidgetState extends State<ListItemWidget> {
 
     var _startTimeStr = '';
     String? _endTimeStr;
+    TodayEventType? _eventBlocType;
 
     if (widget.selectedDate != null) {
       if (widget.entry.dueDateTime != null &&
           widget.selectedDate!.day == widget.entry.dueDateTime!.day) {
         _startTimeStr = 'due today';
+        // Get Today Event Type for TodayBloc
+        _eventBlocType = widget.entry.dueDateTime!.isToday
+            ? TodayEventType.today
+            : widget.entry.startDateTime!.isTomorrow
+                ? TodayEventType.tomorrow
+                : TodayEventType.upcoming;
       } else if (widget.entry.startDateTime != null) {
         final _startDateTimeStr =
             CustomDateUtils.returnTime(widget.entry.startDateTime!.toLocal());
         _startTimeStr = _startDateTimeStr;
+        // Get Today Event Type for TodayBloc
+        _eventBlocType = widget.entry.startDateTime!.isToday
+            ? TodayEventType.today
+            : widget.entry.startDateTime!.isTomorrow
+                ? TodayEventType.tomorrow
+                : TodayEventType.upcoming;
         if (widget.entry.endDateTime != null) {
           final _endTime = widget.entry.endDateTime!.toLocal();
           _endTimeStr = CustomDateUtils.returnTime(_endTime);
@@ -76,18 +90,14 @@ class _ListItemWidgetState extends State<ListItemWidget> {
     }
 
     final _cellContentContainer = Container(
-            width: context.width - (8 + 28 + 8),
-            // ? context.width - (8 + 28 + 8)
-            // : context.width - (8 + 28), //8 is hori padding
+            width: context.width - (8 + 28 + 8), //8 is hori padding
             padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
-            // : const EdgeInsets.only(top: 6, bottom: 6, right: 10, left: 18),
             decoration: BoxDecoration(
               color: _isEvent ? Colors.white : _backgroudColor,
               borderRadius: const BorderRadius.only(
                 topRight: Radius.circular(8),
                 bottomRight: Radius.circular(8),
               ),
-              // : const BorderRadius.all(Radius.circular(8)),
               boxShadow: const [
                 kShadowLightBase,
                 kShadowLight20,
@@ -103,6 +113,9 @@ class _ListItemWidgetState extends State<ListItemWidget> {
                   style: context.bodyText1.copyWith(
                     color: _textColor,
                     fontSize: kSmallTextSize,
+                    decoration: _isEvent && _isPassed
+                        ? TextDecoration.lineThrough
+                        : null,
                   ),
                 ).expanded(),
               ].toRow(),
@@ -142,16 +155,15 @@ class _ListItemWidgetState extends State<ListItemWidget> {
                   widget.entry.subTaskEntries!.isNotEmpty) ...[
                 verticalSpaceTiny,
                 SubTaskItem(
-                  text: widget.entry.subTaskEntries?.first.title ?? '',
-                  priority: widget.entry.subTaskEntries?.first.priority ?? 0,
+                  subTask: widget.entry.subTaskEntries!.first,
                   backgroundColor: _color,
+                  type: _eventBlocType,
                 ),
                 if (widget.entry.subTaskEntries!.length > 1)
                   SubTaskItem(
-                    text: widget.entry.subTaskEntries?.second?.title ?? '',
-                    priority:
-                        widget.entry.subTaskEntries?.second?.priority ?? 0,
+                    subTask: widget.entry.subTaskEntries!.second!,
                     backgroundColor: _color,
+                    type: _eventBlocType,
                   ),
               ]
             ].toColumn(mainAxisSize: MainAxisSize.min))

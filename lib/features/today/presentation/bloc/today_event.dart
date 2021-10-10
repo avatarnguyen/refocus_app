@@ -23,3 +23,13 @@ class GetTodayEntries extends TodayEvent {
   @override
   List<Object> get props => [];
 }
+
+class UpdateTaskEntries extends TodayEvent {
+  const UpdateTaskEntries({this.date, required this.eventType});
+
+  final DateTime? date;
+  final TodayEventType eventType;
+
+  @override
+  List<Object> get props => [date ?? DateTime.now(), eventType];
+}

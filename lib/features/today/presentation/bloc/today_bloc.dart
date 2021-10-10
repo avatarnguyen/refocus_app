@@ -10,6 +10,7 @@ import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart';
 import 'package:refocus_app/enum/today_entry_type.dart';
+import 'package:refocus_app/enum/today_event_type.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/get_events_between.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/helpers/date_range_query_params.dart';
@@ -79,6 +80,7 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
       yield* _eitherTodayLoadedOrErrorState(_events, _todayTask,
           tomorrowTask: _tomorrowTask, upcomingTask: _upcomingTask);
     } else if (event is GetTodayEntriesOfSpecificDate) {
+      //TODO: Implementing this with subtask
       yield TodayLoading();
 
       final _startDateTime = CustomDateUtils.getBeginngOfDay(event.date);
@@ -94,7 +96,71 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
         startDate: event.date,
       ));
       yield* _eitherTodayLoadedOrErrorState(_events, _tasks);
+    } else if (event is UpdateTaskEntries) {
+      if (state is TodayLoaded) {
+        switch (event.eventType) {
+          case TodayEventType.today:
+            final _today = DateTime.now();
+            final _todayTask = await getTasks(TaskParams(
+              dueDate: _today,
+              startDate: _today,
+            ));
+            yield* _eitherTaskLoadedOrErrorState(
+                _todayTask, state, event.eventType);
+            break;
+          case TodayEventType.tomorrow:
+            final _tomorrow = DateTime.now() + 1.days;
+            final _tomorrowTask = await getTasks(TaskParams(
+              dueDate: _tomorrow,
+              startDate: _tomorrow,
+            ));
+            yield* _eitherTaskLoadedOrErrorState(
+                _tomorrowTask, state, event.eventType);
+            break;
+          default:
+            break;
+        }
+      }
     }
+  }
+
+  Stream<TodayState> _eitherTaskLoadedOrErrorState(
+      Either<Failure, List<TaskEntry>> failureOrEntry,
+      TodayState currentState,
+      TodayEventType type) async* {
+    final _currentEntries = type == TodayEventType.today
+        ? (currentState as TodayLoaded).todayEntries
+        : (currentState as TodayLoaded).tomorrowEntries;
+    final _todayEntries = _currentEntries!
+        .filter((element) => element.type == TodayEntryType.event)
+        .toList();
+
+    yield* failureOrEntry.fold(
+      (failure) async* {
+        yield TodayError(_mapFailureToMessage(failure));
+      },
+      (entries) async* {
+        for (final currentTask in entries) {
+          final _fetchedSubTasks =
+              await getSubTasks(SubTaskParams(taskID: currentTask.id));
+          final _resultSubTask = _fetchedSubTasks.foldRight<List<SubTaskEntry>>(
+              [], (entries, previous) => entries);
+
+          final _entry = returnEntryFromTaskEntry(currentTask, _resultSubTask);
+          _todayEntries.add(_entry);
+        }
+
+        yield TodayLoaded(
+          todayEntries: type == TodayEventType.today
+              ? _todayEntries
+              : currentState.todayEntries,
+          tomorrowEntries: type == TodayEventType.tomorrow
+              ? _todayEntries
+              : currentState.tomorrowEntries,
+          upcomingTasks: currentState.upcomingTasks,
+        );
+      },
+    );
   }
 
   TodayEntry returnEntryFromCalendarEvent(CalendarEventEntry eventEntry) {
@@ -111,6 +177,12 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
 
   TodayEntry returnEntryFromTaskEntry(
       TaskEntry taskEntry, List<SubTaskEntry> subtasks) {
+    var _subTaskCompleted = <SubTaskEntry>[];
+    if (subtasks.isNotEmpty) {
+      _subTaskCompleted =
+          subtasks.filter((element) => element.isCompleted == false).toList();
+    }
+
     return TodayEntry(
       id: taskEntry.id,
       type: TodayEntryType.task,
@@ -121,7 +193,7 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
       projectOrCalID: taskEntry.projectID,
       calendarEventID: taskEntry.calendarID,
       color: taskEntry.colorID,
-      subTaskEntries: subtasks,
+      subTaskEntries: _subTaskCompleted,
     );
   }
 

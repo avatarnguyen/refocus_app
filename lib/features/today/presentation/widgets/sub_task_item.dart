@@ -1,22 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
-import 'package:styled_widget/styled_widget.dart';
+import 'package:refocus_app/enum/today_event_type.dart';
+import 'package:refocus_app/features/task/domain/entities/subtask_entry.dart';
+import 'package:refocus_app/features/task/presentation/bloc/cubit/subtask_cubit.dart';
+import 'package:refocus_app/features/today/presentation/bloc/today_bloc.dart';
 
 class SubTaskItem extends StatelessWidget {
   const SubTaskItem({
     Key? key,
-    required this.text,
-    required this.priority,
+    required this.subTask,
     this.textStyle,
     this.backgroundColor,
+    this.type,
   }) : super(key: key);
 
-  final String text;
-  final int priority;
+  final SubTaskEntry subTask;
   final TextStyle? textStyle;
   final Color? backgroundColor;
+  final TodayEventType? type;
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +38,14 @@ class SubTaskItem extends StatelessWidget {
       ],
       dismissal: SlidableDismissal(
         onDismissed: (actionTyp) {
-          print('Cheched');
+          context.read<SubtaskCubit>().updateSubtaskWithoutReload(
+              subTask.copyWith(isCompleted: !subTask.isCompleted));
+
+          if (type != null) {
+            context.read<TodayBloc>().add(UpdateTaskEntries(eventType: type!));
+          } else {
+            context.read<TodayBloc>().add(const GetTodayEntries());
+          }
         },
         dismissThresholds: const <SlideActionType, double>{
           SlideActionType.primary: .5,
@@ -50,7 +61,7 @@ class SubTaskItem extends StatelessWidget {
           borderRadius: const BorderRadius.all(Radius.circular(4)),
         ),
         child: Text(
-          text,
+          subTask.title ?? '',
           overflow: TextOverflow.ellipsis,
           style: textStyle ??
               context.textTheme.caption!.copyWith(
