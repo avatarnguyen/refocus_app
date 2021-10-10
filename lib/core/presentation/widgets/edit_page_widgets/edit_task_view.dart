@@ -365,8 +365,6 @@ class _EditTaskViewState extends State<EditTaskView> {
   }
 
   Widget? _viewTextWidget;
-  Widget? _viewDateTimeWidget;
-  Widget? _viewDueDateWidget;
   Widget? _viewSubtaskWidget;
 
   Widget _buildViewModeElements(TaskEntry _fetchedTask, BuildContext context,
@@ -387,12 +385,12 @@ class _EditTaskViewState extends State<EditTaskView> {
         ).alignment(Alignment.center),
         verticalSpaceMedium,
         //Start and End DateTime
-        _viewDateTimeWidget ??= EditDateTimeCell(
+        EditDateTimeCell(
           fetchedTask: _fetchedTask,
           colorID: widget.colorID,
         ),
         if (_fetchedTask.dueDate != null)
-          _viewDueDateWidget ??= [
+          [
             Text(
               CustomDateUtils.returnDateAndMonth(
                   _fetchedTask.dueDate!.toLocal()),
@@ -593,6 +591,15 @@ class _EditTaskViewState extends State<EditTaskView> {
                   PlatformButton(
                     child: const Text('Save'),
                     onPressed: () {
+                      switch (type) {
+                        case DateTimeSelected.due:
+                          _editDueDateWidget = null;
+                          break;
+                        default:
+                          _editEndDateTimeWidget = null;
+                          _editStartDateTimeWidget = null;
+                          break;
+                      }
                       setState(() {});
                       context.router.pop();
                     },
