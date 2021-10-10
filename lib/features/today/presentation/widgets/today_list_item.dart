@@ -227,22 +227,13 @@ class _ListItemWidgetState extends State<ListItemWidget> {
 
               if (_dateTimeStream.selectedDate != null &&
                   _dateTimeStream.selectedDate!.isToday != true) {
+                //! Refresh not working bc is come before the task is updated
                 context.read<TodayBloc>().add(UpdateTaskEntries(
                     eventType: TodayEventType.specificDate,
                     date: _dateTimeStream.selectedDate));
               } else {
-                if (_newDate.isToday) {
-                  context.read<TodayBloc>().add(
-                      const UpdateTaskEntries(eventType: TodayEventType.today));
-                } else if (_newDate.isTomorrow) {
-                  context.read<TodayBloc>().add(const UpdateTaskEntries(
-                      eventType: TodayEventType.tomorrow));
-                } else if (_newDate.isAfter(1.days.fromNow)) {
-                  context.read<TodayBloc>().add(const UpdateTaskEntries(
-                      eventType: TodayEventType.upcoming));
-                } else {
-                  context.read<TodayBloc>().add(const GetTodayEntries());
-                }
+                // TODO: Add waiting indicator here
+                context.read<TodayBloc>().add(const GetTodayEntries());
               }
             }
           },
@@ -259,29 +250,27 @@ class _ListItemWidgetState extends State<ListItemWidget> {
                   params: TaskParams(
                       task: returnTaskFromTodayEntry(widget.entry,
                           isCompleted: _isCompleted))));
+              context.read<TodayBloc>().add(const GetTodayEntries());
             } else {
               // Postpone Task to next day
               final _currentDate = widget.entry.startDateTime ??
                   widget.entry.dueDateTime ??
                   DateTime.now();
+              final _newDate = _currentDate + 1.days;
               context.read<TaskBloc>().add(EditTaskEntryEvent(
-                  params: TaskParams(
-                      task: returnTaskFromTodayEntry(widget.entry,
-                          newDate: _currentDate + 1.days))));
-            }
-            if (_eventBlocType != null) {
-              if (_eventBlocType == TodayEventType.specificDate) {
+                    params: TaskParams(
+                        task: returnTaskFromTodayEntry(widget.entry,
+                            newDate: _newDate)),
+                  ));
+
+              if (_dateTimeStream.selectedDate != null &&
+                  !_dateTimeStream.selectedDate!.isToday) {
                 context.read<TodayBloc>().add(UpdateTaskEntries(
-                      eventType: _eventBlocType,
-                      date: widget.selectedDate,
-                    ));
+                    eventType: TodayEventType.specificDate,
+                    date: _dateTimeStream.selectedDate));
               } else {
-                context
-                    .read<TodayBloc>()
-                    .add(UpdateTaskEntries(eventType: _eventBlocType));
+                context.read<TodayBloc>().add(const GetTodayEntries());
               }
-            } else {
-              context.read<TodayBloc>().add(const GetTodayEntries());
             }
           }
         },

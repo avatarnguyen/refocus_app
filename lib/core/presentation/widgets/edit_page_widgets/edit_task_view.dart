@@ -126,11 +126,17 @@ class _EditTaskViewState extends State<EditTaskView> {
         break;
       case EditTaskState.editing:
         setState(() {
+          _editStartDateTimeWidget = null;
+          _editEndDateTimeWidget = null;
+          _editDueDateWidget = null;
           _currentEditState = state;
         });
         break;
       default:
         setState(() {
+          _editStartDateTimeWidget = null;
+          _editEndDateTimeWidget = null;
+          _editDueDateWidget = null;
           _currentEditState = EditTaskState.view;
         });
         break;
@@ -139,8 +145,6 @@ class _EditTaskViewState extends State<EditTaskView> {
 
   final _textfieldPadding = const EdgeInsets.all(8);
 
-  Widget? _editModeWidget;
-  Widget? _viewModeWidget;
   @override
   Widget build(BuildContext context) {
     final _color = StyleUtils.getColorFromString(widget.colorID ?? '#115FFB');
