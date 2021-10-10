@@ -50,7 +50,7 @@ class _ListItemWidgetState extends State<ListItemWidget> {
     final _color = _isPassed && _isEvent
         ? Colors.grey.shade600
         : StyleUtils.getColorFromString(widget.entry.color ?? '#115FFB');
-    final _backgroudColor = StyleUtils.lighten(_color, 0.28);
+    final _backgroudColor = StyleUtils.lighten(_color, 0.32);
     final _textColor = StyleUtils.darken(_color, colorDarken1);
 
     // print('$title Color: ${HSLColor.fromColor(_color).lightness}');
@@ -76,78 +76,82 @@ class _ListItemWidgetState extends State<ListItemWidget> {
     }
 
     final _cellContentContainer = Container(
-      width: _isEvent
-          ? context.width - (8 + 28 + 8)
-          : context.width - (8 + 28), //8 is hori padding
-      padding: _isEvent
-          ? const EdgeInsets.only(top: 6, bottom: 6, right: 10)
-          : const EdgeInsets.only(top: 6, bottom: 6, right: 10, left: 16),
-      decoration: BoxDecoration(
-        color: _isEvent ? Colors.white : _backgroudColor,
-        borderRadius: _isEvent
-            ? const BorderRadius.only(
+            width: context.width - (8 + 28 + 8),
+            // ? context.width - (8 + 28 + 8)
+            // : context.width - (8 + 28), //8 is hori padding
+            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+            // : const EdgeInsets.only(top: 6, bottom: 6, right: 10, left: 18),
+            decoration: BoxDecoration(
+              color: _isEvent ? Colors.white : _backgroudColor,
+              borderRadius: const BorderRadius.only(
                 topRight: Radius.circular(8),
                 bottomRight: Radius.circular(8),
-              )
-            : const BorderRadius.all(Radius.circular(8)),
-        boxShadow: const [
-          kShadowLightBase,
-          kShadowLight20,
-        ],
-      ),
-      child: [
-        [
-          Text(
-            widget.entry.title ?? '',
-            overflow: TextOverflow.ellipsis,
-            maxLines: 2,
-            textScaleFactor: context.textScaleFactor,
-            style: context.bodyText1.copyWith(
-              color: _textColor,
-              fontSize: kSmallTextSize,
+              ),
+              // : const BorderRadius.all(Radius.circular(8)),
+              boxShadow: const [
+                kShadowLightBase,
+                kShadowLight20,
+              ],
             ),
-          ).expanded(),
-        ].toRow(),
-        [
-          Text(
-            _startTimeStr,
-            overflow: TextOverflow.clip,
-            textAlign: TextAlign.right,
-            maxLines: 2,
-            textScaleFactor: context.textScaleFactor,
-            style: widget.entry.startDateTime != null
-                ? context.textTheme.subtitle2!.copyWith(
-                    fontWeight: FontWeight.bold,
+            child: [
+              [
+                Text(
+                  widget.entry.title ?? '',
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
+                  textScaleFactor: context.textScaleFactor,
+                  style: context.bodyText1.copyWith(
                     color: _textColor,
+                    fontSize: kSmallTextSize,
+                  ),
+                ).expanded(),
+              ].toRow(),
+              [
+                Text(
+                  _startTimeStr,
+                  overflow: TextOverflow.clip,
+                  textAlign: TextAlign.right,
+                  maxLines: 2,
+                  textScaleFactor: context.textScaleFactor,
+                  style: widget.entry.startDateTime != null
+                      ? context.textTheme.subtitle2!.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: _textColor,
+                        )
+                      : _taskTimeTextStyle,
+                ),
+                if (widget.entry.endDateTime != null &&
+                    _endTimeStr != null) ...[
+                  Icon(Icons.arrow_right_alt_rounded,
+                          size: 20, color: _textColor)
+                      .padding(horizontal: 2),
+                  Text(
+                    _endTimeStr,
+                    overflow: TextOverflow.clip,
+                    textAlign: TextAlign.left,
+                    maxLines: 1,
+                    textScaleFactor: context.textScaleFactor,
+                    style: _taskTimeTextStyle,
                   )
-                : _taskTimeTextStyle,
-          ),
-          if (widget.entry.endDateTime != null && _endTimeStr != null) ...[
-            Icon(Icons.arrow_right_alt_rounded, size: 20, color: _textColor)
-                .padding(horizontal: 2),
-            Text(
-              _endTimeStr,
-              overflow: TextOverflow.clip,
-              textAlign: TextAlign.left,
-              maxLines: 1,
-              textScaleFactor: context.textScaleFactor,
-              style: _taskTimeTextStyle,
-            )
-          ]
-        ].toRow(),
+                ]
+              ].toRow(),
 
-        //* Subtask
-        if (!_isEvent) ...[
-          verticalSpaceTiny,
-          const SubTaskItem(
-            text: 'Sub Task 1',
-            priority: 0,
-          ),
-        ]
-      ]
-          .toColumn(mainAxisSize: MainAxisSize.min)
-          .padding(left: _isEvent ? 8 : 0),
-    ).gestures(onTap: () {
+              //* Subtask
+              if (!_isEvent) ...[
+                verticalSpaceTiny,
+                SubTaskItem(
+                  text: 'Sub Task 1',
+                  priority: 0,
+                  backgroundColor: _color,
+                ),
+                SubTaskItem(
+                  text: 'Sub Task 1',
+                  priority: 0,
+                  backgroundColor: _color,
+                ),
+              ]
+            ].toColumn(mainAxisSize: MainAxisSize.min))
+        .gestures(onTap: () {
       if (_isEvent) {
       } else {
         showTaskBottomSheet(context, widget.entry.id, widget.entry.color);
@@ -167,18 +171,29 @@ class _ListItemWidgetState extends State<ListItemWidget> {
               )
             ],
       secondaryActions: [
-        if (_isEvent)
-          IconSlideAction(
-            icon: Icons.calendar_today_rounded,
-            foregroundColor: context.colorScheme.primary,
-            color: Colors.transparent,
-          )
-        else
-          IconSlideAction(
-            icon: Icons.arrow_forward_outlined,
-            foregroundColor: _textColor,
-            color: Colors.transparent,
-          ),
+        // if (_isEvent)
+        IconSlideAction(
+          icon: Icons.calendar_today_rounded,
+          foregroundColor: context.colorScheme.primary,
+          color: Colors.transparent,
+        ),
+        // else
+        IconSlideAction(
+          icon: Icons.arrow_forward_outlined,
+          foregroundColor: _textColor,
+          color: Colors.transparent,
+          onTap: () {
+            final _currentDate = widget.entry.startDateTime ??
+                widget.entry.dueDateTime ??
+                DateTime.now();
+            context.read<TaskBloc>().add(EditTaskEntryEvent(
+                params: TaskParams(
+                    task: returnTaskFromTodayEntry(widget.entry,
+                        newDate: _currentDate + 1.days))));
+
+            context.read<TodayBloc>().add(const GetTodayEntries());
+          },
+        ),
       ],
       dismissal: SlidableDismissal(
         onDismissed: (actionTyp) {
@@ -205,24 +220,21 @@ class _ListItemWidgetState extends State<ListItemWidget> {
             context.read<TodayBloc>().add(const GetTodayEntries());
           }
         },
-        dismissThresholds: <SlideActionType, double>{
-          SlideActionType.primary: _isEvent ? 1 : .4,
-          SlideActionType.secondary: .6,
+        dismissThresholds: const <SlideActionType, double>{
+          SlideActionType.primary: .4,
+          // SlideActionType.secondary: 1,
         },
         child: const SlidableDrawerDismissal(),
       ),
-      child: (_isEvent
-              ? Container(
-                  decoration: BoxDecoration(
-                    color: _textColor,
-                    borderRadius: const BorderRadius.all(Radius.circular(8)),
-                  ),
-                  padding: const EdgeInsets.only(left: 8),
-                  child: _cellContentContainer,
-                )
-              : _cellContentContainer)
-          .paddingDirectional(horizontal: 4),
-    ).padding(horizontal: 6, vertical: 4);
+      child: Container(
+        decoration: BoxDecoration(
+          color: _textColor,
+          borderRadius: const BorderRadius.all(Radius.circular(8)),
+        ),
+        padding: const EdgeInsets.only(left: 8),
+        child: _cellContentContainer,
+      ).paddingDirectional(horizontal: 4),
+    ).padding(horizontal: 6, vertical: 6);
 
     // .ripple(
     //        customBorder: const RoundedRectangleBorder(
