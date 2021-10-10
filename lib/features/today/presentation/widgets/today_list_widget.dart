@@ -63,7 +63,13 @@ class _TodayListWidgetState extends State<TodayListWidget> {
 
   // final _log = logger(TodayListWidget);
   Future<void> _pullToRefresh(BuildContext context) async {
-    context.read<TodayBloc>().add(const GetTodayEntries());
+    if (_selectedDate != null && _selectedDate!.isToday == false) {
+      context
+          .read<TodayBloc>()
+          .add(GetTodayEntriesOfSpecificDate(_selectedDate!));
+    } else {
+      context.read<TodayBloc>().add(const GetTodayEntries());
+    }
     await Future<dynamic>.delayed(1000.milliseconds);
   }
 
@@ -174,6 +180,7 @@ class _TodayListWidgetState extends State<TodayListWidget> {
               );
             }, childCount: state.upcomingTasks!.length),
           ),
+        const SliverPadding(padding: EdgeInsets.only(bottom: 16)),
       ],
     );
   }

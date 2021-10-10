@@ -79,8 +79,9 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
 
       yield* _eitherTodayLoadedOrErrorState(_events, _todayTask,
           tomorrowTask: _tomorrowTask, upcomingTask: _upcomingTask);
+      //* --------------------------------
     } else if (event is GetTodayEntriesOfSpecificDate) {
-      //TODO: Implementing this with subtask
+      //* Get Event and Task of 1 specific date
       yield TodayLoading();
 
       final _startDateTime = CustomDateUtils.getBeginngOfDay(event.date);
@@ -95,8 +96,12 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
         dueDate: event.date,
         startDate: event.date,
       ));
-      yield* _eitherTodayLoadedOrErrorState(_events, _tasks);
+      yield* _eitherTodayLoadedOrErrorState(_events, _tasks,
+          selectedDate: event.date);
+
+      //* --------------------------------
     } else if (event is UpdateTaskEntries) {
+      //* Only Update certain section
       if (state is TodayLoaded) {
         switch (event.eventType) {
           case TodayEventType.today:
@@ -117,7 +122,29 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
             yield* _eitherTaskLoadedOrErrorState(
                 _tomorrowTask, state, event.eventType);
             break;
+          case TodayEventType.specificDate:
+            //Reload Task in selected Date
+            final _selectedDate = event.date;
+            final _tasks = await getTasks(TaskParams(
+              dueDate: _selectedDate,
+              startDate: _selectedDate,
+            ));
+            yield* _eitherTaskLoadedOrErrorState(
+                _tasks, state, event.eventType);
+            break;
           default:
+            // Reload Upcoming Tasks
+            final _today = DateTime.now();
+
+            final _fromDate = CustomDateUtils.getBeginngOfDay(_today + 2.days);
+            final _untilDate = CustomDateUtils.getEndOfDay(_today + 6.days);
+            final _upcomingTask = await getTasks(TaskParams(
+              startDate: _fromDate,
+              endDate: _untilDate,
+            ));
+            yield* _eitherTaskLoadedOrErrorState(
+                _upcomingTask, state, TodayEventType.upcoming);
+
             break;
         }
       }
@@ -128,10 +155,14 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
       Either<Failure, List<TaskEntry>> failureOrEntry,
       TodayState currentState,
       TodayEventType type) async* {
-    final _currentEntries = type == TodayEventType.today
-        ? (currentState as TodayLoaded).todayEntries
-        : (currentState as TodayLoaded).tomorrowEntries;
-    final _todayEntries = _currentEntries!
+    //Get previous Entries
+    final _currentEntries =
+        (type == TodayEventType.today || type == TodayEventType.specificDate)
+            ? (currentState as TodayLoaded).todayEntries
+            : type == TodayEventType.tomorrow
+                ? (currentState as TodayLoaded).tomorrowEntries
+                : (currentState as TodayLoaded).upcomingTasks;
+    final _newEntries = _currentEntries!
         .filter((element) => element.type == TodayEntryType.event)
         .toList();
 
@@ -147,17 +178,22 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
               [], (entries, previous) => entries);
 
           final _entry = returnEntryFromTaskEntry(currentTask, _resultSubTask);
-          _todayEntries.add(_entry);
+          _newEntries.add(_entry);
         }
 
+        print('Current Type: $type');
+
         yield TodayLoaded(
-          todayEntries: type == TodayEventType.today
-              ? _todayEntries
+          todayEntries: (type == TodayEventType.today ||
+                  type == TodayEventType.specificDate)
+              ? _newEntries
               : currentState.todayEntries,
           tomorrowEntries: type == TodayEventType.tomorrow
-              ? _todayEntries
+              ? _newEntries
               : currentState.tomorrowEntries,
-          upcomingTasks: currentState.upcomingTasks,
+          upcomingTasks: type == TodayEventType.upcoming
+              ? _newEntries
+              : currentState.upcomingTasks,
         );
       },
     );
@@ -200,6 +236,7 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
   Stream<TodayState> _eitherTodayLoadedOrErrorState(
     Either<Failure, List<CalendarEventEntry>> calendar,
     Either<Failure, List<TaskEntry>> todayTask, {
+    DateTime? selectedDate,
     Either<Failure, List<TaskEntry>>? tomorrowTask,
     Either<Failure, List<TaskEntry>>? upcomingTask,
   }) async* {
@@ -218,12 +255,21 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
         yield* calendar.fold((failure) async* {
           yield TodayError(_mapFailureToMessage(failure));
         }, (events) async* {
+          //*Adding Calendar Events
           for (final event in events) {
             final _currentEvent = returnEntryFromCalendarEvent(event);
-            if (event.startDateTime != null && event.startDateTime!.isToday) {
+            if (selectedDate != null) {
+              //Adding all calendar events to [_todayItems]
               _todayItems.add(_currentEvent);
             } else {
-              _tomorrowItems.add(_currentEvent);
+              // Determine whether start date is today or tomorrow
+              if (event.startDateTime != null && event.startDateTime!.isToday) {
+                _todayItems.add(_currentEvent);
+              } else if (event.startDate != null && event.startDate!.isToday) {
+                _todayItems.add(_currentEvent);
+              } else {
+                _tomorrowItems.add(_currentEvent);
+              }
             }
           }
         });
@@ -249,7 +295,9 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
           //? Handling Tomorrow Tasks
           final _tomorrowTasks = tomorrowTask
               .foldRight<List<TaskEntry>>([], (entries, previous) => entries);
-          for (final _task in _tomorrowTasks) {
+          final _filteredTmrTask =
+              _tomorrowTasks.distinctBy((element) => element.id);
+          for (final _task in _filteredTmrTask) {
             final _fetchedSubTasks =
                 await getSubTasks(SubTaskParams(taskID: _task.id));
             final _resultSubTask = _fetchedSubTasks
@@ -263,7 +311,10 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
           //? Handling Upcoming Tasks
           final _upcomingTask = upcomingTask
               .foldRight<List<TaskEntry>>([], (entries, previous) => entries);
-          for (final _task in _upcomingTask) {
+          final _filteredUpcTask =
+              _upcomingTask.distinctBy((element) => element.id);
+
+          for (final _task in _filteredUpcTask) {
             final _fetchedSubTasks =
                 await getSubTasks(SubTaskParams(taskID: _task.id));
             final _resultSubTask = _fetchedSubTasks
@@ -277,8 +328,8 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
 
         yield TodayLoaded(
           todayEntries: _todayItems,
-          tomorrowEntries: _tomorrowItems,
-          upcomingTasks: _upcomingItems,
+          tomorrowEntries: selectedDate != null ? null : _tomorrowItems,
+          upcomingTasks: selectedDate != null ? null : _upcomingItems,
         );
       },
     );

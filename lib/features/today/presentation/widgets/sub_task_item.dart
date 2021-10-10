@@ -4,9 +4,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/today_event_type.dart';
+import 'package:refocus_app/features/calendar/presentation/bloc/calendar/datetime_stream.dart';
 import 'package:refocus_app/features/task/domain/entities/subtask_entry.dart';
 import 'package:refocus_app/features/task/presentation/bloc/cubit/subtask_cubit.dart';
 import 'package:refocus_app/features/today/presentation/bloc/today_bloc.dart';
+import 'package:refocus_app/injection.dart';
 
 class SubTaskItem extends StatelessWidget {
   const SubTaskItem({
@@ -24,6 +26,8 @@ class SubTaskItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final _dateTimeStream = getIt<DateTimeStream>();
+
     final _color = backgroundColor ?? kcPrimary500;
 
     return Slidable(
@@ -42,7 +46,15 @@ class SubTaskItem extends StatelessWidget {
               subTask.copyWith(isCompleted: !subTask.isCompleted));
 
           if (type != null) {
-            context.read<TodayBloc>().add(UpdateTaskEntries(eventType: type!));
+            if (type == TodayEventType.specificDate) {
+              final _selectedDate = _dateTimeStream.selectedDate;
+              context.read<TodayBloc>().add(
+                  UpdateTaskEntries(eventType: type!, date: _selectedDate));
+            } else {
+              context
+                  .read<TodayBloc>()
+                  .add(UpdateTaskEntries(eventType: type!));
+            }
           } else {
             context.read<TodayBloc>().add(const GetTodayEntries());
           }

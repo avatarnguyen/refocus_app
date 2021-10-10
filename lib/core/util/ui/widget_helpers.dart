@@ -12,6 +12,12 @@ Widget todayPage(BuildContext context, {required Widget child}) => SizedBox(
         Styled.widget(child: child).padding(bottom: 40, left: 8, right: 8),
       ].toStack(),
     );
+// Without Line Painter
+Widget todayPageParent({required Widget child}) => SizedBox(
+      child: Styled.widget(
+        child: child,
+      ).padding(bottom: 72, left: 8, right: 8),
+    );
 Widget calendarPage({required Widget child}) => SafeArea(
       child: SizedBox(
         child: Styled.widget(child: child),

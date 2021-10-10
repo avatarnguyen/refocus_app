@@ -10,9 +10,11 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:refocus_app/core/presentation/widgets/edit_page_widgets/edit_task_header.dart';
 import 'package:refocus_app/core/presentation/widgets/edit_page_widgets/edit_task_view.dart';
 import 'package:refocus_app/core/util/helpers/date_utils.dart';
+import 'package:refocus_app/core/util/helpers/logging.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/today_entry_type.dart';
 import 'package:refocus_app/enum/today_event_type.dart';
+import 'package:refocus_app/features/calendar/presentation/bloc/calendar/datetime_stream.dart';
 import 'package:refocus_app/features/task/domain/entities/task_entry.dart';
 import 'package:refocus_app/features/task/domain/usecases/helpers/task_params.dart';
 import 'package:refocus_app/features/task/presentation/bloc/cubit/subtask_cubit.dart';
@@ -20,6 +22,7 @@ import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
 import 'package:refocus_app/features/today/domain/today_entry.dart';
 import 'package:refocus_app/features/today/presentation/bloc/today_bloc.dart';
 import 'package:refocus_app/features/today/presentation/widgets/sub_task_item.dart';
+import 'package:refocus_app/injection.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
 import 'package:styled_widget/styled_widget.dart';
 
@@ -37,6 +40,10 @@ class ListItemWidget extends StatefulWidget {
 }
 
 class _ListItemWidgetState extends State<ListItemWidget> {
+  final DateTimeStream _dateTimeStream = getIt<DateTimeStream>();
+
+  final _log = logger(ListItemWidget);
+
   @override
   void initState() {
     super.initState();
@@ -88,6 +95,14 @@ class _ListItemWidgetState extends State<ListItemWidget> {
         }
       }
     }
+    // Change to specific Date when selected Date is chose
+    if (_dateTimeStream.selectedDate != null &&
+        _dateTimeStream.selectedDate!.isToday == false) {
+      _eventBlocType = TodayEventType.specificDate;
+    }
+
+    // _log.d('Selected Date: ${widget.selectedDate}');
+    // _log.i('Event Bloc Type: $_eventBlocType');
 
     final _cellContentContainer = Container(
             width: context.width - (8 + 28 + 8), //8 is hori padding
@@ -199,15 +214,37 @@ class _ListItemWidgetState extends State<ListItemWidget> {
           foregroundColor: _textColor,
           color: Colors.transparent,
           onTap: () {
-            final _currentDate = widget.entry.startDateTime ??
-                widget.entry.dueDateTime ??
-                DateTime.now();
-            context.read<TaskBloc>().add(EditTaskEntryEvent(
-                params: TaskParams(
-                    task: returnTaskFromTodayEntry(widget.entry,
-                        newDate: _currentDate + 1.days))));
+            if (_isEvent) {
+            } else {
+              final _currentDate = widget.entry.startDateTime ??
+                  widget.entry.dueDateTime ??
+                  DateTime.now();
+              final _newDate = _currentDate + 1.days;
+              context.read<TaskBloc>().add(EditTaskEntryEvent(
+                  params: TaskParams(
+                      task: returnTaskFromTodayEntry(widget.entry,
+                          newDate: _newDate))));
 
-            context.read<TodayBloc>().add(const GetTodayEntries());
+              if (_dateTimeStream.selectedDate != null &&
+                  _dateTimeStream.selectedDate!.isToday != true) {
+                context.read<TodayBloc>().add(UpdateTaskEntries(
+                    eventType: TodayEventType.specificDate,
+                    date: _dateTimeStream.selectedDate));
+              } else {
+                if (_newDate.isToday) {
+                  context.read<TodayBloc>().add(
+                      const UpdateTaskEntries(eventType: TodayEventType.today));
+                } else if (_newDate.isTomorrow) {
+                  context.read<TodayBloc>().add(const UpdateTaskEntries(
+                      eventType: TodayEventType.tomorrow));
+                } else if (_newDate.isAfter(1.days.fromNow)) {
+                  context.read<TodayBloc>().add(const UpdateTaskEntries(
+                      eventType: TodayEventType.upcoming));
+                } else {
+                  context.read<TodayBloc>().add(const GetTodayEntries());
+                }
+              }
+            }
           },
         ),
       ],
@@ -232,8 +269,20 @@ class _ListItemWidgetState extends State<ListItemWidget> {
                       task: returnTaskFromTodayEntry(widget.entry,
                           newDate: _currentDate + 1.days))));
             }
-            //TODO: This also fetch calendar events, need to optimize
-            context.read<TodayBloc>().add(const GetTodayEntries());
+            if (_eventBlocType != null) {
+              if (_eventBlocType == TodayEventType.specificDate) {
+                context.read<TodayBloc>().add(UpdateTaskEntries(
+                      eventType: _eventBlocType,
+                      date: widget.selectedDate,
+                    ));
+              } else {
+                context
+                    .read<TodayBloc>()
+                    .add(UpdateTaskEntries(eventType: _eventBlocType));
+              }
+            } else {
+              context.read<TodayBloc>().add(const GetTodayEntries());
+            }
           }
         },
         dismissThresholds: const <SlideActionType, double>{
@@ -251,18 +300,6 @@ class _ListItemWidgetState extends State<ListItemWidget> {
         child: _cellContentContainer,
       ).paddingDirectional(horizontal: 4),
     ).padding(horizontal: 6, vertical: 6);
-
-    // .ripple(
-    //        customBorder: const RoundedRectangleBorder(
-    //     borderRadius: BorderRadius.all(Radius.circular(16)),
-    //   ),
-    //     )
-    //     .gestures(onTap: () {
-    //   if (_isEvent) {
-    //   } else {
-    //     showTaskBottomSheet(context, entry.id, entry.color);
-    //   }
-    // })
 
     // if (_isEvent) {
     //   return [

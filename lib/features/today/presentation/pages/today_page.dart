@@ -72,44 +72,45 @@ class _TodayPageState extends State<TodayPage> {
       child: Platform.isIOS
           ? CupertinoPageScaffold(
               child: NestedScrollView(
-              controller: _sController,
-              headerSliverBuilder: (context, innerBoxIsScrolled) => [
-                CupertinoSliverNavigationBar(
-                  border: null,
-                  backgroundColor: kcLightBackground,
-                  padding: const EdgeInsetsDirectional.all(8),
-                  stretch: true,
-                  largeTitle: Text(
-                    _getGreeting(),
-                    // style: isAtTop
-                    //     ? null
-                    //     : context.h2.copyWith(color: kcPrimary600),
+                controller: _sController,
+                headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                  CupertinoSliverNavigationBar(
+                    border: null,
+                    backgroundColor: kcLightBackground,
+                    padding: const EdgeInsetsDirectional.all(8),
+                    stretch: true,
+                    largeTitle: Text(
+                      _getGreeting(),
+                      // style: isAtTop
+                      //     ? null
+                      //     : context.h2.copyWith(color: kcPrimary600),
+                    ),
+                    // : const Icon(CupertinoIcons.sun_max_fill),
+                    leading: CupertinoButton(
+                      padding: EdgeInsets.zero,
+                      child: const Icon(CupertinoIcons.calendar),
+                      onPressed: () {
+                        widget.changePage();
+                      },
+                    ),
+                    trailing: CupertinoButton(
+                      padding: EdgeInsets.zero,
+                      child: const Icon(CupertinoIcons.person_fill),
+                      onPressed: () {},
+                    ),
                   ),
-                  // : const Icon(CupertinoIcons.sun_max_fill),
-                  leading: CupertinoButton(
-                    padding: EdgeInsets.zero,
-                    child: const Icon(CupertinoIcons.calendar),
-                    onPressed: () {
-                      widget.changePage();
-                    },
+                  SliverPersistentHeader(
+                    pinned: true,
+                    delegate: PersistentHeaderDelegate(
+                      returnDate(today),
+                      minSize: 30,
+                      maxSize: 30,
+                    ),
                   ),
-                  trailing: CupertinoButton(
-                    padding: EdgeInsets.zero,
-                    child: const Icon(CupertinoIcons.person_fill),
-                    onPressed: () {},
-                  ),
-                ),
-                SliverPersistentHeader(
-                  pinned: true,
-                  delegate: PersistentHeaderDelegate(
-                    returnDate(today),
-                    minSize: 30,
-                    maxSize: 30,
-                  ),
-                ),
-              ],
-              body: const TodayListWidget().padding(horizontal: 8),
-            ))
+                ],
+                body: const TodayListWidget(),
+              ).parent(todayPageParent),
+            )
           : Scaffold(
               body: NestedScrollView(
                 controller: _sController,
@@ -166,9 +167,7 @@ class _TodayPageState extends State<TodayPage> {
                   ),
                 ],
                 body: const TodayListWidget(),
-              ).parent(
-                ({required child}) => todayPage(context, child: child),
-              ),
+              ).parent(todayPageParent),
             ),
     );
   }
