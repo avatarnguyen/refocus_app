@@ -138,7 +138,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
         isBackdropInteractable: true,
         elevation: 16,
         cornerRadius: 16,
-        shadowColor: kcPrimary100,
+        shadowColor: Colors.black26,
         backdropColor: Colors.black26,
         snapSpec: const SnapSpec(
           initialSnap: 0.09,

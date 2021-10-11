@@ -227,12 +227,9 @@ class _ListItemWidgetState extends State<ListItemWidget> {
 
               if (_dateTimeStream.selectedDate != null &&
                   _dateTimeStream.selectedDate!.isToday != true) {
-                //! Refresh not working bc is come before the task is updated
-                context.read<TodayBloc>().add(UpdateTaskEntries(
-                    eventType: TodayEventType.specificDate,
-                    date: _dateTimeStream.selectedDate));
+                context.read<TodayBloc>().add(GetTodayEntriesOfSpecificDate(
+                    _dateTimeStream.selectedDate!));
               } else {
-                // TODO: Add waiting indicator here
                 context.read<TodayBloc>().add(const GetTodayEntries());
               }
             }

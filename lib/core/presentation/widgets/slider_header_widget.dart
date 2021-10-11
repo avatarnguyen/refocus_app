@@ -6,10 +6,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:refocus_app/config/routes/router.dart';
 import 'package:refocus_app/core/presentation/helper/page_stream.dart';
 import 'package:refocus_app/core/presentation/helper/sliding_body_stream.dart';
 import 'package:refocus_app/core/presentation/pages/quickadd_page.dart';
+import 'package:refocus_app/core/presentation/widgets/date_picker_widget.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar/calendar_bloc.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar/datetime_stream.dart';
@@ -250,43 +252,26 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
           elevation: 8,
           cornerRadius: 16,
           duration: 500.milliseconds,
-          color: context.backgroundColor,
+          color: kcDarkBackground,
           backdropColor: Colors.black12,
           isBackdropInteractable: true,
           snapSpec: const SnapSpec(
-            initialSnap: 0.5,
+            initialSnap: 0.6,
             snappings: [0.1, 0.7],
           ),
-          minHeight: parentContext.height / 2.5,
-          // headerBuilder: (context, state) {
-          // },
+          // minHeight: parentContext.height / 2.5,
           builder: (context, state) {
-            return SafeArea(
-              top: false,
-              child: SizedBox(
-                height: 360,
-                child: SfDateRangePicker(
-                  initialSelectedDate: DateTime.now(),
-                  view: _isMonthCal
-                      ? DateRangePickerView.year
-                      : DateRangePickerView.month,
-                  toggleDaySelection: true,
-                  showActionButtons: true,
-                  selectionColor: parentContext.colorScheme.secondary,
-                  todayHighlightColor: parentContext.colorScheme.secondary,
-                  onCancel: () {
-                    _dateTimeStream.broadCastCurrentDate(DateTime.now());
-                    context.router.pop();
-                  },
-                  onSelectionChanged: _onSelectionChanged,
-                  onSubmit: (Object value) {
-                    if (value is DateTime) {
-                      // _dateTimeStream.broadCastCurrentDate(value);
-                      context.router.pop();
-                    }
-                  },
-                ).padding(all: 8),
-              ),
+            return DatePickerWidget(
+              initialDate: _dateTimeStream.selectedDate,
+              pickerView: _isMonthCal
+                  ? DateRangePickerView.year
+                  : DateRangePickerView.month,
+              onSelectionChanged: _onSelectionChanged,
+              onCancelPressed: () {
+                _dateTimeStream.broadCastCurrentDate(DateTime.now());
+                context.router.pop();
+              },
+              onSubmitPressed: () => context.router.pop(),
             );
           },
         );

@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
 import 'package:refocus_app/core/presentation/helper/setting_option.dart';
 import 'package:refocus_app/core/presentation/widgets/add_page_widgets/add_timeblock_widget.dart';
+import 'package:refocus_app/core/presentation/widgets/date_picker_widget.dart';
 import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/date_selection_type.dart';
@@ -262,43 +263,28 @@ class _SetPlannedDateTimeWidgetState extends State<SetPlannedDateTimeWidget> {
           elevation: 8,
           cornerRadius: 16,
           duration: 500.milliseconds,
-          color: context.backgroundColor,
+          color: kcDarkBackground,
           snapSpec: const SnapSpec(
-            initialSnap: 0.5,
+            initialSnap: 0.6,
             snappings: [0.1, 0.7],
           ),
-          minHeight: parentContext.height / 2.5,
+          // minHeight: parentContext.height / 2.5,
           builder: (context, state) {
-            return SafeArea(
-              top: false,
-              child: SizedBox(
-                height: 360,
-                child: SfDateRangePicker(
-                  initialSelectedDate: _currentDateTime,
-                  toggleDaySelection: true,
-                  showActionButtons: true,
-                  selectionColor: parentContext.colorScheme.secondary,
-                  todayHighlightColor: parentContext.colorScheme.secondary,
-                  cancelText: 'CLEAR',
-                  onCancel: () {
-                    _settingOption.broadCastCurrentStartTimeEntry(null);
-                    _settingOption.broadCastCurrentEndTimeEntry(null);
-                    setState(() {
-                      _plannedStartDate = DateTime.now();
-                      _plannedEndDate = 1.hours.fromNow;
-                    });
-
-                    context.router.pop();
-                  },
-                  onSelectionChanged:
-                      (DateRangePickerSelectionChangedArgs args) {
-                    _onSelectionChanged(args, isEndDate);
-                  },
-                  onSubmit: (Object value) {
-                    context.router.pop();
-                  },
-                ).padding(all: 8),
-              ),
+            return DatePickerWidget(
+              initialDate: _currentDateTime,
+              onSelectionChanged: (DateRangePickerSelectionChangedArgs args) {
+                _onSelectionChanged(args, isEndDate);
+              },
+              onCancelPressed: () {
+                _settingOption.broadCastCurrentStartTimeEntry(null);
+                _settingOption.broadCastCurrentEndTimeEntry(null);
+                setState(() {
+                  _plannedStartDate = DateTime.now();
+                  _plannedEndDate = 1.hours.fromNow;
+                });
+                context.router.pop();
+              },
+              onSubmitPressed: () => context.router.pop(),
             );
           },
         );
