@@ -80,7 +80,7 @@ class DatePickerWidget extends StatelessWidget {
                 onPressed: onSubmitPressed,
                 child: Text(
                   submitText ?? 'Close',
-                  style: context.bodyText2.copyWith(color: Colors.white70),
+                  style: context.bodyText2.copyWith(color: kcPrimary100),
                 ),
               ),
             ).padding(horizontal: 24),

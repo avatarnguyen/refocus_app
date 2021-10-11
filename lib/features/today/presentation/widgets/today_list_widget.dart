@@ -8,6 +8,7 @@ import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/today_entry_type.dart';
@@ -81,31 +82,33 @@ class _TodayListWidgetState extends State<TodayListWidget> {
     );
     const _headerPadding = EdgeInsets.only(left: 10, bottom: 8, top: 4);
 
-    return BlocBuilder<TodayBloc, TodayState>(
-      builder: (context, state) {
-        if (state is TodayLoaded) {
-          return Platform.isIOS
-              ? _buildBodyScrollView(
-                  context, _headerPadding, _headerTextStyle, state)
-              : RefreshIndicator(
-                  onRefresh: () async => _pullToRefresh(context),
-                  child: _buildBodyScrollView(
-                      context, _headerPadding, _headerTextStyle, state),
-                );
-        } else if (state is TodayLoading) {
-          return const Align(
-            alignment: Alignment.topCenter,
-            child: Padding(
-              padding: EdgeInsets.only(top: 32),
-              child: progressIndicator,
-            ),
-          );
-        } else if (state is TodayError) {
-          return MessageDisplay(message: state.message);
-        } else {
-          return const MessageDisplay(message: 'Unexpected State');
-        }
-      },
+    return PlatformScaffold(
+      body: BlocBuilder<TodayBloc, TodayState>(
+        builder: (context, state) {
+          if (state is TodayLoaded) {
+            return Platform.isIOS
+                ? _buildBodyScrollView(
+                    context, _headerPadding, _headerTextStyle, state)
+                : RefreshIndicator(
+                    onRefresh: () async => _pullToRefresh(context),
+                    child: _buildBodyScrollView(
+                        context, _headerPadding, _headerTextStyle, state),
+                  );
+          } else if (state is TodayLoading) {
+            return const Align(
+              alignment: Alignment.topCenter,
+              child: Padding(
+                padding: EdgeInsets.only(top: 32),
+                child: progressIndicator,
+              ),
+            );
+          } else if (state is TodayError) {
+            return MessageDisplay(message: state.message);
+          } else {
+            return const MessageDisplay(message: 'Unexpected State');
+          }
+        },
+      ),
     );
   }
 

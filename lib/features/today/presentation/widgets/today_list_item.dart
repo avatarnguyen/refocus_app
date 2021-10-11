@@ -6,7 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:refocus_app/core/presentation/widgets/edit_page_widgets/detail_task_view.dart';
 import 'package:refocus_app/core/presentation/widgets/edit_page_widgets/edit_task_header.dart';
 import 'package:refocus_app/core/presentation/widgets/edit_page_widgets/edit_task_view.dart';
 import 'package:refocus_app/core/util/helpers/date_utils.dart';
@@ -185,7 +188,7 @@ class _ListItemWidgetState extends State<ListItemWidget> {
         .gestures(onTap: () {
       if (_isEvent) {
       } else {
-        showTaskBottomSheet(context, widget.entry.id, widget.entry.color);
+        showTaskBottomSheet(widget.entry.id, widget.entry.color);
       }
     });
 
@@ -286,37 +289,6 @@ class _ListItemWidgetState extends State<ListItemWidget> {
         child: _cellContentContainer,
       ).paddingDirectional(horizontal: 4),
     ).padding(horizontal: 6, vertical: 6);
-
-    // if (_isEvent) {
-    //   return [
-    //     SizedBox(
-    //       width: timeLineWidth,
-    //       child: Text(
-    //         entry.startDateTime != null
-    //             ? CustomDateUtils.returnTime(entry.startDateTime!.toLocal())
-    //             : 'all day',
-    //         overflow: TextOverflow.clip,
-    //         textAlign: TextAlign.right,
-    //         maxLines: 1,
-    //         textScaleFactor: context.textScaleFactor,
-    //         style: _timelineTextStyle,
-    //       ),
-    //     ),
-    //     // horizontalSpaceTiny,
-    //     Icon(Icons.arrow_right, size: 24, color: _textColor),
-    //     Text(
-    //       entry.title ?? '',
-    //       overflow: TextOverflow.ellipsis,
-    //       maxLines: 1,
-    //       textScaleFactor: context.textScaleFactor,
-    //       style: context.caption.copyWith(
-    //         color: _textColor,
-    //       ),
-    //     ).expanded(),
-    //   ].toRow().opacity(_isPassed ? 0.6 : 1.0).padding(all: 6);
-    // } else {
-    //   return _buildItemCell(context, _color);
-    // }
   }
 
   TaskEntry returnTaskFromTodayEntry(TodayEntry todayEntry,
@@ -364,14 +336,45 @@ class _ListItemWidgetState extends State<ListItemWidget> {
   }
 
   dynamic showTaskBottomSheet(
-    BuildContext parentContext,
     String taskID,
     String? colorID,
   ) async {
     SlidingSheetDialog? _taskSheetDialog;
+    Widget? _bodyWidget;
+    Widget? _headerWidget;
+
+    final _blocProvider = MultiBlocProvider(
+      providers: [
+        BlocProvider<TaskBloc>.value(
+          value: BlocProvider.of<TaskBloc>(context),
+        ),
+        BlocProvider<SubtaskCubit>.value(
+          value: BlocProvider.of<SubtaskCubit>(context),
+        ),
+      ],
+      child: _bodyWidget ??= DetailTaskView(
+        key: Key(taskID),
+        taskID: taskID,
+        colorID: colorID,
+      ),
+    );
+    final _headerBlocProvider = MultiBlocProvider(
+        providers: [
+          BlocProvider<TaskBloc>.value(
+            value: BlocProvider.of<TaskBloc>(context),
+          ),
+          BlocProvider<SubtaskCubit>.value(
+            value: BlocProvider.of<SubtaskCubit>(context),
+          ),
+        ],
+        child: _headerWidget ??= EditTaskHeader(
+          taskID: taskID,
+          colorID: colorID,
+        ));
+
     final dynamic result = await showSlidingBottomSheet<dynamic>(
-      parentContext,
-      builder: (context) {
+      context,
+      builder: (_) {
         return _taskSheetDialog ??= SlidingSheetDialog(
           elevation: 8,
           cornerRadius: 16,
@@ -383,22 +386,11 @@ class _ListItemWidgetState extends State<ListItemWidget> {
             positioning: SnapPositioning.relativeToSheetHeight,
           ),
           minHeight: context.height - 56,
-          headerBuilder: (context, state) {
-            return EditTaskHeader(colorID: colorID);
-          },
-          builder: (context, state) {
+          liftOnScrollHeaderElevation: 6,
+          headerBuilder: (_, __) => _headerBlocProvider,
+          builder: (_, __) {
             log(taskID);
-            return MultiBlocProvider(
-              providers: [
-                BlocProvider<TaskBloc>.value(
-                  value: BlocProvider.of<TaskBloc>(parentContext),
-                ),
-                BlocProvider<SubtaskCubit>.value(
-                  value: BlocProvider.of<SubtaskCubit>(parentContext),
-                ),
-              ],
-              child: EditTaskView(taskID: taskID, colorID: colorID),
-            );
+            return _blocProvider;
           },
         );
       },
