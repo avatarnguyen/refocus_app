@@ -14,9 +14,7 @@ import 'package:refocus_app/core/util/helpers/logging.dart';
 import 'package:refocus_app/core/util/helpers/regexp_matcher.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/today_entry_type.dart';
-import 'package:refocus_app/features/calendar/domain/entities/calendar_entry.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar_list/calendar_list_bloc.dart';
-import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
 import 'package:refocus_app/injection.dart';
 import 'package:styled_widget/styled_widget.dart';
 
@@ -35,6 +33,7 @@ class _AddTextFieldWidgetState extends State<AddTextFieldWidget> {
   late StreamSubscription _textSubscription;
 
   late RichTextController _textController;
+  FocusNode _focusNode = FocusNode();
 
   final _matcherDueDate = StringMatcher.matcherDueDate;
   final _matcherRemindDate = StringMatcher.matcherRemindDate;
@@ -69,6 +68,12 @@ class _AddTextFieldWidgetState extends State<AddTextFieldWidget> {
             TextPosition(offset: _textController.text.length));
       }
     });
+
+    // _focusNode.addListener(() {
+    //   if (!_focusNode.hasFocus) {
+    //     FocusScope.of(context).requestFocus(_focusNode);
+    //   }
+    // });
 
     super.initState();
 
@@ -181,6 +186,7 @@ class _AddTextFieldWidgetState extends State<AddTextFieldWidget> {
   Widget _buildTextInput(BuildContext context) {
     return PlatformTextField(
       controller: _textController,
+      focusNode: _focusNode,
       onChanged: _textStream.updateText,
       textAlign: TextAlign.center,
       autofocus: true,

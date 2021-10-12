@@ -228,6 +228,7 @@ class _SetPlannedDateTimeWidgetState extends State<SetPlannedDateTimeWidget> {
             _isAllDay = false;
             _isSomeday = false;
           } else if (type == DateSelectionType.someday) {
+            _settingOption.broadCastCurrentStartTimeEntry(null);
             _isSomeday = !_isSomeday;
             _isAllDay = false;
             _isDateRange = false;
@@ -253,21 +254,23 @@ class _SetPlannedDateTimeWidgetState extends State<SetPlannedDateTimeWidget> {
 
   dynamic _showDatePickerBottomSheet(BuildContext parentContext,
       {bool isEndDate = false}) async {
-    final _currentDateTime = _plannedStartDate;
+    final _sheetController = SheetController();
+    final _currentDateTime = isEndDate ? _plannedEndDate : _plannedStartDate;
 
-    final dynamic result = await showSlidingBottomSheet<dynamic>(
+    await showSlidingBottomSheet<dynamic>(
       context,
+      useRootNavigator: true,
       builder: (context) {
         return SlidingSheetDialog(
           elevation: 8,
           cornerRadius: 16,
+          controller: _sheetController,
           duration: 500.milliseconds,
           color: kcDarkBackground,
           snapSpec: const SnapSpec(
             initialSnap: 0.6,
             snappings: [0.1, 0.7],
           ),
-          // minHeight: parentContext.height / 2.5,
           builder: (context, state) {
             return DatePickerWidget(
               initialDate: _currentDateTime,
@@ -283,13 +286,15 @@ class _SetPlannedDateTimeWidgetState extends State<SetPlannedDateTimeWidget> {
                 });
                 context.router.pop();
               },
-              onSubmitPressed: () => context.router.pop(),
+              onSubmitPressed: () async {
+                await _sheetController.collapse();
+                await context.router.pop();
+              },
             );
           },
         );
       },
     );
-    return result;
   }
 
   void _onSelectionChanged(

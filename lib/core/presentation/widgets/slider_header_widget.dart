@@ -124,9 +124,7 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
               Icons.calendar_today,
               color: kcSecondary100,
               size: 24,
-            ).gestures(onTap: () {
-              showDatePickerBottomSheet(context);
-            }),
+            ).gestures(onTap: showDatePickerBottomSheet),
           [
             Text(
               _titleText,
@@ -248,12 +246,10 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
         ),
       );
 
-  dynamic showDatePickerBottomSheet(
-    BuildContext parentContext,
-  ) async {
-    final dynamic result = await showSlidingBottomSheet<dynamic>(
+  dynamic showDatePickerBottomSheet() async {
+    await showSlidingBottomSheet<dynamic>(
       context,
-      builder: (context) {
+      builder: (_) {
         return SlidingSheetDialog(
           elevation: 8,
           cornerRadius: 16,
@@ -265,7 +261,6 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
             initialSnap: 0.6,
             snappings: [0.1, 0.7],
           ),
-          // minHeight: parentContext.height / 2.5,
           builder: (context, state) {
             return DatePickerWidget(
               initialDate: _dateTimeStream.selectedDate,
@@ -277,13 +272,12 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
                 _dateTimeStream.broadCastCurrentDate(DateTime.now());
                 context.router.pop();
               },
-              onSubmitPressed: () => context.router.pop(),
+              onSubmitPressed: () async => context.router.pop(),
             );
           },
         );
       },
     );
-    return result;
   }
 
   void _onSelectionChanged(DateRangePickerSelectionChangedArgs args) {
