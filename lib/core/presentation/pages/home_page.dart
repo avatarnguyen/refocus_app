@@ -134,17 +134,17 @@ class _HomePageWidgetState extends State<HomePageWidget> {
   PlatformScaffold _drawerBody(BuildContext context) {
     return PlatformScaffold(
       body: SlidingSheet(
+        controller: _sheetController,
         color: kcDarkBackground,
         isBackdropInteractable: true,
         elevation: 16,
         cornerRadius: 16,
         shadowColor: Colors.black26,
-        backdropColor: Colors.black26,
+        backdropColor: Colors.black12,
         snapSpec: const SnapSpec(
           initialSnap: 0.09,
           snappings: [0.09, 0.5, 0.89],
         ),
-        // parallaxSpec: ParallaxSpec(),
         minHeight: context.height * 0.9,
         closeOnBackdropTap: true,
         closeOnBackButtonPressed: Platform.isAndroid,
@@ -152,7 +152,10 @@ class _HomePageWidgetState extends State<HomePageWidget> {
           buildWhen: (oldState, newState) =>
               oldState.isExpanded != newState.isExpanded,
           builder: (context, state) {
-            return SlidingHeaderWidget(sheetState: state);
+            return SlidingHeaderWidget(
+              sheetState: state,
+              closeSheet: _collapseBottomSheet,
+            );
           },
         ),
         builder: (context, state) {
@@ -193,5 +196,10 @@ class _HomePageWidgetState extends State<HomePageWidget> {
             ),
       ),
     );
+  }
+
+  void _collapseBottomSheet() {
+    log.i('Collapse Sheet');
+    _sheetController.collapse();
   }
 }

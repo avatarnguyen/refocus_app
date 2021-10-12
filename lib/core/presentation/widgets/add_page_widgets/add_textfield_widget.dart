@@ -18,7 +18,6 @@ import 'package:refocus_app/enum/today_entry_type.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_entry.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar_list/calendar_list_bloc.dart';
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
-import 'package:refocus_app/features/task/presentation/bloc/project_bloc.dart';
 import 'package:refocus_app/injection.dart';
 import 'package:styled_widget/styled_widget.dart';
 
@@ -100,42 +99,6 @@ class _AddTextFieldWidgetState extends State<AddTextFieldWidget> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          StreamBuilder<TodayEntryType>(
-              stream: _settingOption.typeStream,
-              builder: (context, snapshot) {
-                final _entryType = snapshot.data;
-                if (_entryType != null) {
-                  // isEventNotifier.value = _entryType == TodayEntryType.event;
-                  if (_entryType == TodayEntryType.event) {
-                    return BlocBuilder<CalendarListBloc, CalendarListState>(
-                        builder: (context, state) {
-                      if (state is Loaded) {
-                        final calendars = state.calendarList;
-                        final _currentColor = StyleUtils.getColorFromString(
-                            _currentCalendar?.color ?? '#8879FC');
-                        return _buildEventElements(
-                            _currentColor, context, calendars);
-                      } else {
-                        return progressIndicator;
-                      }
-                    });
-                  } else {
-                    return BlocBuilder<ProjectBloc, ProjectState>(
-                        builder: (context, state) {
-                      if (state is ProjectLoaded) {
-                        final _projects = state.project;
-                        final _currentColor = StyleUtils.getColorFromString(
-                            _currentProject?.color ?? '#8879FC');
-                        return _buildTaskElements(
-                            context, _currentColor, _projects);
-                      } else {
-                        return progressIndicator;
-                      }
-                    });
-                  }
-                }
-                return const SizedBox.shrink();
-              }),
           verticalSpaceSmall,
           //* Main Task Text Field
           _buildTextInput(context),

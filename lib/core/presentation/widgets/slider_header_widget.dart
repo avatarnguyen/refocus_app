@@ -6,7 +6,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:refocus_app/config/routes/router.dart';
 import 'package:refocus_app/core/presentation/helper/page_stream.dart';
 import 'package:refocus_app/core/presentation/helper/sliding_body_stream.dart';
@@ -27,9 +26,11 @@ class SlidingHeaderWidget extends StatefulWidget {
   const SlidingHeaderWidget({
     Key? key,
     required this.sheetState,
+    required this.closeSheet,
   }) : super(key: key);
 
   final SheetState sheetState;
+  final VoidCallback closeSheet;
 
   @override
   _SlidingHeaderWidgetState createState() => _SlidingHeaderWidgetState();
@@ -117,7 +118,7 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
               Icons.close_rounded,
               color: kcSecondary100,
               size: 24,
-            ).gestures(onTap: () {})
+            ).gestures(onTap: widget.closeSheet)
           else
             const Icon(
               Icons.calendar_today,
@@ -142,7 +143,12 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
             color: kcSecondary100,
             size: 33,
           ).gestures(onTap: () {
+            widget.closeSheet();
+
             //TODO: Refactor this to and use auto_route instead!!!
+
+            // context.router.push(const QuickAddRouteWrapper());
+
             Navigator.push<dynamic>(
               context,
               Platform.isIOS

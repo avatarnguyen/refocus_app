@@ -12,15 +12,10 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:refocus_app/config/routes/router.dart';
-import 'package:refocus_app/constants/routes_name.dart';
-import 'package:refocus_app/core/presentation/pages/home_page.dart';
-import 'package:refocus_app/core/presentation/pages/quickadd_page.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart';
 import 'package:refocus_app/core/util/ui/style_helpers.dart';
-import 'package:refocus_app/features/calendar/presentation/pages/calendar_list_page.dart';
 import 'package:refocus_app/l10n/l10n.dart';
 
 // Generated in previous step
@@ -66,6 +61,27 @@ class _AppState extends State<App> {
         secondary: kcSecondary500,
         secondaryVariant: kcSecondary600,
         surface: Colors.white70,
+        background: kcDarkBackground,
+        error: kcError500,
+        onPrimary: Colors.white,
+        onSecondary: Colors.white,
+        onSurface: Colors.black87,
+        onBackground: Colors.black87,
+        onError: Colors.white,
+        brightness: Brightness.light,
+      ),
+      textTheme: _materialTextTheme,
+      brightness: Brightness.light,
+    );
+    final _materialDarkThemeData = ThemeData(
+      appBarTheme: const AppBarTheme(color: kcPrimary500),
+      backgroundColor: kcDarkBackground,
+      colorScheme: const ColorScheme(
+        primary: kcPrimary500,
+        primaryVariant: kcPrimary600,
+        secondary: kcSecondary500,
+        secondaryVariant: kcSecondary600,
+        surface: Colors.white70,
         background: kcLightBackground,
         error: kcError500,
         onPrimary: Colors.white,
@@ -93,6 +109,7 @@ class _AppState extends State<App> {
       ],
       supportedLocales: AppLocalizations.supportedLocales,
       theme: _materialThemeData,
+      darkTheme: _materialDarkThemeData,
       themeMode: ThemeMode.light,
     );
   }

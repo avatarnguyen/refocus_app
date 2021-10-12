@@ -11,7 +11,6 @@ export 'router.gr.dart';
   routes: <AutoRoute>[
     AutoRoute<dynamic>(page: HomePage, initial: true),
     AutoRoute<dynamic>(page: CalendarListPage),
-    AutoRoute<dynamic>(page: EditTaskView),
     CustomRoute<dynamic>(
       page: QuickAddPage,
       fullscreenDialog: true,

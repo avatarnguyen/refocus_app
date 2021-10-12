@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 import 'package:refocus_app/enum/today_entry_type.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_entry.dart';
