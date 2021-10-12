@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -37,13 +36,6 @@ class _AddTextFieldWidgetState extends State<AddTextFieldWidget> {
 
   late RichTextController _textController;
 
-  ProjectEntry? _currentProject;
-  CalendarEntry? _currentCalendar;
-
-  // bool _isEvent = false;
-
-  // final ValueNotifier<bool> isEventNotifier = ValueNotifier(false);
-
   final _matcherDueDate = StringMatcher.matcherDueDate;
   final _matcherRemindDate = StringMatcher.matcherRemindDate;
   final _matcherRemindTime = StringMatcher.matcherRemindTime;
@@ -79,8 +71,6 @@ class _AddTextFieldWidgetState extends State<AddTextFieldWidget> {
     });
 
     super.initState();
-
-    _currentProject = _settingOption.projectEntry;
 
     BlocProvider.of<CalendarListBloc>(context, listen: false)
         .add(GetCalendarListEvent());
@@ -184,139 +174,6 @@ class _AddTextFieldWidgetState extends State<AddTextFieldWidget> {
             },
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildEventElements(Color _currentColor, BuildContext context,
-      List<CalendarEntry> calendars) {
-    return Container(
-      padding: const EdgeInsets.all(6),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        color: _currentColor,
-        boxShadow: [
-          BoxShadow(
-            color: _currentColor.withOpacity(0.1),
-            blurRadius: 1,
-          ),
-          BoxShadow(
-            color: _currentColor.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          isDense: true,
-          focusColor: Colors.white,
-          iconEnabledColor: Colors.white,
-          value: _currentCalendar?.name,
-          dropdownColor: _currentColor,
-          elevation: Platform.isIOS ? 0 : 8,
-          alignment: AlignmentDirectional.center,
-          style: context.subtitle1.copyWith(
-            color: Colors.white,
-          ),
-          items: calendars.map<DropdownMenuItem<String>>(
-            (CalendarEntry _cal) {
-              return DropdownMenuItem<String>(
-                value: _cal.name,
-                child: Text(
-                  _cal.name,
-                  textAlign: TextAlign.center,
-                  style: context.subtitle1.copyWith(
-                    color: Colors.white,
-                  ),
-                ),
-              );
-            },
-          ).toList(),
-          hint: Text(
-            'Select a calendar ...',
-            textAlign: TextAlign.center,
-            style: context.subtitle1.copyWith(
-              color: Colors.white,
-            ),
-          ),
-          onChanged: (String? newValue) {
-            final selectedCal = calendars.singleWhere(
-              (element) => element.name == newValue,
-            );
-            _settingOption.broadCastCurrentCalendarEntry(selectedCal);
-            setState(() {
-              _currentCalendar = selectedCal;
-            });
-          },
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTaskElements(
-      BuildContext context, Color _currentColor, List<ProjectEntry> _projects) {
-    return Container(
-      padding: const EdgeInsets.all(6),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        color: _currentColor,
-        boxShadow: [
-          BoxShadow(
-            color: _currentColor.withOpacity(0.1),
-            blurRadius: 1,
-          ),
-          BoxShadow(
-            color: _currentColor.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          isDense: true,
-          focusColor: Colors.white,
-          iconEnabledColor: Colors.white,
-          value: _currentProject?.title,
-          dropdownColor: _currentColor,
-          elevation: Platform.isIOS ? 0 : 8,
-          alignment: AlignmentDirectional.center,
-          style: context.subtitle1.copyWith(
-            color: Colors.white,
-          ),
-          items: _projects.map<DropdownMenuItem<String>>(
-            (ProjectEntry project) {
-              return DropdownMenuItem<String>(
-                value: project.title,
-                child: Text(
-                  project.title!,
-                  textAlign: TextAlign.center,
-                  style: context.subtitle1.copyWith(
-                    color: Colors.white,
-                  ),
-                ),
-              );
-            },
-          ).toList(),
-          hint: Text(
-            'Inbox',
-            textAlign: TextAlign.center,
-            style: context.subtitle1.copyWith(
-              color: Colors.white,
-            ),
-          ),
-          onChanged: (String? newValue) {
-            final selectedProject = _projects.singleWhere(
-              (element) => element.title == newValue,
-            );
-            _settingOption.projectEntry = selectedProject;
-            _settingOption.broadCastCurrentProjectEntry(selectedProject);
-            setState(() {
-              _currentProject = selectedProject;
-            });
-          },
-        ),
       ),
     );
   }

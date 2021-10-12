@@ -40,6 +40,8 @@ class _QuickAddPageState extends State<QuickAddPage> {
 
   @override
   void initState() {
+    _currentProject = _settingOption.projectEntry;
+
     super.initState();
   }
 
@@ -288,7 +290,7 @@ class _QuickAddPageState extends State<QuickAddPage> {
                         final _currentColor = StyleUtils.getColorFromString(
                             _currentCalendar?.color ?? '#8879FC');
                         return Text(
-                          _currentCalendar?.name ?? 'Select a computer',
+                          _currentCalendar?.name ?? 'Select a calendar',
                           style: _projectTextStyle.copyWith(
                             color: _currentColor,
                           ),

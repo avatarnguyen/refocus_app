@@ -3,12 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:refocus_app/core/presentation/helper/action_stream.dart';
 import 'package:refocus_app/core/presentation/helper/text_stream.dart';
 import 'package:refocus_app/core/presentation/widgets/add_page_widgets/action_bottom_widget.dart';
-import 'package:refocus_app/core/presentation/widgets/add_page_widgets/add_timeblock_widget.dart';
 import 'package:refocus_app/core/presentation/widgets/add_page_widgets/set_duedate_widget.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/action_selection_type.dart';
 import 'package:refocus_app/enum/prio_type.dart';
-import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
 import 'package:refocus_app/injection.dart';
 import 'package:styled_widget/styled_widget.dart';
 import 'package:uuid/uuid.dart';
@@ -57,8 +55,6 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
                 return _buildSelectionListRow(context, _prioList, _currentText);
               },
             );
-            // } else if (_currentAction == ActionSelectionType.timeBlock) {
-            //   return const AddTimeBlockWidget().padding(vertical: 4);
           } else if (_currentAction == ActionSelectionType.dueDate) {
             return const SetDueDateWidget().padding(vertical: 4);
           } else {
@@ -73,9 +69,7 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
   }
 
   String _getItemString(dynamic item) {
-    if (item is ProjectEntry) {
-      return item.title?.trim() ?? '';
-    } else if (item is PrioType) {
+    if (item is PrioType) {
       final _dueDateString = <String>['Low Prio', 'Medium Prio', 'High Prio'];
       return _dueDateString[item.index];
     } else {
@@ -96,11 +90,10 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4),
             child: ChoiceChip(
-              backgroundColor: context.colorScheme.primaryVariant,
+              backgroundColor: context.colorScheme.background,
               selectedColor: context.colorScheme.secondary,
-              shape: RoundedRectangleBorder(
-                side: const BorderSide(color: kcPrimary100),
-                borderRadius: BorderRadius.circular(8),
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(8)),
               ),
               label: Text(
                 _getItemString(_item),
@@ -111,10 +104,6 @@ class _ActionPanelWidgetState extends State<ActionPanelWidget> {
               selected: _currentPrio == _item,
               onSelected: (bool selected) {
                 setState(() {
-                  // if (_item is ProjectEntry) {
-                  //   _settingOption.projectEntry = _item;
-                  //   _settingOption.broadCastCurrentProjectEntry(_item);
-                  // }
                   if (_item is PrioType) {
                     _currentPrio = _item;
                     _mapPrioTypeToAction(_item, currentText ?? '');

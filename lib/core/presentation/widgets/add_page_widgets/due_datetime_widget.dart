@@ -191,7 +191,7 @@ class _SetPlannedDateTimeWidgetState extends State<SetPlannedDateTimeWidget> {
           stream: _settingOption.typeStream,
           builder: (context, snapshot) => snapshot.data != TodayEntryType.event
               ? const AddTimeBlockWidget().padding(bottom: 4)
-              : const SizedBox.shrink(),
+              : verticalSpaceMedium,
         ),
       ].toColumn(mainAxisAlignment: MainAxisAlignment.end),
     );
@@ -200,13 +200,12 @@ class _SetPlannedDateTimeWidgetState extends State<SetPlannedDateTimeWidget> {
   Widget _buildSelectionMode(
       BuildContext context, String title, DateSelectionType type) {
     return ChoiceChip(
-      backgroundColor: context.colorScheme.primaryVariant,
+      backgroundColor: context.colorScheme.background,
       selectedColor: context.colorScheme.secondary,
       shape: RoundedRectangleBorder(
-        side: BorderSide(color: context.colorScheme.primaryVariant),
+        side: BorderSide(color: context.colorScheme.background),
         borderRadius: BorderRadius.circular(8),
       ),
-      elevation: 0,
       label: Text(
         title,
         style: context.subtitle1.copyWith(
