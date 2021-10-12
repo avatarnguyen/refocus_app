@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar_list/calendar_list_bloc.dart';
-import 'package:refocus_app/features/calendar/presentation/widgets/checkboxlistitem_widget.dart';
+import 'package:refocus_app/features/calendar/presentation/widgets/calendarlist_item_widget.dart';
 import 'package:refocus_app/features/calendar/presentation/widgets/widgets.dart';
 
 import 'package:refocus_app/injection.dart';
@@ -42,13 +42,16 @@ class _CalendarListWidgetState extends State<CalendarListWidget> {
         }
         if (state is Loaded) {
           final calendars = state.calendarList;
-          return ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            padding: const EdgeInsets.only(top: 16),
-            itemCount: calendars.length,
-            itemBuilder: (context, index) =>
-                CheckBoxListItem(calendar: calendars[index]),
+          return SafeArea(
+            top: false,
+            child: ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              padding: const EdgeInsets.only(top: 16),
+              itemCount: calendars.length,
+              itemBuilder: (context, index) =>
+                  CalendarListItem(calendar: calendars[index]),
+            ),
           );
         } else if (state is Error) {
           return MessageDisplay(

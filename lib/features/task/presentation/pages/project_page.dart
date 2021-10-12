@@ -50,7 +50,7 @@ class _ProjectPageState extends State<ProjectPage> {
               final _project = _projects[index];
               return ProjectItem(project: _project);
             },
-          );
+          ).safeArea(top: false);
         } else if (state is ProjectLoading) {
           return progressIndicator;
         } else {

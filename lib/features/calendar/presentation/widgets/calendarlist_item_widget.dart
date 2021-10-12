@@ -5,8 +5,8 @@ import 'package:refocus_app/features/calendar/domain/entities/calendar_entry.dar
 import 'package:refocus_app/features/calendar/domain/usecases/helpers/calendar_params.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar_list/calendar_list_bloc.dart';
 
-class CheckBoxListItem extends StatefulWidget {
-  const CheckBoxListItem({
+class CalendarListItem extends StatefulWidget {
+  const CalendarListItem({
     Key? key,
     required this.calendar,
   }) : super(key: key);
@@ -14,10 +14,10 @@ class CheckBoxListItem extends StatefulWidget {
   final CalendarEntry calendar;
 
   @override
-  _CheckBoxListItemState createState() => _CheckBoxListItemState();
+  _CalendarListItemState createState() => _CalendarListItemState();
 }
 
-class _CheckBoxListItemState extends State<CheckBoxListItem> {
+class _CalendarListItemState extends State<CalendarListItem> {
   bool _isSelected = false;
 
   @override
@@ -36,36 +36,34 @@ class _CheckBoxListItemState extends State<CheckBoxListItem> {
     const _textColor = Colors.white;
 
     return [
-      Text(
-        widget.calendar.name,
-        style: context.bodyText1.copyWith(
-          color: _textColor,
-        ),
-      ).flexible(),
-      Material(
-        color: Colors.transparent,
-        child: Checkbox(
-          visualDensity: const VisualDensity(
-            horizontal: VisualDensity.minimumDensity,
-            vertical: VisualDensity.minimumDensity,
-          ),
-          value: _isSelected,
-          onChanged: _changeCheckBoxState,
-        ),
-      ),
+      widget.calendar.name.toBodyText1(color: _textColor).flexible(),
+      // Material(
+      //   color: Colors.transparent,
+      //   child: Checkbox(
+      //     visualDensity: const VisualDensity(
+      //       horizontal: VisualDensity.minimumDensity,
+      //       vertical: VisualDensity.minimumDensity,
+      //     ),
+      //     value: _isSelected,
+      //     onChanged: _changeCheckBoxState,
+      //   ),
+      // ),
     ]
         .toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween)
         .padding(all: 16)
         .ripple()
         .card(
-          color: _backgroundColor,
-          elevation: 2,
+          color: _isSelected ? _backgroundColor : Colors.transparent,
+          elevation: 4,
           margin: const EdgeInsets.symmetric(
             horizontal: 16,
             vertical: 8,
           ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: const BorderRadius.all(Radius.circular(8)),
+            side: _isSelected
+                ? BorderSide.none
+                : BorderSide(color: _backgroundColor),
           ),
         )
         .gestures(
