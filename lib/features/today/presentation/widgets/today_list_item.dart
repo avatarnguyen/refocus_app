@@ -370,6 +370,7 @@ class _ListItemWidgetState extends State<ListItemWidget> {
         child: _headerWidget ??= EditTaskHeader(
           taskID: taskID,
           colorID: colorID,
+          getEditView: _openEditView,
         ));
 
     final dynamic result = await showSlidingBottomSheet<dynamic>(
@@ -397,6 +398,57 @@ class _ListItemWidgetState extends State<ListItemWidget> {
     );
 
     print(result); // This is the result.
+  }
+
+  void _openEditView() {
+    print('Open Edit');
+    final _entry = widget.entry;
+    // Navigator.of(context).push(MaterialWithModalsPageRoute(builder: (context) => Container()));
+    // Navigator.of(context).push<dynamic>(
+    //   CupertinoModalBottomSheetRoute<dynamic>(
+    //     builder: (_) => MultiBlocProvider(
+    //       providers: [
+    //         BlocProvider<TaskBloc>.value(
+    //           value: BlocProvider.of<TaskBloc>(context),
+    //         ),
+    //         BlocProvider<SubtaskCubit>.value(
+    //           value: BlocProvider.of<SubtaskCubit>(context),
+    //         ),
+    //       ],
+    //       child: EditTaskView(
+    //         key: Key(_entry.id),
+    //         taskID: _entry.id,
+    //         colorID: _entry.color,
+    //         // modalScrollController: ModalScrollController.of(context),
+    //       ),
+    //     ),
+    //     expanded: false,
+    //     transitionBackgroundColor: Colors.black38,
+    //   ),
+    // );
+    showCupertinoModalBottomSheet<dynamic>(
+      elevation: 8,
+      useRootNavigator: true,
+      expand: true,
+      context: context,
+      topRadius: const Radius.circular(16),
+      builder: (_) => MultiBlocProvider(
+        providers: [
+          BlocProvider<TaskBloc>.value(
+            value: BlocProvider.of<TaskBloc>(context),
+          ),
+          BlocProvider<SubtaskCubit>.value(
+            value: BlocProvider.of<SubtaskCubit>(context),
+          ),
+        ],
+        child: EditTaskView(
+          key: Key(_entry.id),
+          taskID: _entry.id,
+          colorID: _entry.color,
+          modalScrollController: ModalScrollController.of(context),
+        ),
+      ),
+    );
   }
 
   Color getColor(Set<MaterialState> states) {

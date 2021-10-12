@@ -1,9 +1,7 @@
 /// [view] normal viewing mode
-/// [editing] send signal to start editing task
-/// [edited] send signal that editing task has been completed and
+/// [shouldSave] send signal to start editing task
 /// task should be reloaded
 enum EditTaskState {
   view,
-  editing,
-  edited,
+  shouldSave,
 }
