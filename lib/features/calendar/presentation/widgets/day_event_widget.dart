@@ -23,16 +23,18 @@ class DayEventCellWidget extends StatelessWidget {
     return Container(
       width: width,
       height: height,
-      padding: const EdgeInsets.all(2),
+      padding: const EdgeInsets.symmetric(horizontal: 4),
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.all(Radius.circular(4)),
         color: backgroudColor,
       ),
-      child: Text(
-        event.subject,
-        textAlign: TextAlign.center,
-        style: context.subtitle2.copyWith(
-          color: textColor,
+      child: Center(
+        child: Text(
+          event.subject,
+          textAlign: TextAlign.center,
+          style: context.subtitle2.copyWith(
+            color: textColor,
+          ),
         ),
       ),
     );

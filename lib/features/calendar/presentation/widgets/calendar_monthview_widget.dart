@@ -1,7 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar/datetime_stream.dart';
+import 'package:refocus_app/features/calendar/presentation/widgets/appointment_widget.dart';
+import 'package:refocus_app/features/calendar/presentation/widgets/day_event_widget.dart';
 import 'package:refocus_app/injection.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
@@ -61,6 +64,51 @@ class _CalendarMonthViewWidgetState extends State<CalendarMonthViewWidget> {
     );
   }
 
+  Widget appointmentBuilder(BuildContext context,
+      CalendarAppointmentDetails calendarAppointmentDetails) {
+    final event =
+        calendarAppointmentDetails.appointments.first as CalendarEventEntry;
+
+    final _colorValue = event.colorId!.replaceAll('#', '0xff');
+    final _color = Color(int.parse(_colorValue));
+    final _backgroudColor = StyleUtils.lighten(_color, 0.25);
+
+    final _textColor = StyleUtils.darken(_color, 0.32);
+
+    final _height = calendarAppointmentDetails.bounds.height;
+    final _width = calendarAppointmentDetails.bounds.width;
+
+    if (event.allDay != null && event.allDay!) {
+      return DayEventCellWidget(
+        backgroudColor: _backgroudColor,
+        event: event,
+        textColor: _textColor,
+        height: _height,
+        width: _width,
+      );
+    } else {
+      final _diff =
+          event.endDateTime!.difference(event.startDateTime!).inMinutes;
+
+      return Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Positioned(
+            top: 0,
+            child: AppointmentEventCellWidget(
+              width: _width,
+              diff: _diff,
+              height: _height,
+              backgroudColor: _backgroudColor,
+              event: event,
+              textColor: _textColor,
+            ),
+          ),
+        ],
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -77,30 +125,30 @@ class _CalendarMonthViewWidgetState extends State<CalendarMonthViewWidget> {
           textStyle: kBodyStyleBold.copyWith(
             color: kcPrimary600,
           ),
-          backgroundColor: Colors.white,
+          backgroundColor: context.backgroundColor,
         ),
         viewHeaderHeight: 48,
-        backgroundColor: kcLightBackground,
+        backgroundColor: context.backgroundColor,
         cellBorderColor: Colors.white10,
         todayHighlightColor: kcPrimary400,
         selectionDecoration:
             BoxDecoration(border: Border.all(color: kcTertiary500, width: 2)),
-        // appointmentTextStyle: kBodyStyleRegular,
         showDatePickerButton: true,
         // showNavigationArrow: true,
         viewHeaderStyle: ViewHeaderStyle(
-            backgroundColor: Colors.white,
+            backgroundColor: context.backgroundColor,
             dayTextStyle: kCaptionStyleBold.copyWith(color: Colors.black38)),
+        appointmentBuilder: appointmentBuilder,
         monthViewSettings: MonthViewSettings(
           showAgenda: true,
           agendaViewHeight: screenHeightPercentage(context, percentage: 0.35),
           numberOfWeeksInView: 4,
           dayFormat: 'EEE',
           monthCellStyle: MonthCellStyle(
-            backgroundColor: Colors.white70,
-            trailingDatesBackgroundColor: Colors.white70,
-            leadingDatesBackgroundColor: Colors.white70,
-            todayBackgroundColor: Colors.white70,
+            backgroundColor: context.backgroundColor,
+            trailingDatesBackgroundColor: context.backgroundColor,
+            leadingDatesBackgroundColor: context.backgroundColor,
+            todayBackgroundColor: context.backgroundColor,
             textStyle: kCaptionStyleRegular.copyWith(color: Colors.black87),
           ),
           agendaStyle: AgendaStyle(

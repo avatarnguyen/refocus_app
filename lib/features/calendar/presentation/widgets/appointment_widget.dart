@@ -27,73 +27,74 @@ class AppointmentEventCellWidget extends StatelessWidget {
     return Container(
       width: width,
       height: diff < 25 ? 18 : height,
-      padding: const EdgeInsets.symmetric(
-        horizontal: 8,
-      ),
       decoration: BoxDecoration(
-        borderRadius: const BorderRadius.all(Radius.circular(4)),
-        color: backgroudColor,
+        color: textColor,
+        borderRadius: const BorderRadius.all(Radius.circular(8)),
+        boxShadow: const [
+          kShadowLightBase,
+          kShadowLight20,
+        ],
       ),
-      child: [
-        [
-          SizedBox(
-            child: Text(
-              event.subject,
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-              textScaleFactor: (diff > 30 || diff < 20) ? 1.0 : 0.86,
-              style: diff > 20
-                  ? context.textTheme.bodyText2!.copyWith(
-                      color: textColor,
-                      fontWeight: FontWeight.w500,
-                      fontSize: 16,
-                    )
-                  : kTinyStyleRegular.copyWith(
-                      color: textColor,
-                      fontWeight: FontWeight.w500,
-                    ),
-            ),
-          ).padding(
-            vertical: diff > 20 ? 4 : 2,
+      padding: const EdgeInsets.only(left: 8),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        decoration: const BoxDecoration(
+          borderRadius: BorderRadius.only(
+            topRight: Radius.circular(8),
+            bottomRight: Radius.circular(8),
           ),
-          if (diff > 30)
-            [
-              Icon(
-                Icons.alarm_on,
-                color: textColor.withOpacity(0.9),
-                size: 16,
+          color: Colors.white,
+        ),
+        child: [
+          [
+            SizedBox(
+              child: Text(
+                event.subject,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+                textScaleFactor: (diff > 30 || diff < 20) ? 1.0 : 0.86,
+                style: diff > 20
+                    ? context.textTheme.bodyText2!.copyWith(
+                        color: textColor,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 16,
+                      )
+                    : kTinyStyleRegular.copyWith(
+                        color: textColor,
+                        fontWeight: FontWeight.w500,
+                      ),
               ),
-              horizontalSpaceTiny,
-              Text(
-                "${DateFormat('hh:mm a').format(event.startDateTime!.toLocal())} - ${DateFormat('hh:mm a').format(event.endDateTime!.toLocal())}",
-                textScaleFactor: diff > 45 ? 1.0 : 0.7,
-                style: context.textTheme.subtitle2!.copyWith(
-                  color: textColor.withOpacity(0.9),
+            ).padding(
+              vertical: diff > 20 ? 4 : 2,
+            ),
+            if (diff > 30)
+              [
+                Text(
+                  "${DateFormat('hh:mm a').format(event.startDateTime!.toLocal())} - ${DateFormat('hh:mm a').format(event.endDateTime!.toLocal())}",
+                  textScaleFactor: diff > 45 ? 1.0 : 0.7,
+                  style: context.textTheme.subtitle2!.copyWith(
+                    color: textColor.withOpacity(0.9),
+                  ),
+                  overflow: TextOverflow.fade,
+                ).flexible(),
+              ]
+                  .toRow()
+                  .parent(({required child}) => SizedBox(
+                        child: Styled.widget(child: child),
+                      ))
+                  .flexible(),
+          ]
+              .toColumn(crossAxisAlignment: CrossAxisAlignment.start)
+              .parent(
+                ({required child}) => SizedBox(
+                  child: Styled.widget(child: child),
                 ),
-                overflow: TextOverflow.fade,
-              ).flexible(),
-            ]
-                .toRow()
-                .parent(({required child}) => SizedBox(
-                      child: Styled.widget(child: child),
-                    ))
-                .flexible(),
-        ]
-            .toColumn(crossAxisAlignment: CrossAxisAlignment.start)
-            .parent(
-              ({required child}) => SizedBox(
-                child: Styled.widget(child: child),
-              ),
-            )
-            .expanded(),
-        // Icon(
-        //   Icons.more_horiz,
-        //   color: textColor,
-        //   size: diff > 20 ? 24 : 22,
-        // ).flexible(),
-      ].toRow(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.start,
+              )
+              .expanded(),
+        ].toRow(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
+        ),
       ),
     );
   }
