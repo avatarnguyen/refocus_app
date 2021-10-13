@@ -16,6 +16,8 @@ import 'package:refocus_app/core/presentation/helper/sliding_body_stream.dart';
 import 'package:refocus_app/core/presentation/widgets/slider_header_widget.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
+import 'package:refocus_app/features/calendar/presentation/bloc/calendar/calendar_bloc.dart';
+import 'package:refocus_app/features/calendar/presentation/bloc/calendar_list/calendar_list_bloc.dart';
 import 'package:refocus_app/features/calendar/presentation/pages/calendar_list_page.dart';
 import 'package:refocus_app/features/calendar/presentation/pages/calendar_page.dart';
 import 'package:refocus_app/features/task/presentation/bloc/cubit/subtask_cubit.dart';
@@ -37,13 +39,18 @@ class HomePage extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<ProjectBloc>(
-            create: (context) =>
-                getIt<ProjectBloc>()..add(GetProjectEntriesEvent())),
+            create: (_) => getIt<ProjectBloc>()..add(GetProjectEntriesEvent())),
         BlocProvider<TaskBloc>(
-          create: (context) => getIt<TaskBloc>(),
+          create: (_) => getIt<TaskBloc>(),
         ),
         BlocProvider(
-          create: (context) => getIt<SubtaskCubit>(),
+          create: (_) => getIt<SubtaskCubit>(),
+        ),
+        BlocProvider<CalendarListBloc>(
+          create: (_) => getIt<CalendarListBloc>(),
+        ),
+        BlocProvider<CalendarBloc>(
+          create: (_) => getIt<CalendarBloc>(),
         ),
       ],
       child: const HomePageWidget(),
@@ -79,11 +86,9 @@ class _HomePageWidgetState extends State<HomePageWidget> {
   void initState() {
     _configureAmplifyAndGoogleSignIn();
     _slidingBodySub = _slidingStream.pageStream.listen(_slidingPageReceived);
-
-    // _googleSignIn.signInSilently();
-    super.initState();
-
     _sheetController = SheetController();
+
+    super.initState();
   }
 
   void _slidingPageReceived(int newPage) {
@@ -162,7 +167,10 @@ class _HomePageWidgetState extends State<HomePageWidget> {
         builder: (context, state) {
           if (amplifyConfigured) {
             if (_currentSlidingBodyPage == 0) {
-              return const CalendarListPage();
+              return BlocProvider<CalendarListBloc>.value(
+                value: BlocProvider.of<CalendarListBloc>(context),
+                child: const CalendarListPage(),
+              );
             } else {
               return BlocProvider<ProjectBloc>.value(
                 value: BlocProvider.of<ProjectBloc>(context),

@@ -37,6 +37,30 @@ class SlidingHeaderWidget extends StatefulWidget {
 
   @override
   _SlidingHeaderWidgetState createState() => _SlidingHeaderWidgetState();
+
+  // @override
+  // Widget wrappedRoute(BuildContext context) {
+  //   return MultiBlocProvider(
+  //     providers: [
+  //       BlocProvider<ProjectBloc>.value(
+  //         value: BlocProvider.of<ProjectBloc>(context),
+  //       ),
+  //       BlocProvider<TaskBloc>.value(
+  //         value: BlocProvider.of<TaskBloc>(context),
+  //       ),
+  //       BlocProvider<SubtaskCubit>.value(
+  //         value: BlocProvider.of<SubtaskCubit>(context),
+  //       ),
+  //       BlocProvider<CalendarListBloc>.value(
+  //         value: BlocProvider.of<CalendarListBloc>(context),
+  //       ),
+  //       BlocProvider<CalendarBloc>.value(
+  //         value: BlocProvider.of<CalendarBloc>(context),
+  //       ),
+  //     ],
+  //     child: this,
+  //   );
+  // }
 }
 
 class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
@@ -153,8 +177,6 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
 
             //TODO: Refactor this to and use auto_route instead!!!
 
-            // context.router.push(const QuickAddRouteWrapper());
-
             Navigator.push<dynamic>(
               context,
               Platform.isIOS
@@ -171,11 +193,11 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
                           BlocProvider<SubtaskCubit>.value(
                             value: BlocProvider.of<SubtaskCubit>(context),
                           ),
-                          BlocProvider<CalendarListBloc>(
-                            create: (context) => getIt<CalendarListBloc>(),
+                          BlocProvider<CalendarListBloc>.value(
+                            value: BlocProvider.of<CalendarListBloc>(context),
                           ),
-                          BlocProvider<CalendarBloc>(
-                            create: (context) => getIt<CalendarBloc>(),
+                          BlocProvider<CalendarBloc>.value(
+                            value: BlocProvider.of<CalendarBloc>(context),
                           ),
                         ],
                         child: const QuickAddPage(),
@@ -183,26 +205,28 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
                     )
                   : MaterialPageRoute<dynamic>(
                       fullscreenDialog: true,
-                      builder: (_) => MultiBlocProvider(
-                        providers: [
-                          BlocProvider<ProjectBloc>.value(
-                            value: BlocProvider.of<ProjectBloc>(context),
-                          ),
-                          BlocProvider<TaskBloc>.value(
-                            value: BlocProvider.of<TaskBloc>(context),
-                          ),
-                          BlocProvider<SubtaskCubit>.value(
-                            value: BlocProvider.of<SubtaskCubit>(context),
-                          ),
-                          BlocProvider<CalendarListBloc>(
-                            create: (context) => getIt<CalendarListBloc>(),
-                          ),
-                          BlocProvider<CalendarBloc>(
-                            create: (context) => getIt<CalendarBloc>(),
-                          ),
-                        ],
-                        child: const QuickAddPage(),
-                      ),
+                      builder: (_) {
+                        return MultiBlocProvider(
+                          providers: [
+                            BlocProvider<ProjectBloc>.value(
+                              value: BlocProvider.of<ProjectBloc>(context),
+                            ),
+                            BlocProvider<TaskBloc>.value(
+                              value: BlocProvider.of<TaskBloc>(context),
+                            ),
+                            BlocProvider<SubtaskCubit>.value(
+                              value: BlocProvider.of<SubtaskCubit>(context),
+                            ),
+                            BlocProvider<CalendarListBloc>.value(
+                              value: BlocProvider.of<CalendarListBloc>(context),
+                            ),
+                            BlocProvider<CalendarBloc>.value(
+                              value: BlocProvider.of<CalendarBloc>(context),
+                            ),
+                          ],
+                          child: const QuickAddPage(),
+                        );
+                      },
                     ),
             );
           }),
