@@ -155,6 +155,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
             return SlidingHeaderWidget(
               sheetState: state,
               closeSheet: _collapseBottomSheet,
+              expandSheet: _expandBottomSheet,
             );
           },
         ),
@@ -201,5 +202,9 @@ class _HomePageWidgetState extends State<HomePageWidget> {
   void _collapseBottomSheet() {
     log.i('Collapse Sheet');
     _sheetController.collapse();
+  }
+
+  void _expandBottomSheet() {
+    _sheetController.expand();
   }
 }

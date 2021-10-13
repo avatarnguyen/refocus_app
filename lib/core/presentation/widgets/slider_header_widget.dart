@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:refocus_app/config/routes/router.dart';
 import 'package:refocus_app/core/presentation/helper/page_stream.dart';
 import 'package:refocus_app/core/presentation/helper/sliding_body_stream.dart';
@@ -27,10 +28,12 @@ class SlidingHeaderWidget extends StatefulWidget {
     Key? key,
     required this.sheetState,
     required this.closeSheet,
+    required this.expandSheet,
   }) : super(key: key);
 
   final SheetState sheetState;
   final VoidCallback closeSheet;
+  final VoidCallback expandSheet;
 
   @override
   _SlidingHeaderWidgetState createState() => _SlidingHeaderWidgetState();
@@ -66,6 +69,11 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
   void _slidingIndexReceived(int newIdx) {
     setState(() {
       _currentSegmentedIdx = newIdx;
+      if (newIdx == 1) {
+        _titleText = 'Projects';
+      } else {
+        _titleText = 'Calendars';
+      }
     });
   }
 
@@ -224,7 +232,8 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
               color: kcSecondary100,
               size: 28,
             ).gestures(onTap: () {
-              print('Create New Project');
+              widget.expandSheet();
+              _showCreateProjectBottomSheet();
             }),
           ]
         ].toRow(
@@ -246,6 +255,75 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
         ),
       );
 
+  // Create New Project Bottomsheet
+  dynamic _showCreateProjectBottomSheet() async {
+    SlidingSheetDialog? _slidingSheet;
+    Widget? _bodyWidget;
+    await showSlidingBottomSheet<dynamic>(
+      context,
+      useRootNavigator: true,
+      builder: (_) {
+        return _slidingSheet ??= SlidingSheetDialog(
+          elevation: 8,
+          cornerRadius: 16,
+          color: context.colorScheme.background,
+          isBackdropInteractable: true,
+          snapSpec: const SnapSpec(
+            initialSnap: 0.6,
+            snappings: [0.1, 0.7],
+          ),
+          minHeight: context.height / 2,
+          builder: (_, state) {
+            return _bodyWidget ??= Container(
+                    width: context.width,
+                    color: context.colorScheme.background,
+                    child: [
+                      'Project Title'.toH5(),
+                      SizedBox(
+                        height: 32,
+                        width: context.width,
+                        child: Material(
+                          color: Colors.transparent,
+                          child: PlatformTextField(
+                            onChanged: (text) {},
+                            textAlign: TextAlign.center,
+                            autofocus: true,
+                            style: context.h4.copyWith(color: kcPrimary100),
+                            material: (context, platform) =>
+                                MaterialTextFieldData(
+                              decoration: InputDecoration(
+                                hintText: 'Enter new Project',
+                                hintStyle:
+                                    context.h4.copyWith(color: Colors.white38),
+                                contentPadding: const EdgeInsets.all(16),
+                                border: const OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(8)),
+                                ),
+                              ),
+                            ),
+                            cupertino: (context, platform) =>
+                                CupertinoTextFieldData(
+                              placeholder: 'Enter new Project',
+                              placeholderStyle:
+                                  context.h4.copyWith(color: Colors.white38),
+                              padding: const EdgeInsets.all(16),
+                              decoration: const BoxDecoration(
+                                color: Colors.transparent,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ].toColumn().scrollable())
+                .safeArea();
+          },
+        );
+      },
+    );
+  }
+
+  // DateTime Picker Bottomsheet
   dynamic showDatePickerBottomSheet() async {
     await showSlidingBottomSheet<dynamic>(
       context,
