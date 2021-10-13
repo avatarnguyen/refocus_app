@@ -174,61 +174,7 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
             size: 33,
           ).gestures(onTap: () {
             widget.closeSheet();
-
             context.navigateTo(const QuickAddRoute());
-
-            // Navigator.push<dynamic>(
-            //   context,
-            //   Platform.isIOS
-            //       ? CupertinoPageRoute<dynamic>(
-            //           fullscreenDialog: true,
-            //           builder: (_) => MultiBlocProvider(
-            //             providers: [
-            //               BlocProvider<ProjectBloc>.value(
-            //                 value: BlocProvider.of<ProjectBloc>(context),
-            //               ),
-            //               BlocProvider<TaskBloc>.value(
-            //                 value: BlocProvider.of<TaskBloc>(context),
-            //               ),
-            //               BlocProvider<SubtaskCubit>.value(
-            //                 value: BlocProvider.of<SubtaskCubit>(context),
-            //               ),
-            //               BlocProvider<CalendarListBloc>.value(
-            //                 value: BlocProvider.of<CalendarListBloc>(context),
-            //               ),
-            //               BlocProvider<CalendarBloc>.value(
-            //                 value: BlocProvider.of<CalendarBloc>(context),
-            //               ),
-            //             ],
-            //             child: const QuickAddPage(),
-            //           ),
-            //         )
-            //       : MaterialPageRoute<dynamic>(
-            //           fullscreenDialog: true,
-            //           builder: (_) {
-            //             return MultiBlocProvider(
-            //               providers: [
-            //                 BlocProvider<ProjectBloc>.value(
-            //                   value: BlocProvider.of<ProjectBloc>(context),
-            //                 ),
-            //                 BlocProvider<TaskBloc>.value(
-            //                   value: BlocProvider.of<TaskBloc>(context),
-            //                 ),
-            //                 BlocProvider<SubtaskCubit>.value(
-            //                   value: BlocProvider.of<SubtaskCubit>(context),
-            //                 ),
-            //                 BlocProvider<CalendarListBloc>.value(
-            //                   value: BlocProvider.of<CalendarListBloc>(context),
-            //                 ),
-            //                 BlocProvider<CalendarBloc>.value(
-            //                   value: BlocProvider.of<CalendarBloc>(context),
-            //                 ),
-            //               ],
-            //               child: const QuickAddPage(),
-            //             );
-            //           },
-            //         ),
-            // );
           }),
         ].toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween),
         [
@@ -249,21 +195,19 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
               }
             },
           ),
-          if (_currentSegmentedIdx == 1) ...[
-            horizontalSpaceRegular,
-            const Icon(
-              Icons.add,
-              color: kcSecondary100,
-              size: 28,
-            ).gestures(onTap: () {
-              widget.expandSheet();
-              _showCreateProjectBottomSheet();
-            }),
-          ]
+          // if (_currentSegmentedIdx == 1) ...[
+          //   horizontalSpaceRegular,
+          //   const Icon(
+          //     Icons.add,
+          //     color: kcSecondary100,
+          //     size: 28,
+          //   ).gestures(onTap: () {
+          //     widget.expandSheet();
+          //     _showCreateProjectBottomSheet();
+          //   }),
+          // ]
         ].toRow(
-          mainAxisAlignment: _currentSegmentedIdx == 1
-              ? MainAxisAlignment.end
-              : MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
         )
       ].toColumn(mainAxisAlignment: MainAxisAlignment.spaceBetween),
     );
@@ -279,73 +223,73 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
         ),
       );
 
-  // Create New Project Bottomsheet
-  dynamic _showCreateProjectBottomSheet() async {
-    SlidingSheetDialog? _slidingSheet;
-    Widget? _bodyWidget;
-    await showSlidingBottomSheet<dynamic>(
-      context,
-      useRootNavigator: true,
-      builder: (_) {
-        return _slidingSheet ??= SlidingSheetDialog(
-          elevation: 8,
-          cornerRadius: 16,
-          color: context.colorScheme.background,
-          isBackdropInteractable: true,
-          snapSpec: const SnapSpec(
-            initialSnap: 0.6,
-            snappings: [0.1, 0.7],
-          ),
-          minHeight: context.height / 2,
-          builder: (_, state) {
-            return _bodyWidget ??= Container(
-                    width: context.width,
-                    color: context.colorScheme.background,
-                    child: [
-                      'Project Title'.toH5(),
-                      SizedBox(
-                        height: 32,
-                        width: context.width,
-                        child: Material(
-                          color: Colors.transparent,
-                          child: PlatformTextField(
-                            onChanged: (text) {},
-                            textAlign: TextAlign.center,
-                            autofocus: true,
-                            style: context.h4.copyWith(color: kcPrimary100),
-                            material: (context, platform) =>
-                                MaterialTextFieldData(
-                              decoration: InputDecoration(
-                                hintText: 'Enter new Project',
-                                hintStyle:
-                                    context.h4.copyWith(color: Colors.white38),
-                                contentPadding: const EdgeInsets.all(16),
-                                border: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(8)),
-                                ),
-                              ),
-                            ),
-                            cupertino: (context, platform) =>
-                                CupertinoTextFieldData(
-                              placeholder: 'Enter new Project',
-                              placeholderStyle:
-                                  context.h4.copyWith(color: Colors.white38),
-                              padding: const EdgeInsets.all(16),
-                              decoration: const BoxDecoration(
-                                color: Colors.transparent,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ].toColumn().scrollable())
-                .safeArea();
-          },
-        );
-      },
-    );
-  }
+  // // Create New Project Bottomsheet
+  // dynamic _showCreateProjectBottomSheet() async {
+  //   SlidingSheetDialog? _slidingSheet;
+  //   Widget? _bodyWidget;
+  //   await showSlidingBottomSheet<dynamic>(
+  //     context,
+  //     useRootNavigator: true,
+  //     builder: (_) {
+  //       return _slidingSheet ??= SlidingSheetDialog(
+  //         elevation: 8,
+  //         cornerRadius: 16,
+  //         color: context.colorScheme.background,
+  //         isBackdropInteractable: true,
+  //         snapSpec: const SnapSpec(
+  //           initialSnap: 0.6,
+  //           snappings: [0.1, 0.7],
+  //         ),
+  //         minHeight: context.height / 2,
+  //         builder: (_, state) {
+  //           return _bodyWidget ??= Container(
+  //                   width: context.width,
+  //                   color: context.colorScheme.background,
+  //                   child: [
+  //                     'Project Title'.toH5(),
+  //                     SizedBox(
+  //                       height: 32,
+  //                       width: context.width,
+  //                       child: Material(
+  //                         color: Colors.transparent,
+  //                         child: PlatformTextField(
+  //                           onChanged: (text) {},
+  //                           textAlign: TextAlign.center,
+  //                           autofocus: true,
+  //                           style: context.h4.copyWith(color: kcPrimary100),
+  //                           material: (context, platform) =>
+  //                               MaterialTextFieldData(
+  //                             decoration: InputDecoration(
+  //                               hintText: 'Enter new Project',
+  //                               hintStyle:
+  //                                   context.h4.copyWith(color: Colors.white38),
+  //                               contentPadding: const EdgeInsets.all(16),
+  //                               border: const OutlineInputBorder(
+  //                                 borderRadius:
+  //                                     BorderRadius.all(Radius.circular(8)),
+  //                               ),
+  //                             ),
+  //                           ),
+  //                           cupertino: (context, platform) =>
+  //                               CupertinoTextFieldData(
+  //                             placeholder: 'Enter new Project',
+  //                             placeholderStyle:
+  //                                 context.h4.copyWith(color: Colors.white38),
+  //                             padding: const EdgeInsets.all(16),
+  //                             decoration: const BoxDecoration(
+  //                               color: Colors.transparent,
+  //                             ),
+  //                           ),
+  //                         ),
+  //                       ),
+  //                     ),
+  //                   ].toColumn().scrollable())
+  //               .safeArea();
+  //         },
+  //       );
+  //     },
+  //   );
+  // }
 
   // DateTime Picker Bottomsheet
   dynamic showDatePickerBottomSheet() async {

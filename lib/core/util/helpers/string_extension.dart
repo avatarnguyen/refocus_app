@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:refocus_app/core/util/ui/style_helpers.dart';
 
 extension TextStyleExtension on String {
-  Text toButtonText({Color? color}) {
-    return Text(
+  Widget toButtonText({Color? color}) {
+    return PlatformText(
       this,
       style: kBodyStyleRegular.copyWith(
         color: color ?? kcPrimary100,
@@ -11,8 +12,8 @@ extension TextStyleExtension on String {
     );
   }
 
-  Text toBodyText1({Color? color}) {
-    return Text(
+  PlatformText toBodyText1({Color? color}) {
+    return PlatformText(
       this,
       style: kBodyStyleBold.copyWith(
         color: color ?? kcPrimary100,
@@ -20,8 +21,8 @@ extension TextStyleExtension on String {
     );
   }
 
-  Text toSubtitle1({Color? color}) {
-    return Text(
+  PlatformText toSubtitle1({Color? color}) {
+    return PlatformText(
       this,
       style: kSmallStyleRegular.copyWith(
         color: color ?? kcPrimary100,
@@ -29,8 +30,8 @@ extension TextStyleExtension on String {
     );
   }
 
-  Text toH5({Color? color}) {
-    return Text(
+  PlatformText toH5({Color? color}) {
+    return PlatformText(
       this,
       style: kHeadline5StyleBold.copyWith(
         color: color ?? kcPrimary100,
@@ -38,8 +39,8 @@ extension TextStyleExtension on String {
     );
   }
 
-  Text toH6({Color? color}) {
-    return Text(
+  PlatformText toH6({Color? color}) {
+    return PlatformText(
       this,
       style: kHeadline5StyleRegular.copyWith(
         color: color ?? kcPrimary100,
