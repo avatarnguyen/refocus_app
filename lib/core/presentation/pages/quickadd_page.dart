@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:googleapis/servicenetworking/v1.dart';
 import 'package:refocus_app/core/presentation/helper/action_stream.dart';
 import 'package:refocus_app/core/presentation/helper/setting_option.dart';
 import 'package:refocus_app/core/presentation/helper/subtask_stream.dart';
@@ -63,7 +64,7 @@ class _QuickAddPageState extends State<QuickAddPage> {
   }) {
     showCupertinoModalPopup<dynamic>(
       context: context,
-      builder: (_) => CupertinoActionSheet(
+      builder: (context) => CupertinoActionSheet(
         actions: [
           if (calendars != null)
             buildPicker(calendars)
@@ -71,7 +72,7 @@ class _QuickAddPageState extends State<QuickAddPage> {
             buildPicker(projects!)
         ],
         cancelButton: CupertinoActionSheetAction(
-          onPressed: () => context.router.popTop(),
+          onPressed: () => context.router.pop(),
           child: 'Cancel'.toButtonText(color: kcError500),
         ),
       ),

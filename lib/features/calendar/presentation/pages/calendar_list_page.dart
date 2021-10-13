@@ -4,20 +4,8 @@ import 'package:refocus_app/features/calendar/presentation/bloc/calendar_list/ca
 import 'package:refocus_app/features/calendar/presentation/widgets/calendarlist_item_widget.dart';
 import 'package:refocus_app/features/calendar/presentation/widgets/widgets.dart';
 
-class CalendarListPage extends StatefulWidget {
+class CalendarListPage extends StatelessWidget {
   const CalendarListPage({Key? key}) : super(key: key);
-
-  @override
-  _CalendarListPageState createState() => _CalendarListPageState();
-}
-
-class _CalendarListPageState extends State<CalendarListPage> {
-  @override
-  void initState() {
-    super.initState();
-    // BlocProvider.of<CalendarListBloc>(context, listen: false)
-    //     .add(GetCalendarListEvent());
-  }
 
   @override
   Widget build(BuildContext context) {
