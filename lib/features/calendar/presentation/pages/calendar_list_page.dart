@@ -15,8 +15,8 @@ class _CalendarListPageState extends State<CalendarListPage> {
   @override
   void initState() {
     super.initState();
-    BlocProvider.of<CalendarListBloc>(context, listen: false)
-        .add(GetCalendarListEvent());
+    // BlocProvider.of<CalendarListBloc>(context, listen: false)
+    //     .add(GetCalendarListEvent());
   }
 
   @override

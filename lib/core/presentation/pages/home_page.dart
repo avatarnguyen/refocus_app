@@ -31,15 +31,16 @@ import 'package:sliding_sheet/sliding_sheet.dart';
 
 // const rightPaddingSize = 8.0;
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatelessWidget implements AutoRouteWrapper {
   const HomePage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget wrappedRoute(BuildContext context) {
     return MultiBlocProvider(
       providers: [
         BlocProvider<ProjectBloc>(
-            create: (_) => getIt<ProjectBloc>()..add(GetProjectEntriesEvent())),
+          create: (_) => getIt<ProjectBloc>()..add(GetProjectEntriesEvent()),
+        ), //..add(GetProjectEntriesEvent())),
         BlocProvider<TaskBloc>(
           create: (_) => getIt<TaskBloc>(),
         ),
@@ -47,14 +48,19 @@ class HomePage extends StatelessWidget {
           create: (_) => getIt<SubtaskCubit>(),
         ),
         BlocProvider<CalendarListBloc>(
-          create: (_) => getIt<CalendarListBloc>(),
+          create: (_) => getIt<CalendarListBloc>()..add(GetCalendarListEvent()),
         ),
         BlocProvider<CalendarBloc>(
           create: (_) => getIt<CalendarBloc>(),
         ),
       ],
-      child: const HomePageWidget(),
+      child: this,
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return const AutoRouter();
   }
 }
 
@@ -167,15 +173,13 @@ class _HomePageWidgetState extends State<HomePageWidget> {
         builder: (context, state) {
           if (amplifyConfigured) {
             if (_currentSlidingBodyPage == 0) {
-              return BlocProvider<CalendarListBloc>.value(
-                value: BlocProvider.of<CalendarListBloc>(context),
-                child: const CalendarListPage(),
-              );
+              return const CalendarListPage();
             } else {
-              return BlocProvider<ProjectBloc>.value(
-                value: BlocProvider.of<ProjectBloc>(context),
-                child: const ProjectPage(),
-              );
+              return const ProjectPage();
+              // return BlocProvider<ProjectBloc>.value(
+              //   value: BlocProvider.of<ProjectBloc>(context),
+              //   child: const ProjectPage(),
+              // );
             }
           } else {
             return const SizedBox();

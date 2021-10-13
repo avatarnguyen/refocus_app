@@ -175,60 +175,60 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
           ).gestures(onTap: () {
             widget.closeSheet();
 
-            //TODO: Refactor this to and use auto_route instead!!!
+            context.navigateTo(const QuickAddRoute());
 
-            Navigator.push<dynamic>(
-              context,
-              Platform.isIOS
-                  ? CupertinoPageRoute<dynamic>(
-                      fullscreenDialog: true,
-                      builder: (_) => MultiBlocProvider(
-                        providers: [
-                          BlocProvider<ProjectBloc>.value(
-                            value: BlocProvider.of<ProjectBloc>(context),
-                          ),
-                          BlocProvider<TaskBloc>.value(
-                            value: BlocProvider.of<TaskBloc>(context),
-                          ),
-                          BlocProvider<SubtaskCubit>.value(
-                            value: BlocProvider.of<SubtaskCubit>(context),
-                          ),
-                          BlocProvider<CalendarListBloc>.value(
-                            value: BlocProvider.of<CalendarListBloc>(context),
-                          ),
-                          BlocProvider<CalendarBloc>.value(
-                            value: BlocProvider.of<CalendarBloc>(context),
-                          ),
-                        ],
-                        child: const QuickAddPage(),
-                      ),
-                    )
-                  : MaterialPageRoute<dynamic>(
-                      fullscreenDialog: true,
-                      builder: (_) {
-                        return MultiBlocProvider(
-                          providers: [
-                            BlocProvider<ProjectBloc>.value(
-                              value: BlocProvider.of<ProjectBloc>(context),
-                            ),
-                            BlocProvider<TaskBloc>.value(
-                              value: BlocProvider.of<TaskBloc>(context),
-                            ),
-                            BlocProvider<SubtaskCubit>.value(
-                              value: BlocProvider.of<SubtaskCubit>(context),
-                            ),
-                            BlocProvider<CalendarListBloc>.value(
-                              value: BlocProvider.of<CalendarListBloc>(context),
-                            ),
-                            BlocProvider<CalendarBloc>.value(
-                              value: BlocProvider.of<CalendarBloc>(context),
-                            ),
-                          ],
-                          child: const QuickAddPage(),
-                        );
-                      },
-                    ),
-            );
+            // Navigator.push<dynamic>(
+            //   context,
+            //   Platform.isIOS
+            //       ? CupertinoPageRoute<dynamic>(
+            //           fullscreenDialog: true,
+            //           builder: (_) => MultiBlocProvider(
+            //             providers: [
+            //               BlocProvider<ProjectBloc>.value(
+            //                 value: BlocProvider.of<ProjectBloc>(context),
+            //               ),
+            //               BlocProvider<TaskBloc>.value(
+            //                 value: BlocProvider.of<TaskBloc>(context),
+            //               ),
+            //               BlocProvider<SubtaskCubit>.value(
+            //                 value: BlocProvider.of<SubtaskCubit>(context),
+            //               ),
+            //               BlocProvider<CalendarListBloc>.value(
+            //                 value: BlocProvider.of<CalendarListBloc>(context),
+            //               ),
+            //               BlocProvider<CalendarBloc>.value(
+            //                 value: BlocProvider.of<CalendarBloc>(context),
+            //               ),
+            //             ],
+            //             child: const QuickAddPage(),
+            //           ),
+            //         )
+            //       : MaterialPageRoute<dynamic>(
+            //           fullscreenDialog: true,
+            //           builder: (_) {
+            //             return MultiBlocProvider(
+            //               providers: [
+            //                 BlocProvider<ProjectBloc>.value(
+            //                   value: BlocProvider.of<ProjectBloc>(context),
+            //                 ),
+            //                 BlocProvider<TaskBloc>.value(
+            //                   value: BlocProvider.of<TaskBloc>(context),
+            //                 ),
+            //                 BlocProvider<SubtaskCubit>.value(
+            //                   value: BlocProvider.of<SubtaskCubit>(context),
+            //                 ),
+            //                 BlocProvider<CalendarListBloc>.value(
+            //                   value: BlocProvider.of<CalendarListBloc>(context),
+            //                 ),
+            //                 BlocProvider<CalendarBloc>.value(
+            //                   value: BlocProvider.of<CalendarBloc>(context),
+            //                 ),
+            //               ],
+            //               child: const QuickAddPage(),
+            //             );
+            //           },
+            //         ),
+            // );
           }),
         ].toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween),
         [

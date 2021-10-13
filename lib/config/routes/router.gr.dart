@@ -19,15 +19,26 @@ class AppRouter extends _i3.RootStackRouter {
       return _i3.AdaptivePage<dynamic>(
           routeData: routeData, child: const _i1.HomePage());
     },
-    QuickAddRoute.name: (routeData) {
+    HomeRouteWidget.name: (routeData) {
       return _i3.AdaptivePage<dynamic>(
-          routeData: routeData, child: const _i2.QuickAddPage());
+          routeData: routeData, child: const _i1.HomePageWidget());
+    },
+    QuickAddRoute.name: (routeData) {
+      return _i3.CustomPage<dynamic>(
+          routeData: routeData,
+          child: const _i2.QuickAddPage(),
+          fullscreenDialog: true,
+          transitionsBuilder: _i3.TransitionsBuilders.fadeIn,
+          durationInMilliseconds: 400,
+          opaque: true,
+          barrierDismissible: false);
     }
   };
 
   @override
   List<_i3.RouteConfig> get routes => [
         _i3.RouteConfig(HomeRoute.name, path: '/', children: [
+          _i3.RouteConfig(HomeRouteWidget.name, path: ''),
           _i3.RouteConfig(QuickAddRoute.name, path: 'quick-add-page')
         ])
       ];
@@ -39,6 +50,13 @@ class HomeRoute extends _i3.PageRouteInfo<void> {
       : super(name, path: '/', initialChildren: children);
 
   static const String name = 'HomeRoute';
+}
+
+/// generated route for [_i1.HomePageWidget]
+class HomeRouteWidget extends _i3.PageRouteInfo<void> {
+  const HomeRouteWidget() : super(name, path: '');
+
+  static const String name = 'HomeRouteWidget';
 }
 
 /// generated route for [_i2.QuickAddPage]

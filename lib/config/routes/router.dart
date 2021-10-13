@@ -8,7 +8,13 @@ export 'router.gr.dart';
   replaceInRouteName: 'Page,Route',
   routes: <AutoRoute>[
     AutoRoute<dynamic>(page: HomePage, initial: true, children: [
-      AutoRoute<dynamic>(page: QuickAddPage),
+      AutoRoute<dynamic>(page: HomePageWidget, initial: true),
+      CustomRoute<dynamic>(
+        page: QuickAddPage,
+        fullscreenDialog: true,
+        transitionsBuilder: TransitionsBuilders.fadeIn,
+        durationInMilliseconds: 400,
+      ),
     ]),
   ],
 )

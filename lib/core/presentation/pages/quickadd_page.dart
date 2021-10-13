@@ -71,7 +71,7 @@ class _QuickAddPageState extends State<QuickAddPage> {
             buildPicker(projects!)
         ],
         cancelButton: CupertinoActionSheetAction(
-          onPressed: context.router.pop,
+          onPressed: () => context.router.popTop(),
           child: 'Cancel'.toButtonText(color: kcError500),
         ),
       ),
