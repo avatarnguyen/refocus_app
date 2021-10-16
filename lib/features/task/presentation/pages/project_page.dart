@@ -4,6 +4,7 @@ import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:refocus_app/config/routes/router.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
@@ -59,7 +60,7 @@ class _ProjectPageState extends State<ProjectPage> {
                     child: PlatformButton(
                       color: Colors.white,
                       onPressed: () {
-                        context.navigateTo(const CreateProjectRoute());
+                        context.navigateTo(CreateProjectRoute());
                       }, //_showCreateProjectBottomSheet,
                       child: Icon(
                         Icons.add,
@@ -98,6 +99,7 @@ class ProjectItem extends StatefulWidget {
 
 class _ProjectItemState extends State<ProjectItem> {
   late ProjectEntry _currentProject;
+  final SlidableController _slidableController = SlidableController();
 
   @override
   void initState() {
@@ -114,80 +116,146 @@ class _ProjectItemState extends State<ProjectItem> {
     final _backgroundColor = StyleUtils.darken(_color);
     const _textColor = Colors.white;
 
-    return [
-      Text(
-        _currentProject.title!,
-        style: context.bodyText1.copyWith(
-          color: _textColor,
+    return Slidable(
+      key: Key(_currentProject.title ?? 'project_item'),
+      controller: _slidableController,
+      actionPane: const SlidableStrechActionPane(),
+      secondaryActions: [
+        IconSlideAction(
+          icon: Icons.edit,
+          color: Colors.transparent,
+          foregroundColor: context.colorScheme.onPrimary,
+          onTap: () {
+            context.navigateTo(CreateProjectRoute(project: _currentProject));
+          },
         ),
-      ),
-      Chip(
-        labelPadding: EdgeInsets.zero,
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        visualDensity: const VisualDensity(vertical: -2),
-        label: Text('10', style: context.subtitle1),
-      ),
-    ]
-        .toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween)
-        .padding(all: 16)
-        .ripple()
-        .card(
-          color: _backgroundColor,
-          elevation: 2,
-          margin: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 8,
-          ),
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(8)),
-          ),
+        IconSlideAction(
+          icon: Icons.delete,
+          color: Colors.transparent,
+          foregroundColor: context.colorScheme.error,
+          onTap: () async {
+            final _result = await _showDeleteAlertDialog();
+            if (_result) {
+              //TODO: Delete Project
+
+            }
+          },
         )
-        .gestures(
-      onTap: () {
-        showTaskBottomSheet(context, _currentProject);
-      },
+      ],
+      dismissal: SlidableDismissal(
+        child: const SlidableDrawerDismissal(),
+        onWillDismiss: (actionType) async {
+          final _result = await _showDeleteAlertDialog();
+          return _result;
+        },
+        onDismissed: (actionType) {
+          //TODO: Delete Project
+        },
+      ),
+      child: [
+        Text(
+          _currentProject.title!,
+          style: context.bodyText1.copyWith(
+            color: _textColor,
+          ),
+        ),
+        Chip(
+          labelPadding: EdgeInsets.zero,
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          visualDensity: const VisualDensity(vertical: -2),
+          label: Text('10', style: context.subtitle1),
+        ),
+      ]
+          .toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween)
+          .padding(all: 16)
+          .ripple()
+          .card(
+            color: _backgroundColor,
+            elevation: 2,
+            margin: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 8,
+            ),
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(8)),
+            ),
+          )
+          .gestures(
+        onTap: () {
+          context.navigateTo(TaskRoute(project: _currentProject));
+          // showTaskBottomSheet(context, _currentProject);
+        },
+      ),
     );
   }
 
-  //TODO: Change to 'customBuilder' when sliding sheet release new version
-  dynamic showTaskBottomSheet(
-    BuildContext parentContext,
-    ProjectEntry project,
-  ) async {
-    SlidingSheetDialog? _taskSheetDialog;
-    Widget? _taskPageContent;
-    final dynamic result = await showSlidingBottomSheet<dynamic>(
-      context,
+  Future<bool> _showDeleteAlertDialog() async {
+    final _result = await showPlatformDialog<bool>(
+      context: context,
       builder: (context) {
-        return _taskSheetDialog ??= SlidingSheetDialog(
-          elevation: 8,
-          cornerRadius: 16,
-          duration: 500.milliseconds,
-          color: context.backgroundColor,
-          snapSpec: const SnapSpec(
-            initialSnap: 0.89,
-            snappings: [0.4, 0.89],
-            positioning: SnapPositioning.relativeToSheetHeight,
-          ),
-          minHeight: context.height - 56,
-          headerBuilder: (context, state) {
-            return const TaskPageHeaderWidget();
-          },
-          builder: (context, state) {
-            return BlocProvider<TaskBloc>.value(
-              value: BlocProvider.of<TaskBloc>(parentContext),
-              child: _taskPageContent ??= TaskPage(
-                project: project,
-              ),
-            );
-          },
+        return PlatformAlertDialog(
+          title: 'Delete Project'.toH5(color: context.colorScheme.primary),
+          content:
+              'Do you want to delete this project permanently? All Tasks inside the project will be deleted as well!'
+                  .toSubtitle1(color: context.colorScheme.primary),
+          actions: [
+            PlatformButton(
+              color: Colors.transparent,
+              onPressed: () => context.router.pop(false),
+              child: 'Cancel'.toButtonText(color: context.colorScheme.primary),
+            ),
+            PlatformButton(
+              color: Colors.transparent,
+              onPressed: () => context.router.pop(true),
+              child: 'Delete Project'
+                  .toButtonText(color: context.colorScheme.error),
+            ),
+          ],
         );
       },
     );
-
-    print(result); // This is the result.
+    return _result ?? false;
   }
+
+//   //TODO: Change to 'customBuilder' when sliding sheet release new version
+//   dynamic showTaskBottomSheet(
+//     BuildContext parentContext,
+//     ProjectEntry project,
+//   ) async {
+//     SlidingSheetDialog? _taskSheetDialog;
+//     Widget? _taskPageContent;
+//     final dynamic result = await showSlidingBottomSheet<dynamic>(
+//       context,
+//       builder: (context) {
+//         return _taskSheetDialog ??= SlidingSheetDialog(
+//           elevation: 8,
+//           cornerRadius: 16,
+//           duration: 500.milliseconds,
+//           color: context.backgroundColor,
+//           snapSpec: const SnapSpec(
+//             initialSnap: 0.89,
+//             snappings: [0.4, 0.89],
+//             positioning: SnapPositioning.relativeToSheetHeight,
+//           ),
+//           minHeight: context.height - 56,
+//           headerBuilder: (context, state) {
+//             return const TaskPageHeaderWidget();
+//           },
+//           builder: (context, state) {
+//             return BlocProvider<TaskBloc>.value(
+//               value: BlocProvider.of<TaskBloc>(parentContext),
+//               child: _taskPageContent ??= TaskPage(
+//                 project: project,
+//               ),
+//             );
+//           },
+//         );
+//       },
+//     );
+
+//     print(result); // This is the result.
+//   }
 }
 
 class TaskPageHeaderWidget extends StatelessWidget {

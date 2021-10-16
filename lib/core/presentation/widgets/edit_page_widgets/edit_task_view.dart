@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:io';
 
 import 'package:dartx/dartx.dart';
@@ -9,18 +8,14 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-import 'package:refocus_app/core/presentation/helper/edit_task_stream.dart';
 import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
-import 'package:refocus_app/enum/edit_task_state.dart';
 import 'package:refocus_app/features/calendar/presentation/widgets/message_widget.dart';
 import 'package:refocus_app/features/task/domain/entities/subtask_entry.dart';
 import 'package:refocus_app/features/task/domain/entities/task_entry.dart';
 import 'package:refocus_app/features/task/domain/usecases/helpers/task_params.dart';
 import 'package:refocus_app/features/task/presentation/bloc/cubit/subtask_cubit.dart';
 import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
-import 'package:refocus_app/injection.dart';
 import 'package:uuid/uuid.dart';
 
 enum DateTimeSelected { start, end, due }
@@ -28,13 +23,17 @@ enum DateTimeSelected { start, end, due }
 class EditTaskView extends StatefulWidget {
   const EditTaskView(
       {Key? key,
-      required this.taskID,
+      this.taskID,
       this.colorID,
-      this.modalScrollController})
+      this.modalScrollController,
+      this.task,
+      this.subTask})
       : super(key: key);
 
-  final String taskID;
+  final String? taskID;
   final String? colorID;
+  final TaskEntry? task;
+  final List<SubTaskEntry>? subTask;
   final ScrollController? modalScrollController;
 
   @override
@@ -62,11 +61,18 @@ class _EditTaskViewState extends State<EditTaskView> {
   @override
   void initState() {
     super.initState();
-    context
-        .read<TaskBloc>()
-        .add(GetSingleTaskEntryEvent(taskID: widget.taskID));
+    if (widget.task != null) {
+      currentTask ??= widget.task;
+      startDateTime ??= widget.task!.startDateTime;
+      endDateTime ??= widget.task!.endDateTime;
+      dueDateTime ??= widget.task!.dueDate;
+    } else {
+      context
+          .read<TaskBloc>()
+          .add(GetSingleTaskEntryEvent(taskID: widget.taskID!));
 
-    context.read<SubtaskCubit>().getSubTasksFromTask(widget.taskID);
+      context.read<SubtaskCubit>().getSubTasksFromTask(widget.taskID!);
+    }
 
     // _editSub = _editStream.editStateStream.listen(_editSettingReceived);
   }
@@ -77,61 +83,6 @@ class _EditTaskViewState extends State<EditTaskView> {
     // _editStream.broadCastCurrentPage(EditTaskState.view);
     super.dispose();
   }
-
-  // void _editSettingReceived(EditTaskState state) {
-  //   switch (state) {
-  //     case EditTaskState.shouldSave:
-  //       if (currentTask != null) {
-  //         var shouldUpdateTask = false;
-
-  //         if (title != null && currentTask!.title != title) {
-  //           shouldUpdateTask = true;
-
-  //           currentTask = currentTask!.copyWith(title: title);
-  //         }
-
-  //         if (currentTask!.dueDate != dueDateTime ||
-  //             currentTask!.startDateTime != startDateTime ||
-  //             currentTask!.endDateTime != endDateTime) {
-  //           shouldUpdateTask = true;
-
-  //           currentTask = currentTask!.copyWith(
-  //             startDateTime: startDateTime,
-  //             endDateTime: endDateTime,
-  //             dueDate: dueDateTime,
-  //           );
-  //         }
-
-  //         if (editedSubTasks.isNotEmpty) {
-  //           editedSubTasks.forEach((key, subtask) {
-  //             context.read<SubtaskCubit>().createNewSubtask(subtask);
-  //           });
-  //           editedSubTasks.clear();
-  //         }
-
-  //         if (shouldUpdateTask) {
-  //           context.read<TaskBloc>().add(
-  //                 EditTaskEntryEvent(
-  //                   params: TaskParams(
-  //                     task: currentTask,
-  //                     taskID: currentTask!.id,
-  //                   ),
-  //                 ),
-  //               );
-  //           print('Reload Task');
-  //           context
-  //               .read<TaskBloc>()
-  //               .add(GetSingleTaskEntryEvent(taskID: widget.taskID));
-  //         }
-  //         _editStream.broadCastCurrentPage(EditTaskState.view);
-  //         context.router.pop();
-  //       }
-  //       break;
-  //     default:
-  //       // context.router.pop();
-  //       break;
-  //   }
-  // }
 
   final _textfieldPadding = const EdgeInsets.all(8);
 
@@ -157,173 +108,192 @@ class _EditTaskViewState extends State<EditTaskView> {
       backgroundColor: context.backgroundColor,
       appBar: PlatformAppBar(
         trailingActions: [
-          CupertinoButton(
+          PlatformButton(
             padding: EdgeInsets.zero,
             onPressed: _saveEditedTask,
             child: const Text('Save'),
           ),
         ],
       ),
-      body: BlocBuilder<TaskBloc, TaskState>(
-        builder: (_, state) {
-          if (state is TasksLoaded) {
-            if (state.tasks.isNotEmpty) {
-              final _fetchedTask = state.tasks.first;
+      body: widget.task != null
+          ? _buildListViewContent(
+              context,
+              _textColor,
+              widget.task!,
+              _editTimeTextStyle,
+              _dateTextStyle,
+            )
+          : BlocBuilder<TaskBloc, TaskState>(
+              builder: (_, state) {
+                if (state is TasksLoaded) {
+                  if (state.tasks.isNotEmpty) {
+                    final _fetchedTask = state.tasks.first;
 
-              currentTask ??= _fetchedTask;
-              startDateTime ??= _fetchedTask.startDateTime;
-              endDateTime ??= _fetchedTask.endDateTime;
-              dueDateTime ??= _fetchedTask.dueDate;
+                    currentTask ??= _fetchedTask;
+                    startDateTime ??= _fetchedTask.startDateTime;
+                    endDateTime ??= _fetchedTask.endDateTime;
+                    dueDateTime ??= _fetchedTask.dueDate;
 
-              return SafeArea(
-                child: ListView(
-                  shrinkWrap: true,
-                  controller: widget.modalScrollController,
-                  padding: const EdgeInsets.all(16),
-                  children: [
-                    Text('Title',
-                        textAlign: TextAlign.center,
-                        style: context.subtitle1.copyWith(
-                          color: _textColor,
-                        )).padding(top: 6, bottom: 4),
+                    return _buildListViewContent(
+                      context,
+                      _textColor,
+                      _fetchedTask,
+                      _editTimeTextStyle,
+                      _dateTextStyle,
+                    );
+                  }
+                }
+                return progressIndicator;
+              },
+            ),
+    );
+  }
 
-                    PlatformTextField(
-                      controller: TextEditingController(
-                          text: title ?? _fetchedTask.title)
-                        ..selection = TextSelection.fromPosition(
-                          TextPosition(
-                              offset: title?.length ??
-                                  _fetchedTask.title?.length ??
-                                  0),
-                        ),
-                      onChanged: (text) {
-                        title = text;
-                      },
-                      onSubmitted: (p0) {},
-                      textAlignVertical: TextAlignVertical.center,
-                      textAlign: TextAlign.center,
-                      material: (context, platform) => materialTextField(),
-                      cupertino: (context, platform) => cupertinoTextField(),
-                      style: context.h4.copyWith(
-                          fontWeight: FontWeight.w500, color: _textColor),
-                    ),
+  Widget _buildListViewContent(
+      BuildContext context,
+      Color _textColor,
+      TaskEntry _fetchedTask,
+      TextStyle _editTimeTextStyle,
+      TextStyle _dateTextStyle) {
+    return SafeArea(
+      child: ListView(
+        shrinkWrap: true,
+        controller: widget.modalScrollController,
+        padding: const EdgeInsets.all(16),
+        children: [
+          Text('Title',
+              textAlign: TextAlign.center,
+              style: context.subtitle1.copyWith(
+                color: _textColor,
+              )).padding(top: 6, bottom: 4),
 
-                    verticalSpaceMedium,
-                    //* Edit Start & End DateTime
-                    _buildEditDateTimeCell(startDateTime!.toLocal(),
-                            _editTimeTextStyle, DateTimeSelected.start)
-                        .gestures(
-                      onTap: () {
-                        Platform.isIOS
-                            ? _cupertinoDateTimePicker(
-                                context,
-                                startDateTime!.toLocal(),
-                                DateTimeSelected.start,
-                              )
-                            : _materialDateTimePicker(context);
-                      },
-                    ),
-                    Text('Until', style: _dateTextStyle)
-                        .alignment(Alignment.center)
-                        .padding(vertical: 4),
-                    _buildEditDateTimeCell(endDateTime!.toLocal(),
-                            _editTimeTextStyle, DateTimeSelected.end)
-                        .gestures(
-                      onTap: () {
-                        Platform.isIOS
-                            ? _cupertinoDateTimePicker(context,
-                                endDateTime!.toLocal(), DateTimeSelected.end)
-                            : _materialDateTimePicker(context);
-                      },
-                    ),
-                    //* Edit Due Date
-                    if (_fetchedTask.dueDate != null)
-                      [
-                        _buildEditDateTimeCell(
-                          dueDateTime!,
-                          _editTimeTextStyle,
-                          DateTimeSelected.due,
-                        ).gestures(
-                          onTap: () {
-                            Platform.isIOS
-                                ? _cupertinoDateTimePicker(
-                                    context, endDateTime!, DateTimeSelected.due)
-                                : _materialDateTimePicker(context);
-                          },
-                        ),
-                        Text('Due Date', style: _dateTextStyle).padding(top: 4),
-                      ]
-                          .toColumn(mainAxisSize: MainAxisSize.min)
-                          .padding(top: 24),
-                    verticalSpaceMedium,
+          PlatformTextField(
+            controller: TextEditingController(text: title ?? _fetchedTask.title)
+              ..selection = TextSelection.fromPosition(
+                TextPosition(
+                    offset: title?.length ?? _fetchedTask.title?.length ?? 0),
+              ),
+            onChanged: (text) {
+              title = text;
+            },
+            onSubmitted: (p0) {},
+            textAlignVertical: TextAlignVertical.center,
+            textAlign: TextAlign.center,
+            material: (context, platform) => materialTextField(),
+            cupertino: (context, platform) => cupertinoTextField(),
+            style: context.h4
+                .copyWith(fontWeight: FontWeight.w500, color: _textColor),
+          ),
 
-                    //* Get SubTasks
-                    BlocBuilder<SubtaskCubit, SubtaskState>(
-                      builder: (context, state) {
-                        return state.when<Widget>(
-                          initial: () => progressIndicator,
-                          loaded: (subtasks) {
-                            if (subtasks.isNotEmpty) {
-                              return Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: subtasks
-                                      .map((subtask) =>
-                                          _buildSubTaskEditTextField(
-                                            context,
-                                            subtask,
-                                            _textColor,
-                                          ))
-                                      .toList());
-                            } else {
-                              return const SizedBox.shrink();
-                            }
-                          },
-                          error: (errorMessage) =>
-                              MessageDisplay(message: errorMessage),
-                        );
-                      },
-                    ),
+          verticalSpaceMedium,
+          //* Edit Start & End DateTime
+          _buildEditDateTimeCell(startDateTime!.toLocal(), _editTimeTextStyle,
+                  DateTimeSelected.start)
+              .gestures(
+            onTap: () {
+              Platform.isIOS
+                  ? _cupertinoDateTimePicker(
+                      context,
+                      startDateTime!.toLocal(),
+                      DateTimeSelected.start,
+                    )
+                  : _materialDateTimePicker(context);
+            },
+          ),
+          Text('Until', style: _dateTextStyle)
+              .alignment(Alignment.center)
+              .padding(vertical: 4),
+          _buildEditDateTimeCell(endDateTime!.toLocal(), _editTimeTextStyle,
+                  DateTimeSelected.end)
+              .gestures(
+            onTap: () {
+              Platform.isIOS
+                  ? _cupertinoDateTimePicker(
+                      context, endDateTime!.toLocal(), DateTimeSelected.end)
+                  : _materialDateTimePicker(context);
+            },
+          ),
+          //* Edit Due Date
+          if (_fetchedTask.dueDate != null)
+            [
+              _buildEditDateTimeCell(
+                dueDateTime!,
+                _editTimeTextStyle,
+                DateTimeSelected.due,
+              ).gestures(
+                onTap: () {
+                  Platform.isIOS
+                      ? _cupertinoDateTimePicker(
+                          context, endDateTime!, DateTimeSelected.due)
+                      : _materialDateTimePicker(context);
+                },
+              ),
+              Text('Due Date', style: _dateTextStyle).padding(top: 4),
+            ].toColumn(mainAxisSize: MainAxisSize.min).padding(top: 24),
+          verticalSpaceMedium,
 
-                    verticalSpaceRegular,
-                    if (newSubTask != null) ...[
-                      _buildCreateSubTaskTextField(context, newSubTask!),
-                      verticalSpaceTiny,
-                    ],
-                    verticalSpaceSmall,
-                    if (newSubTask == null)
-                      PlatformIconButton(
-                        color: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 12, horizontal: 24),
-                        materialIcon: Icon(Icons.add, color: _textColor),
-                        cupertinoIcon:
-                            Icon(CupertinoIcons.add, color: _textColor),
-                        onPressed: () => setState(() {
-                          newSubTask = '';
-                        }),
-                      ),
-                    verticalSpaceMedium,
-                    PlatformButton(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 8, horizontal: 32),
-                      child: Text('Delete Task',
-                          style: context.bodyText2.copyWith(color: kcError500)),
-                      onPressed: () {
-                        //TODO:
-                        //             context
-                        // .read<TaskBloc>()
-                        // .add(
-                        //   Deletetask
-                        // );
-                      },
-                    ),
-                  ],
-                ),
-              );
-            }
-          }
-          return progressIndicator;
-        },
+          //* Get SubTasks
+          if (widget.subTask != null)
+            widget.subTask!
+                .map((subtask) => _buildSubTaskEditTextField(
+                      context,
+                      subtask,
+                      _textColor,
+                    ))
+                .toList()
+                .toColumn(mainAxisSize: MainAxisSize.min)
+          else
+            BlocBuilder<SubtaskCubit, SubtaskState>(
+              builder: (context, state) {
+                return state.when<Widget>(
+                  initial: () => progressIndicator,
+                  loaded: (_subtasks) {
+                    if (_subtasks.isNotEmpty) {
+                      return Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: _subtasks
+                              .map((subtask) => _buildSubTaskEditTextField(
+                                    context,
+                                    subtask,
+                                    _textColor,
+                                  ))
+                              .toList());
+                    } else {
+                      return const SizedBox.shrink();
+                    }
+                  },
+                  error: (errorMessage) =>
+                      MessageDisplay(message: errorMessage),
+                );
+              },
+            ),
+
+          verticalSpaceRegular,
+          if (newSubTask != null) ...[
+            _buildCreateSubTaskTextField(context, newSubTask!),
+            verticalSpaceTiny,
+          ],
+          verticalSpaceSmall,
+          if (newSubTask == null)
+            PlatformIconButton(
+              color: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+              materialIcon: Icon(Icons.add, color: _textColor),
+              cupertinoIcon: Icon(CupertinoIcons.add, color: _textColor),
+              onPressed: () => setState(() {
+                newSubTask = '';
+              }),
+            ),
+          verticalSpaceMedium,
+          PlatformButton(
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 32),
+            child: Text('Delete Task',
+                style: context.bodyText2.copyWith(color: kcError500)),
+            onPressed: () {
+              //TODO: Delete Task
+            },
+          ),
+        ],
       ),
     );
   }
@@ -415,7 +385,7 @@ class _EditTaskViewState extends State<EditTaskView> {
               context.read<SubtaskCubit>().createNewSubtask(SubTaskEntry(
                     id: _uuid.v1(),
                     isCompleted: false,
-                    taskID: widget.taskID,
+                    taskID: widget.task?.id ?? widget.taskID!,
                     title: newSubTask,
                     priority: 0,
                   ));
@@ -448,7 +418,7 @@ class _EditTaskViewState extends State<EditTaskView> {
                   context.read<SubtaskCubit>().createNewSubtask(SubTaskEntry(
                         id: _uuid.v1(),
                         isCompleted: false,
-                        taskID: widget.taskID,
+                        taskID: widget.task?.id ?? widget.taskID!,
                         title: newSubTask,
                         priority: 0,
                       ));
@@ -579,9 +549,8 @@ class _EditTaskViewState extends State<EditTaskView> {
               ),
             );
         print('Reload Task');
-        context
-            .read<TaskBloc>()
-            .add(GetSingleTaskEntryEvent(taskID: widget.taskID));
+        context.read<TaskBloc>().add(
+            GetSingleTaskEntryEvent(taskID: widget.task?.id ?? widget.taskID!));
       }
       context.router.pop();
     }

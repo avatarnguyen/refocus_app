@@ -18,6 +18,7 @@ import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/today_entry_type.dart';
 import 'package:refocus_app/enum/today_event_type.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar/datetime_stream.dart';
+import 'package:refocus_app/features/task/domain/entities/subtask_entry.dart';
 import 'package:refocus_app/features/task/domain/entities/task_entry.dart';
 import 'package:refocus_app/features/task/domain/usecases/helpers/task_params.dart';
 import 'package:refocus_app/features/task/presentation/bloc/cubit/subtask_cubit.dart';
@@ -32,11 +33,14 @@ import 'package:styled_widget/styled_widget.dart';
 const timeLineWidth = 48.0;
 
 class ListItemWidget extends StatefulWidget {
-  const ListItemWidget({Key? key, required this.entry, this.selectedDate})
+  const ListItemWidget(
+      {Key? key, this.entry, this.selectedDate, this.task, this.projectColor})
       : super(key: key);
 
-  final TodayEntry entry;
+  final TodayEntry? entry;
+  final TaskEntry? task;
   final DateTime? selectedDate;
+  final String? projectColor;
 
   @override
   State<ListItemWidget> createState() => _ListItemWidgetState();
@@ -44,25 +48,53 @@ class ListItemWidget extends StatefulWidget {
 
 class _ListItemWidgetState extends State<ListItemWidget> {
   final DateTimeStream _dateTimeStream = getIt<DateTimeStream>();
-
   final _log = logger(ListItemWidget);
+
+  DateTime? _dueDateTime;
+  DateTime? _startDateTime;
+  DateTime? _endDateTime;
+  String? _title;
+  String? _colorID;
+  late String _id;
+  late bool _isCompleted;
+  List<SubTaskEntry>? _subtasks;
+  late TodayEntryType _type;
 
   @override
   void initState() {
     super.initState();
-    // context.read<SubtaskCubit>().getSubTasksFromTask(widget.entry.id);
+    if (widget.entry != null) {
+      _id = widget.entry!.id;
+      _dueDateTime = widget.entry!.dueDateTime;
+      _startDateTime = widget.entry!.startDateTime;
+      _endDateTime = widget.entry!.endDateTime;
+      _title = widget.entry!.title;
+      _colorID = widget.entry!.color;
+      _subtasks = widget.entry!.subTaskEntries;
+      _isCompleted = widget.entry!.isCompleted ?? false;
+      _type = widget.entry!.type;
+    } else if (widget.task != null) {
+      _id = widget.task!.id;
+      _dueDateTime = widget.task!.dueDate;
+      _startDateTime = widget.task!.startDateTime;
+      _endDateTime = widget.task!.endDateTime;
+      _title = widget.task!.title;
+      _colorID = widget.task!.colorID;
+      _isCompleted = widget.task!.isCompleted;
+      _type = TodayEntryType.task;
+    }
+    // context.read<SubtaskCubit>().getSubTasksFromTask(_id);
   }
 
   @override
   Widget build(BuildContext context) {
-    final _isEvent = widget.entry.type == TodayEntryType.event;
-    final _isPassed = widget.entry.endDateTime != null &&
-        widget.entry.endDateTime!.compareTo(DateTime.now()) <= 0;
-
-    final _color =
-        StyleUtils.getColorFromString(widget.entry.color ?? '#115FFB');
+    final _isEvent = _type == TodayEntryType.event;
+    final _isPassed =
+        _endDateTime != null && _endDateTime!.compareTo(DateTime.now()) <= 0;
+    final _color = StyleUtils.getColorFromString(
+        _colorID ?? widget.projectColor ?? '#115FFB');
     final _backgroudColor = StyleUtils.lighten(_color, 0.32);
-    final _textColor = StyleUtils.darken(_color, colorDarken1);
+    final _textColor = StyleUtils.darken(_color, 0.2);
 
     // print('$title Color: ${HSLColor.fromColor(_color).lightness}');
 
@@ -73,27 +105,27 @@ class _ListItemWidgetState extends State<ListItemWidget> {
     TodayEventType? _eventBlocType;
 
     if (widget.selectedDate != null) {
-      if (widget.entry.dueDateTime != null &&
-          widget.selectedDate!.day == widget.entry.dueDateTime!.day) {
+      if (_dueDateTime != null &&
+          widget.selectedDate!.day == _dueDateTime!.day) {
         _startTimeStr = 'due today';
         // Get Today Event Type for TodayBloc
-        _eventBlocType = widget.entry.dueDateTime!.isToday
+        _eventBlocType = _dueDateTime!.isToday
             ? TodayEventType.today
-            : widget.entry.startDateTime!.isTomorrow
+            : _startDateTime!.isTomorrow
                 ? TodayEventType.tomorrow
                 : TodayEventType.upcoming;
-      } else if (widget.entry.startDateTime != null) {
+      } else if (_startDateTime != null) {
         final _startDateTimeStr =
-            CustomDateUtils.returnTime(widget.entry.startDateTime!.toLocal());
+            CustomDateUtils.returnTime(_startDateTime!.toLocal());
         _startTimeStr = _startDateTimeStr;
         // Get Today Event Type for TodayBloc
-        _eventBlocType = widget.entry.startDateTime!.isToday
+        _eventBlocType = _startDateTime!.isToday
             ? TodayEventType.today
-            : widget.entry.startDateTime!.isTomorrow
+            : _startDateTime!.isTomorrow
                 ? TodayEventType.tomorrow
                 : TodayEventType.upcoming;
-        if (widget.entry.endDateTime != null) {
-          final _endTime = widget.entry.endDateTime!.toLocal();
+        if (_endDateTime != null) {
+          final _endTime = _endDateTime!.toLocal();
           _endTimeStr = CustomDateUtils.returnTime(_endTime);
         }
       }
@@ -124,7 +156,7 @@ class _ListItemWidgetState extends State<ListItemWidget> {
             child: [
               [
                 Text(
-                  widget.entry.title ?? '',
+                  _title ?? '',
                   overflow: TextOverflow.ellipsis,
                   maxLines: 2,
                   textScaleFactor: context.textScaleFactor,
@@ -144,15 +176,14 @@ class _ListItemWidgetState extends State<ListItemWidget> {
                   textAlign: TextAlign.right,
                   maxLines: 2,
                   textScaleFactor: context.textScaleFactor,
-                  style: widget.entry.startDateTime != null
+                  style: _startDateTime != null
                       ? context.textTheme.subtitle2!.copyWith(
                           fontWeight: FontWeight.bold,
                           color: _textColor,
                         )
                       : _taskTimeTextStyle,
                 ),
-                if (widget.entry.endDateTime != null &&
-                    _endTimeStr != null) ...[
+                if (_endDateTime != null && _endTimeStr != null) ...[
                   Icon(Icons.arrow_right_alt_rounded,
                           size: 20, color: _textColor)
                       .padding(horizontal: 2),
@@ -168,18 +199,16 @@ class _ListItemWidgetState extends State<ListItemWidget> {
               ].toRow(),
 
               //* Subtask
-              if (!_isEvent &&
-                  widget.entry.subTaskEntries != null &&
-                  widget.entry.subTaskEntries!.isNotEmpty) ...[
+              if (!_isEvent && _subtasks != null && _subtasks!.isNotEmpty) ...[
                 verticalSpaceTiny,
                 SubTaskItem(
-                  subTask: widget.entry.subTaskEntries!.first,
+                  subTask: _subtasks!.first,
                   backgroundColor: _color,
                   type: _eventBlocType,
                 ),
-                if (widget.entry.subTaskEntries!.length > 1)
+                if (_subtasks!.length > 1)
                   SubTaskItem(
-                    subTask: widget.entry.subTaskEntries!.second!,
+                    subTask: _subtasks!.second!,
                     backgroundColor: _color,
                     type: _eventBlocType,
                   ),
@@ -188,12 +217,12 @@ class _ListItemWidgetState extends State<ListItemWidget> {
         .gestures(onTap: () {
       if (_isEvent) {
       } else {
-        showTaskBottomSheet(widget.entry.id, widget.entry.color);
+        showTaskBottomSheet();
       }
     });
 
     return Slidable(
-      key: Key(widget.entry.id),
+      key: Key(_id),
       actionPane: const SlidableStrechActionPane(),
       actions: _isEvent
           ? null
@@ -210,6 +239,7 @@ class _ListItemWidgetState extends State<ListItemWidget> {
           icon: Icons.calendar_today_rounded,
           foregroundColor: context.colorScheme.primary,
           color: Colors.transparent,
+          onTap: () {},
         ),
         // else
         IconSlideAction(
@@ -218,15 +248,20 @@ class _ListItemWidgetState extends State<ListItemWidget> {
           color: Colors.transparent,
           onTap: () {
             if (_isEvent) {
+              //TODO
             } else {
-              final _currentDate = widget.entry.startDateTime ??
-                  widget.entry.dueDateTime ??
-                  DateTime.now();
+              final _currentDate =
+                  _startDateTime ?? _dueDateTime ?? DateTime.now();
               final _newDate = _currentDate + 1.days;
               context.read<TaskBloc>().add(EditTaskEntryEvent(
-                  params: TaskParams(
-                      task: returnTaskFromTodayEntry(widget.entry,
-                          newDate: _newDate))));
+                    params: TaskParams(
+                      task: widget.task ??
+                          returnTaskFromTodayEntry(
+                            widget.entry!,
+                            newDate: _newDate,
+                          ),
+                    ),
+                  ));
 
               if (_dateTimeStream.selectedDate != null &&
                   _dateTimeStream.selectedDate!.isToday != true) {
@@ -245,22 +280,27 @@ class _ListItemWidgetState extends State<ListItemWidget> {
           } else {
             if (actionTyp == SlideActionType.primary) {
               // Mark Task as Done
-              final _isCompleted = !(widget.entry.isCompleted ?? false);
               context.read<TaskBloc>().add(EditTaskEntryEvent(
-                  params: TaskParams(
-                      task: returnTaskFromTodayEntry(widget.entry,
-                          isCompleted: _isCompleted))));
+                    params: TaskParams(
+                        task: widget.task ??
+                            returnTaskFromTodayEntry(
+                              widget.entry!,
+                              isCompleted: _isCompleted,
+                            )),
+                  ));
               context.read<TodayBloc>().add(const GetTodayEntries());
             } else {
               // Postpone Task to next day
-              final _currentDate = widget.entry.startDateTime ??
-                  widget.entry.dueDateTime ??
-                  DateTime.now();
+              final _currentDate =
+                  _startDateTime ?? _dueDateTime ?? DateTime.now();
               final _newDate = _currentDate + 1.days;
               context.read<TaskBloc>().add(EditTaskEntryEvent(
                     params: TaskParams(
-                        task: returnTaskFromTodayEntry(widget.entry,
-                            newDate: _newDate)),
+                        task: widget.task ??
+                            returnTaskFromTodayEntry(
+                              widget.entry!,
+                              newDate: _newDate,
+                            )),
                   ));
 
               if (_dateTimeStream.selectedDate != null &&
@@ -335,46 +375,13 @@ class _ListItemWidgetState extends State<ListItemWidget> {
     );
   }
 
-  dynamic showTaskBottomSheet(
-    String taskID,
-    String? colorID,
-  ) async {
+  dynamic showTaskBottomSheet() async {
     SlidingSheetDialog? _taskSheetDialog;
-    Widget? _bodyWidget;
     Widget? _headerWidget;
-
-    final _blocProvider = MultiBlocProvider(
-      providers: [
-        BlocProvider<TaskBloc>.value(
-          value: BlocProvider.of<TaskBloc>(context),
-        ),
-        BlocProvider<SubtaskCubit>.value(
-          value: BlocProvider.of<SubtaskCubit>(context),
-        ),
-      ],
-      child: _bodyWidget ??= DetailTaskView(
-        key: Key(taskID),
-        taskID: taskID,
-        colorID: colorID,
-      ),
-    );
-    final _headerBlocProvider = MultiBlocProvider(
-        providers: [
-          BlocProvider<TaskBloc>.value(
-            value: BlocProvider.of<TaskBloc>(context),
-          ),
-          BlocProvider<SubtaskCubit>.value(
-            value: BlocProvider.of<SubtaskCubit>(context),
-          ),
-        ],
-        child: _headerWidget ??= EditTaskHeader(
-          taskID: taskID,
-          colorID: colorID,
-          getEditView: _openEditView,
-        ));
 
     final dynamic result = await showSlidingBottomSheet<dynamic>(
       context,
+      // useRootNavigator: true,
       builder: (_) {
         return _taskSheetDialog ??= SlidingSheetDialog(
           elevation: 8,
@@ -388,10 +395,19 @@ class _ListItemWidgetState extends State<ListItemWidget> {
           ),
           minHeight: context.height - 56,
           liftOnScrollHeaderElevation: 6,
-          headerBuilder: (_, __) => _headerBlocProvider,
+          headerBuilder: (_, __) => _headerWidget ??= EditTaskHeader(
+            taskID: _id,
+            colorID: _colorID,
+            getEditView: _openEditView,
+          ),
           builder: (_, __) {
-            log(taskID);
-            return _blocProvider;
+            // return _blocProvider;
+            return DetailTaskView(
+              key: Key('${_id}_detail'),
+              task: widget.task,
+              taskID: widget.entry?.id,
+              colorID: _colorID,
+            );
           },
         );
       },
@@ -403,31 +419,9 @@ class _ListItemWidgetState extends State<ListItemWidget> {
   void _openEditView() {
     print('Open Edit');
     final _entry = widget.entry;
-    // Navigator.of(context).push(MaterialWithModalsPageRoute(builder: (context) => Container()));
-    // Navigator.of(context).push<dynamic>(
-    //   CupertinoModalBottomSheetRoute<dynamic>(
-    //     builder: (_) => MultiBlocProvider(
-    //       providers: [
-    //         BlocProvider<TaskBloc>.value(
-    //           value: BlocProvider.of<TaskBloc>(context),
-    //         ),
-    //         BlocProvider<SubtaskCubit>.value(
-    //           value: BlocProvider.of<SubtaskCubit>(context),
-    //         ),
-    //       ],
-    //       child: EditTaskView(
-    //         key: Key(_entry.id),
-    //         taskID: _entry.id,
-    //         colorID: _entry.color,
-    //         // modalScrollController: ModalScrollController.of(context),
-    //       ),
-    //     ),
-    //     expanded: false,
-    //     transitionBackgroundColor: Colors.black38,
-    //   ),
-    // );
+
     showCupertinoModalBottomSheet<dynamic>(
-      elevation: 8,
+      elevation: 24,
       useRootNavigator: true,
       expand: true,
       context: context,
@@ -442,9 +436,10 @@ class _ListItemWidgetState extends State<ListItemWidget> {
           ),
         ],
         child: EditTaskView(
-          key: Key(_entry.id),
-          taskID: _entry.id,
-          colorID: _entry.color,
+          key: Key(_id),
+          taskID: _id,
+          task: widget.task,
+          colorID: _colorID,
           modalScrollController: ModalScrollController.of(context),
         ),
       ),

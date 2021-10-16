@@ -9,7 +9,9 @@ import 'package:refocus_app/features/task/presentation/bloc/project_bloc.dart';
 import 'package:uuid/uuid.dart';
 
 class CreateProjectPage extends StatefulWidget {
-  const CreateProjectPage({Key? key}) : super(key: key);
+  const CreateProjectPage({Key? key, this.project}) : super(key: key);
+
+  final ProjectEntry? project;
 
   @override
   _CreateProjectPageState createState() => _CreateProjectPageState();
@@ -18,6 +20,7 @@ class CreateProjectPage extends StatefulWidget {
 class _CreateProjectPageState extends State<CreateProjectPage> {
   final TextEditingController _textController = TextEditingController();
   Uuid uuid = const Uuid();
+  late String projectID;
 
   final _colorCodeList = <String>[
     '#0000FF',
@@ -31,6 +34,16 @@ class _CreateProjectPageState extends State<CreateProjectPage> {
   ];
 
   int _selectedColorIdx = -1;
+
+  @override
+  void initState() {
+    super.initState();
+    projectID = widget.project?.id ?? uuid.v1();
+    if (widget.project != null) {
+      _textController.text = widget.project!.title ?? '';
+      _selectedColorIdx = _colorCodeList.indexOf(widget.project!.color ?? '');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

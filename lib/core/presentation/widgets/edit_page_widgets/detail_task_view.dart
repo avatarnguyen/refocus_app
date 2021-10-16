@@ -9,17 +9,19 @@ import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/features/calendar/presentation/widgets/widgets.dart';
 import 'package:refocus_app/features/task/domain/entities/subtask_entry.dart';
+import 'package:refocus_app/features/task/domain/entities/task_entry.dart';
 import 'package:refocus_app/features/task/presentation/bloc/cubit/subtask_cubit.dart';
 import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
 import 'package:dartx/dartx.dart';
 import 'package:uuid/uuid.dart';
 
 class DetailTaskView extends StatefulWidget {
-  const DetailTaskView({Key? key, required this.taskID, this.colorID})
+  const DetailTaskView({Key? key, this.taskID, this.colorID, this.task})
       : super(key: key);
 
-  final String taskID;
+  final String? taskID;
   final String? colorID;
+  final TaskEntry? task;
 
   @override
   State<DetailTaskView> createState() => _DetailTaskViewState();
@@ -27,7 +29,7 @@ class DetailTaskView extends StatefulWidget {
 
 class _DetailTaskViewState extends State<DetailTaskView> {
   late TextEditingController _newSubTaskController;
-  FocusNode _focusNode = FocusNode();
+  final FocusNode _focusNode = FocusNode();
   String? newSubTask;
   final Uuid _uuid = const Uuid();
 
@@ -36,11 +38,15 @@ class _DetailTaskViewState extends State<DetailTaskView> {
     super.initState();
     _newSubTaskController = TextEditingController();
     if (this.mounted) {
-      context
-          .read<TaskBloc>()
-          .add(GetSingleTaskEntryEvent(taskID: widget.taskID));
+      if (widget.taskID != null) {
+        context
+            .read<TaskBloc>()
+            .add(GetSingleTaskEntryEvent(taskID: widget.taskID!));
 
-      context.read<SubtaskCubit>().getSubTasksFromTask(widget.taskID);
+        context.read<SubtaskCubit>().getSubTasksFromTask(widget.taskID!);
+      } else if (widget.task != null) {
+        context.read<SubtaskCubit>().getSubTasksFromTask(widget.task!.id);
+      }
     }
   }
 
@@ -70,137 +76,139 @@ class _DetailTaskViewState extends State<DetailTaskView> {
       color: _textColor,
     );
 
-    return BlocBuilder<TaskBloc, TaskState>(
-      builder: (context, state) {
-        if (state is TasksLoaded) {
-          if (state.tasks.isNotEmpty) {
-            final _fetchedTask = state.tasks.first;
+    if (widget.task != null) {
+      return _buildListView(
+          widget.task!, context, _textColor, _timeTextStyle, _dateTextStyle);
+    } else {
+      return BlocBuilder<TaskBloc, TaskState>(
+        builder: (context, state) {
+          if (state is TasksLoaded) {
+            if (state.tasks.isNotEmpty) {
+              final _fetchedTask = state.tasks.first;
 
-            // currentTask ??= _fetchedTask;
-            // startDateTime ??= _fetchedTask.startDateTime;
-            // endDateTime ??= _fetchedTask.endDateTime;
-            // dueDateTime ??= _fetchedTask.dueDate;
-
-            return ListView(
-              // controller: ModalScrollController.of(context),
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              padding: const EdgeInsets.only(
-                  right: 16, left: 16, top: 16, bottom: 24),
-              children: [
-                Text(
-                  _fetchedTask.title ?? '',
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: context.h4.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: _textColor,
-                  ),
-                ).alignment(Alignment.center),
-                verticalSpaceMedium,
-                //Start and End DateTime
-                EditDateTimeCell(
-                  fetchedTask: _fetchedTask,
-                  colorID: widget.colorID,
-                ),
-                if (_fetchedTask.dueDate != null)
-                  [
-                    Text(
-                      CustomDateUtils.returnDateAndMonth(
-                          _fetchedTask.dueDate!.toLocal()),
-                      style: _timeTextStyle,
-                    ),
-                    Text('Due Date', style: _dateTextStyle),
-                  ].toColumn(mainAxisSize: MainAxisSize.min).padding(top: 16),
-
-                verticalSpaceLarge,
-
-                //* Get SubTasks
-                BlocBuilder<SubtaskCubit, SubtaskState>(
-                  builder: (context, state) {
-                    return state.when<Widget>(
-                      initial: () => progressIndicator,
-                      loaded: (subtasks) {
-                        if (subtasks.isNotEmpty) {
-                          return Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: subtasks
-                                .map(
-                                  (subtask) => SlidableSubTaskItem(
-                                    key: Key(subtask.id),
-                                    colorID: widget.colorID,
-                                    subTask: SubTaskEntry(
-                                      id: subtask.id,
-                                      isCompleted: subtask.isCompleted,
-                                      taskID: subtask.taskID,
-                                      title: subtask.title,
-                                    ),
-                                  ),
-                                )
-                                .toList(),
-                          );
-                        } else {
-                          return const SizedBox.shrink();
-                        }
-                      },
-                      error: (errorMessage) =>
-                          MessageDisplay(message: errorMessage),
-                    );
-                  },
-                ),
-
-                //* Adding new Subtask
-                if (newSubTask != null) ...[
-                  PlatformTextField(
-                    focusNode: _focusNode,
-                    controller: _newSubTaskController,
-                    textAlignVertical: TextAlignVertical.center,
-                    textAlign: TextAlign.center,
-                    onChanged: (text) {
-                      if (newSubTask != null) {
-                        newSubTask = text;
-                      }
-                    },
-                    autofocus: true,
-                    onEditingComplete: () {},
-                    onSubmitted: (p0) {
-                      _focusNode.unfocus();
-                    },
-                    material: (_, platform) => materialTextField(
-                      customPadding: const EdgeInsets.all(16),
-                      shouldShowIcon: newSubTask != null,
-                    ),
-                    cupertino: (_, platform) => cupertinoTextField(
-                      customPadding: const EdgeInsets.all(16),
-                      shouldShowIcon: newSubTask != null,
-                    ),
-                  ).padding(vertical: 4, horizontal: 8),
-                  verticalSpaceTiny,
-                ],
-                verticalSpaceSmall,
-                if (newSubTask == null)
-                  PlatformIconButton(
-                    color: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 12, horizontal: 24),
-                    materialIcon: Icon(Icons.add, color: _textColor),
-                    cupertinoIcon: Icon(CupertinoIcons.add, color: _textColor),
-                    onPressed: () => setState(() => newSubTask = ''),
-                  ).paddingDirectional(horizontal: 8),
-                verticalSpaceMedium,
-                PlatformButton(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 8, horizontal: 32),
-                  onPressed: () {},
-                  child: Text('Mark Task as Completed',
-                      style: context.bodyText2.copyWith(color: kcSuccess500)),
-                ).paddingDirectional(horizontal: 8)
-              ],
-            );
+              return _buildListView(_fetchedTask, context, _textColor,
+                  _timeTextStyle, _dateTextStyle);
+            }
           }
-        }
-        return progressIndicator;
-      },
+          return progressIndicator;
+        },
+      );
+    }
+  }
+
+  ListView _buildListView(TaskEntry _fetchedTask, BuildContext context,
+      Color _textColor, TextStyle _timeTextStyle, TextStyle _dateTextStyle) {
+    return ListView(
+      // controller: ModalScrollController.of(context),
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.only(right: 16, left: 16, top: 16, bottom: 24),
+      children: [
+        Text(
+          _fetchedTask.title ?? '',
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: context.h4.copyWith(
+            fontWeight: FontWeight.w600,
+            color: _textColor,
+          ),
+        ).alignment(Alignment.center),
+        verticalSpaceMedium,
+        //Start and End DateTime
+        EditDateTimeCell(
+          fetchedTask: _fetchedTask,
+          colorID: widget.colorID,
+        ),
+        if (_fetchedTask.dueDate != null)
+          [
+            Text(
+              CustomDateUtils.returnDateAndMonth(
+                  _fetchedTask.dueDate!.toLocal()),
+              style: _timeTextStyle,
+            ),
+            Text('Due Date', style: _dateTextStyle),
+          ].toColumn(mainAxisSize: MainAxisSize.min).padding(top: 16),
+
+        verticalSpaceLarge,
+
+        //* Get SubTasks
+        BlocBuilder<SubtaskCubit, SubtaskState>(
+          builder: (context, state) {
+            return state.when<Widget>(
+              initial: () => progressIndicator,
+              loaded: (subtasks) {
+                if (subtasks.isNotEmpty) {
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: subtasks
+                        .map(
+                          (subtask) => SlidableSubTaskItem(
+                            key: Key(subtask.id),
+                            colorID: widget.colorID,
+                            subTask: SubTaskEntry(
+                              id: subtask.id,
+                              isCompleted: subtask.isCompleted,
+                              taskID: subtask.taskID,
+                              title: subtask.title,
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  );
+                } else {
+                  return const SizedBox.shrink();
+                }
+              },
+              error: (errorMessage) => MessageDisplay(message: errorMessage),
+            );
+          },
+        ),
+
+        //* Adding new Subtask
+        if (newSubTask != null) ...[
+          PlatformTextField(
+            focusNode: _focusNode,
+            controller: _newSubTaskController,
+            textAlignVertical: TextAlignVertical.center,
+            textAlign: TextAlign.center,
+            onChanged: (text) {
+              if (newSubTask != null) {
+                newSubTask = text;
+              }
+            },
+            autofocus: true,
+            onEditingComplete: () {},
+            onSubmitted: (p0) {
+              _focusNode.unfocus();
+            },
+            material: (_, platform) => materialTextField(
+              customPadding: const EdgeInsets.all(16),
+              shouldShowIcon: newSubTask != null,
+            ),
+            cupertino: (_, platform) => cupertinoTextField(
+              customPadding: const EdgeInsets.all(16),
+              shouldShowIcon: newSubTask != null,
+            ),
+          ).padding(vertical: 4, horizontal: 8),
+          verticalSpaceTiny,
+        ],
+        verticalSpaceSmall,
+        if (newSubTask == null)
+          PlatformIconButton(
+            color: Colors.white,
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+            materialIcon: Icon(Icons.add, color: _textColor),
+            cupertinoIcon: Icon(CupertinoIcons.add, color: _textColor),
+            onPressed: () => setState(() => newSubTask = ''),
+          ).paddingDirectional(horizontal: 8),
+        verticalSpaceMedium,
+        PlatformButton(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 32),
+          onPressed: () {},
+          child: Text('Mark Task as Completed',
+              style: context.bodyText2.copyWith(color: kcSuccess500)),
+        ).paddingDirectional(horizontal: 8)
+      ],
     );
   }
 
@@ -227,7 +235,7 @@ class _DetailTaskViewState extends State<DetailTaskView> {
               context.read<SubtaskCubit>().createNewSubtask(SubTaskEntry(
                     id: _uuid.v1(),
                     isCompleted: false,
-                    taskID: widget.taskID,
+                    taskID: widget.taskID ?? widget.task!.id,
                     title: newSubTask,
                     priority: 0,
                   ));
@@ -260,7 +268,7 @@ class _DetailTaskViewState extends State<DetailTaskView> {
                   context.read<SubtaskCubit>().createNewSubtask(SubTaskEntry(
                         id: _uuid.v1(),
                         isCompleted: false,
-                        taskID: widget.taskID,
+                        taskID: widget.taskID ?? widget.task!.id,
                         title: newSubTask,
                         priority: 0,
                       ));
