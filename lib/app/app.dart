@@ -95,6 +95,10 @@ class _AppState extends State<App> {
       brightness: Brightness.light,
     );
 
+    // final _cupertinoTheme = CupertinoThemeData(
+    //   textTheme: CupertinoTextThemeData()
+    // );
+
     return MaterialApp.router(
       routerDelegate: _appRouter.delegate(
         navigatorObservers: () => [

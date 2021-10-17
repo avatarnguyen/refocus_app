@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -37,15 +39,10 @@ class _TaskPageState extends State<TaskPage> {
   @override
   Widget build(BuildContext context) {
     return PlatformScaffold(
-      // appBar: PlatformAppBar(
-      //   trailingActions: [
-      //     PlatformButton(
-      //       padding: EdgeInsets.zero,
-      //       onPressed: () {},
-      //       child: const Text('Save'),
-      //     ),
-      //   ],
-      // ),
+      iosContentBottomPadding: Platform.isIOS,
+      appBar: PlatformAppBar(
+        title: Text(widget.project.title ?? ''),
+      ),
       body: BlocBuilder<TaskBloc, TaskState>(
         builder: (context, state) {
           print(state);
