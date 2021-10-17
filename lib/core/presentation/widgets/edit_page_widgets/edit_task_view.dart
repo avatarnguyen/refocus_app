@@ -188,32 +188,36 @@ class _EditTaskViewState extends State<EditTaskView> {
           verticalSpaceMedium,
           //* Edit Start & End DateTime
           //! Null Error here
-          _buildEditDateTimeCell(startDateTime!.toLocal(), _editTimeTextStyle,
-                  DateTimeSelected.start)
-              .gestures(
-            onTap: () {
-              Platform.isIOS
-                  ? _cupertinoDateTimePicker(
-                      context,
-                      startDateTime!.toLocal(),
-                      DateTimeSelected.start,
-                    )
-                  : _materialDateTimePicker(context);
-            },
-          ),
-          Text('Until', style: _dateTextStyle)
-              .alignment(Alignment.center)
-              .padding(vertical: 4),
-          _buildEditDateTimeCell(endDateTime!.toLocal(), _editTimeTextStyle,
-                  DateTimeSelected.end)
-              .gestures(
-            onTap: () {
-              Platform.isIOS
-                  ? _cupertinoDateTimePicker(
-                      context, endDateTime!.toLocal(), DateTimeSelected.end)
-                  : _materialDateTimePicker(context);
-            },
-          ),
+          if (_fetchedTask.startDateTime != null)
+            _buildEditDateTimeCell(startDateTime!.toLocal(), _editTimeTextStyle,
+                    DateTimeSelected.start)
+                .gestures(
+              onTap: () {
+                Platform.isIOS
+                    ? _cupertinoDateTimePicker(
+                        context,
+                        startDateTime!.toLocal(),
+                        DateTimeSelected.start,
+                      )
+                    : _materialDateTimePicker(context);
+              },
+            ),
+          if (_fetchedTask.endDateTime != null) ...[
+            Text('Until', style: _dateTextStyle)
+                .alignment(Alignment.center)
+                .padding(vertical: 4),
+            _buildEditDateTimeCell(endDateTime!.toLocal(), _editTimeTextStyle,
+                    DateTimeSelected.end)
+                .gestures(
+              onTap: () {
+                Platform.isIOS
+                    ? _cupertinoDateTimePicker(
+                        context, endDateTime!.toLocal(), DateTimeSelected.end)
+                    : _materialDateTimePicker(context);
+              },
+            ),
+          ],
+
           //* Edit Due Date
           if (_fetchedTask.dueDate != null)
             [
