@@ -147,89 +147,7 @@ class _ListItemWidgetState extends State<ListItemWidget> {
     // _log.d('Selected Date: ${widget.selectedDate}');
     _log.d('Container: $_cellContentContainer');
 
-    _cellContentContainer ??= Container(
-            key: UniqueKey(),
-            width: context.width - (8 + 28 + 8), //8 is hori padding
-            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
-            decoration: BoxDecoration(
-              color: _isEvent ? Colors.white : _backgroudColor,
-              borderRadius: const BorderRadius.only(
-                topRight: Radius.circular(8),
-                bottomRight: Radius.circular(8),
-              ),
-              boxShadow: const [
-                kShadowLightBase,
-                kShadowLight20,
-              ],
-            ),
-            child: [
-              [
-                Text(
-                  _title ?? '',
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 2,
-                  textScaleFactor: context.textScaleFactor,
-                  style: context.bodyText1.copyWith(
-                    color: _textColor,
-                    fontSize: kSmallTextSize,
-                    decoration: _isEvent && _isPassed
-                        ? TextDecoration.lineThrough
-                        : null,
-                  ),
-                ).expanded(),
-              ].toRow(),
-              [
-                Text(
-                  _startTimeStr,
-                  overflow: TextOverflow.clip,
-                  textAlign: TextAlign.right,
-                  maxLines: 2,
-                  textScaleFactor: context.textScaleFactor,
-                  style: _startDateTime != null
-                      ? context.textTheme.subtitle2!.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: _textColor,
-                        )
-                      : _taskTimeTextStyle,
-                ),
-                if (_endDateTime != null && _endTimeStr != null) ...[
-                  Icon(Icons.arrow_right_alt_rounded,
-                          size: 20, color: _textColor)
-                      .padding(horizontal: 2),
-                  Text(
-                    _endTimeStr,
-                    overflow: TextOverflow.clip,
-                    textAlign: TextAlign.left,
-                    maxLines: 1,
-                    textScaleFactor: context.textScaleFactor,
-                    style: _taskTimeTextStyle,
-                  )
-                ]
-              ].toRow(),
-
-              //* Subtask
-              if (!_isEvent && _subtasks != null && _subtasks!.isNotEmpty) ...[
-                verticalSpaceTiny,
-                SubTaskItem(
-                  subTask: _subtasks!.first,
-                  backgroundColor: _color,
-                  type: _eventBlocType,
-                ),
-                if (_subtasks!.length > 1)
-                  SubTaskItem(
-                    subTask: _subtasks!.second!,
-                    backgroundColor: _color,
-                    type: _eventBlocType,
-                  ),
-              ]
-            ].toColumn(mainAxisSize: MainAxisSize.min))
-        .gestures(onTap: () {
-      if (_isEvent) {
-        //TODO: Display Event Details
-      } else {
-        showTaskBottomSheet();
-      }
-    });
+    // _cellContentContainer ??=
 
     return Slidable(
       key: Key(_id),
@@ -336,7 +254,92 @@ class _ListItemWidgetState extends State<ListItemWidget> {
           borderRadius: const BorderRadius.all(Radius.circular(8)),
         ),
         padding: const EdgeInsets.only(left: 8),
-        child: _cellContentContainer,
+        child: Container(
+                // key: UniqueKey(),
+                width: context.width - (8 + 28 + 8), //8 is hori padding
+                padding:
+                    const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+                decoration: BoxDecoration(
+                  color: _isEvent ? Colors.white : _backgroudColor,
+                  borderRadius: const BorderRadius.only(
+                    topRight: Radius.circular(8),
+                    bottomRight: Radius.circular(8),
+                  ),
+                  boxShadow: const [
+                    kShadowLightBase,
+                    kShadowLight20,
+                  ],
+                ),
+                child: [
+                  [
+                    Text(
+                      _title ?? '',
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                      textScaleFactor: context.textScaleFactor,
+                      style: context.bodyText1.copyWith(
+                        color: _textColor,
+                        fontSize: kSmallTextSize,
+                        decoration: _isEvent && _isPassed
+                            ? TextDecoration.lineThrough
+                            : null,
+                      ),
+                    ).expanded(),
+                  ].toRow(),
+                  [
+                    Text(
+                      _startTimeStr,
+                      overflow: TextOverflow.clip,
+                      textAlign: TextAlign.right,
+                      maxLines: 2,
+                      textScaleFactor: context.textScaleFactor,
+                      style: _startDateTime != null
+                          ? context.textTheme.subtitle2!.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: _textColor,
+                            )
+                          : _taskTimeTextStyle,
+                    ),
+                    if (_endDateTime != null && _endTimeStr != null) ...[
+                      Icon(Icons.arrow_right_alt_rounded,
+                              size: 20, color: _textColor)
+                          .padding(horizontal: 2),
+                      Text(
+                        _endTimeStr,
+                        overflow: TextOverflow.clip,
+                        textAlign: TextAlign.left,
+                        maxLines: 1,
+                        textScaleFactor: context.textScaleFactor,
+                        style: _taskTimeTextStyle,
+                      )
+                    ]
+                  ].toRow(),
+
+                  //* Subtask
+                  if (!_isEvent &&
+                      _subtasks != null &&
+                      _subtasks!.isNotEmpty) ...[
+                    verticalSpaceTiny,
+                    SubTaskItem(
+                      subTask: _subtasks!.first,
+                      backgroundColor: _color,
+                      type: _eventBlocType,
+                    ),
+                    if (_subtasks!.length > 1)
+                      SubTaskItem(
+                        subTask: _subtasks!.second!,
+                        backgroundColor: _color,
+                        type: _eventBlocType,
+                      ),
+                  ]
+                ].toColumn(mainAxisSize: MainAxisSize.min))
+            .gestures(onTap: () {
+          if (_isEvent) {
+            //TODO: Display Event Details
+          } else {
+            showTaskBottomSheet();
+          }
+        }),
       ).paddingDirectional(horizontal: 4),
     ).padding(horizontal: 6, vertical: 6);
   }
@@ -414,17 +417,31 @@ class _ListItemWidgetState extends State<ListItemWidget> {
             getEditView: _openEditView,
           ),
           builder: (_, __) {
-            //! Didn't reload after edit
-            return DetailTaskView(
-              key: UniqueKey(), //Key('${_id}_detail'),
-              task: widget.task,
-              taskID: widget.entry?.id,
-              colorID: _colorID ?? widget.projectColor,
+            return MultiBlocProvider(
+              providers: [
+                BlocProvider<TaskBloc>.value(
+                  value: BlocProvider.of<TaskBloc>(context),
+                ),
+                BlocProvider<SubtaskCubit>.value(
+                  value: BlocProvider.of<SubtaskCubit>(context),
+                ),
+              ],
+              child: DetailTaskView(
+                key: Key('${_id}_detail'),
+                task: _currentTask,
+                taskID: widget.entry?.id,
+                colorID: _colorID ?? widget.projectColor,
+              ),
             );
           },
         );
       },
     );
+    // context.read<TaskBloc>().add(
+    //       GetTaskEntriesEvent(
+    //         project: ProjectEntry(id: _currentTask!.projectID),
+    //       ),
+    //     );
   }
 
   void _openEditView() async {
@@ -437,23 +454,27 @@ class _ListItemWidgetState extends State<ListItemWidget> {
       expand: true,
       context: context,
       topRadius: const Radius.circular(16),
-      builder: (_) => EditTaskView(
-        key: Key(_id),
-        taskID: _id,
-        task: _currentTask,
-        colorID: _colorID ?? widget.projectColor,
-        modalScrollController: ModalScrollController.of(context),
+      builder: (_) => MultiBlocProvider(
+        providers: [
+          BlocProvider<TaskBloc>.value(
+            value: BlocProvider.of<TaskBloc>(context),
+          ),
+          BlocProvider<SubtaskCubit>.value(
+            value: BlocProvider.of<SubtaskCubit>(context),
+          ),
+        ],
+        child: EditTaskView(
+          key: Key(_id),
+          taskID: _id,
+          task: _currentTask,
+          colorID: _colorID ?? widget.projectColor,
+          modalScrollController: ModalScrollController.of(context),
+        ),
       ),
     );
 
-    print(_result);
+    // print(_result);
     if (_result != null) {
-      // await context.router.pop();
-      // context.read<TaskBloc>().add(
-      //       GetTaskEntriesEvent(
-      //         project: ProjectEntry(id: _result.projectID),
-      //       ),
-      //     );
       setState(() {
         _currentTask = _result;
         _taskSheetDialog = null;
@@ -466,10 +487,8 @@ class _ListItemWidgetState extends State<ListItemWidget> {
         _colorID = _result.colorID;
         _isCompleted = _result.isCompleted;
       });
-      // await context.router.pop();
-      // await _sheetController.expand();
+
       _sheetController.rebuild();
-      // showTaskBottomSheet();
     }
   }
 

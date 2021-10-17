@@ -9,6 +9,7 @@ import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/features/calendar/presentation/widgets/widgets.dart';
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
 import 'package:refocus_app/features/task/presentation/bloc/project_bloc.dart';
+import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
 import 'package:uuid/uuid.dart';
 
 class ProjectPage extends StatefulWidget {
@@ -178,8 +179,12 @@ class _ProjectItemState extends State<ProjectItem> {
           )
           .gestures(
         onTap: () {
-          context.navigateTo(TaskRoute(project: _currentProject));
-          // showTaskBottomSheet(context, _currentProject);
+          context.read<TaskBloc>().add(
+                GetTaskEntriesEvent(project: _currentProject),
+              );
+          context.router.push(TaskRoute(
+            project: _currentProject,
+          ));
         },
       ),
     );

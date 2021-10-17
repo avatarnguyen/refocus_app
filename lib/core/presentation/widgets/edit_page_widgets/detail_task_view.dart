@@ -55,6 +55,8 @@ class _DetailTaskViewState extends State<DetailTaskView> {
     _focusNode.unfocus();
     _newSubTaskController.dispose();
 
+    print('Dismiss DetailTaskView');
+
     super.dispose();
   }
 

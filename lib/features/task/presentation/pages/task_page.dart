@@ -21,22 +21,6 @@ class TaskPage extends StatefulWidget {
 }
 
 class _TaskPageState extends State<TaskPage> {
-  @override
-  void initState() {
-    super.initState();
-    print('[TaskPage] Init State');
-
-    context.read<TaskBloc>().add(
-          GetTaskEntriesEvent(project: widget.project),
-        );
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    print('[TaskPage] Did Change Dep');
-  }
-
   Color getColor(Set<MaterialState> states) {
     const interactiveStates = <MaterialState>{
       MaterialState.selected,
