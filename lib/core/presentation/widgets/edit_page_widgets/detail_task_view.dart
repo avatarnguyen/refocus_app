@@ -33,6 +33,8 @@ class _DetailTaskViewState extends State<DetailTaskView> {
   String? newSubTask;
   final Uuid _uuid = const Uuid();
 
+  bool _showCompleted = false;
+
   @override
   void initState() {
     super.initState();
@@ -55,8 +57,6 @@ class _DetailTaskViewState extends State<DetailTaskView> {
     _focusNode.unfocus();
     _newSubTaskController.dispose();
 
-    print('Dismiss DetailTaskView');
-
     super.dispose();
   }
 
@@ -67,10 +67,6 @@ class _DetailTaskViewState extends State<DetailTaskView> {
     final _textColor = StyleUtils.darken(_color, colorDarken1);
 
     final _timeTextStyle = context.h6.copyWith(
-      color: _textColor,
-      fontWeight: FontWeight.w600,
-    );
-    final _editTimeTextStyle = context.bodyText1.copyWith(
       color: _textColor,
       fontWeight: FontWeight.w600,
     );
@@ -140,22 +136,64 @@ class _DetailTaskViewState extends State<DetailTaskView> {
               initial: () => progressIndicator,
               loaded: (subtasks) {
                 if (subtasks.isNotEmpty) {
+                  final _notCompletedSubTasks = subtasks
+                      .filter((_subtask) => !_subtask.isCompleted)
+                      .toList();
+                  final _completedSubTasks = subtasks
+                      .filter((_subtask) => _subtask.isCompleted)
+                      .toList();
                   return Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: subtasks
-                        .map(
-                          (subtask) => SlidableSubTaskItem(
-                            key: Key(subtask.id),
-                            colorID: widget.colorID,
-                            subTask: SubTaskEntry(
-                              id: subtask.id,
-                              isCompleted: subtask.isCompleted,
-                              taskID: subtask.taskID,
-                              title: subtask.title,
-                            ),
+                    children: [
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: _notCompletedSubTasks
+                            .map(
+                              (subtask) => SlidableSubTaskItem(
+                                key: Key(subtask.id),
+                                colorID: widget.colorID,
+                                subTask: SubTaskEntry(
+                                  id: subtask.id,
+                                  isCompleted: subtask.isCompleted,
+                                  taskID: subtask.taskID,
+                                  title: subtask.title,
+                                ),
+                              ),
+                            )
+                            .toList(),
+                      ),
+                      verticalSpaceSmall,
+                      Material(
+                        color: Colors.transparent,
+                        child: ChoiceChip(
+                          label: Text(
+                            'Completed: ${_completedSubTasks.length}', //${_showCompleted ? ' ▼' : ''}
+                            style: context.caption,
                           ),
-                        )
-                        .toList(),
+                          selected: _showCompleted,
+                          onSelected: _completedSubTasks.isNotEmpty
+                              ? (value) {
+                                  setState(() {
+                                    _showCompleted = value;
+                                  });
+                                }
+                              : null,
+                        ),
+                      ),
+                      if (_showCompleted)
+                        _completedSubTasks
+                            .map((subtask) => SlidableSubTaskItem(
+                                  key: Key(subtask.id),
+                                  colorID: widget.colorID,
+                                  subTask: SubTaskEntry(
+                                    id: subtask.id,
+                                    isCompleted: subtask.isCompleted,
+                                    taskID: subtask.taskID,
+                                    title: subtask.title,
+                                  ),
+                                ))
+                            .toList()
+                            .toColumn(mainAxisSize: MainAxisSize.min)
+                    ],
                   );
                 } else {
                   return const SizedBox.shrink();
