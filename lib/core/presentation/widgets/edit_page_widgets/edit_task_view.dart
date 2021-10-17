@@ -187,7 +187,6 @@ class _EditTaskViewState extends State<EditTaskView> {
 
           verticalSpaceMedium,
           //* Edit Start & End DateTime
-          //! Null Error here
           if (_fetchedTask.startDateTime != null)
             _buildEditDateTimeCell(startDateTime!.toLocal(), _editTimeTextStyle,
                     DateTimeSelected.start)
