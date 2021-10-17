@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
-import 'package:refocus_app/enum/today_entry_type.dart';
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
 import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
-import 'package:refocus_app/features/today/domain/today_entry.dart';
-import 'package:refocus_app/features/today/presentation/widgets/today_list_item.dart';
+import 'package:refocus_app/features/today/presentation/widgets/list_item_widget.dart';
 import 'package:styled_widget/styled_widget.dart';
 
 class TaskPage extends StatefulWidget {
@@ -27,9 +24,17 @@ class _TaskPageState extends State<TaskPage> {
   @override
   void initState() {
     super.initState();
+    print('[TaskPage] Init State');
+
     context.read<TaskBloc>().add(
           GetTaskEntriesEvent(project: widget.project),
         );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    print('[TaskPage] Did Change Dep');
   }
 
   Color getColor(Set<MaterialState> states) {
@@ -75,6 +80,7 @@ class _TaskPageState extends State<TaskPage> {
               itemBuilder: (context, index) {
                 final _task = _tasks[index];
                 return ListItemWidget(
+                  key: Key('task_page_${_task.id}'),
                   task: _task,
                   projectColor: widget.project.color,
                 );

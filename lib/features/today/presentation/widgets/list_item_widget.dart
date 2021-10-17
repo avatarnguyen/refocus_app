@@ -18,6 +18,7 @@ import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/today_entry_type.dart';
 import 'package:refocus_app/enum/today_event_type.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar/datetime_stream.dart';
+import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
 import 'package:refocus_app/features/task/domain/entities/subtask_entry.dart';
 import 'package:refocus_app/features/task/domain/entities/task_entry.dart';
 import 'package:refocus_app/features/task/domain/usecases/helpers/task_params.dart';
@@ -48,6 +49,8 @@ class ListItemWidget extends StatefulWidget {
 
 class _ListItemWidgetState extends State<ListItemWidget> {
   final DateTimeStream _dateTimeStream = getIt<DateTimeStream>();
+  final SheetController _sheetController = SheetController();
+
   final _log = logger(ListItemWidget);
 
   DateTime? _dueDateTime;
@@ -59,6 +62,8 @@ class _ListItemWidgetState extends State<ListItemWidget> {
   late bool _isCompleted;
   List<SubTaskEntry>? _subtasks;
   late TodayEntryType _type;
+
+  TaskEntry? _currentTask;
 
   @override
   void initState() {
@@ -74,6 +79,7 @@ class _ListItemWidgetState extends State<ListItemWidget> {
       _isCompleted = widget.entry!.isCompleted ?? false;
       _type = widget.entry!.type;
     } else if (widget.task != null) {
+      _currentTask = widget.task;
       _id = widget.task!.id;
       _dueDateTime = widget.task!.dueDate;
       _startDateTime = widget.task!.startDateTime;
@@ -85,6 +91,8 @@ class _ListItemWidgetState extends State<ListItemWidget> {
     }
     // context.read<SubtaskCubit>().getSubTasksFromTask(_id);
   }
+
+  Widget? _cellContentContainer;
 
   @override
   Widget build(BuildContext context) {
@@ -137,9 +145,10 @@ class _ListItemWidgetState extends State<ListItemWidget> {
     }
 
     // _log.d('Selected Date: ${widget.selectedDate}');
-    // _log.i('Event Bloc Type: $_eventBlocType');
+    _log.d('Container: $_cellContentContainer');
 
-    final _cellContentContainer = Container(
+    _cellContentContainer ??= Container(
+            key: UniqueKey(),
             width: context.width - (8 + 28 + 8), //8 is hori padding
             padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
             decoration: BoxDecoration(
@@ -216,6 +225,7 @@ class _ListItemWidgetState extends State<ListItemWidget> {
             ].toColumn(mainAxisSize: MainAxisSize.min))
         .gestures(onTap: () {
       if (_isEvent) {
+        //TODO: Display Event Details
       } else {
         showTaskBottomSheet();
       }
@@ -375,15 +385,17 @@ class _ListItemWidgetState extends State<ListItemWidget> {
     );
   }
 
+  SlidingSheetDialog? _taskSheetDialog;
+
   dynamic showTaskBottomSheet() async {
-    SlidingSheetDialog? _taskSheetDialog;
     Widget? _headerWidget;
 
-    final dynamic result = await showSlidingBottomSheet<dynamic>(
+    await showSlidingBottomSheet<dynamic>(
       context,
       // useRootNavigator: true,
       builder: (_) {
-        return _taskSheetDialog ??= SlidingSheetDialog(
+        return SlidingSheetDialog(
+          controller: _sheetController,
           elevation: 8,
           cornerRadius: 16,
           duration: 500.milliseconds,
@@ -396,54 +408,69 @@ class _ListItemWidgetState extends State<ListItemWidget> {
           minHeight: context.height - 56,
           liftOnScrollHeaderElevation: 6,
           headerBuilder: (_, __) => _headerWidget ??= EditTaskHeader(
+            // key: Key('${_id}_header'),
             taskID: _id,
-            colorID: _colorID,
+            colorID: _colorID ?? widget.projectColor,
             getEditView: _openEditView,
           ),
           builder: (_, __) {
-            // return _blocProvider;
+            //! Didn't reload after edit
             return DetailTaskView(
-              key: Key('${_id}_detail'),
+              key: UniqueKey(), //Key('${_id}_detail'),
               task: widget.task,
               taskID: widget.entry?.id,
-              colorID: _colorID,
+              colorID: _colorID ?? widget.projectColor,
             );
           },
         );
       },
     );
-
-    print(result); // This is the result.
   }
 
-  void _openEditView() {
+  void _openEditView() async {
     print('Open Edit');
-    final _entry = widget.entry;
+    // await _sheetController.hide();
 
-    showCupertinoModalBottomSheet<dynamic>(
+    final _result = await showCupertinoModalBottomSheet<TaskEntry?>(
       elevation: 24,
       useRootNavigator: true,
       expand: true,
       context: context,
       topRadius: const Radius.circular(16),
-      builder: (_) => MultiBlocProvider(
-        providers: [
-          BlocProvider<TaskBloc>.value(
-            value: BlocProvider.of<TaskBloc>(context),
-          ),
-          BlocProvider<SubtaskCubit>.value(
-            value: BlocProvider.of<SubtaskCubit>(context),
-          ),
-        ],
-        child: EditTaskView(
-          key: Key(_id),
-          taskID: _id,
-          task: widget.task,
-          colorID: _colorID,
-          modalScrollController: ModalScrollController.of(context),
-        ),
+      builder: (_) => EditTaskView(
+        key: Key(_id),
+        taskID: _id,
+        task: _currentTask,
+        colorID: _colorID ?? widget.projectColor,
+        modalScrollController: ModalScrollController.of(context),
       ),
     );
+
+    print(_result);
+    if (_result != null) {
+      // await context.router.pop();
+      // context.read<TaskBloc>().add(
+      //       GetTaskEntriesEvent(
+      //         project: ProjectEntry(id: _result.projectID),
+      //       ),
+      //     );
+      setState(() {
+        _currentTask = _result;
+        _taskSheetDialog = null;
+        _cellContentContainer = null;
+        _id = _result.id;
+        _dueDateTime = _result.dueDate;
+        _startDateTime = _result.startDateTime;
+        _endDateTime = _result.endDateTime;
+        _title = _result.title;
+        _colorID = _result.colorID;
+        _isCompleted = _result.isCompleted;
+      });
+      // await context.router.pop();
+      // await _sheetController.expand();
+      _sheetController.rebuild();
+      // showTaskBottomSheet();
+    }
   }
 
   Color getColor(Set<MaterialState> states) {

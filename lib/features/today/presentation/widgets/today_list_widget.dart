@@ -16,7 +16,7 @@ import 'package:refocus_app/features/calendar/presentation/bloc/calendar/datetim
 import 'package:refocus_app/features/calendar/presentation/widgets/widgets.dart';
 import 'package:refocus_app/features/today/presentation/bloc/today_bloc.dart';
 import 'package:refocus_app/features/today/presentation/widgets/persistent_header_delegate.dart';
-import 'package:refocus_app/features/today/presentation/widgets/today_list_item.dart';
+import 'package:refocus_app/features/today/presentation/widgets/list_item_widget.dart';
 import 'package:refocus_app/injection.dart';
 
 class TodayListWidget extends StatefulWidget {

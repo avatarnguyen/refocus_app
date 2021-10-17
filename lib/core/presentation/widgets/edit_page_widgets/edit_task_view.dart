@@ -187,6 +187,7 @@ class _EditTaskViewState extends State<EditTaskView> {
 
           verticalSpaceMedium,
           //* Edit Start & End DateTime
+          //! Null Error here
           _buildEditDateTimeCell(startDateTime!.toLocal(), _editTimeTextStyle,
                   DateTimeSelected.start)
               .gestures(
@@ -548,11 +549,12 @@ class _EditTaskViewState extends State<EditTaskView> {
                 ),
               ),
             );
-        print('Reload Task');
-        context.read<TaskBloc>().add(
-            GetSingleTaskEntryEvent(taskID: widget.task?.id ?? widget.taskID!));
+        // context.read<TaskBloc>().add(
+        //     GetSingleTaskEntryEvent(taskID: widget.task?.id ?? widget.taskID!));
+        context.router.pop(currentTask);
+      } else {
+        context.router.pop();
       }
-      context.router.pop();
     }
   }
 }
