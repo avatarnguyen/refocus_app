@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/features/task/domain/entities/subtask_entry.dart';
 
-class SlidableSubTaskItem extends StatelessWidget {
+class SlidableSubTaskItem extends StatefulWidget {
   const SlidableSubTaskItem({
     Key? key,
     required this.subTask,
@@ -14,28 +17,89 @@ class SlidableSubTaskItem extends StatelessWidget {
   final String? colorID;
 
   @override
+  State<SlidableSubTaskItem> createState() => _SlidableSubTaskItemState();
+}
+
+class _SlidableSubTaskItemState extends State<SlidableSubTaskItem> {
+  // late final SlidableController _slidableController;
+
+  bool _shouldDisplayLine = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _shouldDisplayLine = widget.subTask.isCompleted;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final _color = StyleUtils.getColorFromString(colorID ?? '#115FFB');
-    final _backgroudColor = StyleUtils.darken(_color, colorDarken1);
+    final _color = StyleUtils.getColorFromString(widget.colorID ?? '#115FFB');
+    final _backgroudColor = StyleUtils.darken(_color, kcdarker1);
 
     return Slidable.builder(
-        key: key ?? const Key('subtask_value'),
+        key: widget.key ?? const Key('subtask_value'),
         actionPane: const SlidableStrechActionPane(),
         actionExtentRatio: .6,
         actionDelegate: SlideActionBuilderDelegate(
           builder: (context, index, animation, step) {
-            // print('Current Animation: ${animation}');
-            if (animation!.isCompleted) {
-              final controller = Slidable.of(context);
-              controller!.close();
-            }
-            return Icon(
-              Icons.check,
-              size: 40 * animation.value,
-              color: animation.value > 0.5 ? _backgroudColor : Colors.grey,
-            ).alignment(Alignment.centerRight).padding(right: 16);
+            return IconSlideAction(
+              color: step == SlidableRenderingMode.dismiss
+                  ? kcSuccess500
+                  : Colors.transparent,
+              foregroundColor: step == SlidableRenderingMode.slide
+                  ? kcPrimary500.withOpacity(animation!.value)
+                  : (step == SlidableRenderingMode.dismiss
+                      ? Colors.white
+                      : kcPrimary500),
+              icon: Icons.check,
+              caption: animation!.value > 0.96 ? 'Mark as Done' : null,
+              onTap: () async {
+                // final state = Slidable.of(context);
+              },
+            );
           },
           actionCount: 1,
+        ),
+        secondaryActionDelegate: SlideActionBuilderDelegate(
+          actionCount: 1,
+          builder: (context, index, animation, step) {
+            return IconSlideAction(
+              icon: Icons.delete,
+              foregroundColor: step == SlidableRenderingMode.slide
+                  ? kcPrimary500.withOpacity(
+                      animation!.value <= 0.7 ? animation.value + 0.3 : 1.0)
+                  : (step == SlidableRenderingMode.dismiss
+                      ? Colors.white
+                      : kcError500),
+              color: step == SlidableRenderingMode.dismiss
+                  ? kcError500
+                  : Colors.transparent,
+              caption: animation!.value >= 0.8 ? 'Delete' : null,
+              onTap: () async {
+                final state = Slidable.of(context);
+                final dismiss = await (_deleteConfirmationDialog(context)
+                    as FutureOr<bool>);
+
+                if (dismiss) {
+                  state!.dismiss();
+                }
+              },
+            );
+          },
+        ),
+        dismissal: SlidableDismissal(
+          child: const SlidableDrawerDismissal(),
+          onDismissed: (actionTyp) {
+            if (actionTyp == SlideActionType.primary) {}
+            if (actionTyp == SlideActionType.secondary) {}
+          },
+          //TODO: Implementation
+          // onWillDismiss: (SlideActionType? actionType) {
+          //   if (actionType == SlideActionType.secondary) {
+          //     return _deleteConfirmationDialog(context) as FutureOr<bool>;
+          //   }
+          //   return false;
+          // },
         ),
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -49,14 +113,36 @@ class SlidableSubTaskItem extends StatelessWidget {
                 kShadowLight40,
               ]),
           child: Text(
-            subTask.title ?? '',
+            widget.subTask.title ?? '',
             textAlign: TextAlign.center,
             style: context.caption.copyWith(
               color: Colors.white,
               decoration:
-                  subTask.isCompleted ? TextDecoration.lineThrough : null,
+                  _shouldDisplayLine ? TextDecoration.lineThrough : null,
             ),
           ),
         ));
+  }
+
+  Future<bool?> _deleteConfirmationDialog(BuildContext context) {
+    return showDialog<bool>(
+      context: context,
+      builder: (context2) {
+        return PlatformAlertDialog(
+          title: PlatformText('Delete'),
+          content: PlatformText('Item will be deleted'),
+          actions: <Widget>[
+            PlatformTextButton(
+              child: PlatformText('Cancel'),
+              onPressed: () => Navigator.of(context2).pop(false),
+            ),
+            PlatformTextButton(
+              child: PlatformText('Ok'),
+              onPressed: () => Navigator.of(context2).pop(true),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

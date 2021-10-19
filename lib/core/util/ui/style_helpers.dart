@@ -35,7 +35,11 @@ class StyleUtils {
   }
 }
 
-const double colorDarken1 = 0.24;
+const double kclighter1 = 0.16;
+const double kclighter2 = 0.24;
+const double kcdarker1 = 0.16;
+const double kcdarker2 = 0.24;
+const double kcdarker4 = 0.28;
 
 const Color kcLightShadow = Color(0x19303133);
 const BoxShadow kShadowLightBase = BoxShadow(

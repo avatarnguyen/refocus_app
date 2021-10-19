@@ -23,7 +23,7 @@ class _EditDateTimeCellState extends State<EditDateTimeCell> {
     final _textColor = widget.colorID != null
         ? StyleUtils.darken(
             StyleUtils.getColorFromString(widget.colorID!),
-            colorDarken1,
+            kcdarker2,
           )
         : kcPrimary500;
 

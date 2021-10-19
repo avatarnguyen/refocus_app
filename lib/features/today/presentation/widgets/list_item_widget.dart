@@ -1,12 +1,9 @@
-import 'dart:developer';
-
 import 'package:dartx/dartx.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:refocus_app/core/presentation/widgets/edit_page_widgets/detail_task_view.dart';
@@ -18,7 +15,6 @@ import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/today_entry_type.dart';
 import 'package:refocus_app/enum/today_event_type.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar/datetime_stream.dart';
-import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
 import 'package:refocus_app/features/task/domain/entities/subtask_entry.dart';
 import 'package:refocus_app/features/task/domain/entities/task_entry.dart';
 import 'package:refocus_app/features/task/domain/usecases/helpers/task_params.dart';
@@ -149,59 +145,96 @@ class _ListItemWidgetState extends State<ListItemWidget> {
 
     // _cellContentContainer ??=
 
-    return Slidable(
+    return Slidable.builder(
       key: Key(_id),
       actionPane: const SlidableStrechActionPane(),
-      actions: _isEvent
+      actionExtentRatio: .4,
+      actionDelegate: _isEvent
           ? null
-          : [
-              IconSlideAction(
-                icon: Icons.check_circle_outline,
-                foregroundColor: _textColor,
-                color: Colors.transparent,
-              )
-            ],
-      secondaryActions: [
-        // if (_isEvent)
-        IconSlideAction(
-          icon: Icons.calendar_today_rounded,
-          foregroundColor: context.colorScheme.primary,
-          color: Colors.transparent,
-          onTap: () {},
-        ),
-        // else
-        IconSlideAction(
-          icon: Icons.arrow_forward_outlined,
-          foregroundColor: _textColor,
-          color: Colors.transparent,
-          onTap: () {
-            if (_isEvent) {
-              //TODO
-            } else {
-              final _currentDate =
-                  _startDateTime ?? _dueDateTime ?? DateTime.now();
-              final _newDate = _currentDate + 1.days;
-              context.read<TaskBloc>().add(EditTaskEntryEvent(
-                    params: TaskParams(
-                      task: widget.task ??
-                          returnTaskFromTodayEntry(
-                            widget.entry!,
-                            newDate: _newDate,
-                          ),
-                    ),
-                  ));
+          : SlideActionBuilderDelegate(
+              builder: (context, index, animation, step) {
+                // print('Current Animation: ${animation?.value}');
 
-              if (_dateTimeStream.selectedDate != null &&
-                  _dateTimeStream.selectedDate!.isToday != true) {
-                context.read<TodayBloc>().add(GetTodayEntriesOfSpecificDate(
-                    _dateTimeStream.selectedDate!));
-              } else {
-                context.read<TodayBloc>().add(const GetTodayEntries());
-              }
-            }
-          },
-        ),
-      ],
+                return IconSlideAction(
+                  color: step == SlidableRenderingMode.dismiss
+                      ? kcSuccess500
+                      : Colors.transparent,
+                  foregroundColor: step == SlidableRenderingMode.slide
+                      ? kcPrimary500.withOpacity(animation!.value)
+                      : (step == SlidableRenderingMode.dismiss
+                          ? Colors.white
+                          : kcPrimary500),
+                  icon: Icons.check,
+                  caption: animation!.value > 0.96 ? 'Mark as Done' : null,
+                  onTap: () async {
+                    // final state = Slidable.of(context);
+                  },
+                );
+              },
+              actionCount: 1,
+            ),
+      secondaryActionDelegate: SlideActionBuilderDelegate(
+        actionCount: 2,
+        builder: (context, index, animation, step) {
+          // print('Current Animation: ${animation?.value}');
+          if (index == 0 && step != SlidableRenderingMode.dismiss) {
+            return IconSlideAction(
+              icon: Icons.calendar_today_rounded,
+              foregroundColor: _color,
+              color: Colors.transparent,
+              onTap: () {},
+            );
+          } else if (index == 0 && step == SlidableRenderingMode.dismiss) {
+            return IconSlideAction(
+              icon: Icons.calendar_today_rounded,
+              foregroundColor: kcWarning500,
+              color: kcWarning500,
+              onTap: () {},
+            );
+          } else {
+            return IconSlideAction(
+              icon: Icons.arrow_forward_outlined,
+              foregroundColor: step == SlidableRenderingMode.slide
+                  ? kcPrimary500.withOpacity(
+                      animation!.value <= 0.7 ? animation.value + 0.3 : 1.0)
+                  : (step == SlidableRenderingMode.dismiss
+                      ? kcPrimary500
+                      : kcError500),
+              color: step == SlidableRenderingMode.dismiss
+                  ? kcWarning500
+                  : Colors.transparent,
+              caption: animation!.value >= 0.8 ? 'postpone by 1 day' : null,
+              onTap: () async {
+                // final state = Slidable.of(context);
+                if (_isEvent) {
+                  //TODO
+                } else {
+                  final _currentDate =
+                      _startDateTime ?? _dueDateTime ?? DateTime.now();
+                  final _newDate = _currentDate + 1.days;
+                  context.read<TaskBloc>().add(EditTaskEntryEvent(
+                        params: TaskParams(
+                          task: widget.task ??
+                              returnTaskFromTodayEntry(
+                                widget.entry!,
+                                newDate: _newDate,
+                              ),
+                        ),
+                      ));
+
+                  if (_dateTimeStream.selectedDate != null &&
+                      _dateTimeStream.selectedDate!.isToday != true) {
+                    context.read<TodayBloc>().add(GetTodayEntriesOfSpecificDate(
+                        _dateTimeStream.selectedDate!));
+                  } else {
+                    context.read<TodayBloc>().add(const GetTodayEntries());
+                  }
+                }
+              },
+            );
+          }
+        },
+      ),
       dismissal: SlidableDismissal(
         onDismissed: (actionTyp) {
           if (_isEvent) {
@@ -240,11 +273,12 @@ class _ListItemWidgetState extends State<ListItemWidget> {
                 context.read<TodayBloc>().add(const GetTodayEntries());
               }
             }
+            if (actionTyp == SlideActionType.secondary) {}
           }
         },
         dismissThresholds: const <SlideActionType, double>{
           SlideActionType.primary: .4,
-          // SlideActionType.secondary: 1,
+          SlideActionType.secondary: 0.6,
         },
         child: const SlidableDrawerDismissal(),
       ),

@@ -90,7 +90,7 @@ class _EditTaskViewState extends State<EditTaskView> {
   Widget build(BuildContext context) {
     final _color = StyleUtils.getColorFromString(widget.colorID ?? '#115FFB');
     final _backgroudColor = StyleUtils.lighten(_color, 0.32);
-    final _textColor = StyleUtils.darken(_color, colorDarken1);
+    final _textColor = StyleUtils.darken(_color, kcdarker2);
 
     final _timeTextStyle = context.h6.copyWith(
       color: _textColor,

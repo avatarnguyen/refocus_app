@@ -63,8 +63,7 @@ class _DetailTaskViewState extends State<DetailTaskView> {
   @override
   Widget build(BuildContext context) {
     final _color = StyleUtils.getColorFromString(widget.colorID ?? '#115FFB');
-    final _backgroudColor = StyleUtils.lighten(_color, 0.32);
-    final _textColor = StyleUtils.darken(_color, colorDarken1);
+    final _textColor = StyleUtils.darken(_color);
 
     final _timeTextStyle = context.h6.copyWith(
       color: _textColor,
@@ -144,23 +143,21 @@ class _DetailTaskViewState extends State<DetailTaskView> {
                       .toList();
                   return Column(
                     children: [
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: _notCompletedSubTasks
-                            .map(
-                              (subtask) => SlidableSubTaskItem(
-                                key: Key(subtask.id),
-                                colorID: widget.colorID,
-                                subTask: SubTaskEntry(
-                                  id: subtask.id,
-                                  isCompleted: subtask.isCompleted,
-                                  taskID: subtask.taskID,
-                                  title: subtask.title,
-                                ),
+                      _notCompletedSubTasks
+                          .map(
+                            (subtask) => SlidableSubTaskItem(
+                              key: Key(subtask.id),
+                              colorID: widget.colorID,
+                              subTask: SubTaskEntry(
+                                id: subtask.id,
+                                isCompleted: subtask.isCompleted,
+                                taskID: subtask.taskID,
+                                title: subtask.title,
                               ),
-                            )
-                            .toList(),
-                      ),
+                            ),
+                          )
+                          .toList()
+                          .toColumn(mainAxisSize: MainAxisSize.min),
                       verticalSpaceSmall,
                       Material(
                         color: Colors.transparent,
