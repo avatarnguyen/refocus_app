@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/features/task/domain/entities/subtask_entry.dart';
+import 'package:refocus_app/features/task/presentation/bloc/cubit/subtask_cubit.dart';
 
 class SlidableSubTaskItem extends StatefulWidget {
   const SlidableSubTaskItem({
@@ -36,6 +38,9 @@ class _SlidableSubTaskItemState extends State<SlidableSubTaskItem> {
     final _color = StyleUtils.getColorFromString(widget.colorID ?? '#115FFB');
     final _backgroudColor = StyleUtils.darken(_color, kcdarker1);
 
+    final _doneStrIndicator =
+        widget.subTask.isCompleted ? 'Mark as Undone' : 'Mark as Done';
+
     return Slidable.builder(
         key: widget.key ?? const Key('subtask_value'),
         actionPane: const SlidableStrechActionPane(),
@@ -52,9 +57,13 @@ class _SlidableSubTaskItemState extends State<SlidableSubTaskItem> {
                       ? Colors.white
                       : kcPrimary500),
               icon: Icons.check,
-              caption: animation!.value > 0.96 ? 'Mark as Done' : null,
-              onTap: () async {
-                // final state = Slidable.of(context);
+              caption: animation!.value > 0.96 ? _doneStrIndicator : null,
+              onTap: () {
+                context
+                    .read<SubtaskCubit>()
+                    .updateSubtask(widget.subTask.copyWith(
+                      isCompleted: !widget.subTask.isCompleted,
+                    ));
               },
             );
           },
@@ -77,12 +86,7 @@ class _SlidableSubTaskItemState extends State<SlidableSubTaskItem> {
               caption: animation!.value >= 0.8 ? 'Delete' : null,
               onTap: () async {
                 final state = Slidable.of(context);
-                final dismiss = await (_deleteConfirmationDialog(context)
-                    as FutureOr<bool>);
-
-                if (dismiss) {
-                  state!.dismiss();
-                }
+                state!.dismiss();
               },
             );
           },
@@ -90,16 +94,28 @@ class _SlidableSubTaskItemState extends State<SlidableSubTaskItem> {
         dismissal: SlidableDismissal(
           child: const SlidableDrawerDismissal(),
           onDismissed: (actionTyp) {
-            if (actionTyp == SlideActionType.primary) {}
-            if (actionTyp == SlideActionType.secondary) {}
+            if (actionTyp == SlideActionType.primary) {
+              context
+                  .read<SubtaskCubit>()
+                  .updateSubtask(widget.subTask.copyWith(
+                    isCompleted: !widget.subTask.isCompleted,
+                  ));
+            }
+            if (actionTyp == SlideActionType.secondary) {
+              context.read<SubtaskCubit>().deleteSubtask(widget.subTask);
+            }
           },
-          //TODO: Implementation
-          // onWillDismiss: (SlideActionType? actionType) {
-          //   if (actionType == SlideActionType.secondary) {
-          //     return _deleteConfirmationDialog(context) as FutureOr<bool>;
-          //   }
-          //   return false;
-          // },
+          onWillDismiss: (SlideActionType? actionType) async {
+            if (actionType == SlideActionType.secondary) {
+              final dismiss = await _deleteConfirmationDialog(context);
+              if (dismiss != null && dismiss) {
+                return true;
+              } else {
+                return false;
+              }
+            }
+            return false;
+          },
         ),
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),

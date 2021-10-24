@@ -11,6 +11,7 @@ import 'package:injectable/injectable.dart' as _i2;
 import 'package:internet_connection_checker/internet_connection_checker.dart'
     as _i12;
 
+import 'core/aws_stream.dart' as _i4;
 import 'core/injectable_module.dart' as _i52;
 import 'core/network/network_info.dart' as _i13;
 import 'core/presentation/helper/action_stream.dart' as _i3;
@@ -43,7 +44,6 @@ import 'features/calendar/presentation/bloc/calendar/datetime_stream.dart'
 import 'features/calendar/presentation/bloc/calendar_list/calendar_list_bloc.dart'
     as _i51;
 import 'features/task/data/datasources/aws_data_source.dart' as _i20;
-import 'features/task/data/datasources/aws_stream.dart' as _i4;
 import 'features/task/data/datasources/task_local_data_source.dart' as _i19;
 import 'features/task/data/repositories/task_repository_impl.dart' as _i22;
 import 'features/task/domain/repositories/task_repository.dart' as _i21;
@@ -158,6 +158,7 @@ Future<_i1.GetIt> $initGetIt(_i1.GetIt get,
   gh.lazySingleton<_i45.GetEventsBetween>(
       () => _i45.GetEventsBetween(get<_i40.CalendarRepository>()));
   gh.factory<_i46.TodayBloc>(() => _i46.TodayBloc(
+      dataStream: get<_i4.AwsStream>(),
       getEventEntry: get<_i45.GetEventsBetween>(),
       getTasks: get<_i36.GetTasks>(),
       getSubTasks: get<_i35.GetSubTasks>()));

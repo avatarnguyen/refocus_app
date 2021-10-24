@@ -6,6 +6,7 @@ import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:injectable/injectable.dart';
 import 'package:refocus_app/constants/failure_message.dart';
+import 'package:refocus_app/core/aws_stream.dart';
 import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart';
@@ -28,6 +29,7 @@ part 'today_state.dart';
 @injectable
 class TodayBloc extends Bloc<TodayEvent, TodayState> {
   TodayBloc({
+    required this.dataStream,
     required this.getEventEntry,
     required this.getTasks,
     required this.getSubTasks,
@@ -36,6 +38,7 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
   final GetEventsBetween getEventEntry;
   final GetTasks getTasks;
   final GetSubTasks getSubTasks;
+  final AwsStream dataStream;
 
   @override
   Stream<TodayState> mapEventToState(
@@ -333,6 +336,18 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
         );
       },
     );
+  }
+
+  void _observerTodos() {
+    final todoStream = dataStream.getTaskStream;
+    todoStream.listen((dynamic _) {
+      if (state is TodayLoaded) {
+        final _currentState = state as TodayLoaded;
+        if (_currentState.tomorrowEntries != null &&
+            _currentState.upcomingTasks != null) {
+        } else {}
+      }
+    });
   }
 
   List<TodayEntry> sortTodayEntries(List<TodayEntry> entries) {

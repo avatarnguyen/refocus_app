@@ -9,7 +9,7 @@ import 'package:injectable/injectable.dart';
 import 'package:refocus_app/constants/failure_message.dart';
 import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/core/usecases/usecase.dart';
-import 'package:refocus_app/features/task/data/datasources/aws_stream.dart';
+import 'package:refocus_app/core/aws_stream.dart';
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
 import 'package:refocus_app/features/task/domain/usecases/helpers/project_params.dart';
 import 'package:refocus_app/features/task/domain/usecases/project/create_project.dart';

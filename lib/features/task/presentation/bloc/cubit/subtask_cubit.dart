@@ -67,7 +67,7 @@ class SubtaskCubit extends Cubit<SubtaskState> {
 
   Future<void> updateSubtask(SubTaskEntry subTaskEntry) async {
     try {
-      emit(const SubtaskState.initial());
+      // emit(const SubtaskState.initial());
 
       await updateSubTask(
         SubTaskParams(subTaskEntry: subTaskEntry),
@@ -97,7 +97,7 @@ class SubtaskCubit extends Cubit<SubtaskState> {
 
   Future<void> deleteSubtask(SubTaskEntry subTaskEntry) async {
     try {
-      emit(const SubtaskState.initial());
+      // emit(const SubtaskState.initial());
 
       await deleteSubTask(
         SubTaskParams(subTaskEntry: subTaskEntry),
