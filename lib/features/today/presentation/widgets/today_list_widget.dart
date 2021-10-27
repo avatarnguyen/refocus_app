@@ -226,65 +226,72 @@ class _TodayListWidgetState extends State<TodayListWidget> {
             isCompleted: true,
           )),
         ));
-    context.read<TodayBloc>().add(const GetTodayEntries());
-  }
-
-  void _deleteItem(TodayEventType type) {
-    switch (type) {
-      case TodayEventType.today:
-        break;
-      case TodayEventType.tomorrow:
-        break;
-      case TodayEventType.upcoming:
-        break;
-      default:
-        break;
-    }
+    // context.read<TodayBloc>().add(const GetTodayEntries());
+    setState(() {
+      switch (type) {
+        case TodayEventType.today:
+          _todayList.remove(entry);
+          break;
+        case TodayEventType.tomorrow:
+          _tomorrowList.remove(entry);
+          break;
+        case TodayEventType.upcoming:
+          _upcomingList.remove(entry);
+          break;
+        default:
+          _todayList.remove(entry);
+          _tomorrowList.remove(entry);
+          _upcomingList.remove(entry);
+          break;
+      }
+    });
   }
 
   void _postponeItem(TodayEventType type, TodayEntry? entry) {
-    switch (type) {
-      case TodayEventType.today:
-        if (entry != null) {
-          _tomorrowList.add(entry);
-          _todayList.remove(entry);
-        }
-        break;
-      case TodayEventType.tomorrow:
-        if (entry != null) {
-          _upcomingList.add(entry);
-          _tomorrowList.remove(entry);
-        }
-        break;
-      case TodayEventType.upcoming:
-        if (entry != null) {
-          _upcomingList.remove(entry);
-          if (entry.endDateTime != null &&
-              entry.endDateTime!.isBefore(4.days.fromNow)) {
-            _upcomingList.add(entry.copyWith(
-              endDateTime: entry.endDateTime! + 1.days,
-            ));
-          }
-        }
-        break;
-      default:
-        if (entry != null) {
-          _upcomingList.removeWhere((element) => element.id == entry.id);
-        }
-        break;
-    }
-    // if (entry != null) {
-    //   final _currentDate =
-    //       entry.startDateTime ?? entry.dueDateTime ?? DateTime.now();
-    //   final _newDate = _currentDate + 1.days;
-    //   context.read<TaskBloc>().add(EditTaskEntryEvent(
-    //         params: TaskParams(
-    //           task: _returnTaskFromTodayEntry(entry, newDate: _newDate),
-    //         ),
-    //       ));
-    // }
+    if (entry != null) {
+      final _currentDate =
+          entry.startDateTime ?? entry.dueDateTime ?? DateTime.now();
+      final _newDate = _currentDate + 1.days;
+      context.read<TaskBloc>().add(EditTaskEntryEvent(
+            params: TaskParams(
+              task: _returnTaskFromTodayEntry(entry, newDate: _newDate),
+            ),
+          ));
 
-    setState(() {});
+      // Handling List because Slidable item has to be remove from list
+      setState(() {
+        switch (type) {
+          case TodayEventType.today:
+            _tomorrowList.add(entry);
+            _todayList.remove(entry);
+
+            break;
+          case TodayEventType.tomorrow:
+            _upcomingList.add(entry);
+            _tomorrowList.remove(entry);
+
+            break;
+          case TodayEventType.upcoming:
+            _upcomingList.remove(entry);
+            // Adding Entry Back to the list
+            if (entry.endDateTime != null &&
+                entry.endDateTime!.isBefore(4.days.fromNow)) {
+              _upcomingList.add(
+                  entry.copyWith(endDateTime: entry.endDateTime! + 1.days));
+            } else if (entry.dueDateTime != null &&
+                entry.dueDateTime!.isBefore(4.days.fromNow)) {
+              _upcomingList.add(
+                  entry.copyWith(dueDateTime: entry.dueDateTime! + 1.days));
+            }
+            break;
+          default:
+            _todayList.remove(entry);
+            _tomorrowList.remove(entry);
+            _upcomingList.remove(entry);
+            break;
+        }
+      });
+    }
   }
 
   TaskEntry _returnTaskFromTodayEntry(TodayEntry todayEntry,

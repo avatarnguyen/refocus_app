@@ -176,8 +176,10 @@ class _ListItemWidgetState extends State<ListItemWidget> {
                           : kcPrimary500),
                   icon: Icons.check,
                   caption: animation!.value > 0.96 ? 'Mark as Done' : null,
-                  onTap: () async {
-                    // final state = Slidable.of(context);
+                  onTap: () {
+                    if (widget.markItemAsDone != null) {
+                      widget.markItemAsDone!();
+                    }
                   },
                 );
               },
@@ -216,29 +218,8 @@ class _ListItemWidgetState extends State<ListItemWidget> {
               caption: animation!.value >= 0.8 ? 'postpone by 1 day' : null,
               onTap: () async {
                 // final state = Slidable.of(context);
-                if (_isEvent) {
-                  //TODO
-                } else {
-                  final _currentDate =
-                      _startDateTime ?? _dueDateTime ?? DateTime.now();
-                  final _newDate = _currentDate + 1.days;
-                  context.read<TaskBloc>().add(EditTaskEntryEvent(
-                        params: TaskParams(
-                          task: widget.task ??
-                              returnTaskFromTodayEntry(
-                                widget.entry!,
-                                newDate: _newDate,
-                              ),
-                        ),
-                      ));
-
-                  if (_dateTimeStream.selectedDate != null &&
-                      _dateTimeStream.selectedDate!.isToday != true) {
-                    context.read<TodayBloc>().add(GetTodayEntriesOfSpecificDate(
-                        _dateTimeStream.selectedDate!));
-                  } else {
-                    context.read<TodayBloc>().add(const GetTodayEntries());
-                  }
+                if (widget.postponeItem != null) {
+                  widget.postponeItem!();
                 }
               },
             );
@@ -248,36 +229,21 @@ class _ListItemWidgetState extends State<ListItemWidget> {
       dismissal: SlidableDismissal(
         onDismissed: (actionTyp) {
           if (_isEvent) {
+            if (widget.postponeItem != null) {
+              widget.postponeItem!();
+            }
           } else {
             if (actionTyp == SlideActionType.primary) {
               // Mark Task as Done
-              widget.markItemAsDone!();
+              if (widget.markItemAsDone != null) {
+                widget.markItemAsDone!();
+              }
             } else {
-              // Postpone Task to next day
-              // final _currentDate =
-              //     _startDateTime ?? _dueDateTime ?? DateTime.now();
-              // final _newDate = _currentDate + 1.days;
-              // context.read<TaskBloc>().add(EditTaskEntryEvent(
-              //         params: TaskParams(
-              //       task: widget.task ??
-              //           returnTaskFromTodayEntry(
-              //             widget.entry!,
-              //             newDate: _newDate,
-              //           ),
-              //     )));
-
-              // if (_dateTimeStream.selectedDate != null &&
-              //     !_dateTimeStream.selectedDate!.isToday) {
-              //   context.read<TodayBloc>().add(UpdateTaskEntries(
-              //       eventType: TodayEventType.specificDate,
-              //       date: _dateTimeStream.selectedDate));
-              // } else {
-              //   context.read<TodayBloc>().add(const GetTodayEntries());
-              // }
-              widget.postponeItem!();
+              if (widget.postponeItem != null) {
+                widget.postponeItem!();
+              }
             }
           }
-          // widget.deleteItem!();
         },
         dismissThresholds: const <SlideActionType, double>{
           SlideActionType.primary: .4,
@@ -425,14 +391,11 @@ class _ListItemWidgetState extends State<ListItemWidget> {
     );
   }
 
-  SlidingSheetDialog? _taskSheetDialog;
-
   dynamic showTaskBottomSheet() async {
     Widget? _headerWidget;
 
     await showSlidingBottomSheet<dynamic>(
       context,
-      // useRootNavigator: true,
       builder: (_) {
         return SlidingSheetDialog(
           controller: _sheetController,
@@ -510,11 +473,9 @@ class _ListItemWidgetState extends State<ListItemWidget> {
       ),
     );
 
-    // print(_result);
     if (_result != null) {
       setState(() {
         _currentTask = _result;
-        _taskSheetDialog = null;
         _cellContentContainer = null;
         _id = _result.id;
         _dueDateTime = _result.dueDate;
