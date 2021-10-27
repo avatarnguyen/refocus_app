@@ -1,16 +1,13 @@
 import 'dart:io';
-import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
-import 'package:refocus_app/enum/today_entry_type.dart';
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
 import 'package:refocus_app/features/task/domain/entities/task_entry.dart';
 import 'package:refocus_app/features/task/domain/usecases/helpers/task_params.dart';
 import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
-import 'package:refocus_app/features/today/domain/today_entry.dart';
 import 'package:refocus_app/features/today/presentation/widgets/list_item_widget.dart';
 import 'package:styled_widget/styled_widget.dart';
 
@@ -63,6 +60,7 @@ class _TaskPageState extends State<TaskPage> {
               itemCount: _tasks.length,
               itemBuilder: (context, index) {
                 final _task = _tasks[index];
+
                 return ListItemWidget(
                   key: Key('task_page_${_task.id}'),
                   task: _task,

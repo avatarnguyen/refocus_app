@@ -49,11 +49,9 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       //TODO: Watch AWS Stream here
     } else if (event is CreateTaskEntriesEvent) {
       log('Create New Task');
-
       yield* _mapTaskCreatedToState(event);
     } else if (event is EditTaskEntryEvent) {
       log('Edit Task');
-
       yield* _mapTaskEditToState(event);
     } else if (event is GetSingleTaskEntryEvent) {
       yield TaskLoading();
@@ -61,6 +59,9 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
         TaskParams(taskID: event.taskID),
       );
       yield* _eitherTaskLoadedOrErrorState(failureOrEntry);
+    } else if (event is DeleteTaskEntryEvent) {
+      final deleteResult = await deleteTask(event.params);
+      yield* _handeDeleteEvent(deleteResult);
     }
   }
 
@@ -92,6 +93,15 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       (failure) => TaskError(_mapFailureToMessage(failure)),
       (entry) => TasksLoaded(tasks: entry),
     );
+  }
+
+  Stream<TaskState> _handeDeleteEvent(
+      Either<Failure, Unit> failureOrEntry) async* {
+    yield* failureOrEntry.fold((failure) async* {
+      yield TaskError(_mapFailureToMessage(failure));
+    }, (entry) async* {
+      print(entry);
+    });
   }
 
   String _mapFailureToMessage(Failure failure) {
