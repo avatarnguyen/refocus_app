@@ -30,14 +30,24 @@ import 'package:styled_widget/styled_widget.dart';
 const timeLineWidth = 48.0;
 
 class ListItemWidget extends StatefulWidget {
-  const ListItemWidget(
-      {Key? key, this.entry, this.selectedDate, this.task, this.projectColor})
-      : super(key: key);
+  const ListItemWidget({
+    Key? key,
+    this.entry,
+    this.selectedDate,
+    this.task,
+    this.projectColor,
+    this.deleteItem,
+    this.markItemAsDone,
+    this.postponeItem,
+  }) : super(key: key);
 
   final TodayEntry? entry;
   final TaskEntry? task;
   final DateTime? selectedDate;
   final String? projectColor;
+  final VoidCallback? deleteItem;
+  final VoidCallback? markItemAsDone;
+  final VoidCallback? postponeItem;
 
   @override
   State<ListItemWidget> createState() => _ListItemWidgetState();
@@ -72,7 +82,7 @@ class _ListItemWidgetState extends State<ListItemWidget> {
       _title = widget.entry!.title;
       _colorID = widget.entry!.color;
       _subtasks = widget.entry!.subTaskEntries;
-      _isCompleted = widget.entry!.isCompleted ?? false;
+      _isCompleted = widget.entry?.isCompleted ?? false;
       _type = widget.entry!.type;
     } else if (widget.task != null) {
       _currentTask = widget.task;
@@ -241,40 +251,33 @@ class _ListItemWidgetState extends State<ListItemWidget> {
           } else {
             if (actionTyp == SlideActionType.primary) {
               // Mark Task as Done
-              context.read<TaskBloc>().add(EditTaskEntryEvent(
-                    params: TaskParams(
-                        task: widget.task ??
-                            returnTaskFromTodayEntry(
-                              widget.entry!,
-                              isCompleted: _isCompleted,
-                            )),
-                  ));
-              context.read<TodayBloc>().add(const GetTodayEntries());
+              widget.markItemAsDone!();
             } else {
               // Postpone Task to next day
-              final _currentDate =
-                  _startDateTime ?? _dueDateTime ?? DateTime.now();
-              final _newDate = _currentDate + 1.days;
-              context.read<TaskBloc>().add(EditTaskEntryEvent(
-                    params: TaskParams(
-                        task: widget.task ??
-                            returnTaskFromTodayEntry(
-                              widget.entry!,
-                              newDate: _newDate,
-                            )),
-                  ));
+              // final _currentDate =
+              //     _startDateTime ?? _dueDateTime ?? DateTime.now();
+              // final _newDate = _currentDate + 1.days;
+              // context.read<TaskBloc>().add(EditTaskEntryEvent(
+              //         params: TaskParams(
+              //       task: widget.task ??
+              //           returnTaskFromTodayEntry(
+              //             widget.entry!,
+              //             newDate: _newDate,
+              //           ),
+              //     )));
 
-              if (_dateTimeStream.selectedDate != null &&
-                  !_dateTimeStream.selectedDate!.isToday) {
-                context.read<TodayBloc>().add(UpdateTaskEntries(
-                    eventType: TodayEventType.specificDate,
-                    date: _dateTimeStream.selectedDate));
-              } else {
-                context.read<TodayBloc>().add(const GetTodayEntries());
-              }
+              // if (_dateTimeStream.selectedDate != null &&
+              //     !_dateTimeStream.selectedDate!.isToday) {
+              //   context.read<TodayBloc>().add(UpdateTaskEntries(
+              //       eventType: TodayEventType.specificDate,
+              //       date: _dateTimeStream.selectedDate));
+              // } else {
+              //   context.read<TodayBloc>().add(const GetTodayEntries());
+              // }
+              widget.postponeItem!();
             }
-            if (actionTyp == SlideActionType.secondary) {}
           }
+          // widget.deleteItem!();
         },
         dismissThresholds: const <SlideActionType, double>{
           SlideActionType.primary: .4,

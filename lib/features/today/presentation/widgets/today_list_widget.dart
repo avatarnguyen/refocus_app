@@ -12,11 +12,16 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/today_entry_type.dart';
+import 'package:refocus_app/enum/today_event_type.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar/datetime_stream.dart';
 import 'package:refocus_app/features/calendar/presentation/widgets/widgets.dart';
+import 'package:refocus_app/features/task/domain/entities/task_entry.dart';
+import 'package:refocus_app/features/task/domain/usecases/helpers/task_params.dart';
+import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
+import 'package:refocus_app/features/today/domain/today_entry.dart';
 import 'package:refocus_app/features/today/presentation/bloc/today_bloc.dart';
-import 'package:refocus_app/features/today/presentation/widgets/persistent_header_delegate.dart';
 import 'package:refocus_app/features/today/presentation/widgets/list_item_widget.dart';
+import 'package:refocus_app/features/today/presentation/widgets/persistent_header_delegate.dart';
 import 'package:refocus_app/injection.dart';
 
 class TodayListWidget extends StatefulWidget {
@@ -34,11 +39,19 @@ class _TodayListWidgetState extends State<TodayListWidget> {
 
   DateTime? _selectedDate;
 
+  late List<TodayEntry> _todayList;
+  late List<TodayEntry> _tomorrowList;
+  late List<TodayEntry> _upcomingList;
+
   @override
   void initState() {
     _dateTimeSubscription =
         _dateTimeStream.dateTimeStream.listen(_dateTimeReceived);
     super.initState();
+
+    _todayList = [];
+    _tomorrowList = [];
+    _upcomingList = [];
   }
 
   void _dateTimeReceived(DateTime newDate) {
@@ -117,6 +130,9 @@ class _TodayListWidgetState extends State<TodayListWidget> {
       EdgeInsets _headerPadding,
       TextStyle _headerTextStyle,
       TodayLoaded state) {
+    _todayList = state.todayEntries;
+    _tomorrowList = state.tomorrowEntries ?? [];
+    _upcomingList = state.upcomingTasks ?? [];
     return CustomScrollView(
       slivers: [
         if (Platform.isIOS)
@@ -139,12 +155,16 @@ class _TodayListWidgetState extends State<TodayListWidget> {
         ),
         SliverList(
           delegate: SliverChildBuilderDelegate((context, index) {
-            final _entry = state.todayEntries[index];
+            final _entry = _todayList[index];
             return ListItemWidget(
+              key: Key(_entry.id),
               entry: _entry,
               selectedDate: _selectedDate ?? DateTime.now(),
+              postponeItem: () => _postponeItem(TodayEventType.today, _entry),
+              markItemAsDone: () =>
+                  _markTaskAsDone(_entry, TodayEventType.today),
             );
-          }, childCount: state.todayEntries.length),
+          }, childCount: _todayList.length),
         ),
         if (_selectedDate == null)
           SliverPersistentHeader(
@@ -157,13 +177,17 @@ class _TodayListWidgetState extends State<TodayListWidget> {
         if (state.tomorrowEntries != null)
           SliverList(
             delegate: SliverChildBuilderDelegate((context, index) {
-              final _entries = state.tomorrowEntries!;
-              final _entry = _entries[index];
+              final _entry = _tomorrowList[index];
               return ListItemWidget(
+                key: Key(_entry.id),
                 entry: _entry,
                 selectedDate: 1.days.fromNow,
+                postponeItem: () =>
+                    _postponeItem(TodayEventType.tomorrow, _entry),
+                markItemAsDone: () =>
+                    _markTaskAsDone(_entry, TodayEventType.tomorrow),
               );
-            }, childCount: state.tomorrowEntries!.length),
+            }, childCount: _tomorrowList.length),
           ),
         if (_selectedDate == null)
           SliverPersistentHeader(
@@ -176,15 +200,134 @@ class _TodayListWidgetState extends State<TodayListWidget> {
         if (state.upcomingTasks != null)
           SliverList(
             delegate: SliverChildBuilderDelegate((context, index) {
-              final _entry = state.upcomingTasks![index];
+              final _entry = _upcomingList[index];
               return ListItemWidget(
+                key: Key(
+                    '${_entry.id}_${_entry.endDateTime}_${_entry.dueDateTime}'),
                 entry: _entry,
                 selectedDate: 2.days.fromNow,
+                markItemAsDone: () =>
+                    _markTaskAsDone(_entry, TodayEventType.upcoming),
+                postponeItem: () =>
+                    _postponeItem(TodayEventType.upcoming, _entry),
               );
-            }, childCount: state.upcomingTasks!.length),
+            }, childCount: _upcomingList.length),
           ),
         const SliverPadding(padding: EdgeInsets.only(bottom: 16)),
       ],
+    );
+  }
+
+  void _markTaskAsDone(TodayEntry entry, TodayEventType type) {
+    context.read<TaskBloc>().add(EditTaskEntryEvent(
+          params: TaskParams(
+              task: _returnTaskFromTodayEntry(
+            entry,
+            isCompleted: true,
+          )),
+        ));
+    context.read<TodayBloc>().add(const GetTodayEntries());
+  }
+
+  void _deleteItem(TodayEventType type) {
+    switch (type) {
+      case TodayEventType.today:
+        break;
+      case TodayEventType.tomorrow:
+        break;
+      case TodayEventType.upcoming:
+        break;
+      default:
+        break;
+    }
+  }
+
+  void _postponeItem(TodayEventType type, TodayEntry? entry) {
+    switch (type) {
+      case TodayEventType.today:
+        if (entry != null) {
+          _tomorrowList.add(entry);
+          _todayList.remove(entry);
+        }
+        break;
+      case TodayEventType.tomorrow:
+        if (entry != null) {
+          _upcomingList.add(entry);
+          _tomorrowList.remove(entry);
+        }
+        break;
+      case TodayEventType.upcoming:
+        if (entry != null) {
+          _upcomingList.remove(entry);
+          if (entry.endDateTime != null &&
+              entry.endDateTime!.isBefore(4.days.fromNow)) {
+            _upcomingList.add(entry.copyWith(
+              endDateTime: entry.endDateTime! + 1.days,
+            ));
+          }
+        }
+        break;
+      default:
+        if (entry != null) {
+          _upcomingList.removeWhere((element) => element.id == entry.id);
+        }
+        break;
+    }
+    // if (entry != null) {
+    //   final _currentDate =
+    //       entry.startDateTime ?? entry.dueDateTime ?? DateTime.now();
+    //   final _newDate = _currentDate + 1.days;
+    //   context.read<TaskBloc>().add(EditTaskEntryEvent(
+    //         params: TaskParams(
+    //           task: _returnTaskFromTodayEntry(entry, newDate: _newDate),
+    //         ),
+    //       ));
+    // }
+
+    setState(() {});
+  }
+
+  TaskEntry _returnTaskFromTodayEntry(TodayEntry todayEntry,
+      {bool? isCompleted, DateTime? newDate}) {
+    final _startDateTime = newDate != null && todayEntry.startDateTime != null
+        ? todayEntry.startDateTime!.copyWith(
+            day: newDate.day,
+            month: newDate.month,
+            year: newDate.year,
+          )
+        : todayEntry.startDateTime;
+
+    final _endDateTime = newDate != null && todayEntry.endDateTime != null
+        ? todayEntry.endDateTime!.copyWith(
+            day: newDate.day,
+            month: newDate.month,
+            year: newDate.year,
+          )
+        : todayEntry.endDateTime;
+
+    final _dueDate = newDate != null && todayEntry.dueDateTime != null
+        ? todayEntry.dueDateTime!.copyWith(
+            day: newDate.day,
+            month: newDate.month,
+            year: newDate.year,
+          )
+        : todayEntry.dueDateTime;
+
+    return TaskEntry(
+      id: todayEntry.id,
+      isCompleted: isCompleted ?? todayEntry.isCompleted ?? false,
+      completedDate:
+          (isCompleted != null && isCompleted) ? DateTime.now() : null,
+      projectID: todayEntry.projectOrCalID!,
+      calendarID: todayEntry.calendarEventID,
+      colorID: todayEntry.color,
+      title: todayEntry.title,
+      dueDate: _dueDate,
+      startDateTime: _startDateTime,
+      endDateTime: _endDateTime,
+      description: todayEntry.description,
+      priority: todayEntry.priority,
+      isHabit: todayEntry.type == TodayEntryType.habit,
     );
   }
 }
