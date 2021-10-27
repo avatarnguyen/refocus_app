@@ -1,0 +1,11 @@
+{
+  "AppSyncApiName": "Superday",
+  "DynamoDBBillingMode": "PAY_PER_REQUEST",
+  "DynamoDBEnableServerSideEncryption": false,
+  "AuthCognitoUserPoolId": {
+    "Fn::GetAtt": [
+      "authsuperday1c222a7d",
+      "Outputs.UserPoolId"
+    ]
+  }
+}

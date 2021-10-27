@@ -1,40 +1,15 @@
 {
- "kind": "calendar#events",
- "etag": "\"p320en7uqrfnv20g\"",
- "summary": "Test Dev",
- "description": "For Testing Purposes",
- "updated": "2021-07-19T18:01:50.448Z",
- "timeZone": "Europe/Berlin",
- "accessRole": "reader",
- "defaultReminders": [],
- "nextSyncToken": "CIDrn9rb7_ECEAAYASC3zui3AQ==",
- "items": [
-  {
-   "kind": "calendar#event",
-   "etag": "\"3253435420896000\"",
-   "id": "4okqcu9vna2ak7jt7545ndlp9n",
-   "status": "confirmed",
-   "htmlLink": "https://www.google.com/calendar/event?eid=NG9rcWN1OXZuYTJhazdqdDc1NDVuZGxwOW4gaW41NThwbjIyZzM0dWo4ajc2OXBvYWRkcGtAZw",
-   "created": "2021-07-19T17:49:58.000Z",
-   "updated": "2021-07-19T18:01:50.448Z",
-   "summary": "Event Refocus App",
-   "creator": {
-    "email": "nguyenanh12.vn@gmail.com"
-   },
-   "organizer": {
-    "email": "in558pn22g34uj8j769poaddpk@group.calendar.google.com",
-    "displayName": "Test Dev",
-    "self": true
-   },
-   "start": {
-    "dateTime": "2021-07-19T16:45:00+02:00"
-   },
-   "end": {
-    "dateTime": "2021-07-19T18:30:00+02:00"
-   },
-   "iCalUID": "4okqcu9vna2ak7jt7545ndlp9n@google.com",
-   "sequence": 0,
-   "eventType": "default"
-  }
- ]
+ "id": "4okqcu9vna2ak7jt7545ndlp9n",
+ "summary": "Event Refocus App",
+ "organizer": {
+  "email": "in558pn22g34uj8j769poaddpk@group.calendar.google.com",
+  "displayName": "Test Dev",
+  "self": true
+ },
+ "start": {
+  "dateTime": "2021-07-19T16:45:00+02:00"
+ },
+ "end": {
+  "dateTime": "2021-07-19T18:30:00+02:00"
+ }
 }
