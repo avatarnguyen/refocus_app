@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:refocus_app/core/presentation/widgets/edit_page_widgets/detail_task_view.dart';
@@ -230,7 +231,10 @@ class _ListItemWidgetState extends State<ListItemWidget> {
                 caption: animation!.value >= 0.8 ? 'delete item' : null,
                 onTap: () async {
                   if (widget.deleteItem != null) {
-                    widget.deleteItem!();
+                    final _result = await _showDeleteAlertDialog();
+                    if (_result) {
+                      widget.deleteItem!();
+                    }
                   }
                 },
               );
@@ -284,6 +288,15 @@ class _ListItemWidgetState extends State<ListItemWidget> {
         dismissThresholds: const <SlideActionType, double>{
           SlideActionType.primary: .4,
           SlideActionType.secondary: .6,
+        },
+        onWillDismiss: (actionType) async {
+          if (actionType == SlideActionType.primary &&
+              widget.deleteItem != null) {
+            final _result = await _showDeleteAlertDialog();
+            return _result;
+          } else {
+            return false;
+          }
         },
         child: const SlidableDrawerDismissal(),
       ),
@@ -499,28 +512,30 @@ class _ListItemWidgetState extends State<ListItemWidget> {
     }
     return Colors.grey;
   }
-}
 
-class LinePainter extends CustomPainter {
-  LinePainter(this.color);
-
-  final Color color;
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color
-      ..strokeWidth = 8
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.square;
-
-    final path = Path();
-    path.moveTo(4, -2);
-    path.lineTo(4, size.height + 2.5);
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) {
-    return false;
+  Future<bool> _showDeleteAlertDialog() async {
+    final _result = await showPlatformDialog<bool>(
+      context: context,
+      builder: (context) {
+        return PlatformAlertDialog(
+          title: 'Delete Task'.toH5(color: context.colorScheme.primary),
+          content: 'Do you want to delete this task permanently?'
+              .toSubtitle1(color: context.colorScheme.primary),
+          actions: [
+            PlatformButton(
+              color: Colors.transparent,
+              onPressed: () => context.router.pop(false),
+              child: 'Cancel'.toButtonText(color: context.colorScheme.primary),
+            ),
+            PlatformButton(
+              color: Colors.transparent,
+              onPressed: () => context.router.pop(true),
+              child: 'Delete'.toButtonText(color: context.colorScheme.error),
+            ),
+          ],
+        );
+      },
+    );
+    return _result ?? false;
   }
 }
