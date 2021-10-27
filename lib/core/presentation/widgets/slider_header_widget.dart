@@ -1,24 +1,15 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:dartx/dartx.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:refocus_app/config/routes/router.dart';
 import 'package:refocus_app/core/presentation/helper/page_stream.dart';
 import 'package:refocus_app/core/presentation/helper/sliding_body_stream.dart';
-import 'package:refocus_app/core/presentation/pages/quickadd_page.dart';
 import 'package:refocus_app/core/presentation/widgets/date_picker_widget.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
-import 'package:refocus_app/features/calendar/presentation/bloc/calendar/calendar_bloc.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar/datetime_stream.dart';
-import 'package:refocus_app/features/calendar/presentation/bloc/calendar_list/calendar_list_bloc.dart';
-import 'package:refocus_app/features/task/presentation/bloc/cubit/subtask_cubit.dart';
-import 'package:refocus_app/features/task/presentation/bloc/project_bloc.dart';
-import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
 import 'package:refocus_app/injection.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
@@ -37,30 +28,6 @@ class SlidingHeaderWidget extends StatefulWidget {
 
   @override
   _SlidingHeaderWidgetState createState() => _SlidingHeaderWidgetState();
-
-  // @override
-  // Widget wrappedRoute(BuildContext context) {
-  //   return MultiBlocProvider(
-  //     providers: [
-  //       BlocProvider<ProjectBloc>.value(
-  //         value: BlocProvider.of<ProjectBloc>(context),
-  //       ),
-  //       BlocProvider<TaskBloc>.value(
-  //         value: BlocProvider.of<TaskBloc>(context),
-  //       ),
-  //       BlocProvider<SubtaskCubit>.value(
-  //         value: BlocProvider.of<SubtaskCubit>(context),
-  //       ),
-  //       BlocProvider<CalendarListBloc>.value(
-  //         value: BlocProvider.of<CalendarListBloc>(context),
-  //       ),
-  //       BlocProvider<CalendarBloc>.value(
-  //         value: BlocProvider.of<CalendarBloc>(context),
-  //       ),
-  //     ],
-  //     child: this,
-  //   );
-  // }
 }
 
 class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {

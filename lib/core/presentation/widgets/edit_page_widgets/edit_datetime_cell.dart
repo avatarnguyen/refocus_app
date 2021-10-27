@@ -21,10 +21,7 @@ class _EditDateTimeCellState extends State<EditDateTimeCell> {
   @override
   Widget build(BuildContext context) {
     final _textColor = widget.colorID != null
-        ? StyleUtils.darken(
-            StyleUtils.getColorFromString(widget.colorID!),
-            kcdarker2,
-          )
+        ? StyleUtils.darken(StyleUtils.getColorFromString(widget.colorID!))
         : kcPrimary500;
 
     final _timeTextStyle = context.h6.copyWith(

@@ -29,8 +29,8 @@ class _EditTaskHeaderState extends State<EditTaskHeader> {
     super.initState();
 
     _color = StyleUtils.getColorFromString(widget.colorID ?? '#115FFB');
-    _backgroudColor = StyleUtils.lighten(_color, 0.28);
-    _textColor = StyleUtils.darken(_color, kcdarker2);
+    _backgroudColor = StyleUtils.lighten(_color, 0.32);
+    _textColor = StyleUtils.darken(_color, kcdarker1);
   }
 
   @override

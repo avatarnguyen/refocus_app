@@ -95,7 +95,6 @@ class _DetailTaskViewState extends State<DetailTaskView> {
   ListView _buildListView(TaskEntry _fetchedTask, BuildContext context,
       Color _textColor, TextStyle _timeTextStyle, TextStyle _dateTextStyle) {
     return ListView(
-      // controller: ModalScrollController.of(context),
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.only(right: 16, left: 16, top: 16, bottom: 24),
