@@ -397,50 +397,6 @@ class _ListItemWidgetState extends State<ListItemWidget> {
     ).padding(horizontal: 6, vertical: 6);
   }
 
-  TaskEntry returnTaskFromTodayEntry(TodayEntry todayEntry,
-      {bool? isCompleted, DateTime? newDate}) {
-    final _startDateTime = newDate != null && todayEntry.startDateTime != null
-        ? todayEntry.startDateTime!.copyWith(
-            day: newDate.day,
-            month: newDate.month,
-            year: newDate.year,
-          )
-        : todayEntry.startDateTime;
-
-    final _endDateTime = newDate != null && todayEntry.endDateTime != null
-        ? todayEntry.endDateTime!.copyWith(
-            day: newDate.day,
-            month: newDate.month,
-            year: newDate.year,
-          )
-        : todayEntry.endDateTime;
-
-    final _dueDate = newDate != null && todayEntry.dueDateTime != null
-        ? todayEntry.dueDateTime!.copyWith(
-            day: newDate.day,
-            month: newDate.month,
-            year: newDate.year,
-          )
-        : todayEntry.dueDateTime;
-
-    return TaskEntry(
-      id: todayEntry.id,
-      isCompleted: isCompleted ?? todayEntry.isCompleted ?? false,
-      completedDate:
-          (isCompleted != null && isCompleted) ? DateTime.now() : null,
-      projectID: todayEntry.projectOrCalID!,
-      calendarID: todayEntry.calendarEventID,
-      colorID: todayEntry.color,
-      title: todayEntry.title,
-      dueDate: _dueDate,
-      startDateTime: _startDateTime,
-      endDateTime: _endDateTime,
-      description: todayEntry.description,
-      priority: todayEntry.priority,
-      isHabit: todayEntry.type == TodayEntryType.habit,
-    );
-  }
-
   dynamic showTaskBottomSheet() async {
     Widget? _headerWidget;
 
@@ -486,16 +442,9 @@ class _ListItemWidgetState extends State<ListItemWidget> {
         );
       },
     );
-    // context.read<TaskBloc>().add(
-    //       GetTaskEntriesEvent(
-    //         project: ProjectEntry(id: _currentTask!.projectID),
-    //       ),
-    //     );
   }
 
-  void _openEditView() async {
-    // await _sheetController.hide();
-
+  Future<void> _openEditView() async {
     final _result = await showCupertinoModalBottomSheet<TaskEntry?>(
       elevation: 24,
       useRootNavigator: true,

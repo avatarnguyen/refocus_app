@@ -1,8 +1,8 @@
+import 'package:dartx/dartx.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:refocus_app/core/presentation/widgets/edit_page_widgets/edit_datetime_cell.dart';
 import 'package:refocus_app/core/presentation/widgets/edit_page_widgets/slidable_subtask_item.dart';
 import 'package:refocus_app/core/util/helpers/date_utils.dart';
@@ -12,7 +12,6 @@ import 'package:refocus_app/features/task/domain/entities/subtask_entry.dart';
 import 'package:refocus_app/features/task/domain/entities/task_entry.dart';
 import 'package:refocus_app/features/task/presentation/bloc/cubit/subtask_cubit.dart';
 import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
-import 'package:dartx/dartx.dart';
 import 'package:uuid/uuid.dart';
 
 class DetailTaskView extends StatefulWidget {

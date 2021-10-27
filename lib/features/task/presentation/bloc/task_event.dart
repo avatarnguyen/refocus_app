@@ -46,3 +46,13 @@ class EditTaskEntryEvent extends TaskEvent {
   @override
   List<Object?> get props => [params];
 }
+
+class DeleteTaskEntryEvent extends TaskEvent {
+  const DeleteTaskEntryEvent({
+    required this.params,
+  });
+
+  final TaskParams params;
+  @override
+  List<Object?> get props => [params];
+}

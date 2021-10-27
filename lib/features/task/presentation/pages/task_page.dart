@@ -1,12 +1,16 @@
 import 'dart:io';
-
+import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
+import 'package:refocus_app/enum/today_entry_type.dart';
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
+import 'package:refocus_app/features/task/domain/entities/task_entry.dart';
+import 'package:refocus_app/features/task/domain/usecases/helpers/task_params.dart';
 import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
+import 'package:refocus_app/features/today/domain/today_entry.dart';
 import 'package:refocus_app/features/today/presentation/widgets/list_item_widget.dart';
 import 'package:styled_widget/styled_widget.dart';
 
@@ -23,6 +27,8 @@ class TaskPage extends StatefulWidget {
 }
 
 class _TaskPageState extends State<TaskPage> {
+  late List<TaskEntry> _tasks;
+
   Color getColor(Set<MaterialState> states) {
     const interactiveStates = <MaterialState>{
       MaterialState.selected,
@@ -45,9 +51,8 @@ class _TaskPageState extends State<TaskPage> {
       ),
       body: BlocBuilder<TaskBloc, TaskState>(
         builder: (context, state) {
-          print(state);
           if (state is TasksLoaded) {
-            final _tasks = state.tasks;
+            _tasks = state.tasks;
             print(_tasks);
             if (_tasks.isEmpty) {
               return const BottomSheetMessageWidget(
@@ -62,6 +67,8 @@ class _TaskPageState extends State<TaskPage> {
                   key: Key('task_page_${_task.id}'),
                   task: _task,
                   project: widget.project,
+                  markItemAsDone: () => _markTaskAsDone(_task),
+                  deleteItem: () => _deleteTask(_task),
                 );
               },
             );
@@ -79,6 +86,26 @@ class _TaskPageState extends State<TaskPage> {
         },
       ),
     );
+  }
+
+  void _deleteTask(TaskEntry entry) {
+    _tasks.remove(entry);
+    context.read<TaskBloc>().add(
+          DeleteTaskEntryEvent(
+            params: TaskParams(task: entry),
+          ),
+        );
+  }
+
+  void _markTaskAsDone(TaskEntry entry) {
+    _tasks.remove(entry);
+    context.read<TaskBloc>().add(EditTaskEntryEvent(
+          params: TaskParams(
+              task: entry.copyWith(
+            isCompleted: true,
+          )),
+        ));
+    // context.read<TaskBloc>().add();
   }
 }
 
