@@ -87,23 +87,22 @@ class _TaskPageState extends State<TaskPage> {
   }
 
   void _deleteTask(TaskEntry entry) {
-    _tasks.remove(entry);
     context.read<TaskBloc>().add(
           DeleteTaskEntryEvent(
             params: TaskParams(task: entry),
           ),
         );
+    _tasks.remove(entry);
   }
 
   void _markTaskAsDone(TaskEntry entry) {
-    _tasks.remove(entry);
     context.read<TaskBloc>().add(EditTaskEntryEvent(
           params: TaskParams(
               task: entry.copyWith(
             isCompleted: true,
           )),
         ));
-    // context.read<TaskBloc>().add();
+    _tasks.remove(entry);
   }
 }
 
