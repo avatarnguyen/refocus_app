@@ -54,16 +54,14 @@ class _TaskPageState extends State<TaskPage> {
                   message: 'Nothing todo here :)');
             }
             return ListView.builder(
-              // shrinkWrap: true,
               controller: ModalScrollController.of(context),
-              // physics: const NeverScrollableScrollPhysics(),
               itemCount: _tasks.length,
               itemBuilder: (context, index) {
                 final _task = _tasks[index];
                 return ListItemWidget(
                   key: Key('task_page_${_task.id}'),
                   task: _task,
-                  projectColor: widget.project.color,
+                  project: widget.project,
                 );
               },
             );

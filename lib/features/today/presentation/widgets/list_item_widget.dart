@@ -15,13 +15,12 @@ import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/today_entry_type.dart';
 import 'package:refocus_app/enum/today_event_type.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar/datetime_stream.dart';
+import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
 import 'package:refocus_app/features/task/domain/entities/subtask_entry.dart';
 import 'package:refocus_app/features/task/domain/entities/task_entry.dart';
-import 'package:refocus_app/features/task/domain/usecases/helpers/task_params.dart';
 import 'package:refocus_app/features/task/presentation/bloc/cubit/subtask_cubit.dart';
 import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
 import 'package:refocus_app/features/today/domain/today_entry.dart';
-import 'package:refocus_app/features/today/presentation/bloc/today_bloc.dart';
 import 'package:refocus_app/features/today/presentation/widgets/sub_task_item.dart';
 import 'package:refocus_app/injection.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
@@ -35,7 +34,7 @@ class ListItemWidget extends StatefulWidget {
     this.entry,
     this.selectedDate,
     this.task,
-    this.projectColor,
+    this.project,
     this.deleteItem,
     this.markItemAsDone,
     this.postponeItem,
@@ -44,7 +43,7 @@ class ListItemWidget extends StatefulWidget {
   final TodayEntry? entry;
   final TaskEntry? task;
   final DateTime? selectedDate;
-  final String? projectColor;
+  final ProjectEntry? project;
   final VoidCallback? deleteItem;
   final VoidCallback? markItemAsDone;
   final VoidCallback? postponeItem;
@@ -106,7 +105,7 @@ class _ListItemWidgetState extends State<ListItemWidget> {
     final _isPassed =
         _endDateTime != null && _endDateTime!.compareTo(DateTime.now()) <= 0;
     final _color = StyleUtils.getColorFromString(
-        _colorID ?? widget.projectColor ?? '#115FFB');
+        _colorID ?? widget.project?.color ?? '#115FFB');
     final _backgroudColor = StyleUtils.lighten(_color, 0.32);
     final _textColor = StyleUtils.darken(_color, 0.2);
 
@@ -118,7 +117,20 @@ class _ListItemWidgetState extends State<ListItemWidget> {
     String? _endTimeStr;
     TodayEventType? _eventBlocType;
 
-    if (widget.selectedDate != null) {
+    // Time Subtitle String depends on where is display
+    // and whether the time is start time or due time
+    if (widget.project != null) {
+      if (_startDateTime != null) {
+        final _startDateTimeStr =
+            CustomDateUtils.returnTime(_startDateTime!.toLocal());
+        _startTimeStr = _startDateTimeStr;
+        // Get Today Event Type for TodayBloc
+        if (_endDateTime != null) {
+          final _endTime = _endDateTime!.toLocal();
+          _endTimeStr = CustomDateUtils.returnTime(_endTime);
+        }
+      }
+    } else if (widget.selectedDate != null) {
       if (_dueDateTime != null &&
           widget.selectedDate!.day == _dueDateTime!.day) {
         _startTimeStr = 'due today';
@@ -144,6 +156,7 @@ class _ListItemWidgetState extends State<ListItemWidget> {
         }
       }
     }
+
     // Change to specific Date when selected Date is chose
     if (_dateTimeStream.selectedDate != null &&
         _dateTimeStream.selectedDate!.isToday == false) {
@@ -152,8 +165,6 @@ class _ListItemWidgetState extends State<ListItemWidget> {
 
     // _log.d('Selected Date: ${widget.selectedDate}');
     _log.d('Container: $_cellContentContainer');
-
-    // _cellContentContainer ??=
 
     return Slidable.builder(
       key: Key(_id),
@@ -188,41 +199,62 @@ class _ListItemWidgetState extends State<ListItemWidget> {
       secondaryActionDelegate: SlideActionBuilderDelegate(
         actionCount: 2,
         builder: (context, index, animation, step) {
-          // print('Current Animation: ${animation?.value}');
-          if (index == 0 && step != SlidableRenderingMode.dismiss) {
+          if (index == 0) {
             return IconSlideAction(
               icon: Icons.calendar_today_rounded,
-              foregroundColor: _color,
-              color: Colors.transparent,
-              onTap: () {},
-            );
-          } else if (index == 0 && step == SlidableRenderingMode.dismiss) {
-            return IconSlideAction(
-              icon: Icons.calendar_today_rounded,
-              foregroundColor: kcWarning500,
-              color: kcWarning500,
+              foregroundColor: step != SlidableRenderingMode.dismiss
+                  ? _color
+                  : widget.project != null
+                      ? kcError500
+                      : kcWarning500,
+              color: step != SlidableRenderingMode.dismiss
+                  ? Colors.transparent
+                  : widget.project != null
+                      ? kcError500
+                      : kcWarning500,
               onTap: () {},
             );
           } else {
-            return IconSlideAction(
-              icon: Icons.arrow_forward_outlined,
-              foregroundColor: step == SlidableRenderingMode.slide
-                  ? kcPrimary500.withOpacity(
-                      animation!.value <= 0.7 ? animation.value + 0.3 : 1.0)
-                  : (step == SlidableRenderingMode.dismiss
-                      ? kcPrimary500
-                      : kcError500),
-              color: step == SlidableRenderingMode.dismiss
-                  ? kcWarning500
-                  : Colors.transparent,
-              caption: animation!.value >= 0.8 ? 'postpone by 1 day' : null,
-              onTap: () async {
-                // final state = Slidable.of(context);
-                if (widget.postponeItem != null) {
-                  widget.postponeItem!();
-                }
-              },
-            );
+            if (widget.project != null) {
+              return IconSlideAction(
+                icon: Icons.delete,
+                foregroundColor: step == SlidableRenderingMode.slide
+                    ? kcPrimary500.withOpacity(
+                        animation!.value <= 0.7 ? animation.value + 0.3 : 1.0)
+                    : (step == SlidableRenderingMode.dismiss
+                        ? kcPrimary500
+                        : kcError500),
+                color: step == SlidableRenderingMode.dismiss
+                    ? kcError500
+                    : Colors.transparent,
+                caption: animation!.value >= 0.8 ? 'delete item' : null,
+                onTap: () async {
+                  if (widget.deleteItem != null) {
+                    widget.deleteItem!();
+                  }
+                },
+              );
+            } else {
+              return IconSlideAction(
+                icon: Icons.arrow_forward_outlined,
+                foregroundColor: step == SlidableRenderingMode.slide
+                    ? kcPrimary500.withOpacity(
+                        animation!.value <= 0.7 ? animation.value + 0.3 : 1.0)
+                    : (step == SlidableRenderingMode.dismiss
+                        ? kcPrimary500
+                        : kcError500),
+                color: step == SlidableRenderingMode.dismiss
+                    ? kcWarning500
+                    : Colors.transparent,
+                caption: animation!.value >= 0.8 ? 'postpone by 1 day' : null,
+                onTap: () async {
+                  // final state = Slidable.of(context);
+                  if (widget.postponeItem != null) {
+                    widget.postponeItem!();
+                  }
+                },
+              );
+            }
           }
         },
       ),
@@ -241,13 +273,17 @@ class _ListItemWidgetState extends State<ListItemWidget> {
             } else {
               if (widget.postponeItem != null) {
                 widget.postponeItem!();
+              } else {
+                if (widget.deleteItem != null) {
+                  widget.deleteItem!();
+                }
               }
             }
           }
         },
         dismissThresholds: const <SlideActionType, double>{
           SlideActionType.primary: .4,
-          SlideActionType.secondary: 0.6,
+          SlideActionType.secondary: .6,
         },
         child: const SlidableDrawerDismissal(),
       ),
@@ -290,33 +326,47 @@ class _ListItemWidgetState extends State<ListItemWidget> {
                     ).expanded(),
                   ].toRow(),
                   [
-                    Text(
-                      _startTimeStr,
-                      overflow: TextOverflow.clip,
-                      textAlign: TextAlign.right,
-                      maxLines: 2,
-                      textScaleFactor: context.textScaleFactor,
-                      style: _startDateTime != null
-                          ? context.textTheme.subtitle2!.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: _textColor,
-                            )
-                          : _taskTimeTextStyle,
-                    ),
-                    if (_endDateTime != null && _endTimeStr != null) ...[
-                      Icon(Icons.arrow_right_alt_rounded,
-                              size: 20, color: _textColor)
-                          .padding(horizontal: 2),
+                    [
                       Text(
-                        _endTimeStr,
+                        _startTimeStr,
                         overflow: TextOverflow.clip,
-                        textAlign: TextAlign.left,
-                        maxLines: 1,
+                        textAlign: TextAlign.right,
+                        maxLines: 2,
+                        textScaleFactor: context.textScaleFactor,
+                        style: _startDateTime != null
+                            ? context.textTheme.subtitle2!.copyWith(
+                                fontWeight: FontWeight.w700,
+                                color: _textColor,
+                              )
+                            : _taskTimeTextStyle,
+                      ),
+                      if (_endDateTime != null && _endTimeStr != null) ...[
+                        Icon(Icons.arrow_right_alt_rounded,
+                                size: 20, color: _textColor)
+                            .padding(horizontal: 2),
+                        Text(
+                          _endTimeStr,
+                          overflow: TextOverflow.clip,
+                          textAlign: TextAlign.left,
+                          maxLines: 1,
+                          textScaleFactor: context.textScaleFactor,
+                          style: _taskTimeTextStyle,
+                        )
+                      ]
+                    ].toRow(),
+                    if (widget.project != null && _dueDateTime != null)
+                      Text(
+                        'due: ${CustomDateUtils.returnDateAndMonth(_dueDateTime!)}',
+                        overflow: TextOverflow.clip,
+                        textAlign: TextAlign.right,
                         textScaleFactor: context.textScaleFactor,
                         style: _taskTimeTextStyle,
-                      )
-                    ]
-                  ].toRow(),
+                      ),
+                  ].toRow(
+                      mainAxisAlignment:
+                          (widget.project != null && _dueDateTime != null)
+                              ? MainAxisAlignment.spaceBetween
+                              : MainAxisAlignment.start),
 
                   //* Subtask
                   if (!_isEvent &&
@@ -411,9 +461,8 @@ class _ListItemWidgetState extends State<ListItemWidget> {
           minHeight: context.height - 56,
           liftOnScrollHeaderElevation: 6,
           headerBuilder: (_, __) => _headerWidget ??= EditTaskHeader(
-            // key: Key('${_id}_header'),
             taskID: _id,
-            colorID: _colorID ?? widget.projectColor,
+            colorID: _colorID ?? widget.project?.color,
             getEditView: _openEditView,
           ),
           builder: (_, __) {
@@ -430,7 +479,7 @@ class _ListItemWidgetState extends State<ListItemWidget> {
                 key: Key('${_id}_detail'),
                 task: _currentTask,
                 taskID: widget.entry?.id,
-                colorID: _colorID ?? widget.projectColor,
+                colorID: _colorID ?? widget.project?.color,
               ),
             );
           },
@@ -445,7 +494,6 @@ class _ListItemWidgetState extends State<ListItemWidget> {
   }
 
   void _openEditView() async {
-    print('Open Edit');
     // await _sheetController.hide();
 
     final _result = await showCupertinoModalBottomSheet<TaskEntry?>(
@@ -467,7 +515,7 @@ class _ListItemWidgetState extends State<ListItemWidget> {
           key: Key(_id),
           taskID: _id,
           task: _currentTask,
-          colorID: _colorID ?? widget.projectColor,
+          colorID: _colorID ?? widget.project?.color,
           modalScrollController: ModalScrollController.of(context),
         ),
       ),
