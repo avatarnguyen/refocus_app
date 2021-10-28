@@ -3,6 +3,7 @@ import 'package:amplify_flutter/amplify.dart';
 import 'package:dartx/dartx.dart';
 import 'package:injectable/injectable.dart';
 import 'package:refocus_app/core/error/exceptions.dart';
+import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart';
 import 'package:refocus_app/models/ModelProvider.dart';
 
@@ -99,12 +100,13 @@ class AWSTaskRemoteDataSource implements TaskRemoteDataSource {
   }
 
   @override
-  Future<List<Task>> getRemoteTask(
-      {String? todoID,
-      Project? project,
-      DateTime? startTime,
-      DateTime? endTime,
-      DateTime? dueDate}) async {
+  Future<List<Task>> getRemoteTask({
+    String? todoID,
+    Project? project,
+    DateTime? startTime,
+    DateTime? endTime,
+    DateTime? dueDate,
+  }) async {
     var _todos = <Task>[];
 
     try {
@@ -124,73 +126,66 @@ class AWSTaskRemoteDataSource implements TaskRemoteDataSource {
               .and(Task.ISCOMPLETED.eq(false)),
         );
 
-        log.i('$_todos');
-        log.d('AWS Tasks: ${_todos.length}');
+        log.d('AWS Tasks in project: ${_todos.length}');
       } else if (startTime != null && endTime != null) {
-        log.i('Get AWS Task by Time Range until: $endTime');
+        //? Get Task between a certain time range
 
-        final _fetchedTasks = await Amplify.DataStore.query(
+        log.i('Get AWS Task by Time Range: from $startTime until $endTime');
+
+        final _start = CustomDateUtils.getBeginngOfDay(startTime);
+        final _end = CustomDateUtils.getEndOfDay(endTime);
+
+        final _fetchedTasksByStartTime = await Amplify.DataStore.query(
           Task.classType,
-          where: Task.ISCOMPLETED.eq(false),
+          where: Task.ISCOMPLETED
+              .eq(false)
+              .and(Task.STARTDATETIME.gt(_start))
+              .and(Task.STARTDATETIME.lt(_end)),
+        );
+        final _fetchedTasksByDueDate = await Amplify.DataStore.query(
+          Task.classType,
+          where: Task.ISCOMPLETED
+              .eq(false)
+              .and(Task.DUEDATE.gt(_start))
+              .and(Task.DUEDATE.lt(_end)),
         );
 
-        final _filteredTasks = <Task>[];
-
-        for (final _todo in _fetchedTasks) {
-          if (_todo.dueDate != null) {
-            final _tmpDueDate = _todo.dueDate;
-            final _dueDateUtc = _tmpDueDate!.getDateTime();
-
-            if (_dueDateUtc.isBefore(endTime) &&
-                _dueDateUtc.isAfter(startTime)) {
-              _filteredTasks.add(_todo);
-            }
-          } else if (_todo.startDateTime != null) {
-            final _tmpStartDateTime = _todo.startDateTime!;
-            final _startUtc = _tmpStartDateTime.getDateTimeInUtc();
-
-            if (_startUtc.isBefore(endTime) && _startUtc.isAfter(startTime)) {
-              _filteredTasks.add(_todo);
-            }
-          } else {
-            continue;
-          }
-        }
-
-        _todos.addAll(_filteredTasks);
+        _todos.addAll(_fetchedTasksByStartTime);
+        _todos.addAll(_fetchedTasksByDueDate);
       } else {
-        //Amplify DataStore cannot query AWSDateTime
-        //Therefore the list has to be filtered manually
-        final _fetchedTasks = await Amplify.DataStore.query(
-          Task.classType,
-          where: Task.ISCOMPLETED.eq(false),
+        //? Get Task that either due or start with given datetime
+
+        final _startDay = CustomDateUtils.getBeginngOfDay(
+          dueDate ?? startTime ?? DateTime.now(),
+        );
+        final _endDay = CustomDateUtils.getEndOfDay(
+          dueDate ?? startTime ?? DateTime.now(),
         );
         if (dueDate != null) {
           log.i('Get AWS Task with DueDate: $dueDate');
-          final _startDate = TemporalDate(dueDate);
+          final _tasks = await Amplify.DataStore.query(
+            Task.classType,
+            where: Task.ISCOMPLETED
+                .eq(false)
+                .and(Task.DUEDATE.gt(_startDay))
+                .and(Task.DUEDATE.lt(_endDay)),
+          );
+          log.d('Resulted Task with DueDate: $_tasks');
 
-          final _filteredTasks = _fetchedTasks
-              .where((todo) => todo.dueDate == _startDate)
-              .toList();
-          _todos.addAll(_filteredTasks);
+          _todos.addAll(_tasks);
         }
         if (startTime != null) {
           log.i('Get AWS Task by Start Time: $startTime');
 
-          final _filteredTasks = <Task>[];
-
-          for (final _todo in _fetchedTasks) {
-            if (_todo.startDateTime != null) {
-              final _tmpDateTime = _todo.startDateTime!;
-              final _dateTimeUtc = _tmpDateTime.getDateTimeInUtc();
-              if (startTime.isAtSameDayAs(_dateTimeUtc) &&
-                  startTime.isAtSameMonthAs(_dateTimeUtc) &&
-                  startTime.isAtSameYearAs(_dateTimeUtc)) {
-                _filteredTasks.add(_todo);
-              }
-            }
-          }
-          _todos.addAll(_filteredTasks);
+          final _tasks = await Amplify.DataStore.query(
+            Task.classType,
+            where: Task.ISCOMPLETED
+                .eq(false)
+                .and(Task.STARTDATETIME.gt(_startDay))
+                .and(Task.STARTDATETIME.lt(_endDay)),
+          );
+          log.d('Resulted Task with StartTime: $_tasks');
+          _todos.addAll(_tasks);
         }
       }
       return _todos;
