@@ -21,14 +21,14 @@ import 'package:uuid/uuid.dart';
 enum DateTimeSelected { start, end, due }
 
 class EditTaskView extends StatefulWidget {
-  const EditTaskView(
-      {Key? key,
-      this.taskID,
-      this.colorID,
-      this.modalScrollController,
-      this.task,
-      this.subTask})
-      : super(key: key);
+  const EditTaskView({
+    Key? key,
+    this.taskID,
+    this.colorID,
+    this.modalScrollController,
+    this.task,
+    this.subTask,
+  }) : super(key: key);
 
   final String? taskID;
   final String? colorID;
@@ -188,9 +188,11 @@ class _EditTaskViewState extends State<EditTaskView> {
           verticalSpaceMedium,
           //* Edit Start & End DateTime
           if (_fetchedTask.startDateTime != null)
-            _buildEditDateTimeCell(startDateTime!.toLocal(), _editTimeTextStyle,
-                    DateTimeSelected.start)
-                .gestures(
+            _buildEditDateTimeCell(
+              startDateTime!.toLocal(),
+              _editTimeTextStyle,
+              DateTimeSelected.start,
+            ).gestures(
               onTap: () {
                 Platform.isIOS
                     ? _cupertinoDateTimePicker(
@@ -205,13 +207,18 @@ class _EditTaskViewState extends State<EditTaskView> {
             Text('Until', style: _dateTextStyle)
                 .alignment(Alignment.center)
                 .padding(vertical: 4),
-            _buildEditDateTimeCell(endDateTime!.toLocal(), _editTimeTextStyle,
-                    DateTimeSelected.end)
-                .gestures(
+            _buildEditDateTimeCell(
+              endDateTime!.toLocal(),
+              _editTimeTextStyle,
+              DateTimeSelected.end,
+            ).gestures(
               onTap: () {
                 Platform.isIOS
                     ? _cupertinoDateTimePicker(
-                        context, endDateTime!.toLocal(), DateTimeSelected.end)
+                        context,
+                        endDateTime!.toLocal(),
+                        DateTimeSelected.end,
+                      )
                     : _materialDateTimePicker(context);
               },
             ),
@@ -228,7 +235,10 @@ class _EditTaskViewState extends State<EditTaskView> {
                 onTap: () {
                   Platform.isIOS
                       ? _cupertinoDateTimePicker(
-                          context, endDateTime!, DateTimeSelected.due)
+                          context,
+                          endDateTime!,
+                          DateTimeSelected.due,
+                        )
                       : _materialDateTimePicker(context);
                 },
               ),
@@ -481,32 +491,33 @@ class _EditTaskViewState extends State<EditTaskView> {
                 ),
               ).padding(bottom: 4),
               Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: [
-                    PlatformTextButton(
-                      child: const Text('Cancel'),
-                      onPressed: () {
-                        if (type == DateTimeSelected.start) {
-                          final _diff = endDateTime!.difference(startDateTime!);
-                          startDateTime = currentDateTime;
-                          endDateTime = currentDateTime + _diff;
-                        } else if (type == DateTimeSelected.end) {
-                          endDateTime = currentDateTime;
-                        } else {
-                          dueDateTime = currentDateTime;
-                        }
-                        context.router.pop();
-                      },
-                    ),
-                    PlatformButton(
-                      color: context.colorScheme.primary,
-                      child: 'Save'.toButtonText(),
-                      onPressed: () {
-                        setState(() {});
-                        context.router.pop();
-                      },
-                    ),
-                  ].toRow(mainAxisAlignment: MainAxisAlignment.spaceEvenly)),
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: [
+                  PlatformTextButton(
+                    child: const Text('Cancel'),
+                    onPressed: () {
+                      if (type == DateTimeSelected.start) {
+                        final _diff = endDateTime!.difference(startDateTime!);
+                        startDateTime = currentDateTime;
+                        endDateTime = currentDateTime + _diff;
+                      } else if (type == DateTimeSelected.end) {
+                        endDateTime = currentDateTime;
+                      } else {
+                        dueDateTime = currentDateTime;
+                      }
+                      context.router.pop();
+                    },
+                  ),
+                  PlatformButton(
+                    color: context.colorScheme.primary,
+                    child: 'Save'.toButtonText(),
+                    onPressed: () {
+                      setState(() {});
+                      context.router.pop();
+                    },
+                  ),
+                ].toRow(mainAxisAlignment: MainAxisAlignment.spaceEvenly),
+              ),
             ],
           ),
         );
