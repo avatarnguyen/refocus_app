@@ -126,10 +126,11 @@ class _TodayListWidgetState extends State<TodayListWidget> {
   }
 
   CustomScrollView _buildBodyScrollView(
-      BuildContext context,
-      EdgeInsets _headerPadding,
-      TextStyle _headerTextStyle,
-      TodayLoaded state) {
+    BuildContext context,
+    EdgeInsets _headerPadding,
+    TextStyle _headerTextStyle,
+    TodayLoaded state,
+  ) {
     _todayList = state.todayEntries;
     _tomorrowList = state.tomorrowEntries ?? [];
     _upcomingList = state.upcomingTasks ?? [];
@@ -154,17 +155,23 @@ class _TodayListWidgetState extends State<TodayListWidget> {
           ),
         ),
         SliverList(
-          delegate: SliverChildBuilderDelegate((context, index) {
-            final _entry = _todayList[index];
-            return ListItemWidget(
-              key: Key(_entry.id),
-              entry: _entry,
-              selectedDate: _selectedDate ?? DateTime.now(),
-              postponeItem: () => _postponeItem(TodayEventType.today, _entry),
-              markItemAsDone: () =>
-                  _markTaskAsDone(_entry, TodayEventType.today),
-            );
-          }, childCount: _todayList.length),
+          delegate: SliverChildBuilderDelegate(
+            (context, index) {
+              final _entry = _todayList[index];
+              return ListItemWidget(
+                key: Key(
+                  '${_entry.id}_${_entry.startDateTime}_${_entry.dueDateTime}',
+                ),
+                entry: _entry,
+                selectedDate: _selectedDate ?? DateTime.now(),
+                postponeItem: () => _postponeItem(TodayEventType.today, _entry),
+                markItemAsDone: () =>
+                    _markTaskAsDone(_entry, TodayEventType.today),
+                changeItemDate: () => _changeDateTime(_entry),
+              );
+            },
+            childCount: _todayList.length,
+          ),
         ),
         if (_selectedDate == null)
           SliverPersistentHeader(
@@ -176,18 +183,24 @@ class _TodayListWidgetState extends State<TodayListWidget> {
           ),
         if (state.tomorrowEntries != null)
           SliverList(
-            delegate: SliverChildBuilderDelegate((context, index) {
-              final _entry = _tomorrowList[index];
-              return ListItemWidget(
-                key: Key(_entry.id),
-                entry: _entry,
-                selectedDate: 1.days.fromNow,
-                postponeItem: () =>
-                    _postponeItem(TodayEventType.tomorrow, _entry),
-                markItemAsDone: () =>
-                    _markTaskAsDone(_entry, TodayEventType.tomorrow),
-              );
-            }, childCount: _tomorrowList.length),
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                final _entry = _tomorrowList[index];
+                return ListItemWidget(
+                  key: Key(
+                    '${_entry.id}_${_entry.startDateTime}_${_entry.dueDateTime}',
+                  ),
+                  entry: _entry,
+                  selectedDate: 1.days.fromNow,
+                  postponeItem: () =>
+                      _postponeItem(TodayEventType.tomorrow, _entry),
+                  markItemAsDone: () =>
+                      _markTaskAsDone(_entry, TodayEventType.tomorrow),
+                  changeItemDate: () => _changeDateTime(_entry),
+                );
+              },
+              childCount: _tomorrowList.length,
+            ),
           ),
         if (_selectedDate == null)
           SliverPersistentHeader(
@@ -199,34 +212,171 @@ class _TodayListWidgetState extends State<TodayListWidget> {
           ),
         if (state.upcomingTasks != null)
           SliverList(
-            delegate: SliverChildBuilderDelegate((context, index) {
-              final _entry = _upcomingList[index];
-              return ListItemWidget(
-                key: Key(
-                    '${_entry.id}_${_entry.endDateTime}_${_entry.dueDateTime}'),
-                entry: _entry,
-                selectedDate: 2.days.fromNow,
-                markItemAsDone: () =>
-                    _markTaskAsDone(_entry, TodayEventType.upcoming),
-                postponeItem: () =>
-                    _postponeItem(TodayEventType.upcoming, _entry),
-              );
-            }, childCount: _upcomingList.length),
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                final _entry = _upcomingList[index];
+                return ListItemWidget(
+                  key: Key(
+                    '${_entry.id}_${_entry.endDateTime}_${_entry.dueDateTime}',
+                  ),
+                  entry: _entry,
+                  selectedDate: 2.days.fromNow,
+                  markItemAsDone: () =>
+                      _markTaskAsDone(_entry, TodayEventType.upcoming),
+                  postponeItem: () =>
+                      _postponeItem(TodayEventType.upcoming, _entry),
+                  changeItemDate: () => _changeDateTime(_entry),
+                );
+              },
+              childCount: _upcomingList.length,
+            ),
           ),
         const SliverPadding(padding: EdgeInsets.only(bottom: 16)),
       ],
     );
   }
 
+  final ValueNotifier<int> _currentIdx = ValueNotifier(0);
+
+  //TODO(): implement Material UI Date Time Picker
+  Future<void> _changeDateTime(TodayEntry entry) async {
+    _currentIdx.value = 0;
+    var _pStartDateTime = entry.startDateTime?.toLocal() ?? DateTime.now();
+    var _pEndDateTime =
+        entry.endDateTime?.toLocal() ?? DateTime.now() + 1.hours;
+
+    Widget _buildSegment(String text, int index, int currentSegIdx) =>
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
+          child: Text(
+            text,
+            style: context.bodyText1.copyWith(
+              color: index == currentSegIdx ? kcPrimary100 : kcPrimary900,
+            ),
+          ),
+        );
+    final dynamic result = await showModalBottomSheet<dynamic>(
+      context: context,
+      shape: RoundedRectangleBorder(
+        side: BorderSide(color: context.colorScheme.primaryVariant),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      elevation: 4,
+      builder: (BuildContext builder) {
+        return ValueListenableBuilder<int>(
+          valueListenable: _currentIdx,
+          builder: (context, _currentSegIdx, child) {
+            return SafeArea(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  verticalSpaceRegular,
+                  CupertinoSlidingSegmentedControl<int>(
+                    padding: const EdgeInsets.all(4),
+                    groupValue: _currentSegIdx,
+                    thumbColor: context.colorScheme.primary,
+                    children: {
+                      0: _buildSegment('Start', 0, _currentSegIdx),
+                      1: _buildSegment('End', 1, _currentSegIdx),
+                    },
+                    onValueChanged: (value) {
+                      if (value != null) {
+                        _currentIdx.value = value;
+                      }
+                    },
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).copyWith().size.height / 3.8,
+                    child: CupertinoDatePicker(
+                      key: Key('index_$_currentSegIdx'),
+                      onDateTimeChanged: (picked) {
+                        final _currentDateTime = _currentSegIdx == 0
+                            ? _pStartDateTime
+                            : _pEndDateTime;
+
+                        if (picked != _currentDateTime) {
+                          if (_currentSegIdx == 0) {
+                            final _diff =
+                                _pEndDateTime.difference(_pStartDateTime);
+                            _pStartDateTime = picked;
+                            _pEndDateTime = picked + _diff;
+                          } else {
+                            _pEndDateTime = picked;
+                          }
+                        }
+                      },
+                      initialDateTime:
+                          _currentSegIdx == 0 ? _pStartDateTime : _pEndDateTime,
+                      minimumYear: 2020,
+                      maximumYear: 2025,
+                    ),
+                  ).padding(bottom: 4),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: [
+                      PlatformTextButton(
+                        child: const Text('Cancel'),
+                        onPressed: () {
+                          context.router
+                              .pop([entry.startDateTime, entry.endDateTime]);
+                        },
+                      ),
+                      PlatformButton(
+                        color: context.colorScheme.primary,
+                        child: 'Save'.toButtonText(),
+                        onPressed: () {
+                          context.router.pop([_pStartDateTime, _pEndDateTime]);
+                        },
+                      ),
+                    ].toRow(mainAxisAlignment: MainAxisAlignment.spaceEvenly),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+    if (result != null) {
+      print(result);
+
+      // ignore: use_build_context_synchronously
+      context.read<TaskBloc>().add(
+            EditTaskEntryEvent(
+              params: TaskParams(
+                task: _returnTaskFromTodayEntry(
+                  entry,
+                  startDate: _pStartDateTime,
+                  endDate: _pEndDateTime,
+                ),
+              ),
+            ),
+          );
+      _reloadData();
+    }
+  }
+
+  void _reloadData() {
+    if (_selectedDate != null && _selectedDate!.isToday == false) {
+      context
+          .read<TodayBloc>()
+          .add(GetTodayEntriesOfSpecificDate(_selectedDate!));
+    } else {
+      context.read<TodayBloc>().add(const GetTodayEntries());
+    }
+  }
+
   void _markTaskAsDone(TodayEntry entry, TodayEventType type) {
-    context.read<TaskBloc>().add(EditTaskEntryEvent(
-          params: TaskParams(
+    context.read<TaskBloc>().add(
+          EditTaskEntryEvent(
+            params: TaskParams(
               task: _returnTaskFromTodayEntry(
-            entry,
-            isCompleted: true,
-          )),
-        ));
-    // context.read<TodayBloc>().add(const GetTodayEntries());
+                entry,
+                isCompleted: true,
+              ),
+            ),
+          ),
+        );
     setState(() {
       switch (type) {
         case TodayEventType.today:
@@ -238,6 +388,7 @@ class _TodayListWidgetState extends State<TodayListWidget> {
         case TodayEventType.upcoming:
           _upcomingList.remove(entry);
           break;
+        // ignore: no_default_cases
         default:
           _todayList.remove(entry);
           _tomorrowList.remove(entry);
@@ -249,14 +400,21 @@ class _TodayListWidgetState extends State<TodayListWidget> {
 
   void _postponeItem(TodayEventType type, TodayEntry? entry) {
     if (entry != null) {
-      final _currentDate =
-          entry.startDateTime ?? entry.dueDateTime ?? DateTime.now();
-      final _newDate = _currentDate + 1.days;
-      context.read<TaskBloc>().add(EditTaskEntryEvent(
-            params: TaskParams(
-              task: _returnTaskFromTodayEntry(entry, newDate: _newDate),
+      final _newStartDate =
+          entry.startDateTime != null ? entry.startDateTime! + 1.days : null;
+      final _newDueDate =
+          entry.dueDateTime != null ? entry.dueDateTime! + 1.days : null;
+      context.read<TaskBloc>().add(
+            EditTaskEntryEvent(
+              params: TaskParams(
+                task: _returnTaskFromTodayEntry(
+                  entry,
+                  startDate: _newStartDate,
+                  dueDate: _newDueDate,
+                ),
+              ),
             ),
-          ));
+          );
 
       // Handling List because Slidable item has to be remove from list
       setState(() {
@@ -277,13 +435,16 @@ class _TodayListWidgetState extends State<TodayListWidget> {
             if (entry.endDateTime != null &&
                 entry.endDateTime!.isBefore(4.days.fromNow)) {
               _upcomingList.add(
-                  entry.copyWith(endDateTime: entry.endDateTime! + 1.days));
+                entry.copyWith(endDateTime: entry.endDateTime! + 1.days),
+              );
             } else if (entry.dueDateTime != null &&
                 entry.dueDateTime!.isBefore(4.days.fromNow)) {
               _upcomingList.add(
-                  entry.copyWith(dueDateTime: entry.dueDateTime! + 1.days));
+                entry.copyWith(dueDateTime: entry.dueDateTime! + 1.days),
+              );
             }
             break;
+          // ignore: no_default_cases
           default:
             _todayList.remove(entry);
             _tomorrowList.remove(entry);
@@ -294,30 +455,23 @@ class _TodayListWidgetState extends State<TodayListWidget> {
     }
   }
 
-  TaskEntry _returnTaskFromTodayEntry(TodayEntry todayEntry,
-      {bool? isCompleted, DateTime? newDate}) {
-    final _startDateTime = newDate != null && todayEntry.startDateTime != null
-        ? todayEntry.startDateTime!.copyWith(
-            day: newDate.day,
-            month: newDate.month,
-            year: newDate.year,
-          )
+  TaskEntry _returnTaskFromTodayEntry(
+    TodayEntry todayEntry, {
+    bool? isCompleted,
+    DateTime? startDate,
+    DateTime? endDate,
+    DateTime? dueDate,
+  }) {
+    final _startDateTime = startDate != null && todayEntry.startDateTime != null
+        ? startDate
         : todayEntry.startDateTime;
 
-    final _endDateTime = newDate != null && todayEntry.endDateTime != null
-        ? todayEntry.endDateTime!.copyWith(
-            day: newDate.day,
-            month: newDate.month,
-            year: newDate.year,
-          )
+    final _endDateTime = endDate != null && todayEntry.endDateTime != null
+        ? endDate
         : todayEntry.endDateTime;
 
-    final _dueDate = newDate != null && todayEntry.dueDateTime != null
-        ? todayEntry.dueDateTime!.copyWith(
-            day: newDate.day,
-            month: newDate.month,
-            year: newDate.year,
-          )
+    final _dueDate = dueDate != null && todayEntry.dueDateTime != null
+        ? dueDate
         : todayEntry.dueDateTime;
 
     return TaskEntry(
@@ -335,6 +489,49 @@ class _TodayListWidgetState extends State<TodayListWidget> {
       description: todayEntry.description,
       priority: todayEntry.priority,
       isHabit: todayEntry.type == TodayEntryType.habit,
+    );
+  }
+}
+
+class DateTypeSegmentedCtrlWidget extends StatefulWidget {
+  const DateTypeSegmentedCtrlWidget({Key? key}) : super(key: key);
+
+  @override
+  _DateTypeSegmentedCtrlWidgetState createState() =>
+      _DateTypeSegmentedCtrlWidgetState();
+}
+
+class _DateTypeSegmentedCtrlWidgetState
+    extends State<DateTypeSegmentedCtrlWidget> {
+  int _currentSegmentedIdx = 0;
+
+  Widget _buildSegment(String text, int index) => Container(
+        padding: const EdgeInsets.all(8),
+        child: Text(
+          text,
+          style: context.bodyText1.copyWith(
+            color: index == _currentSegmentedIdx ? kcPrimary900 : kcPrimary100,
+          ),
+        ),
+      );
+
+  @override
+  Widget build(BuildContext context) {
+    return CupertinoSlidingSegmentedControl<int>(
+      padding: const EdgeInsets.all(4),
+      groupValue: _currentSegmentedIdx,
+      thumbColor: kcPrimary100,
+      children: {
+        0: _buildSegment('Start', 0),
+        1: _buildSegment('End', 1),
+      },
+      onValueChanged: (value) {
+        if (value != null) {
+          setState(() {
+            _currentSegmentedIdx = value;
+          });
+        }
+      },
     );
   }
 }
