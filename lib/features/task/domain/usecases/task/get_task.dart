@@ -20,9 +20,12 @@ class GetTasks implements UseCase<List<TaskEntry>, TaskParams> {
     } else if (params.project != null) {
       return repository.getTaskOfSpecificProject(params.project!);
     } else if (params.endDate != null) {
+      //? Get Task between a certain range
+      //(1 use case: getting upcoming task in today bloc)
       return repository.getFilteredTask(
           startDate: params.startDate, endDate: params.endDate);
     } else {
+      //? Get Task that either due or start with given datetime
       return repository.getFilteredTask(
           dueDate: params.dueDate, startDate: params.startDate);
     }
