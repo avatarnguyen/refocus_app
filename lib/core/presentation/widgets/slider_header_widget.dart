@@ -144,38 +144,23 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
             context.navigateTo(const QuickAddRoute());
           }),
         ].toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween),
-        [
-          CupertinoSlidingSegmentedControl<int>(
-            padding: const EdgeInsets.all(4),
-            groupValue: _currentSegmentedIdx,
-            thumbColor: kcPrimary100,
-            children: {
-              0: _buildSegment('Calendars', 0),
-              1: _buildSegment('Projects', 1),
-            },
-            onValueChanged: (value) {
-              if (value != null) {
-                _slidingStream.broadCastCurrentPage(value);
-                setState(() {
-                  _currentSegmentedIdx = value;
-                });
-              }
-            },
-          ),
-          // if (_currentSegmentedIdx == 1) ...[
-          //   horizontalSpaceRegular,
-          //   const Icon(
-          //     Icons.add,
-          //     color: kcSecondary100,
-          //     size: 28,
-          //   ).gestures(onTap: () {
-          //     widget.expandSheet();
-          //     _showCreateProjectBottomSheet();
-          //   }),
-          // ]
-        ].toRow(
-          mainAxisAlignment: MainAxisAlignment.center,
-        )
+        CupertinoSlidingSegmentedControl<int>(
+          padding: const EdgeInsets.all(4),
+          groupValue: _currentSegmentedIdx,
+          thumbColor: kcPrimary100,
+          children: {
+            0: _buildSegment('Calendars', 0),
+            1: _buildSegment('Projects', 1),
+          },
+          onValueChanged: (value) {
+            if (value != null) {
+              _slidingStream.broadCastCurrentPage(value);
+              setState(() {
+                _currentSegmentedIdx = value;
+              });
+            }
+          },
+        ),
       ].toColumn(mainAxisAlignment: MainAxisAlignment.spaceBetween),
     );
   }
