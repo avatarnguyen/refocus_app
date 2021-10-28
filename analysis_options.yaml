@@ -21,3 +21,4 @@ linter:
     lines_longer_than_80_chars: false
     cascade_invocations: false
     unnecessary_this: false
+    library_private_types_in_public_api: false
