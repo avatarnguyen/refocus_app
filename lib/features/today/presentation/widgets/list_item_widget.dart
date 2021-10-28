@@ -39,6 +39,7 @@ class ListItemWidget extends StatefulWidget {
     this.deleteItem,
     this.markItemAsDone,
     this.postponeItem,
+    this.changeItemDate,
   }) : super(key: key);
 
   final TodayEntry? entry;
@@ -48,6 +49,7 @@ class ListItemWidget extends StatefulWidget {
   final VoidCallback? deleteItem;
   final VoidCallback? markItemAsDone;
   final VoidCallback? postponeItem;
+  final VoidCallback? changeItemDate;
 
   @override
   State<ListItemWidget> createState() => _ListItemWidgetState();
@@ -213,7 +215,11 @@ class _ListItemWidgetState extends State<ListItemWidget> {
                   : widget.project != null
                       ? kcError500
                       : kcWarning500,
-              onTap: () {},
+              onTap: () {
+                if (widget.changeItemDate != null) {
+                  widget.changeItemDate!();
+                }
+              },
             );
           } else {
             if (widget.project != null) {
