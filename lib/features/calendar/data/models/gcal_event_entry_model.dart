@@ -6,6 +6,7 @@ class GCalEventEntryModel extends CalendarEventEntry {
     required String subject,
     String? id,
     String? colorId,
+    String? calendarId,
     String? notes,
     String? location,
     List<String>? recurrence,
@@ -20,6 +21,7 @@ class GCalEventEntryModel extends CalendarEventEntry {
   }) : super(
           id: id,
           colorId: colorId,
+          calendarId: calendarId,
           notes: notes,
           subject: subject,
           location: location,
@@ -47,6 +49,7 @@ class GCalEventEntryModel extends CalendarEventEntry {
     return GCalEventEntryModel(
       subject: json['summary'] as String? ?? '',
       id: json['id'] as String?,
+      calendarId: json['calendarId'] as String?,
       colorId: json['colorId'] as String?,
       notes: json['description'] as String?,
       location: json['location'] as String?,
@@ -94,6 +97,7 @@ class GCalEventEntryModel extends CalendarEventEntry {
         'summary': subject,
         if (id != null) 'id': id,
         if (colorId != null) 'colorId': colorId,
+        if (calendarId != null) 'calendarId': calendarId,
         if (notes != null) 'description': notes,
         if (location != null) 'location': location,
         if (recurrence != null) 'recurrence': recurrence,

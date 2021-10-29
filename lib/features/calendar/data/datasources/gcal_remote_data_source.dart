@@ -70,7 +70,7 @@ class GoogleAPIGCalRemoteDataSoure implements GCalRemoteDataSource {
               _insertEventsToAppointments(
                 calEvents,
                 appointments,
-                color: calendar.color,
+                calendar: calendar,
               );
             }
           }
@@ -99,15 +99,16 @@ class GoogleAPIGCalRemoteDataSoure implements GCalRemoteDataSource {
 
   List<GCalEventEntryModel> _insertEventsToAppointments(
       google_api.Events calEvents, List<GCalEventEntryModel> appointments,
-      {String? color}) {
+      {GCalEntryModel? calendar}) {
     if (calEvents.items != null && calEvents.items!.isNotEmpty) {
       log('Items Total #: ${calEvents.items!.length}');
       for (var i = 0; i < calEvents.items!.length; i++) {
         final event = calEvents.items![i];
         if (event.start != null) {
           final eventJson = event.toJson();
-          log('Calendar Color: $color');
-          eventJson['colorId'] = color ?? '#3B2DB0';
+
+          eventJson['colorId'] = calendar?.color ?? '#3B2DB0';
+          eventJson['calendarId'] = calendar?.id ?? 'primary';
           appointments.add(GCalEventEntryModel.fromJson(eventJson));
         }
       }
