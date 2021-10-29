@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:refocus_app/core/presentation/widgets/edit_page_widgets/detail_event_view.dart';
 import 'package:refocus_app/core/presentation/widgets/edit_page_widgets/detail_task_view.dart';
 import 'package:refocus_app/core/presentation/widgets/edit_page_widgets/edit_task_header.dart';
 import 'package:refocus_app/core/presentation/widgets/edit_page_widgets/edit_task_view.dart';
@@ -409,19 +410,15 @@ class _ListItemWidgetState extends State<ListItemWidget> {
                       ),
                   ]
                 ].toColumn(mainAxisSize: MainAxisSize.min))
-            .gestures(onTap: () {
-          if (_isEvent) {
-            //TODO: Display Event Details
-          } else {
-            showTaskBottomSheet();
-          }
-        }),
+            .gestures(onTap: showTaskBottomSheet),
       ).paddingDirectional(horizontal: 4),
     ).padding(horizontal: 6, vertical: 6);
   }
 
   dynamic showTaskBottomSheet() async {
     Widget? _headerWidget;
+
+    final _isTask = _type == TodayEntryType.task;
 
     await showSlidingBottomSheet<dynamic>(
       context,
@@ -454,12 +451,17 @@ class _ListItemWidgetState extends State<ListItemWidget> {
                   value: BlocProvider.of<SubtaskCubit>(context),
                 ),
               ],
-              child: DetailTaskView(
-                key: Key('${_id}_detail'),
-                task: _currentTask,
-                taskID: widget.entry?.id,
-                colorID: _colorID ?? widget.project?.color,
-              ),
+              child: _isTask
+                  ? DetailTaskView(
+                      key: Key('${_id}_task_detail'),
+                      task: _currentTask,
+                      taskID: widget.entry?.id,
+                      colorID: _colorID ?? widget.project?.color,
+                    )
+                  : DetailEventView(
+                      key: Key('${_id}_event_detail'),
+                      event: widget.entry,
+                    ),
             );
           },
         );
