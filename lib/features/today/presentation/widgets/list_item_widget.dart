@@ -172,7 +172,7 @@ class _ListItemWidgetState extends State<ListItemWidget> {
     return Slidable.builder(
       key: Key(_id),
       actionPane: const SlidableStrechActionPane(),
-      actionExtentRatio: .4,
+      // actionExtentRatio: .4,
       actionDelegate: _isEvent
           ? null
           : SlideActionBuilderDelegate(
@@ -200,7 +200,7 @@ class _ListItemWidgetState extends State<ListItemWidget> {
               actionCount: 1,
             ),
       secondaryActionDelegate: SlideActionBuilderDelegate(
-        actionCount: 2,
+        actionCount: _isEvent ? 1 : 2,
         builder: (context, index, animation, step) {
           if (index == 0) {
             return IconSlideAction(
@@ -215,6 +215,7 @@ class _ListItemWidgetState extends State<ListItemWidget> {
                   : widget.project != null
                       ? kcError500
                       : kcWarning500,
+              caption: animation!.value >= 0.8 ? 'change date' : null,
               onTap: () {
                 if (widget.changeItemDate != null) {
                   widget.changeItemDate!();
@@ -227,7 +228,8 @@ class _ListItemWidgetState extends State<ListItemWidget> {
                 icon: Icons.delete,
                 foregroundColor: step == SlidableRenderingMode.slide
                     ? kcPrimary500.withOpacity(
-                        animation!.value <= 0.7 ? animation.value + 0.3 : 1.0)
+                        animation!.value <= 0.7 ? animation.value + 0.3 : 1.0,
+                      )
                     : (step == SlidableRenderingMode.dismiss
                         ? kcPrimary500
                         : kcError500),
@@ -249,14 +251,15 @@ class _ListItemWidgetState extends State<ListItemWidget> {
                 icon: Icons.arrow_forward_outlined,
                 foregroundColor: step == SlidableRenderingMode.slide
                     ? kcPrimary500.withOpacity(
-                        animation!.value <= 0.7 ? animation.value + 0.3 : 1.0)
+                        animation!.value <= 0.7 ? animation.value + 0.3 : 1.0,
+                      )
                     : (step == SlidableRenderingMode.dismiss
                         ? kcPrimary500
                         : kcError500),
                 color: step == SlidableRenderingMode.dismiss
                     ? kcWarning500
                     : Colors.transparent,
-                caption: animation!.value >= 0.8 ? 'postpone by 1 day' : null,
+                caption: animation!.value >= 0.8 ? 'to next day' : null,
                 onTap: () async {
                   // final state = Slidable.of(context);
                   if (widget.postponeItem != null) {
@@ -271,8 +274,9 @@ class _ListItemWidgetState extends State<ListItemWidget> {
       dismissal: SlidableDismissal(
         onDismissed: (actionTyp) {
           if (_isEvent) {
-            if (widget.postponeItem != null) {
-              widget.postponeItem!();
+            if (widget.changeItemDate != null) {
+              // ignore: prefer_null_aware_method_calls
+              widget.changeItemDate!();
             }
           } else {
             if (actionTyp == SlideActionType.primary) {
@@ -291,9 +295,9 @@ class _ListItemWidgetState extends State<ListItemWidget> {
             }
           }
         },
-        dismissThresholds: const <SlideActionType, double>{
+        dismissThresholds: <SlideActionType, double>{
           SlideActionType.primary: .4,
-          SlideActionType.secondary: .6,
+          SlideActionType.secondary: _isEvent ? 1.0 : .5,
         },
         onWillDismiss: (actionType) async {
           if (actionType == SlideActionType.primary &&
@@ -301,7 +305,7 @@ class _ListItemWidgetState extends State<ListItemWidget> {
             final _result = await _showDeleteAlertDialog();
             return _result;
           } else {
-            return false;
+            return true;
           }
         },
         child: const SlidableDrawerDismissal(),

@@ -9,10 +9,14 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:http/http.dart';
 import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/today_entry_type.dart';
 import 'package:refocus_app/enum/today_event_type.dart';
+import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
+import 'package:refocus_app/features/calendar/domain/usecases/helpers/event_params.dart';
+import 'package:refocus_app/features/calendar/presentation/bloc/calendar/calendar_bloc.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar/datetime_stream.dart';
 import 'package:refocus_app/features/calendar/presentation/widgets/widgets.dart';
 import 'package:refocus_app/features/task/domain/entities/task_entry.dart';
@@ -254,18 +258,44 @@ class _TodayListWidgetState extends State<TodayListWidget> {
     if (result != null && result is List) {
       print(result);
 
-      // ignore: use_build_context_synchronously
-      context.read<TaskBloc>().add(
-            EditTaskEntryEvent(
-              params: TaskParams(
-                task: _returnTaskFromTodayEntry(
-                  entry,
-                  startDate: result[0] as DateTime?,
-                  endDate: result[1] as DateTime?,
+      final _newStartTime = result[0] as DateTime?;
+      final _newEndTime = result[1] as DateTime?;
+
+      if (entry.type == TodayEntryType.event) {
+        // ignore: use_build_context_synchronously
+        context.read<CalendarBloc>().add(
+              UpdateCalendarEvent(
+                EventParams(
+                  eventEntry: CalendarEventEntry(
+                    id: entry.id,
+                    subject: entry.title ?? '',
+                    colorId: entry.color,
+                    calendarId: entry.projectOrCalID,
+                    startDate: _newStartTime,
+                    startDateTime: _newStartTime,
+                    endDate: _newEndTime,
+                    endDateTime: _newEndTime,
+                    timeZone: entry.startDateTime?.timeZoneName,
+                    allDay: false,
+                  ),
                 ),
               ),
-            ),
-          );
+            );
+      } else {
+        // ignore: use_build_context_synchronously
+        context.read<TaskBloc>().add(
+              EditTaskEntryEvent(
+                params: TaskParams(
+                  task: _returnTaskFromTodayEntry(
+                    entry,
+                    startDate: _newStartTime,
+                    endDate: _newEndTime,
+                  ),
+                ),
+              ),
+            );
+      }
+
       _reloadData();
     }
   }
