@@ -8,6 +8,7 @@ import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
 import 'package:refocus_app/features/task/domain/entities/task_entry.dart';
 import 'package:refocus_app/features/task/domain/usecases/helpers/task_params.dart';
 import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
+import 'package:refocus_app/features/today/presentation/widgets/change_datetime_widget.dart';
 import 'package:refocus_app/features/today/presentation/widgets/list_item_widget.dart';
 import 'package:styled_widget/styled_widget.dart';
 
@@ -67,6 +68,7 @@ class _TaskPageState extends State<TaskPage> {
                   project: widget.project,
                   markItemAsDone: () => _markTaskAsDone(_task),
                   deleteItem: () => _deleteTask(_task),
+                  changeItemDate: () => _changeDateTime(_task),
                 );
               },
             );
@@ -96,13 +98,55 @@ class _TaskPageState extends State<TaskPage> {
   }
 
   void _markTaskAsDone(TaskEntry entry) {
-    context.read<TaskBloc>().add(EditTaskEntryEvent(
-          params: TaskParams(
+    context.read<TaskBloc>().add(
+          EditTaskEntryEvent(
+            params: TaskParams(
               task: entry.copyWith(
-            isCompleted: true,
-          )),
-        ));
+                isCompleted: true,
+              ),
+            ),
+          ),
+        );
     _tasks.remove(entry);
+  }
+
+  Future<void> _changeDateTime(TaskEntry entry) async {
+    final dynamic result = await showModalBottomSheet<dynamic>(
+      context: context,
+      shape: RoundedRectangleBorder(
+        // side: BorderSide(color: context.colorScheme.primary),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      elevation: 4,
+      builder: (BuildContext builder) {
+        return ChangeDateTimeWidget(
+          startDateTime: entry.startDateTime,
+          endDateTime: entry.endDateTime,
+        );
+      },
+    );
+    if (result != null && result is List) {
+      print(result);
+
+      // ignore: use_build_context_synchronously
+      context.read<TaskBloc>().add(
+            EditTaskEntryEvent(
+              params: TaskParams(
+                task: entry.copyWith(
+                  startDateTime: result[0] as DateTime?,
+                  endDateTime: result[1] as DateTime?,
+                ),
+              ),
+            ),
+          );
+      _reloadData();
+    }
+  }
+
+  void _reloadData() {
+    context.read<TaskBloc>().add(
+          GetTaskEntriesEvent(project: widget.project),
+        );
   }
 }
 

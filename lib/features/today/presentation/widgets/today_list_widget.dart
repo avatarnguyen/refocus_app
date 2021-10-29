@@ -241,7 +241,6 @@ class _TodayListWidgetState extends State<TodayListWidget> {
     final dynamic result = await showModalBottomSheet<dynamic>(
       context: context,
       shape: RoundedRectangleBorder(
-        side: BorderSide(color: context.colorScheme.primaryVariant),
         borderRadius: BorderRadius.circular(16),
       ),
       elevation: 4,
