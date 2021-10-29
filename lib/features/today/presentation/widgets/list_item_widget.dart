@@ -17,6 +17,7 @@ import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/today_entry_type.dart';
 import 'package:refocus_app/enum/today_event_type.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar/datetime_stream.dart';
+import 'package:refocus_app/features/calendar/presentation/bloc/calendar_list/calendar_list_bloc.dart';
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
 import 'package:refocus_app/features/task/domain/entities/subtask_entry.dart';
 import 'package:refocus_app/features/task/domain/entities/task_entry.dart';
@@ -437,7 +438,6 @@ class _ListItemWidgetState extends State<ListItemWidget> {
           minHeight: context.height - 56,
           liftOnScrollHeaderElevation: 6,
           headerBuilder: (_, __) => _headerWidget ??= EditTaskHeader(
-            taskID: _id,
             colorID: _colorID ?? widget.project?.color,
             getEditView: _openEditView,
           ),
@@ -478,6 +478,9 @@ class _ListItemWidgetState extends State<ListItemWidget> {
       topRadius: const Radius.circular(16),
       builder: (_) => MultiBlocProvider(
         providers: [
+          BlocProvider<CalendarListBloc>.value(
+            value: BlocProvider.of<CalendarListBloc>(context),
+          ),
           BlocProvider<TaskBloc>.value(
             value: BlocProvider.of<TaskBloc>(context),
           ),
@@ -489,6 +492,7 @@ class _ListItemWidgetState extends State<ListItemWidget> {
           key: Key(_id),
           taskID: _id,
           task: _currentTask,
+          entry: widget.entry,
           colorID: _colorID ?? widget.project?.color,
           modalScrollController: ModalScrollController.of(context),
         ),

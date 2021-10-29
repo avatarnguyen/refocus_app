@@ -89,11 +89,6 @@ class DetailEventView extends StatelessWidget {
               ]
             ].toRow(mainAxisAlignment: MainAxisAlignment.center),
             verticalSpaceMedium,
-            Text(
-              'Calendar',
-              style: _dateTextStyle,
-            ),
-            verticalSpaceSmall,
             BlocBuilder<CalendarListBloc, CalendarListState>(
               builder: (context, state) {
                 if (state is Loaded) {
@@ -108,7 +103,12 @@ class DetailEventView extends StatelessWidget {
                   return const SizedBox.shrink();
                 }
               },
-            )
+            ),
+            verticalSpaceTiny,
+            Text(
+              'Calendar',
+              style: _dateTextStyle,
+            ),
           ].toColumn(mainAxisSize: MainAxisSize.min),
         )
       ],

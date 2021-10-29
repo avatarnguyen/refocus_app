@@ -7,11 +7,9 @@ class EditTaskHeader extends StatefulWidget {
   const EditTaskHeader({
     Key? key,
     this.colorID,
-    required this.taskID,
     required this.getEditView,
   }) : super(key: key);
 
-  final String taskID;
   final String? colorID;
   final VoidCallback getEditView;
 

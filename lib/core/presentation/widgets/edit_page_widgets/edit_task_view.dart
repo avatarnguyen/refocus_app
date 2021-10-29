@@ -10,12 +10,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
+import 'package:refocus_app/features/calendar/domain/entities/calendar_entry.dart';
+import 'package:refocus_app/features/calendar/presentation/bloc/calendar_list/calendar_list_bloc.dart';
 import 'package:refocus_app/features/calendar/presentation/widgets/message_widget.dart';
 import 'package:refocus_app/features/task/domain/entities/subtask_entry.dart';
 import 'package:refocus_app/features/task/domain/entities/task_entry.dart';
 import 'package:refocus_app/features/task/domain/usecases/helpers/task_params.dart';
 import 'package:refocus_app/features/task/presentation/bloc/cubit/subtask_cubit.dart';
 import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
+import 'package:refocus_app/features/today/domain/today_entry.dart';
 import 'package:uuid/uuid.dart';
 
 enum DateTimeSelected { start, end, due }
@@ -28,10 +31,12 @@ class EditTaskView extends StatefulWidget {
     this.modalScrollController,
     this.task,
     this.subTask,
+    this.entry,
   }) : super(key: key);
 
   final String? taskID;
   final String? colorID;
+  final TodayEntry? entry;
   final TaskEntry? task;
   final List<SubTaskEntry>? subTask;
   final ScrollController? modalScrollController;
@@ -44,10 +49,11 @@ class _EditTaskViewState extends State<EditTaskView> {
   // final EditTaskStream _editStream = getIt<EditTaskStream>();
   // late StreamSubscription<EditTaskState> _editSub;
 
-  String? title;
-  DateTime? startDateTime;
-  DateTime? endDateTime;
-  DateTime? dueDateTime;
+  String? _title;
+  DateTime? _startDateTime;
+  DateTime? _endDateTime;
+  DateTime? _dueDateTime;
+  String? _calendarID;
 
   Map<String, SubTaskEntry> editedSubTasks = {};
   String? newSubTask;
@@ -61,11 +67,16 @@ class _EditTaskViewState extends State<EditTaskView> {
   @override
   void initState() {
     super.initState();
-    if (widget.task != null) {
+    if (widget.entry != null) {
+      _title = widget.entry!.title;
+      _startDateTime ??= widget.entry!.startDateTime;
+      _endDateTime ??= widget.entry!.endDateTime;
+      _calendarID = widget.entry!.projectOrCalID;
+    } else if (widget.task != null) {
       currentTask ??= widget.task;
-      startDateTime ??= widget.task!.startDateTime;
-      endDateTime ??= widget.task!.endDateTime;
-      dueDateTime ??= widget.task!.dueDate;
+      _startDateTime ??= widget.task!.startDateTime;
+      _endDateTime ??= widget.task!.endDateTime;
+      _dueDateTime ??= widget.task!.dueDate;
     } else {
       context
           .read<TaskBloc>()
@@ -73,15 +84,6 @@ class _EditTaskViewState extends State<EditTaskView> {
 
       context.read<SubtaskCubit>().getSubTasksFromTask(widget.taskID!);
     }
-
-    // _editSub = _editStream.editStateStream.listen(_editSettingReceived);
-  }
-
-  @override
-  void dispose() {
-    // _editSub.cancel();
-    // _editStream.broadCastCurrentPage(EditTaskState.view);
-    super.dispose();
   }
 
   final _textfieldPadding = const EdgeInsets.all(8);
@@ -96,13 +98,6 @@ class _EditTaskViewState extends State<EditTaskView> {
       color: _textColor,
       fontWeight: FontWeight.w600,
     );
-    final _editTimeTextStyle = context.bodyText1.copyWith(
-      color: _textColor,
-      fontWeight: FontWeight.w600,
-    );
-    final _dateTextStyle = context.subtitle1.copyWith(
-      color: _textColor,
-    );
 
     return PlatformScaffold(
       backgroundColor: context.backgroundColor,
@@ -115,46 +110,52 @@ class _EditTaskViewState extends State<EditTaskView> {
           ),
         ],
       ),
-      body: widget.task != null
-          ? _buildListViewContent(
-              context,
-              _textColor,
-              widget.task!,
-              _editTimeTextStyle,
-              _dateTextStyle,
-            )
-          : BlocBuilder<TaskBloc, TaskState>(
-              builder: (_, state) {
-                if (state is TasksLoaded) {
-                  if (state.tasks.isNotEmpty) {
-                    final _fetchedTask = state.tasks.first;
+      body: widget.entry != null
+          ? _buildListViewContent(context, _textColor, eventEntry: widget.entry)
+          : widget.task != null
+              ? _buildListViewContent(
+                  context,
+                  _textColor,
+                  fetchedTask: widget.task,
+                )
+              : BlocBuilder<TaskBloc, TaskState>(
+                  builder: (_, state) {
+                    if (state is TasksLoaded) {
+                      if (state.tasks.isNotEmpty) {
+                        final _fetchedTask = state.tasks.first;
 
-                    currentTask ??= _fetchedTask;
-                    startDateTime ??= _fetchedTask.startDateTime;
-                    endDateTime ??= _fetchedTask.endDateTime;
-                    dueDateTime ??= _fetchedTask.dueDate;
+                        currentTask ??= _fetchedTask;
+                        _startDateTime ??= _fetchedTask.startDateTime;
+                        _endDateTime ??= _fetchedTask.endDateTime;
+                        _dueDateTime ??= _fetchedTask.dueDate;
 
-                    return _buildListViewContent(
-                      context,
-                      _textColor,
-                      _fetchedTask,
-                      _editTimeTextStyle,
-                      _dateTextStyle,
-                    );
-                  }
-                }
-                return progressIndicator;
-              },
-            ),
+                        return _buildListViewContent(
+                          context,
+                          _textColor,
+                          fetchedTask: _fetchedTask,
+                        );
+                      }
+                    }
+                    return progressIndicator;
+                  },
+                ),
     );
   }
 
   Widget _buildListViewContent(
-      BuildContext context,
-      Color _textColor,
-      TaskEntry _fetchedTask,
-      TextStyle _editTimeTextStyle,
-      TextStyle _dateTextStyle) {
+    BuildContext context,
+    Color _textColor, {
+    TaskEntry? fetchedTask,
+    TodayEntry? eventEntry,
+  }) {
+    final _editTimeTextStyle = context.bodyText1.copyWith(
+      color: _textColor,
+      fontWeight: FontWeight.w600,
+    );
+    final _dateTextStyle = context.subtitle1.copyWith(
+      color: _textColor,
+    );
+
     return SafeArea(
       child: ListView(
         shrinkWrap: true,
@@ -168,13 +169,14 @@ class _EditTaskViewState extends State<EditTaskView> {
               )).padding(top: 6, bottom: 4),
 
           PlatformTextField(
-            controller: TextEditingController(text: title ?? _fetchedTask.title)
+            controller: TextEditingController(
+                text: _title ?? fetchedTask?.title)
               ..selection = TextSelection.fromPosition(
                 TextPosition(
-                    offset: title?.length ?? _fetchedTask.title?.length ?? 0),
+                    offset: _title?.length ?? fetchedTask?.title?.length ?? 0),
               ),
             onChanged: (text) {
-              title = text;
+              _title = text;
             },
             onSubmitted: (p0) {},
             textAlignVertical: TextAlignVertical.center,
@@ -187,9 +189,9 @@ class _EditTaskViewState extends State<EditTaskView> {
 
           verticalSpaceMedium,
           //* Edit Start & End DateTime
-          if (_fetchedTask.startDateTime != null)
+          if (_startDateTime != null)
             _buildEditDateTimeCell(
-              startDateTime!.toLocal(),
+              _startDateTime!.toLocal(),
               _editTimeTextStyle,
               DateTimeSelected.start,
             ).gestures(
@@ -197,18 +199,18 @@ class _EditTaskViewState extends State<EditTaskView> {
                 Platform.isIOS
                     ? _cupertinoDateTimePicker(
                         context,
-                        startDateTime!.toLocal(),
+                        _startDateTime!.toLocal(),
                         DateTimeSelected.start,
                       )
                     : _materialDateTimePicker(context);
               },
             ),
-          if (_fetchedTask.endDateTime != null) ...[
+          if (_endDateTime != null) ...[
             Text('Until', style: _dateTextStyle)
                 .alignment(Alignment.center)
                 .padding(vertical: 4),
             _buildEditDateTimeCell(
-              endDateTime!.toLocal(),
+              _endDateTime!.toLocal(),
               _editTimeTextStyle,
               DateTimeSelected.end,
             ).gestures(
@@ -216,7 +218,7 @@ class _EditTaskViewState extends State<EditTaskView> {
                 Platform.isIOS
                     ? _cupertinoDateTimePicker(
                         context,
-                        endDateTime!.toLocal(),
+                        _endDateTime!.toLocal(),
                         DateTimeSelected.end,
                       )
                     : _materialDateTimePicker(context);
@@ -224,11 +226,19 @@ class _EditTaskViewState extends State<EditTaskView> {
             ),
           ],
 
+          if (eventEntry != null) ...[
+            verticalSpaceMedium,
+            Text('Calendar', style: _dateTextStyle)
+                .alignment(Alignment.center)
+                .padding(vertical: 4),
+            _buildCalendarSelection(_editTimeTextStyle)
+          ],
+
           //* Edit Due Date
-          if (_fetchedTask.dueDate != null)
+          if (fetchedTask?.dueDate != null)
             [
               _buildEditDateTimeCell(
-                dueDateTime!,
+                _dueDateTime!,
                 _editTimeTextStyle,
                 DateTimeSelected.due,
               ).gestures(
@@ -236,7 +246,7 @@ class _EditTaskViewState extends State<EditTaskView> {
                   Platform.isIOS
                       ? _cupertinoDateTimePicker(
                           context,
-                          endDateTime!,
+                          _endDateTime!,
                           DateTimeSelected.due,
                         )
                       : _materialDateTimePicker(context);
@@ -247,40 +257,41 @@ class _EditTaskViewState extends State<EditTaskView> {
           verticalSpaceMedium,
 
           //* Get SubTasks
-          if (widget.subTask != null)
-            widget.subTask!
-                .map((subtask) => _buildSubTaskEditTextField(
-                      context,
-                      subtask,
-                      _textColor,
-                    ))
-                .toList()
-                .toColumn(mainAxisSize: MainAxisSize.min)
-          else
-            BlocBuilder<SubtaskCubit, SubtaskState>(
-              builder: (context, state) {
-                return state.when<Widget>(
-                  initial: () => progressIndicator,
-                  loaded: (_subtasks) {
-                    if (_subtasks.isNotEmpty) {
-                      return Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: _subtasks
-                              .map((subtask) => _buildSubTaskEditTextField(
-                                    context,
-                                    subtask,
-                                    _textColor,
-                                  ))
-                              .toList());
-                    } else {
-                      return const SizedBox.shrink();
-                    }
-                  },
-                  error: (errorMessage) =>
-                      MessageDisplay(message: errorMessage),
-                );
-              },
-            ),
+          if (fetchedTask != null)
+            if (widget.subTask != null)
+              widget.subTask!
+                  .map((subtask) => _buildSubTaskEditTextField(
+                        context,
+                        subtask,
+                        _textColor,
+                      ))
+                  .toList()
+                  .toColumn(mainAxisSize: MainAxisSize.min)
+            else
+              BlocBuilder<SubtaskCubit, SubtaskState>(
+                builder: (context, state) {
+                  return state.when<Widget>(
+                    initial: () => progressIndicator,
+                    loaded: (_subtasks) {
+                      if (_subtasks.isNotEmpty) {
+                        return Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: _subtasks
+                                .map((subtask) => _buildSubTaskEditTextField(
+                                      context,
+                                      subtask,
+                                      _textColor,
+                                    ))
+                                .toList());
+                      } else {
+                        return const SizedBox.shrink();
+                      }
+                    },
+                    error: (errorMessage) =>
+                        MessageDisplay(message: errorMessage),
+                  );
+                },
+              ),
 
           verticalSpaceRegular,
           if (newSubTask != null) ...[
@@ -288,7 +299,7 @@ class _EditTaskViewState extends State<EditTaskView> {
             verticalSpaceTiny,
           ],
           verticalSpaceSmall,
-          if (newSubTask == null)
+          if (fetchedTask != null && newSubTask == null)
             PlatformIconButton(
               color: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
@@ -299,14 +310,15 @@ class _EditTaskViewState extends State<EditTaskView> {
               }),
             ),
           verticalSpaceMedium,
-          PlatformButton(
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 32),
-            child: Text('Delete Task',
-                style: context.bodyText2.copyWith(color: kcError500)),
-            onPressed: () {
-              //TODO: Delete Task
-            },
-          ),
+          if (fetchedTask != null)
+            PlatformButton(
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 32),
+              child: Text('Delete Task',
+                  style: context.bodyText2.copyWith(color: kcError500)),
+              onPressed: () {
+                //TODO: Delete Task
+              },
+            ),
         ],
       ),
     );
@@ -350,6 +362,35 @@ class _EditTaskViewState extends State<EditTaskView> {
         '$_date$_time',
         textAlign: TextAlign.center,
         style: textStyle,
+      ),
+    );
+  }
+
+  Widget _buildCalendarSelection(TextStyle textStyle) {
+    final _color = StyleUtils.getColorFromString(widget.colorID ?? '#115FFB');
+    final _backgroudColor = StyleUtils.lighten(_color, 0.32);
+
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: _backgroudColor,
+        borderRadius: const BorderRadius.all(Radius.circular(8)),
+      ),
+      child: BlocBuilder<CalendarListBloc, CalendarListState>(
+        builder: (context, state) {
+          if (state is Loaded) {
+            final _calList = state.calendarList;
+            final _currentCal =
+                _calList.singleWhere((_cal) => _cal.id == _calendarID);
+            return Text(
+              _currentCal.name,
+              textAlign: TextAlign.center,
+              style: textStyle,
+            );
+          } else {
+            return const SizedBox.shrink();
+          }
+        },
       ),
     );
   }
@@ -475,13 +516,13 @@ class _EditTaskViewState extends State<EditTaskView> {
                   onDateTimeChanged: (picked) {
                     if (picked != currentDateTime) {
                       if (type == DateTimeSelected.start) {
-                        final _diff = endDateTime!.difference(startDateTime!);
-                        startDateTime = picked;
-                        endDateTime = picked + _diff;
+                        final _diff = _endDateTime!.difference(_startDateTime!);
+                        _startDateTime = picked;
+                        _endDateTime = picked + _diff;
                       } else if (type == DateTimeSelected.end) {
-                        endDateTime = picked;
+                        _endDateTime = picked;
                       } else {
-                        dueDateTime = picked;
+                        _dueDateTime = picked;
                       }
                     }
                   },
@@ -497,13 +538,13 @@ class _EditTaskViewState extends State<EditTaskView> {
                     child: const Text('Cancel'),
                     onPressed: () {
                       if (type == DateTimeSelected.start) {
-                        final _diff = endDateTime!.difference(startDateTime!);
-                        startDateTime = currentDateTime;
-                        endDateTime = currentDateTime + _diff;
+                        final _diff = _endDateTime!.difference(_startDateTime!);
+                        _startDateTime = currentDateTime;
+                        _endDateTime = currentDateTime + _diff;
                       } else if (type == DateTimeSelected.end) {
-                        endDateTime = currentDateTime;
+                        _endDateTime = currentDateTime;
                       } else {
-                        dueDateTime = currentDateTime;
+                        _dueDateTime = currentDateTime;
                       }
                       context.router.pop();
                     },
@@ -529,21 +570,21 @@ class _EditTaskViewState extends State<EditTaskView> {
     if (currentTask != null) {
       var shouldUpdateTask = false;
 
-      if (title != null && currentTask!.title != title) {
+      if (_title != null && currentTask!.title != _title) {
         shouldUpdateTask = true;
 
-        currentTask = currentTask!.copyWith(title: title);
+        currentTask = currentTask!.copyWith(title: _title);
       }
 
-      if (currentTask!.dueDate != dueDateTime ||
-          currentTask!.startDateTime != startDateTime ||
-          currentTask!.endDateTime != endDateTime) {
+      if (currentTask!.dueDate != _dueDateTime ||
+          currentTask!.startDateTime != _startDateTime ||
+          currentTask!.endDateTime != _endDateTime) {
         shouldUpdateTask = true;
 
         currentTask = currentTask!.copyWith(
-          startDateTime: startDateTime,
-          endDateTime: endDateTime,
-          dueDate: dueDateTime,
+          startDateTime: _startDateTime,
+          endDateTime: _endDateTime,
+          dueDate: _dueDateTime,
         );
       }
 
