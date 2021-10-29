@@ -38,9 +38,8 @@ class _QuickAddPageState extends State<QuickAddPage> {
 
   @override
   void initState() {
-    _currentProject = _settingOption.projectEntry;
-
     super.initState();
+    _currentProject = _settingOption.projectEntry;
   }
 
   @override
@@ -61,18 +60,26 @@ class _QuickAddPageState extends State<QuickAddPage> {
   }) {
     showCupertinoModalPopup<dynamic>(
       context: context,
-      builder: (context) => CupertinoActionSheet(
-        actions: [
-          if (calendars != null)
-            buildPicker(calendars)
-          else
-            buildPicker(projects!)
-        ],
-        cancelButton: CupertinoActionSheetAction(
-          onPressed: () => context.router.pop(),
-          child: 'Cancel'.toButtonText(color: kcError500),
-        ),
-      ),
+      builder: (context) {
+        if (calendars != null) {
+          _currentCalendar = calendars.first;
+        } else {
+          _currentProject = projects!.first;
+        }
+
+        return CupertinoActionSheet(
+          actions: [
+            if (calendars != null)
+              buildPicker(calendars)
+            else
+              buildPicker(projects!)
+          ],
+          cancelButton: CupertinoActionSheetAction(
+            onPressed: () => context.router.pop(),
+            child: 'Cancel'.toButtonText(color: kcError500),
+          ),
+        );
+      },
     );
   }
 
@@ -228,13 +235,14 @@ class _QuickAddPageState extends State<QuickAddPage> {
           appBar: AppBar(
             automaticallyImplyLeading: false,
             title: StreamBuilder<TodayEntryType>(
-                stream: _settingOption.typeStream,
-                builder: (context, snapshot) {
-                  final _entryType = snapshot.data;
-                  if (_entryType != null) {
-                    if (_entryType == TodayEntryType.event) {
-                      return BlocBuilder<calList.CalendarListBloc,
-                          calList.CalendarListState>(builder: (context, state) {
+              stream: _settingOption.typeStream,
+              builder: (context, snapshot) {
+                final _entryType = snapshot.data;
+                if (_entryType != null) {
+                  if (_entryType == TodayEntryType.event) {
+                    return BlocBuilder<calList.CalendarListBloc,
+                        calList.CalendarListState>(
+                      builder: (context, state) {
                         if (state is calList.Loaded) {
                           final calendars = state.calendarList;
                           return Text(
@@ -247,10 +255,11 @@ class _QuickAddPageState extends State<QuickAddPage> {
                         } else {
                           return progressIndicator;
                         }
-                      });
-                    } else {
-                      return BlocBuilder<ProjectBloc, ProjectState>(
-                          builder: (context, state) {
+                      },
+                    );
+                  } else {
+                    return BlocBuilder<ProjectBloc, ProjectState>(
+                      builder: (context, state) {
                         if (state is ProjectLoaded) {
                           final _projects = state.project;
                           return Text(
@@ -263,66 +272,75 @@ class _QuickAddPageState extends State<QuickAddPage> {
                         } else {
                           return progressIndicator;
                         }
-                      });
-                    }
+                      },
+                    );
                   }
-                  return const SizedBox.shrink();
-                }),
+                }
+                return const SizedBox.shrink();
+              },
+            ),
           ),
         ),
         cupertino: (_, __) => CupertinoPageScaffoldData(
-            navigationBar: CupertinoNavigationBar(
-          backgroundColor: context.colorScheme.background,
-          border: null,
-          automaticallyImplyLeading: false,
-          middle: StreamBuilder<TodayEntryType>(
+          navigationBar: CupertinoNavigationBar(
+            backgroundColor: context.colorScheme.background,
+            border: null,
+            automaticallyImplyLeading: false,
+            middle: StreamBuilder<TodayEntryType>(
               stream: _settingOption.typeStream,
               builder: (context, snapshot) {
                 final _entryType = snapshot.data;
                 if (_entryType != null) {
                   if (_entryType == TodayEntryType.event) {
                     return BlocBuilder<calList.CalendarListBloc,
-                        calList.CalendarListState>(builder: (context, state) {
-                      if (state is calList.Loaded) {
-                        final calendars = state.calendarList;
-                        final _currentColor = StyleUtils.getColorFromString(
-                            _currentCalendar?.color ?? '#8879FC');
-                        return Text(
-                          _currentCalendar?.name ?? 'Select a calendar',
-                          style: _projectTextStyle.copyWith(
-                            color: _currentColor,
-                          ),
-                        ).gestures(
-                          onTap: () => _showIOSPicker(calendars: calendars),
-                        );
-                      } else {
-                        return progressIndicator;
-                      }
-                    });
+                        calList.CalendarListState>(
+                      builder: (context, state) {
+                        if (state is calList.Loaded) {
+                          final calendars = state.calendarList;
+                          final _currentColor = StyleUtils.getColorFromString(
+                            _currentCalendar?.color ?? '#8879FC',
+                          );
+                          return Text(
+                            _currentCalendar?.name ?? 'Select a calendar',
+                            style: _projectTextStyle.copyWith(
+                              color: _currentColor,
+                            ),
+                          ).gestures(
+                            onTap: () => _showIOSPicker(calendars: calendars),
+                          );
+                        } else {
+                          return progressIndicator;
+                        }
+                      },
+                    );
                   } else {
                     return BlocBuilder<ProjectBloc, ProjectState>(
-                        builder: (context, state) {
-                      if (state is ProjectLoaded) {
-                        final _projects = state.project;
-                        final _currentColor = StyleUtils.getColorFromString(
-                            _currentProject?.color ?? '#8879FC');
-                        return Text(
-                          _currentProject?.title ?? 'Select a project',
-                          style: _projectTextStyle.copyWith(
-                            color: _currentColor,
-                          ),
-                        ).gestures(
-                          onTap: () => _showIOSPicker(projects: _projects),
-                        );
-                      } else {
-                        return progressIndicator;
-                      }
-                    });
+                      builder: (context, state) {
+                        if (state is ProjectLoaded) {
+                          final _projects = state.project;
+                          final _currentColor = StyleUtils.getColorFromString(
+                            _currentProject?.color ?? '#8879FC',
+                          );
+                          return Text(
+                            _currentProject?.title ?? 'Select a project',
+                            style: _projectTextStyle.copyWith(
+                              color: _currentColor,
+                            ),
+                          ).gestures(
+                            onTap: () => _showIOSPicker(projects: _projects),
+                          );
+                        } else {
+                          return progressIndicator;
+                        }
+                      },
+                    );
                   }
                 }
                 return const SizedBox.shrink();
-              }),
-        )),
+              },
+            ),
+          ),
+        ),
         body: [
           [
             BlocProvider<ProjectBloc>.value(
@@ -332,8 +350,9 @@ class _QuickAddPageState extends State<QuickAddPage> {
             const SetPlannedDateTimeWidget(),
           ]
               .toColumn(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.spaceAround)
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+              )
               .scrollable()
               .expanded(),
           MultiBlocProvider(

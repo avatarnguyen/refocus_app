@@ -72,9 +72,9 @@ class CalendarRepositoryImpl implements CalendarRepository {
     final _storedCalendars =
         await localCalDataSource.getLastCachedGoogleCalendar();
     log.i('Stored Calendar List: ${_storedCalendars.length}');
-    for (var _calendar in _storedCalendars) {
+    for (final _calendar in _storedCalendars) {
       if (_calendar.selected != null && _calendar.selected == true) {
-        log.v('Calendar --> ${_calendar.toJson()}');
+        // log.v('Calendar --> ${_calendar.toJson()}');
         _calendarList.add(_calendar);
       }
     }
@@ -147,14 +147,16 @@ class CalendarRepositoryImpl implements CalendarRepository {
   }
 
   @override
-  Future<Either<Failure, Unit>> updateEventsData(CalendarEventEntry event,
-      {String? calendarId}) async {
+  Future<Either<Failure, Unit>> updateEventsData(
+    CalendarEventEntry event, {
+    String? calendarId,
+  }) async {
     try {
       final model = _eventEntryConverter(event);
 
       await remoteCalDataSource.updateRemoteGoogleEvent(
         eventModel: model,
-        calendarId: calendarId,
+        calendarId: calendarId ?? event.calendarId,
       );
 
       return const Right(unit);

@@ -262,6 +262,7 @@ class _TodayListWidgetState extends State<TodayListWidget> {
       final _newEndTime = result[1] as DateTime?;
 
       if (entry.type == TodayEntryType.event) {
+        print('Event Cal ID: ${entry.projectOrCalID}');
         // ignore: use_build_context_synchronously
         context.read<CalendarBloc>().add(
               UpdateCalendarEvent(
@@ -271,11 +272,11 @@ class _TodayListWidgetState extends State<TodayListWidget> {
                     subject: entry.title ?? '',
                     colorId: entry.color,
                     calendarId: entry.projectOrCalID,
-                    startDate: _newStartTime,
-                    startDateTime: _newStartTime,
-                    endDate: _newEndTime,
-                    endDateTime: _newEndTime,
-                    timeZone: entry.startDateTime?.timeZoneName,
+                    startDateTime:
+                        CustomDateUtils.toGoogleRFCDateTime(_newStartTime!),
+                    endDateTime:
+                        CustomDateUtils.toGoogleRFCDateTime(_newEndTime!),
+                    // timeZone: entry.startDateTime?.timeZoneName,
                     allDay: false,
                   ),
                 ),

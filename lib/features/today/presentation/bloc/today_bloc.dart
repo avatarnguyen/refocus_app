@@ -135,6 +135,7 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
             yield* _eitherTaskLoadedOrErrorState(
                 _tasks, state, event.eventType);
             break;
+          // ignore: no_default_cases
           default:
             // Reload Upcoming Tasks
             final _today = DateTime.now();
@@ -203,6 +204,7 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
   }
 
   TodayEntry returnEntryFromCalendarEvent(CalendarEventEntry eventEntry) {
+    print('[TodayBloc] Calendar Event: ${eventEntry.toString()}');
     return TodayEntry(
       id: eventEntry.id!,
       type: TodayEntryType.event,
@@ -215,7 +217,9 @@ class TodayBloc extends Bloc<TodayEvent, TodayState> {
   }
 
   TodayEntry returnEntryFromTaskEntry(
-      TaskEntry taskEntry, List<SubTaskEntry> subtasks) {
+    TaskEntry taskEntry,
+    List<SubTaskEntry> subtasks,
+  ) {
     var _subTaskCompleted = <SubTaskEntry>[];
     if (subtasks.isNotEmpty) {
       _subTaskCompleted =

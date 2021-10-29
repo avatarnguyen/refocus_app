@@ -14,7 +14,7 @@ class UpdateEvent implements UseCase<Unit, EventParams> {
 
   @override
   Future<Either<Failure, Unit>> call(EventParams params) async {
-    return await repository.updateEventsData(
+    return repository.updateEventsData(
       params.eventEntry,
       calendarId: params.calendarId,
     );

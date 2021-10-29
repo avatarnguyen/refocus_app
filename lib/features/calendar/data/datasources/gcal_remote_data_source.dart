@@ -53,7 +53,7 @@ class GoogleAPIGCalRemoteDataSoure implements GCalRemoteDataSource {
 
     final appointments = <GCalEventEntryModel>[];
 
-    var client = await gCalSignIn.authenticatedClient();
+    final client = await gCalSignIn.authenticatedClient();
 
     if (client != null) {
       final calendarApi = google_api.CalendarApi(client);
@@ -61,14 +61,13 @@ class GoogleAPIGCalRemoteDataSoure implements GCalRemoteDataSource {
       try {
         if (calendarList != null) {
           if (calendarList.isNotEmpty) {
-            for (var calendar in calendarList) {
-              // log.d('(GCalEntryModel --> ${calendar.toGCalJson()}');
+            for (final calendar in calendarList) {
               final calEvents = await calendarApi.events.list(
                 calendar.id,
                 timeMin: timeMin,
                 timeMax: timeMax,
               );
-              _addEventsToAppointments(
+              _insertEventsToAppointments(
                 calEvents,
                 appointments,
                 color: calendar.color,
@@ -81,7 +80,7 @@ class GoogleAPIGCalRemoteDataSoure implements GCalRemoteDataSource {
             timeMin: timeMin,
             timeMax: timeMax,
           );
-          _addEventsToAppointments(calEvents, appointments);
+          _insertEventsToAppointments(calEvents, appointments);
         }
       } catch (e) {
         log.e('Catched: ${e.toString()}');
@@ -94,10 +93,11 @@ class GoogleAPIGCalRemoteDataSoure implements GCalRemoteDataSource {
     print('Appointments: ${appointments.length}');
 
     //TODO: Write Test to check # of appointments return
+    //! not sure whether this working, login seems off
     return appointments;
   }
 
-  void _addEventsToAppointments(
+  List<GCalEventEntryModel> _insertEventsToAppointments(
       google_api.Events calEvents, List<GCalEventEntryModel> appointments,
       {String? color}) {
     if (calEvents.items != null && calEvents.items!.isNotEmpty) {
@@ -112,6 +112,7 @@ class GoogleAPIGCalRemoteDataSoure implements GCalRemoteDataSource {
         }
       }
     }
+    return appointments;
   }
 
   @override
@@ -136,17 +137,25 @@ class GoogleAPIGCalRemoteDataSoure implements GCalRemoteDataSource {
   }
 
   @override
-  Future<void> updateRemoteGoogleEvent(
-      {String? calendarId, required GCalEventEntryModel eventModel}) async {
-    var client = await gCalSignIn.authenticatedClient();
+  Future<void> updateRemoteGoogleEvent({
+    String? calendarId,
+    required GCalEventEntryModel eventModel,
+  }) async {
+    final client = await gCalSignIn.authenticatedClient();
     if (client != null) {
       final calendarApi = google_api.CalendarApi(client);
 
       try {
         if (eventModel.id != null) {
           final request = google_api.Event.fromJson(eventModel.toJson());
-          await calendarApi.events
-              .update(request, calendarId ?? 'primary', eventModel.id!);
+          print(eventModel.toJson());
+          print(request.toJson());
+          print('Calendar ID: $calendarId');
+          await calendarApi.events.update(
+            request,
+            calendarId ?? 'primary',
+            eventModel.id!,
+          );
         } else {
           log('Event ID is null');
           throw ServerException();
