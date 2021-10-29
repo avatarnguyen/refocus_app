@@ -17,12 +17,18 @@ class ChangeDateTimeWidget extends StatefulWidget {
 class _ChangeDateTimeWidgetState extends State<ChangeDateTimeWidget> {
   var _currentIdx = 0;
 
+  late DateTime _pStartDateTime;
+  late DateTime _pEndDateTime;
+
+  @override
+  void initState() {
+    super.initState();
+    _pStartDateTime = widget.startDateTime?.toLocal() ?? DateTime.now();
+    _pEndDateTime = widget.endDateTime?.toLocal() ?? DateTime.now() + 1.hours;
+  }
+
   @override
   Widget build(BuildContext context) {
-    var _pStartDateTime = widget.startDateTime?.toLocal() ?? DateTime.now();
-    var _pEndDateTime =
-        widget.endDateTime?.toLocal() ?? DateTime.now() + 1.hours;
-
     //TODO(): implement Material UI Date Time Picker
 
     return SafeArea(
@@ -56,11 +62,15 @@ class _ChangeDateTimeWidgetState extends State<ChangeDateTimeWidget> {
 
                 if (picked != _currentDateTime) {
                   if (_currentIdx == 0) {
-                    final _diff = _pEndDateTime.difference(_pStartDateTime);
-                    _pStartDateTime = picked;
-                    _pEndDateTime = picked + _diff;
+                    setState(() {
+                      final _diff = _pEndDateTime.difference(_pStartDateTime);
+                      _pStartDateTime = picked;
+                      _pEndDateTime = picked + _diff;
+                    });
                   } else {
-                    _pEndDateTime = picked;
+                    setState(() {
+                      _pEndDateTime = picked;
+                    });
                   }
                 }
               },
@@ -76,8 +86,7 @@ class _ChangeDateTimeWidgetState extends State<ChangeDateTimeWidget> {
               PlatformTextButton(
                 child: const Text('Cancel'),
                 onPressed: () {
-                  context.router
-                      .pop([widget.startDateTime, widget.endDateTime]);
+                  context.router.pop(null);
                 },
               ),
               PlatformButton(
