@@ -22,3 +22,6 @@ linter:
     cascade_invocations: false
     unnecessary_this: false
     library_private_types_in_public_api: false
+    require_trailing_commas: false
+    no_default_cases: false
+    flutter_style_todos: false
