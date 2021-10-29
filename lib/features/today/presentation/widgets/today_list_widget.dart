@@ -20,6 +20,7 @@ import 'package:refocus_app/features/task/domain/usecases/helpers/task_params.da
 import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
 import 'package:refocus_app/features/today/domain/today_entry.dart';
 import 'package:refocus_app/features/today/presentation/bloc/today_bloc.dart';
+import 'package:refocus_app/features/today/presentation/widgets/change_datetime_widget.dart';
 import 'package:refocus_app/features/today/presentation/widgets/list_item_widget.dart';
 import 'package:refocus_app/features/today/presentation/widgets/persistent_header_delegate.dart';
 import 'package:refocus_app/injection.dart';
@@ -236,25 +237,7 @@ class _TodayListWidgetState extends State<TodayListWidget> {
     );
   }
 
-  final ValueNotifier<int> _currentIdx = ValueNotifier(0);
-
-  //TODO(): implement Material UI Date Time Picker
   Future<void> _changeDateTime(TodayEntry entry) async {
-    _currentIdx.value = 0;
-    var _pStartDateTime = entry.startDateTime?.toLocal() ?? DateTime.now();
-    var _pEndDateTime =
-        entry.endDateTime?.toLocal() ?? DateTime.now() + 1.hours;
-
-    Widget _buildSegment(String text, int index, int currentSegIdx) =>
-        Container(
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
-          child: Text(
-            text,
-            style: context.bodyText1.copyWith(
-              color: index == currentSegIdx ? kcPrimary100 : kcPrimary900,
-            ),
-          ),
-        );
     final dynamic result = await showModalBottomSheet<dynamic>(
       context: context,
       shape: RoundedRectangleBorder(
@@ -263,81 +246,13 @@ class _TodayListWidgetState extends State<TodayListWidget> {
       ),
       elevation: 4,
       builder: (BuildContext builder) {
-        return ValueListenableBuilder<int>(
-          valueListenable: _currentIdx,
-          builder: (context, _currentSegIdx, child) {
-            return SafeArea(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  verticalSpaceRegular,
-                  CupertinoSlidingSegmentedControl<int>(
-                    padding: const EdgeInsets.all(4),
-                    groupValue: _currentSegIdx,
-                    thumbColor: context.colorScheme.primary,
-                    children: {
-                      0: _buildSegment('Start', 0, _currentSegIdx),
-                      1: _buildSegment('End', 1, _currentSegIdx),
-                    },
-                    onValueChanged: (value) {
-                      if (value != null) {
-                        _currentIdx.value = value;
-                      }
-                    },
-                  ),
-                  SizedBox(
-                    height: MediaQuery.of(context).copyWith().size.height / 3.8,
-                    child: CupertinoDatePicker(
-                      key: Key('index_$_currentSegIdx'),
-                      onDateTimeChanged: (picked) {
-                        final _currentDateTime = _currentSegIdx == 0
-                            ? _pStartDateTime
-                            : _pEndDateTime;
-
-                        if (picked != _currentDateTime) {
-                          if (_currentSegIdx == 0) {
-                            final _diff =
-                                _pEndDateTime.difference(_pStartDateTime);
-                            _pStartDateTime = picked;
-                            _pEndDateTime = picked + _diff;
-                          } else {
-                            _pEndDateTime = picked;
-                          }
-                        }
-                      },
-                      initialDateTime:
-                          _currentSegIdx == 0 ? _pStartDateTime : _pEndDateTime,
-                      minimumYear: 2020,
-                      maximumYear: 2025,
-                    ),
-                  ).padding(bottom: 4),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: [
-                      PlatformTextButton(
-                        child: const Text('Cancel'),
-                        onPressed: () {
-                          context.router
-                              .pop([entry.startDateTime, entry.endDateTime]);
-                        },
-                      ),
-                      PlatformButton(
-                        color: context.colorScheme.primary,
-                        child: 'Save'.toButtonText(),
-                        onPressed: () {
-                          context.router.pop([_pStartDateTime, _pEndDateTime]);
-                        },
-                      ),
-                    ].toRow(mainAxisAlignment: MainAxisAlignment.spaceEvenly),
-                  ),
-                ],
-              ),
-            );
-          },
+        return ChangeDateTimeWidget(
+          startDateTime: entry.startDateTime,
+          endDateTime: entry.endDateTime,
         );
       },
     );
-    if (result != null) {
+    if (result != null && result is List) {
       print(result);
 
       // ignore: use_build_context_synchronously
@@ -346,8 +261,8 @@ class _TodayListWidgetState extends State<TodayListWidget> {
               params: TaskParams(
                 task: _returnTaskFromTodayEntry(
                   entry,
-                  startDate: _pStartDateTime,
-                  endDate: _pEndDateTime,
+                  startDate: result[0] as DateTime?,
+                  endDate: result[1] as DateTime?,
                 ),
               ),
             ),
