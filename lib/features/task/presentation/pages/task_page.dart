@@ -63,7 +63,7 @@ class _TaskPageState extends State<TaskPage> {
                 final _task = _tasks[index];
 
                 return ListItemWidget(
-                  key: Key('task_page_${_task.id}'),
+                  key: Key('task_page_${_task.id}_${_task.startDateTime}'),
                   task: _task,
                   project: widget.project,
                   markItemAsDone: () => _markTaskAsDone(_task),
