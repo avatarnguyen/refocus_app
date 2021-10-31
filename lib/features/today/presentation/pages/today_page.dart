@@ -8,6 +8,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:refocus_app/config/routes/router.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart' as custom_log;
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/features/today/presentation/bloc/today_bloc.dart';
@@ -95,8 +96,10 @@ class _TodayPageState extends State<TodayPage> {
                     ),
                     trailing: CupertinoButton(
                       padding: EdgeInsets.zero,
-                      child: const Icon(CupertinoIcons.person_fill),
-                      onPressed: () {},
+                      child: const Icon(Icons.settings_outlined),
+                      onPressed: () {
+                        context.navigateTo(const SettingRoute());
+                      },
                     ),
                   ),
                   SliverPersistentHeader(
