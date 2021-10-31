@@ -5,6 +5,7 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
 import 'package:refocus_app/features/task/domain/usecases/helpers/project_params.dart';
+import 'package:refocus_app/features/task/domain/usecases/project/update_project.dart';
 import 'package:refocus_app/features/task/presentation/bloc/project_bloc.dart';
 import 'package:uuid/uuid.dart';
 
@@ -67,17 +68,7 @@ class _CreateProjectPageState extends State<CreateProjectPage> {
                 style: context.h4.copyWith(color: kcPrimary100),
                 // onChanged: (text) {},
                 onSubmitted: (text) {
-                  final _newProject = ProjectEntry(
-                    id: uuid.v1(),
-                    title: _textController.text,
-                    color: _colorCodeList[_selectedColorIdx],
-                  );
-                  context.read<ProjectBloc>().add(
-                        CreateProjectEntriesEvent(
-                          ProjectParams(_newProject),
-                        ),
-                      );
-                  context.router.pop();
+                  _saveData();
                 },
                 material: (context, platform) => MaterialTextFieldData(
                   decoration: InputDecoration(
@@ -122,21 +113,7 @@ class _CreateProjectPageState extends State<CreateProjectPage> {
                     Icons.send,
                     size: 26,
                     color: context.colorScheme.secondary,
-                  ).gestures(
-                    onTap: () {
-                      final _newProject = ProjectEntry(
-                        id: uuid.v1(),
-                        title: _textController.text,
-                        color: _colorCodeList[_selectedColorIdx],
-                      );
-                      context.read<ProjectBloc>().add(
-                            CreateProjectEntriesEvent(
-                              ProjectParams(_newProject),
-                            ),
-                          );
-                      context.router.pop();
-                    },
-                  ),
+                  ).gestures(onTap: _saveData),
                 ],
               ),
             )
@@ -144,6 +121,35 @@ class _CreateProjectPageState extends State<CreateProjectPage> {
         ].toColumn(mainAxisSize: MainAxisSize.min),
       ).safeArea(),
     );
+  }
+
+  void _saveData() {
+    late ProjectEntry _project;
+
+    if (widget.project != null) {
+      _project = widget.project!.copyWith(
+        title: _textController.text,
+        color: _colorCodeList[_selectedColorIdx],
+      );
+      context.read<ProjectBloc>().add(
+            UpdateProjectEntriesEvent(
+              ProjectParams(_project),
+            ),
+          );
+    } else {
+      _project = ProjectEntry(
+        id: uuid.v1(),
+        title: _textController.text,
+        color: _colorCodeList[_selectedColorIdx],
+        taskCount: 0,
+      );
+      context.read<ProjectBloc>().add(
+            CreateProjectEntriesEvent(
+              ProjectParams(_project),
+            ),
+          );
+    }
+    context.router.pop();
   }
 
   Widget _buildColorItem(int index, String colorID) {

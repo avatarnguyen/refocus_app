@@ -1,6 +1,6 @@
+import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 import 'package:refocus_app/core/error/failures.dart';
-import 'package:dartz/dartz.dart';
 import 'package:refocus_app/core/usecases/usecase.dart';
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
 import 'package:refocus_app/features/task/domain/repositories/task_repository.dart';
@@ -14,6 +14,6 @@ class UpdateProject implements UseCase<ProjectEntry, ProjectParams> {
 
   @override
   Future<Either<Failure, ProjectEntry>> call(ProjectParams params) async {
-    return await repository.updateProject(params.project);
+    return repository.updateProject(params.project);
   }
 }

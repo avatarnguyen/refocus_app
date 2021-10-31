@@ -60,6 +60,20 @@ class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
       log('Create New Project');
 
       yield* _mapProjectCreatedToState(event);
+    } else if (event is UpdateProjectEntriesEvent) {
+      log('Update Project');
+
+      yield* _mapProjectUpdatedToState(event);
+    } else if (event is DeleteProjectEntriesEvent) {
+      log('Delete Project');
+
+      final deletingState = await deleteProject(event.params);
+      yield* deletingState.fold((failure) async* {
+        yield ProjectError(_mapFailureToMessage(failure));
+      }, (unit) async* {
+        final failureOrEntry = await getProjects(NoParams());
+        yield* _eitherPrejectLoadedOrErrorState(failureOrEntry);
+      });
     }
   }
 
@@ -73,6 +87,23 @@ class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
         final updatedProjects =
             List<ProjectEntry>.from((state as ProjectLoaded).project)
               ..add(entry);
+        yield ProjectLoaded(project: updatedProjects);
+      });
+    }
+  }
+
+  Stream<ProjectState> _mapProjectUpdatedToState(
+      UpdateProjectEntriesEvent event) async* {
+    if (state is ProjectLoaded) {
+      final failureOrSuccess = await updateProject(event.params);
+      yield* failureOrSuccess.fold((failure) async* {
+        yield ProjectError(_mapFailureToMessage(failure));
+      }, (entry) async* {
+        final updatedProjects =
+            List<ProjectEntry>.from((state as ProjectLoaded).project);
+        final index =
+            updatedProjects.indexWhere((element) => element.id == entry.id);
+        updatedProjects[index] = entry;
         yield ProjectLoaded(project: updatedProjects);
       });
     }

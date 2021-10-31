@@ -8,6 +8,7 @@ import 'package:refocus_app/config/routes/router.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/features/calendar/presentation/widgets/widgets.dart';
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
+import 'package:refocus_app/features/task/domain/usecases/helpers/project_params.dart';
 import 'package:refocus_app/features/task/presentation/bloc/project_bloc.dart';
 import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
 import 'package:uuid/uuid.dart';
@@ -54,7 +55,14 @@ class _ProjectPageState extends State<ProjectPage> {
                       vertical: 8,
                     ),
                     child: PlatformButton(
-                      color: Colors.white,
+                      cupertino: (context, platform) => CupertinoButtonData(
+                        color: Colors.white,
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(16)),
+                      ),
+                      material: (context, platform) => MaterialRaisedButtonData(
+                        color: Colors.white,
+                      ),
                       onPressed: () {
                         context.navigateTo(CreateProjectRoute());
                       }, //_showCreateProjectBottomSheet,
@@ -68,7 +76,10 @@ class _ProjectPageState extends State<ProjectPage> {
                 }
                 index -= 1;
                 final _project = _projects[index];
-                return ProjectItem(project: _project);
+                return ProjectItem(
+                    key: Key(
+                        '${_project.id}_${_project.title}_${_project.color}'),
+                    project: _project);
               },
             ).safeArea(top: false);
           } else if (state is ProjectLoading) {
@@ -104,6 +115,14 @@ class _ProjectItemState extends State<ProjectItem> {
         const ProjectEntry(title: 'Inbox', id: 'inbox_2021', color: '#8879FC');
   }
 
+  void _deleteProject() {
+    context.read<ProjectBloc>().add(
+          DeleteProjectEntriesEvent(
+            ProjectParams(_currentProject),
+          ),
+        );
+  }
+
   @override
   Widget build(BuildContext context) {
     final _color =
@@ -112,7 +131,7 @@ class _ProjectItemState extends State<ProjectItem> {
     final _textColor = StyleUtils.darken(_color, 0.4);
 
     return Slidable(
-      key: Key(_currentProject.title ?? 'project_item'),
+      key: widget.key ?? Key(_currentProject.title ?? 'project_item'),
       controller: _slidableController,
       actionPane: const SlidableStrechActionPane(),
       secondaryActions: [
@@ -131,8 +150,7 @@ class _ProjectItemState extends State<ProjectItem> {
           onTap: () async {
             final _result = await _showDeleteAlertDialog();
             if (_result) {
-              //TODO: Delete Project
-
+              _deleteProject();
             }
           },
         )
@@ -144,7 +162,7 @@ class _ProjectItemState extends State<ProjectItem> {
           return _result;
         },
         onDismissed: (actionType) {
-          //TODO: Delete Project
+          _deleteProject();
         },
       ),
       child: [

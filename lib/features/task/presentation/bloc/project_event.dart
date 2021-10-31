@@ -18,3 +18,21 @@ class CreateProjectEntriesEvent extends ProjectEvent {
   @override
   List<Object?> get props => [params];
 }
+
+class UpdateProjectEntriesEvent extends ProjectEvent {
+  const UpdateProjectEntriesEvent(this.params);
+
+  final ProjectParams params;
+
+  @override
+  List<Object?> get props => [params];
+}
+
+class DeleteProjectEntriesEvent extends ProjectEvent {
+  const DeleteProjectEntriesEvent(this.params);
+
+  final ProjectParams params;
+
+  @override
+  List<Object?> get props => [params];
+}
