@@ -11,6 +11,10 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_entry.dart';
+import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
+import 'package:refocus_app/features/calendar/domain/usecases/helpers/event_params.dart';
+import 'package:refocus_app/features/calendar/presentation/bloc/calendar/calendar_bloc.dart'
+    as cal;
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar_list/calendar_list_bloc.dart';
 import 'package:refocus_app/features/calendar/presentation/widgets/message_widget.dart';
 import 'package:refocus_app/features/task/domain/entities/subtask_entry.dart';
@@ -91,13 +95,8 @@ class _EditTaskViewState extends State<EditTaskView> {
   @override
   Widget build(BuildContext context) {
     final _color = StyleUtils.getColorFromString(widget.colorID ?? '#115FFB');
-    final _backgroudColor = StyleUtils.lighten(_color, 0.32);
     final _textColor = StyleUtils.darken(_color, kcdarker2);
-
-    final _timeTextStyle = context.h6.copyWith(
-      color: _textColor,
-      fontWeight: FontWeight.w600,
-    );
+    final _backgroudColor = StyleUtils.lighten(_color, 0.32);
 
     return PlatformScaffold(
       backgroundColor: context.backgroundColor,
@@ -226,7 +225,7 @@ class _EditTaskViewState extends State<EditTaskView> {
             ),
           ],
 
-          if (eventEntry != null) ...[
+          if (widget.entry != null && widget.task == null) ...[
             verticalSpaceMedium,
             Text('Calendar', style: _dateTextStyle)
                 .alignment(Alignment.center)
@@ -607,6 +606,33 @@ class _EditTaskViewState extends State<EditTaskView> {
         // context.read<TaskBloc>().add(
         //     GetSingleTaskEntryEvent(taskID: widget.task?.id ?? widget.taskID!));
         context.router.pop(currentTask);
+      } else {
+        context.router.pop();
+      }
+    } else if (widget.entry != null) {
+      if (_title != widget.entry!.title ||
+          _startDateTime != widget.entry!.startDateTime ||
+          _endDateTime != widget.entry!.endDateTime ||
+          _calendarID != widget.entry!.projectOrCalID) {
+        final _calendarEventEntry = CalendarEventEntry(
+          id: widget.entry!.id,
+          subject: _title ?? widget.entry!.title ?? '',
+          colorId: widget.entry!.color,
+          calendarId: widget.entry!.projectOrCalID,
+          startDateTime: CustomDateUtils.toGoogleRFCDateTime(
+              _startDateTime ?? widget.entry!.startDateTime!),
+          endDateTime: CustomDateUtils.toGoogleRFCDateTime(
+              _endDateTime ?? widget.entry!.endDateTime!),
+          allDay: false,
+        );
+        context.read<cal.CalendarBloc>().add(
+              cal.UpdateCalendarEvent(
+                EventParams(
+                  eventEntry: _calendarEventEntry,
+                ),
+              ),
+            );
+        context.router.pop(_calendarEventEntry);
       } else {
         context.router.pop();
       }

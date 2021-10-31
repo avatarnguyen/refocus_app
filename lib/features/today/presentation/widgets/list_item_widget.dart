@@ -16,6 +16,8 @@ import 'package:refocus_app/core/util/helpers/logging.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/today_entry_type.dart';
 import 'package:refocus_app/enum/today_event_type.dart';
+import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
+import 'package:refocus_app/features/calendar/presentation/bloc/calendar/calendar_bloc.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar/datetime_stream.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar_list/calendar_list_bloc.dart';
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
@@ -69,16 +71,20 @@ class _ListItemWidgetState extends State<ListItemWidget> {
   String? _title;
   String? _colorID;
   late String _id;
-  late bool _isCompleted;
+  // late bool _isCompleted;
   List<SubTaskEntry>? _subtasks;
   late TodayEntryType _type;
 
   TaskEntry? _currentTask;
+  TodayEntry? _currentEvent;
 
   @override
   void initState() {
     super.initState();
     if (widget.entry != null) {
+      if (widget.entry!.type != TodayEntryType.task) {
+        _currentEvent = widget.entry;
+      }
       _id = widget.entry!.id;
       _dueDateTime = widget.entry!.dueDateTime;
       _startDateTime = widget.entry!.startDateTime;
@@ -86,9 +92,10 @@ class _ListItemWidgetState extends State<ListItemWidget> {
       _title = widget.entry!.title;
       _colorID = widget.entry!.color;
       _subtasks = widget.entry!.subTaskEntries;
-      _isCompleted = widget.entry?.isCompleted ?? false;
+      // _isCompleted = widget.entry?.isCompleted ?? false;
       _type = widget.entry!.type;
     } else if (widget.task != null) {
+      // Item come from Task Page
       _currentTask = widget.task;
       _id = widget.task!.id;
       _dueDateTime = widget.task!.dueDate;
@@ -96,13 +103,10 @@ class _ListItemWidgetState extends State<ListItemWidget> {
       _endDateTime = widget.task!.endDateTime;
       _title = widget.task!.title;
       _colorID = widget.task!.colorID;
-      _isCompleted = widget.task!.isCompleted;
+      // _isCompleted = widget.task!.isCompleted;
       _type = TodayEntryType.task;
     }
-    // context.read<SubtaskCubit>().getSubTasksFromTask(_id);
   }
-
-  Widget? _cellContentContainer;
 
   @override
   Widget build(BuildContext context) {
@@ -168,19 +172,14 @@ class _ListItemWidgetState extends State<ListItemWidget> {
       _eventBlocType = TodayEventType.specificDate;
     }
 
-    // _log.d('Selected Date: ${widget.selectedDate}');
-    _log.d('Container: $_cellContentContainer');
-
     return Slidable.builder(
-      key: Key(_id),
+      key: widget.key ?? Key(_id),
       actionPane: const SlidableStrechActionPane(),
-      // actionExtentRatio: .4,
+      actionExtentRatio: .32,
       actionDelegate: _isEvent
           ? null
           : SlideActionBuilderDelegate(
               builder: (context, index, animation, step) {
-                // print('Current Animation: ${animation?.value}');
-
                 return IconSlideAction(
                   color: step == SlidableRenderingMode.dismiss
                       ? kcSuccess500
@@ -193,9 +192,7 @@ class _ListItemWidgetState extends State<ListItemWidget> {
                   icon: Icons.check,
                   caption: animation!.value > 0.96 ? 'Mark as Done' : null,
                   onTap: () {
-                    if (widget.markItemAsDone != null) {
-                      widget.markItemAsDone!();
-                    }
+                    widget.markItemAsDone?.call();
                   },
                 );
               },
@@ -220,7 +217,7 @@ class _ListItemWidgetState extends State<ListItemWidget> {
               caption: animation!.value >= 0.8 ? 'change date' : null,
               onTap: () {
                 if (widget.changeItemDate != null) {
-                  widget.changeItemDate!();
+                  widget.changeItemDate?.call();
                 }
               },
             );
@@ -265,7 +262,7 @@ class _ListItemWidgetState extends State<ListItemWidget> {
                 onTap: () async {
                   // final state = Slidable.of(context);
                   if (widget.postponeItem != null) {
-                    widget.postponeItem!();
+                    widget.postponeItem?.call();
                   }
                 },
               );
@@ -284,14 +281,14 @@ class _ListItemWidgetState extends State<ListItemWidget> {
             if (actionTyp == SlideActionType.primary) {
               // Mark Task as Done
               if (widget.markItemAsDone != null) {
-                widget.markItemAsDone!();
+                widget.markItemAsDone?.call();
               }
             } else {
               if (widget.postponeItem != null) {
                 widget.postponeItem!();
               } else {
                 if (widget.deleteItem != null) {
-                  widget.deleteItem!();
+                  widget.deleteItem?.call();
                 }
               }
             }
@@ -319,7 +316,6 @@ class _ListItemWidgetState extends State<ListItemWidget> {
         ),
         padding: const EdgeInsets.only(left: 8),
         child: Container(
-                // key: UniqueKey(),
                 width: context.width - (8 + 28 + 8), //8 is hori padding
                 padding:
                     const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
@@ -411,12 +407,12 @@ class _ListItemWidgetState extends State<ListItemWidget> {
                       ),
                   ]
                 ].toColumn(mainAxisSize: MainAxisSize.min))
-            .gestures(onTap: showTaskBottomSheet),
+            .gestures(onTap: showDetailBottomSheet),
       ).paddingDirectional(horizontal: 4),
     ).padding(horizontal: 6, vertical: 6);
   }
 
-  dynamic showTaskBottomSheet() async {
+  dynamic showDetailBottomSheet() async {
     Widget? _headerWidget;
 
     final _isTask = _type == TodayEntryType.task;
@@ -453,14 +449,14 @@ class _ListItemWidgetState extends State<ListItemWidget> {
               ],
               child: _isTask
                   ? DetailTaskView(
-                      key: Key('${_id}_task_detail'),
+                      key: Key('${_id}_task_detail_${_currentTask?.title}'),
                       task: _currentTask,
                       taskID: widget.entry?.id,
                       colorID: _colorID ?? widget.project?.color,
                     )
                   : DetailEventView(
-                      key: Key('${_id}_event_detail'),
-                      event: widget.entry,
+                      key: Key('${_id}_event_detail_${_currentEvent?.title}'),
+                      event: _currentEvent,
                     ),
             );
           },
@@ -470,63 +466,83 @@ class _ListItemWidgetState extends State<ListItemWidget> {
   }
 
   Future<void> _openEditView() async {
-    final _result = await showCupertinoModalBottomSheet<TaskEntry?>(
+    final _isTask = _type == TodayEntryType.task;
+
+    final dynamic _result = await showCupertinoModalBottomSheet<dynamic>(
       elevation: 24,
       useRootNavigator: true,
       expand: true,
       context: context,
       topRadius: const Radius.circular(16),
-      builder: (_) => MultiBlocProvider(
-        providers: [
-          BlocProvider<CalendarListBloc>.value(
-            value: BlocProvider.of<CalendarListBloc>(context),
-          ),
-          BlocProvider<TaskBloc>.value(
-            value: BlocProvider.of<TaskBloc>(context),
-          ),
-          BlocProvider<SubtaskCubit>.value(
-            value: BlocProvider.of<SubtaskCubit>(context),
-          ),
-        ],
-        child: EditTaskView(
-          key: Key(_id),
+      builder: (_) {
+        final _editTaskView = EditTaskView(
+          key: Key('edit_$_id'),
           taskID: _id,
           task: _currentTask,
-          entry: widget.entry,
+          entry: _isTask ? null : _currentEvent,
           colorID: _colorID ?? widget.project?.color,
           modalScrollController: ModalScrollController.of(context),
-        ),
-      ),
+        );
+        return _isTask
+            ? MultiBlocProvider(
+                providers: [
+                  BlocProvider<CalendarListBloc>.value(
+                    value: BlocProvider.of<CalendarListBloc>(context),
+                  ),
+                  BlocProvider<TaskBloc>.value(
+                    value: BlocProvider.of<TaskBloc>(context),
+                  ),
+                  BlocProvider<SubtaskCubit>.value(
+                    value: BlocProvider.of<SubtaskCubit>(context),
+                  ),
+                ],
+                child: _editTaskView,
+              )
+            : MultiBlocProvider(
+                providers: [
+                  BlocProvider<CalendarListBloc>.value(
+                    value: BlocProvider.of<CalendarListBloc>(context),
+                  ),
+                  BlocProvider<CalendarBloc>.value(
+                    value: BlocProvider.of<CalendarBloc>(context),
+                  ),
+                ],
+                child: _editTaskView,
+              );
+      },
     );
 
-    if (_result != null) {
+    if (_result is TaskEntry?) {
+      if (_result != null) {
+        setState(() {
+          _currentTask = _result;
+          _id = _result.id;
+          _dueDateTime = _result.dueDate;
+          _startDateTime = _result.startDateTime;
+          _endDateTime = _result.endDateTime;
+          _title = _result.title;
+          _colorID = _result.colorID;
+          // _isCompleted = _result.isCompleted;
+        });
+        _sheetController.rebuild();
+      }
+    } else if (_result is CalendarEventEntry) {
       setState(() {
-        _currentTask = _result;
-        _cellContentContainer = null;
-        _id = _result.id;
-        _dueDateTime = _result.dueDate;
+        _currentEvent = _currentEvent!.copyWith(
+          title: _result.subject,
+          startDateTime: _result.startDateTime,
+          endDateTime: _result.endDateTime,
+          color: _result.colorId,
+          projectOrCalID: _result.calendarId,
+        );
+        _id = _result.id!;
         _startDateTime = _result.startDateTime;
         _endDateTime = _result.endDateTime;
-        _title = _result.title;
-        _colorID = _result.colorID;
-        _isCompleted = _result.isCompleted;
+        _title = _result.subject;
+        _colorID = _result.colorId;
       });
-
       _sheetController.rebuild();
     }
-  }
-
-  Color getColor(Set<MaterialState> states) {
-    const interactiveStates = <MaterialState>{
-      MaterialState.selected,
-      MaterialState.hovered,
-      MaterialState.focused,
-      // MaterialState.disabled,
-    };
-    if (states.any(interactiveStates.contains)) {
-      return kcPrimary500;
-    }
-    return Colors.grey;
   }
 
   Future<bool> _showDeleteAlertDialog() async {

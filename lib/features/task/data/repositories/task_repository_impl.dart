@@ -92,9 +92,19 @@ class TaskRepositoryImpl implements TaskRepository {
       final _projects = await remoteDataSource.getRemoteProject();
       log.v('Fetched Projects Count: ${_projects.length}');
 
-      final _projectsEntry = _projects
-          .map((project) => ProjectEntry.fromMap(project.toJson()))
-          .toList();
+      final _projectsEntry = <ProjectEntry>[];
+
+      for (var idx = 0; idx < _projects.length; idx++) {
+        final _tasks =
+            await remoteDataSource.getRemoteTask(project: _projects[idx]);
+        log.d('Task: $_tasks');
+        final _entry = ProjectEntry.fromMap(_projects[idx].toJson());
+        _projectsEntry.add(
+          _entry.copyWith(
+            taskCount: _tasks.length,
+          ),
+        );
+      }
 
       //Cache Color of Projects to add to task locally
       await localDataSource.cacheRemoteProjectColors(_projects);

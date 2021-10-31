@@ -9,8 +9,8 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:http/http.dart';
 import 'package:refocus_app/core/util/helpers/date_utils.dart';
+import 'package:refocus_app/core/util/helpers/logging.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/today_entry_type.dart';
 import 'package:refocus_app/enum/today_event_type.dart';
@@ -39,6 +39,8 @@ class TodayListWidget extends StatefulWidget {
 }
 
 class _TodayListWidgetState extends State<TodayListWidget> {
+  final _log = logger(TodayListWidget);
+
   final DateTimeStream _dateTimeStream = getIt<DateTimeStream>();
   StreamSubscription<DateTime>? _dateTimeSubscription;
 
@@ -60,7 +62,6 @@ class _TodayListWidgetState extends State<TodayListWidget> {
   }
 
   void _dateTimeReceived(DateTime newDate) {
-    // print('Date Time Received $newDate');
     if (newDate.isToday) {
       if (_selectedDate != null) {
         _selectedDate = null;
@@ -191,6 +192,7 @@ class _TodayListWidgetState extends State<TodayListWidget> {
             delegate: SliverChildBuilderDelegate(
               (context, index) {
                 final _entry = _tomorrowList[index];
+
                 return ListItemWidget(
                   key: Key(
                     '${_entry.id}_${_entry.startDateTime}_${_entry.dueDateTime}',
@@ -256,48 +258,48 @@ class _TodayListWidgetState extends State<TodayListWidget> {
       },
     );
     if (result != null && result is List) {
-      print(result);
+      _log.v(result);
+      _log.v('Project / Calendar ID: ${entry.projectOrCalID}');
 
       final _newStartTime = result[0] as DateTime?;
       final _newEndTime = result[1] as DateTime?;
 
-      if (entry.type == TodayEntryType.event) {
-        print('Event Cal ID: ${entry.projectOrCalID}');
-        // ignore: use_build_context_synchronously
-        context.read<CalendarBloc>().add(
-              UpdateCalendarEvent(
-                EventParams(
-                  eventEntry: CalendarEventEntry(
-                    id: entry.id,
-                    subject: entry.title ?? '',
-                    colorId: entry.color,
-                    calendarId: entry.projectOrCalID,
-                    startDateTime:
-                        CustomDateUtils.toGoogleRFCDateTime(_newStartTime!),
-                    endDateTime:
-                        CustomDateUtils.toGoogleRFCDateTime(_newEndTime!),
-                    // timeZone: entry.startDateTime?.timeZoneName,
-                    allDay: false,
-                  ),
-                ),
-              ),
-            );
-      } else {
-        // ignore: use_build_context_synchronously
-        context.read<TaskBloc>().add(
-              EditTaskEntryEvent(
-                params: TaskParams(
-                  task: _returnTaskFromTodayEntry(
-                    entry,
-                    startDate: _newStartTime,
-                    endDate: _newEndTime,
-                  ),
-                ),
-              ),
-            );
-      }
+      _updateDate(entry, _newStartTime, _newEndTime);
 
       _reloadData();
+    }
+  }
+
+  void _updateDate(TodayEntry entry, DateTime? start, DateTime? end) {
+    if (entry.type == TodayEntryType.event) {
+      context.read<CalendarBloc>().add(
+            UpdateCalendarEvent(
+              EventParams(
+                eventEntry: CalendarEventEntry(
+                  id: entry.id,
+                  subject: entry.title ?? '',
+                  colorId: entry.color,
+                  calendarId: entry.projectOrCalID,
+                  startDateTime: CustomDateUtils.toGoogleRFCDateTime(start!),
+                  endDateTime: CustomDateUtils.toGoogleRFCDateTime(end!),
+                  // timeZone: entry.startDateTime?.timeZoneName,
+                  allDay: false,
+                ),
+              ),
+            ),
+          );
+    } else {
+      context.read<TaskBloc>().add(
+            EditTaskEntryEvent(
+              params: TaskParams(
+                task: _returnTaskFromTodayEntry(
+                  entry,
+                  startDate: start,
+                  endDate: end,
+                ),
+              ),
+            ),
+          );
     }
   }
 

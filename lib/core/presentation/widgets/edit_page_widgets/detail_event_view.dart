@@ -17,7 +17,7 @@ class DetailEventView extends StatelessWidget {
     if (event != null) {
       return _buildListView(context);
     } else {
-      return Container();
+      return const SizedBox.shrink();
     }
   }
 
