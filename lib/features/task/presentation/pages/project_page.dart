@@ -101,8 +101,7 @@ class _ProjectItemState extends State<ProjectItem> {
   void initState() {
     super.initState();
     _currentProject = widget.project ??
-        const ProjectEntry(
-            title: 'Tasks Inbox', id: 'inbox_2021', color: '#8879FC');
+        const ProjectEntry(title: 'Inbox', id: 'inbox_2021', color: '#8879FC');
   }
 
   @override
@@ -155,21 +154,22 @@ class _ProjectItemState extends State<ProjectItem> {
             color: Colors.white,
           ),
         ),
-        Container(
-          width: 32,
-          padding: const EdgeInsets.symmetric(vertical: 2),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.all(Radius.circular(8)),
-          ),
-          child: Text(
-            _currentProject.taskCount?.toString() ?? '0',
-            textAlign: TextAlign.center,
-            style: context.bodyText2.copyWith(
-              color: _textColor,
+        if (widget.project != null)
+          Container(
+            width: 32,
+            padding: const EdgeInsets.symmetric(vertical: 2),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.all(Radius.circular(8)),
+            ),
+            child: Text(
+              _currentProject.taskCount?.toString() ?? '0',
+              textAlign: TextAlign.center,
+              style: context.bodyText2.copyWith(
+                color: _textColor,
+              ),
             ),
           ),
-        ),
       ]
           .toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween)
           .padding(all: 16)
