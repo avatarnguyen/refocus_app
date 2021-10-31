@@ -110,7 +110,7 @@ class _ProjectItemState extends State<ProjectItem> {
     final _color =
         StyleUtils.getColorFromString(_currentProject.color ?? '#8879FC');
     final _backgroundColor = StyleUtils.darken(_color);
-    const _textColor = Colors.white;
+    final _textColor = StyleUtils.darken(_color, 0.4);
 
     return Slidable(
       key: Key(_currentProject.title ?? 'project_item'),
@@ -152,15 +152,23 @@ class _ProjectItemState extends State<ProjectItem> {
         Text(
           _currentProject.title!,
           style: context.bodyText1.copyWith(
-            color: _textColor,
+            color: Colors.white,
           ),
         ),
-        Chip(
-          labelPadding: EdgeInsets.zero,
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          visualDensity: const VisualDensity(vertical: -2),
-          label: Text('10', style: context.subtitle1),
+        Container(
+          width: 32,
+          padding: const EdgeInsets.symmetric(vertical: 2),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.all(Radius.circular(8)),
+          ),
+          child: Text(
+            _currentProject.taskCount?.toString() ?? '0',
+            textAlign: TextAlign.center,
+            style: context.bodyText2.copyWith(
+              color: _textColor,
+            ),
+          ),
         ),
       ]
           .toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween)
@@ -174,7 +182,7 @@ class _ProjectItemState extends State<ProjectItem> {
               vertical: 8,
             ),
             shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(8)),
+              borderRadius: BorderRadius.all(Radius.circular(16)),
             ),
           )
           .gestures(
@@ -217,45 +225,6 @@ class _ProjectItemState extends State<ProjectItem> {
     );
     return _result ?? false;
   }
-
-//   //TODO: Change to 'customBuilder' when sliding sheet release new version
-//   dynamic showTaskBottomSheet(
-//     BuildContext parentContext,
-//     ProjectEntry project,
-//   ) async {
-//     SlidingSheetDialog? _taskSheetDialog;
-//     Widget? _taskPageContent;
-//     final dynamic result = await showSlidingBottomSheet<dynamic>(
-//       context,
-//       builder: (context) {
-//         return _taskSheetDialog ??= SlidingSheetDialog(
-//           elevation: 8,
-//           cornerRadius: 16,
-//           duration: 500.milliseconds,
-//           color: context.backgroundColor,
-//           snapSpec: const SnapSpec(
-//             initialSnap: 0.89,
-//             snappings: [0.4, 0.89],
-//             positioning: SnapPositioning.relativeToSheetHeight,
-//           ),
-//           minHeight: context.height - 56,
-//           headerBuilder: (context, state) {
-//             return const TaskPageHeaderWidget();
-//           },
-//           builder: (context, state) {
-//             return BlocProvider<TaskBloc>.value(
-//               value: BlocProvider.of<TaskBloc>(parentContext),
-//               child: _taskPageContent ??= TaskPage(
-//                 project: project,
-//               ),
-//             );
-//           },
-//         );
-//       },
-//     );
-
-//     print(result); // This is the result.
-//   }
 }
 
 class TaskPageHeaderWidget extends StatelessWidget {

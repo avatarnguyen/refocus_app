@@ -37,17 +37,6 @@ class _CalendarListItemState extends State<CalendarListItem> {
 
     return [
       widget.calendar.name.toBodyText1(color: _textColor).flexible(),
-      // Material(
-      //   color: Colors.transparent,
-      //   child: Checkbox(
-      //     visualDensity: const VisualDensity(
-      //       horizontal: VisualDensity.minimumDensity,
-      //       vertical: VisualDensity.minimumDensity,
-      //     ),
-      //     value: _isSelected,
-      //     onChanged: _changeCheckBoxState,
-      //   ),
-      // ),
     ]
         .toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween)
         .padding(all: 16)
@@ -60,7 +49,7 @@ class _CalendarListItemState extends State<CalendarListItem> {
             vertical: 8,
           ),
           shape: RoundedRectangleBorder(
-            borderRadius: const BorderRadius.all(Radius.circular(8)),
+            borderRadius: const BorderRadius.all(Radius.circular(16)),
             side: _isSelected
                 ? BorderSide.none
                 : BorderSide(color: _backgroundColor),
