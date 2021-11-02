@@ -469,9 +469,9 @@ class _ListItemWidgetState extends State<ListItemWidget> {
     final _isTask = _type == TodayEntryType.task;
 
     final dynamic _result = await showCupertinoModalBottomSheet<dynamic>(
-      elevation: 24,
       useRootNavigator: true,
       expand: true,
+      bounce: true,
       context: context,
       topRadius: const Radius.circular(16),
       builder: (_) {

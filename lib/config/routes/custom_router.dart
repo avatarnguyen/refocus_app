@@ -16,6 +16,7 @@ Route<T> modalSheetCustomRouteBuilder<T>(
         )
       : MaterialWithModalsPageRoute(
           settings: page,
+          fullscreenDialog: true,
           builder: (BuildContext context) => child,
         );
 }

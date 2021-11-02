@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:dartx/dartx.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -139,15 +138,17 @@ class _TodayPageState extends State<TodayPage> {
                           widget.changePage();
                         },
                       ),
+                      // IconButton(
+                      //   padding: EdgeInsets.zero,
+                      //   icon: const Icon(Icons.inbox),
+                      //   onPressed: () {},
+                      // ),
                       IconButton(
                         padding: EdgeInsets.zero,
-                        icon: const Icon(Icons.inbox),
-                        onPressed: () {},
-                      ),
-                      IconButton(
-                        padding: EdgeInsets.zero,
-                        icon: const Icon(Icons.person),
-                        onPressed: () {},
+                        icon: const Icon(Icons.settings_outlined),
+                        onPressed: () {
+                          context.navigateTo(const SettingRoute());
+                        },
                       ),
                     ],
                     flexibleSpace: FlexibleSpaceBar(
