@@ -4,9 +4,8 @@ analyzer:
   exclude:
     - "**/*.g.dart"
     - "**/*.freezed.dart"
-    - "**/Project.dart"
-    - "**/Subtask.dart"
-    - "**/Task.dart"
+    - "**/models/*"
+
   errors:
     invalid_annotation_target: ignore
     argument_type_not_assignable: warning

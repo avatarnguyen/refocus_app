@@ -41,12 +41,12 @@
         "GraphQLAPIEndpointOutput": "https://an5m2b625rhyzd5vni2zhtfmee.appsync-api.eu-west-1.amazonaws.com/graphql",
         "GraphQLAPIKeyOutput": "da2-lj2aeanxbjd65cavotdq7lczcu"
       },
-      "lastPushTimeStamp": "2021-09-28T11:42:52.297Z",
+      "lastPushTimeStamp": "2021-11-03T17:09:54.577Z",
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-superday-staging-152743-deployment/amplify-cfn-templates/api/cloudformation-template.json",
         "logicalId": "apiSuperday"
       },
-      "lastPushDirHash": "XksBOKVH2wXaS/zXWcNR19grkJQ="
+      "lastPushDirHash": "175MYz6Umz1vg3rJnDKJgDolRe4="
     }
   },
   "auth": {
@@ -81,7 +81,7 @@
         "IdentityPoolName": "superday1c222a7d_identitypool_1c222a7d__staging",
         "UserPoolName": "superday1c222a7d_userpool_1c222a7d"
       },
-      "lastPushTimeStamp": "2021-09-28T11:42:52.299Z",
+      "lastPushTimeStamp": "2021-11-03T17:09:54.579Z",
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-superday-staging-152743-deployment/amplify-cfn-templates/auth/superday1c222a7d-cloudformation-template.yml",
         "logicalId": "authsuperday1c222a7d"

@@ -19,16 +19,18 @@ import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_inte
 import 'Project.dart';
 import 'Subtask.dart';
 import 'Task.dart';
+import 'User.dart';
 
 export 'Project.dart';
 export 'Subtask.dart';
 export 'Task.dart';
+export 'User.dart';
 
 class ModelProvider implements ModelProviderInterface {
   @override
-  String version = "0219d3389bb9fadc7189fccc3db61a23";
+  String version = "2e4cde317a9bf54fa3cf294071097358";
   @override
-  List<ModelSchema> modelSchemas = [Project.schema, Subtask.schema, Task.schema];
+  List<ModelSchema> modelSchemas = [Project.schema, Subtask.schema, Task.schema, User.schema];
   static final ModelProvider _instance = ModelProvider();
 
   static ModelProvider get instance => _instance;
@@ -45,6 +47,10 @@ class ModelProvider implements ModelProviderInterface {
     break;
     case "Task": {
     return Task.classType;
+    }
+    break;
+    case "User": {
+    return User.classType;
     }
     break;
     default: {

@@ -30,6 +30,7 @@ class Project extends Model {
   final String? _color;
   final String? _emoji;
   final List<Task>? _Tasks;
+  final String? _userID;
 
   @override
   getInstanceType() => classType;
@@ -55,15 +56,20 @@ class Project extends Model {
     return _Tasks;
   }
   
-  const Project._internal({required this.id, title, color, emoji, Tasks}): _title = title, _color = color, _emoji = emoji, _Tasks = Tasks;
+  String? get userID {
+    return _userID;
+  }
   
-  factory Project({String? id, String? title, String? color, String? emoji, List<Task>? Tasks}) {
+  const Project._internal({required this.id, title, color, emoji, Tasks, userID}): _title = title, _color = color, _emoji = emoji, _Tasks = Tasks, _userID = userID;
+  
+  factory Project({String? id, String? title, String? color, String? emoji, List<Task>? Tasks, String? userID}) {
     return Project._internal(
       id: id == null ? UUID.getUUID() : id,
       title: title,
       color: color,
       emoji: emoji,
-      Tasks: Tasks != null ? List<Task>.unmodifiable(Tasks) : Tasks);
+      Tasks: Tasks != null ? List<Task>.unmodifiable(Tasks) : Tasks,
+      userID: userID);
   }
   
   bool equals(Object other) {
@@ -78,7 +84,8 @@ class Project extends Model {
       _title == other._title &&
       _color == other._color &&
       _emoji == other._emoji &&
-      DeepCollectionEquality().equals(_Tasks, other._Tasks);
+      DeepCollectionEquality().equals(_Tasks, other._Tasks) &&
+      _userID == other._userID;
   }
   
   @override
@@ -92,19 +99,21 @@ class Project extends Model {
     buffer.write("id=" + "$id" + ", ");
     buffer.write("title=" + "$_title" + ", ");
     buffer.write("color=" + "$_color" + ", ");
-    buffer.write("emoji=" + "$_emoji");
+    buffer.write("emoji=" + "$_emoji" + ", ");
+    buffer.write("userID=" + "$_userID");
     buffer.write("}");
     
     return buffer.toString();
   }
   
-  Project copyWith({String? id, String? title, String? color, String? emoji, List<Task>? Tasks}) {
+  Project copyWith({String? id, String? title, String? color, String? emoji, List<Task>? Tasks, String? userID}) {
     return Project(
       id: id ?? this.id,
       title: title ?? this.title,
       color: color ?? this.color,
       emoji: emoji ?? this.emoji,
-      Tasks: Tasks ?? this.Tasks);
+      Tasks: Tasks ?? this.Tasks,
+      userID: userID ?? this.userID);
   }
   
   Project.fromJson(Map<String, dynamic> json)  
@@ -117,10 +126,11 @@ class Project extends Model {
           .where((e) => e?['serializedData'] != null)
           .map((e) => Task.fromJson(new Map<String, dynamic>.from(e['serializedData'])))
           .toList()
-        : null;
+        : null,
+      _userID = json['userID'];
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'title': _title, 'color': _color, 'emoji': _emoji, 'Tasks': _Tasks?.map((e) => e?.toJson())?.toList()
+    'id': id, 'title': _title, 'color': _color, 'emoji': _emoji, 'Tasks': _Tasks?.map((e) => e?.toJson())?.toList(), 'userID': _userID
   };
 
   static final QueryField ID = QueryField(fieldName: "project.id");
@@ -130,6 +140,7 @@ class Project extends Model {
   static final QueryField TASKS = QueryField(
     fieldName: "Tasks",
     fieldType: ModelFieldType(ModelFieldTypeEnum.model, ofModelName: (Task).toString()));
+  static final QueryField USERID = QueryField(fieldName: "userID");
   static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "Project";
     modelSchemaDefinition.pluralName = "Projects";
@@ -170,6 +181,12 @@ class Project extends Model {
       isRequired: false,
       ofModelName: (Task).toString(),
       associatedKey: Task.PROJECTID
+    ));
+    
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
+      key: Project.USERID,
+      isRequired: false,
+      ofType: ModelFieldType(ModelFieldTypeEnum.string)
     ));
   });
 }

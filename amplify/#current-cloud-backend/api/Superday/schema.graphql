@@ -1,3 +1,11 @@
+type User @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  username: String
+  email: String
+  avatarKey: String
+  Projects: [Project] @connection(keyName: "byUser", fields: ["id"])
+}
+
 type Subtask @model @auth(rules: [{allow: public}]) @key(name: "byTask", fields: ["taskID"]) {
   id: ID!
   title: String
@@ -7,12 +15,13 @@ type Subtask @model @auth(rules: [{allow: public}]) @key(name: "byTask", fields:
   taskID: ID
 }
 
-type Project @model @auth(rules: [{allow: public}]) {
+type Project @model @auth(rules: [{allow: public}]) @key(name: "byUser", fields: ["userID"]) {
   id: ID!
   title: String
   color: String
   emoji: String
   Tasks: [Task] @connection(keyName: "byProject", fields: ["id"])
+  userID: ID
 }
 
 type Task @model @auth(rules: [{allow: public}]) @key(name: "byProject", fields: ["projectID"]) {
