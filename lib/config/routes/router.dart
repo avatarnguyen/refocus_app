@@ -27,7 +27,6 @@ export 'router.gr.dart';
       ),
       CustomRoute<dynamic>(
         page: SettingPage,
-        fullscreenDialog: true,
         customRouteBuilder: modalSheetCustomRouteBuilder,
       ),
     ]),

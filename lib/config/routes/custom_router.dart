@@ -10,7 +10,7 @@ Route<T> modalSheetCustomRouteBuilder<T>(
       ? CupertinoModalBottomSheetRoute(
           elevation: 16,
           settings: page,
-          expanded: false,
+          expanded: true,
           topRadius: const Radius.circular(16),
           builder: (BuildContext context) => child,
         )
