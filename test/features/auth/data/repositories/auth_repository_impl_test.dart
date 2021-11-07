@@ -148,7 +148,7 @@ void main() {
         );
         final tServerFailure = ServerFailure();
         expect(result, isA<Left<Failure, UserEntry>>());
-        expect(result, Left<dynamic, UserEntry>(tServerFailure));
+        expect(result, Left<Failure, UserEntry>(tServerFailure));
       },
     );
 
@@ -165,7 +165,7 @@ void main() {
           () => mockAuthDataSource.attemptAutoLogin(),
         );
         expect(result, isA<Right<Failure, UserEntry>>());
-        expect(result, Right<dynamic, UserEntry>(_tUserEntry));
+        expect(result, Right<Failure, UserEntry>(_tUserEntry));
       },
     );
   });
