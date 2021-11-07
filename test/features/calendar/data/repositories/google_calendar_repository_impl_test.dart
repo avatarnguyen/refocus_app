@@ -226,7 +226,7 @@ void main() {
               calendarList: [], timeMin: timeMin, timeMax: timeMax));
           // verifyZeroInteractions(mockLocalDataSource);
 
-          expect(result, equals(Left(ServerFailure())));
+          expect(result, equals(Left<Failure, dynamic>(ServerFailure())));
         },
       );
     });
@@ -266,7 +266,7 @@ void main() {
           // assert
           verifyZeroInteractions(mockRemoteDataSource);
           verify(() => mockLocalDataSource.getLastCalendarEventEntry());
-          expect(result, equals(Left(CacheFailure())));
+          expect(result, equals(Left<Failure, dynamic>(CacheFailure())));
         },
       );
     });
