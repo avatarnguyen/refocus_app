@@ -15,7 +15,7 @@ abstract class AuthDataSource {
     required String username,
     required String password,
   });
-  Future<aws_model.User> attemptAutoLogin();
+  Future<aws_model.User?> attemptAutoLogin();
   Future<void> signOut();
 }
 
@@ -40,10 +40,51 @@ class AWSAuthDataSource implements AuthDataSource {
     }
   }
 
+  Future<aws_model.User?> _getUserModelFromDataStore(String userId) async {
+    try {
+      final fetchedUser = await Amplify.DataStore.query(
+          aws_model.User.classType,
+          where: aws_model.User.ID.eq(userId));
+      if (fetchedUser.isNotEmpty) {
+        return fetchedUser.first;
+      } else {
+        log.d('No User with the given ID exist in the database');
+        return null;
+      }
+    } catch (e) {
+      log.e(e);
+      throw ServerException();
+    }
+  }
+
+  Future<aws_model.User?> _createUserModelInDataStore(
+      aws_model.User user) async {
+    try {
+      await Amplify.DataStore.save(user);
+
+      return _getUserModelFromDataStore(user.id);
+    } catch (e) {
+      log.e(e);
+      throw ServerException();
+    }
+  }
+
   @override
-  Future<aws_model.User> attemptAutoLogin() {
-    // TODO: implement attemptAutoLogin
-    throw UnimplementedError();
+  Future<aws_model.User?> attemptAutoLogin() async {
+    try {
+      final session = await Amplify.Auth.fetchAuthSession();
+
+      if (session.isSignedIn) {
+        final userId = await _getUserIdFromAttributes();
+        return _getUserModelFromDataStore(userId);
+      } else {
+        log.d('No User Session is available');
+        return null;
+      }
+    } catch (e) {
+      log.e(e);
+      throw ServerException();
+    }
   }
 
   @override
@@ -56,8 +97,8 @@ class AWSAuthDataSource implements AuthDataSource {
       );
 
       if (result.isSignedIn) {
-        await _getUserIdFromAttributes();
-        return aws_model.User();
+        final userId = await _getUserIdFromAttributes();
+        return _getUserModelFromDataStore(userId);
       } else {
         return null;
       }
@@ -87,10 +128,18 @@ class AWSAuthDataSource implements AuthDataSource {
         options: options,
       );
       if (result.isSignUpComplete) {
-        await _getUserIdFromAttributes();
+        final _userId = await _getUserIdFromAttributes();
 
-        return aws_model.User();
+        final _newUser = aws_model.User(
+          id: _userId,
+          username: username,
+          email: email,
+        );
+        final result = _createUserModelInDataStore(_newUser);
+
+        return result;
       } else {
+        log.d('Sign Up not completed');
         return null;
       }
     } on AuthException catch (e) {
