@@ -6,13 +6,14 @@
 
 import 'package:auto_route/auto_route.dart' as _i6;
 import 'package:flutter/material.dart' as _i7;
+import 'package:flutter/widgets.dart' as _i9;
 import 'package:refocus_app/config/routes/custom_router.dart' as _i8;
 import 'package:refocus_app/core/presentation/pages/home_page.dart' as _i1;
 import 'package:refocus_app/core/presentation/pages/quickadd_page.dart' as _i2;
 import 'package:refocus_app/features/setting/presentation/pages/setting_page.dart'
     as _i5;
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart'
-    as _i9;
+    as _i10;
 import 'package:refocus_app/features/task/presentation/pages/create_project_page.dart'
     as _i3;
 import 'package:refocus_app/features/task/presentation/pages/task_page.dart'
@@ -105,7 +106,7 @@ class QuickAddRoute extends _i6.PageRouteInfo<void> {
 
 /// generated route for [_i3.CreateProjectPage]
 class CreateProjectRoute extends _i6.PageRouteInfo<CreateProjectRouteArgs> {
-  CreateProjectRoute({_i7.Key? key, _i9.ProjectEntry? project})
+  CreateProjectRoute({_i9.Key? key, _i10.ProjectEntry? project})
       : super(name,
             path: 'create-project-page',
             args: CreateProjectRouteArgs(key: key, project: project));
@@ -116,14 +117,14 @@ class CreateProjectRoute extends _i6.PageRouteInfo<CreateProjectRouteArgs> {
 class CreateProjectRouteArgs {
   const CreateProjectRouteArgs({this.key, this.project});
 
-  final _i7.Key? key;
+  final _i9.Key? key;
 
-  final _i9.ProjectEntry? project;
+  final _i10.ProjectEntry? project;
 }
 
 /// generated route for [_i4.TaskPage]
 class TaskRoute extends _i6.PageRouteInfo<TaskRouteArgs> {
-  TaskRoute({_i7.Key? key, required _i9.ProjectEntry project})
+  TaskRoute({_i9.Key? key, required _i10.ProjectEntry project})
       : super(name,
             path: 'task-page', args: TaskRouteArgs(key: key, project: project));
 
@@ -133,9 +134,9 @@ class TaskRoute extends _i6.PageRouteInfo<TaskRouteArgs> {
 class TaskRouteArgs {
   const TaskRouteArgs({this.key, required this.project});
 
-  final _i7.Key? key;
+  final _i9.Key? key;
 
-  final _i9.ProjectEntry project;
+  final _i10.ProjectEntry project;
 }
 
 /// generated route for [_i5.SettingPage]
