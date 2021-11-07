@@ -20,7 +20,7 @@ class Login implements UseCase<UserEntry, AuthParams> {
   Future<Either<Failure, UserEntry>> call(AuthParams params) async {
     if (params.username != null && params.password != null) {
       final _auth = AuthCredential(
-        email: params.email,
+        // email: params.email,
         password: params.password,
         username: params.username,
       );
