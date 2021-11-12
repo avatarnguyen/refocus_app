@@ -16,10 +16,13 @@ import 'package:refocus_app/core/presentation/helper/sliding_body_stream.dart';
 import 'package:refocus_app/core/presentation/widgets/slider_header_widget.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
+import 'package:refocus_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:refocus_app/features/auth/presentation/pages/login_page.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar/calendar_bloc.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar_list/calendar_list_bloc.dart';
 import 'package:refocus_app/features/calendar/presentation/pages/calendar_list_page.dart';
 import 'package:refocus_app/features/calendar/presentation/pages/calendar_page.dart';
+import 'package:refocus_app/features/calendar/presentation/widgets/widgets.dart';
 import 'package:refocus_app/features/task/presentation/bloc/cubit/subtask_cubit.dart';
 import 'package:refocus_app/features/task/presentation/bloc/project_bloc.dart';
 import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
@@ -139,7 +142,16 @@ class _HomePageWidgetState extends State<HomePageWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return _drawerBody(context);
+    return BlocBuilder<AuthBloc, AuthState>(
+      builder: (context, state) {
+        return state.maybeWhen(
+          unknown: () => const LoginPage(),
+          authenticated: (userEntry) => _drawerBody(context),
+          unauthenticated: () => const LoginPage(),
+          orElse: () => const MessageDisplay(message: 'Unexpected State'),
+        );
+      },
+    );
   }
 
   PlatformScaffold _drawerBody(BuildContext context) {
@@ -176,37 +188,31 @@ class _HomePageWidgetState extends State<HomePageWidget> {
               return const CalendarListPage();
             } else {
               return const ProjectPage();
-              // return BlocProvider<ProjectBloc>.value(
-              //   value: BlocProvider.of<ProjectBloc>(context),
-              //   child: const ProjectPage(),
-              // );
             }
           } else {
             return const SizedBox();
           }
         },
         body: SizedBox(
-            height: context.height,
-            width: context.width,
-            child: PageView(
-              allowImplicitScrolling: true,
-              physics: const ClampingScrollPhysics(),
-              controller: _pageController,
-              onPageChanged: (int index) {
-                _pageStream.broadCastCurrentPage(index);
-                _currentPage = index;
-              },
-              children: [
-                CalendarPage(changePage: switchToPageView),
-                if (amplifyConfigured)
-                  TodayPage(changePage: switchToPageView)
-                else
-                  progressIndicator,
-              ],
-            )
-            // .opacity(_drawerClosed ? 1.0 : 0.32, animate: true)
-            // .animate(400.milliseconds, Curves.fastOutSlowIn),
-            ),
+          height: context.height,
+          width: context.width,
+          child: PageView(
+            allowImplicitScrolling: true,
+            physics: const ClampingScrollPhysics(),
+            controller: _pageController,
+            onPageChanged: (int index) {
+              _pageStream.broadCastCurrentPage(index);
+              _currentPage = index;
+            },
+            children: [
+              CalendarPage(changePage: switchToPageView),
+              if (amplifyConfigured)
+                TodayPage(changePage: switchToPageView)
+              else
+                progressIndicator,
+            ],
+          ),
+        ),
       ),
     );
   }

@@ -45,7 +45,7 @@ void main() {
     test(
       'initial state is Loading State',
       () {
-        expect(bloc.state, const AuthState.loading());
+        expect(bloc.state, const AuthState.unknown());
       },
     );
     blocTest<AuthBloc, AuthState>(
@@ -63,7 +63,7 @@ void main() {
         _bloc.add(const AuthEvent.login(tUsername, tPassword));
       },
       expect: () => <AuthState>[
-        AuthState.success(tUser),
+        AuthState.authenticated(tUser),
       ],
     );
 
@@ -82,7 +82,7 @@ void main() {
         _bloc.add(const AuthEvent.login(tUsername, tPassword));
       },
       expect: () => const <AuthState>[
-        AuthState.error(),
+        AuthState.unknown(),
       ],
     );
   });

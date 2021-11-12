@@ -6,16 +6,17 @@
 // https://opensource.org/licenses/MIT.
 
 // Amplify Flutter Packages
-import 'dart:developer';
-
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:refocus_app/config/routes/router.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart';
 import 'package:refocus_app/core/util/ui/style_helpers.dart';
+import 'package:refocus_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:refocus_app/injection.dart';
 import 'package:refocus_app/l10n/l10n.dart';
 
 // Generated in previous step
@@ -28,7 +29,6 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
-  final log = logger(App);
   final _appRouter = AppRouter();
 
   @override
@@ -95,33 +95,39 @@ class _AppState extends State<App> {
       brightness: Brightness.light,
     );
 
-    // final _cupertinoTheme = CupertinoThemeData(
-    //   textTheme: CupertinoTextThemeData()
-    // );
-
-    return MaterialApp.router(
-      routerDelegate: _appRouter.delegate(
-        navigatorObservers: () => [
-          AppRouteObserver(),
+    return BlocProvider(
+      create: (_) => getIt<AuthBloc>(),
+      child: MaterialApp.router(
+        routerDelegate: _appRouter.delegate(
+          navigatorObservers: () => [
+            AppRouteObserver(),
+          ],
+        ),
+        routeInformationParser: _appRouter.defaultRouteParser(),
+        routeInformationProvider: AutoRouteInformationProvider(),
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
         ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        theme: _materialThemeData,
+        darkTheme: _materialDarkThemeData,
+        themeMode: ThemeMode.light,
       ),
-      routeInformationParser: _appRouter.defaultRouteParser(),
-      routeInformationProvider: AutoRouteInformationProvider(),
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-      ],
-      supportedLocales: AppLocalizations.supportedLocales,
-      theme: _materialThemeData,
-      darkTheme: _materialDarkThemeData,
-      themeMode: ThemeMode.light,
     );
   }
 }
 
 class AppRouteObserver extends AutoRouterObserver {
+  final _log = logger(AppRouteObserver);
   @override
   void didPush(Route route, Route? previousRoute) {
-    log('New route pushed: ${route.settings.name}');
+    _log.i('New route pushed: ${route.settings.name}');
+  }
+
+  @override
+  void didPop(Route route, Route? previousRoute) {
+    _log.i('Route pop: ${route.settings.name}');
+    super.didPop(route, previousRoute);
   }
 }
