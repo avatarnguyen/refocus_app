@@ -6,4 +6,5 @@ class AuthState with _$AuthState {
   const factory AuthState.authenticated(UserEntry userEntry) =
       _AuthAuthenticated;
   const factory AuthState.unauthenticated() = _AuthUnauthenticated;
+  const factory AuthState.loading() = _AuthLoading;
 }

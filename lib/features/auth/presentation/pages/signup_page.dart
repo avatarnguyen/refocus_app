@@ -2,54 +2,62 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:refocus_app/config/routes/router.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:styled_widget/styled_widget.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+class SignupPage extends StatefulWidget {
+  const SignupPage({Key? key}) : super(key: key);
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<SignupPage> createState() => _SignupPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
-  final log = logger(LoginPage);
+class _SignupPageState extends State<SignupPage> {
+  final log = logger(SignupPage);
 
   final _usernameTextCtrl = TextEditingController();
+  final _emailTextCtrl = TextEditingController();
   final _passwordTextCtrl = TextEditingController();
+  final _repeatPasswordTextCtrl = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return PlatformScaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      body: ListView(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         children: [
           Text(
-            'Login',
+            'Sign Up',
             style: context.h1,
-          ).padding(bottom: 40),
-          _buildTextField(_usernameTextCtrl, 'Username').padding(bottom: 20),
+          ).padding(vertical: 40).alignment(Alignment.center),
+          _buildTextField(_usernameTextCtrl, 'Username'),
+          _buildTextField(_emailTextCtrl, 'Email Adress').padding(vertical: 20),
           _buildTextField(_passwordTextCtrl, 'Password'),
+          _buildTextField(_repeatPasswordTextCtrl, 'Username')
+              .padding(vertical: 20),
           Row(
             children: [
               PlatformButton(
                 color: context.colorScheme.primary,
                 child: Text(
-                  'Login',
+                  'Sign Up',
                   style: context.bodyText1.copyWith(
                     color: Colors.white,
                   ),
                 ),
                 onPressed: () {
-                  context.read<AuthBloc>().add(
-                        AuthEvent.login(
-                          username: _usernameTextCtrl.text,
-                          password: _passwordTextCtrl.text,
-                        ),
-                      );
+                  if (_passwordTextCtrl.text.trim() ==
+                      _repeatPasswordTextCtrl.text.trim()) {
+                    context.read<AuthBloc>().add(
+                          AuthEvent.signUp(
+                            username: _usernameTextCtrl.text,
+                            email: _emailTextCtrl.text,
+                            password: _passwordTextCtrl.text,
+                          ),
+                        );
+                    context.popRoute();
+                  }
                 },
               ).expanded()
             ],
@@ -58,19 +66,19 @@ class _LoginPageState extends State<LoginPage> {
             children: [
               PlatformTextButton(
                 child: Text(
-                  'Create an account',
+                  'Go back to Login',
                   style: context.bodyText1.copyWith(
                     color: context.colorScheme.primary,
                   ),
                 ),
                 onPressed: () {
-                  context.pushRoute(const SignupRoute());
+                  context.popRoute();
                 },
               ).expanded()
             ],
           ).padding(top: 10),
         ],
-      ).padding(horizontal: 20).safeArea(),
+      ).safeArea(),
     );
   }
 

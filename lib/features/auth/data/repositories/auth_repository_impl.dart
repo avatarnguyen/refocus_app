@@ -25,9 +25,9 @@ class AuthRepositoryImpl implements AuthRepository {
         final _userEntry = UserEntry.fromJson(_user.toJson());
         return Right(_userEntry);
       } else {
-        log.e(
+        log.d(
             'Cannot login user automatically. User Sesstion might not be available');
-        return Left(ServerFailure());
+        return Left(AuthFailure());
       }
     } on ServerException {
       log.e('Cannot access AWS');
@@ -47,8 +47,8 @@ class AuthRepositoryImpl implements AuthRepository {
         final _userEntry = UserEntry.fromJson(_user.toJson());
         return Right(_userEntry);
       } else {
-        log.e('Cannot find user!');
-        return Left(ServerFailure());
+        log.d('Cannot find user!');
+        return Left(AuthFailure());
       }
     } on ServerException {
       log.e('Cannot access AWS');
@@ -80,8 +80,8 @@ class AuthRepositoryImpl implements AuthRepository {
         final _userEntry = UserEntry.fromJson(_user.toJson());
         return Right(_userEntry);
       } else {
-        log.e('Cannot find user!');
-        return Left(ServerFailure());
+        log.d('Cannot find user!');
+        return Left(AuthFailure());
       }
     } on ServerException {
       log.e('Cannot access AWS');

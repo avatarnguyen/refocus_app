@@ -7,27 +7,28 @@ environment:
   sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
+  # AWS
   amplify_api: ^0.2.6
   amplify_auth_cognito: ^0.2.6
   amplify_datastore: ^0.2.6
   amplify_flutter: ^0.2.6
+
+  # Routing
   auto_route: ^2.4.0
-  awesome_flutter_extensions: ^0.0.1+2
+
+  # Logic
   bloc: ^7.1.0
+  flutter_bloc: ^7.3.0
+
   connectivity: ^3.0.6
-  cupertino_icons: ^1.0.3
   dartx: ^0.7.1
   dartz: ^0.10.0-nullsafety.2
   equatable: ^2.0.3
   extension_google_sign_in_as_googleapis_auth: ^2.0.2
   flutter:
     sdk: flutter
-  flutter_bloc: ^7.3.0
   flutter_localizations:
     sdk: flutter
-  flutter_platform_widgets: ^1.9.5
-  flutter_slidable: ^0.6.0
-  flutter_time_picker_spinner: ^2.0.0
   freezed_annotation: ^0.14.3
   get_it: ^7.2.0
   google_sign_in: ^5.1.0
@@ -39,17 +40,27 @@ dependencies:
   injectable: ^1.5.0
   internet_connection_checker: ^0.0.1+2
   intl: ^0.17.0
-  logger: ^1.1.0
   path_provider: ^2.0.3
-  rxdart: ^0.27.2
   shared_preferences: ^2.0.7
-  sliding_sheet: ^0.5.1-dev+2
+
+  # Misc
+  logger: ^1.1.0
+  rxdart: ^0.27.2
+  url_launcher: ^6.0.10
+  uuid: ^3.0.4
+  awesome_flutter_extensions: ^0.0.1+2
+
+  # UI
+  cupertino_icons: ^1.0.3
+  fluttertoast: ^8.0.8
+  flutter_platform_widgets: ^1.9.5
+  flutter_slidable: ^0.6.0
+  flutter_time_picker_spinner: ^2.0.0
   modal_bottom_sheet: ^2.0.0
+  sliding_sheet: ^0.5.1-dev+2
   styled_widget: ^0.4.0+3
   syncfusion_flutter_calendar: ^19.3.44
   syncfusion_flutter_datepicker: ^19.3.44
-  url_launcher: ^6.0.10
-  uuid: ^3.0.4
 
 dev_dependencies:
   auto_route_generator: ^2.4.0

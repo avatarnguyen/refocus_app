@@ -73,9 +73,21 @@ class _CalendarWidgetState extends State<CalendarWidget> {
   bool showMonthView = false;
 
   @override
+  void initState() {
+    _attemptSignInGoogle();
+
+    super.initState();
+  }
+
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _getCurrentUser();
+  }
+
+  Future _attemptSignInGoogle() async {
+    // Sign in google calendar api
+    await _googleSignIn.signInSilently();
   }
 
   //TODO: move this to home page
