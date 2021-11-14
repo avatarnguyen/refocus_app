@@ -5,7 +5,7 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:refocus_app/config/routes/router.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
-import 'package:refocus_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:refocus_app/features/auth/presentation/authentication/bloc/auth_bloc.dart';
 import 'package:styled_widget/styled_widget.dart';
 
 class LoginPage extends StatefulWidget {

@@ -3,8 +3,9 @@ import 'package:refocus_app/config/routes/custom_router.dart';
 import 'package:refocus_app/core/presentation/pages/app_loader_page.dart';
 import 'package:refocus_app/core/presentation/pages/home_page.dart';
 import 'package:refocus_app/core/presentation/pages/quickadd_page.dart';
-import 'package:refocus_app/features/auth/presentation/pages/login_page.dart';
-import 'package:refocus_app/features/auth/presentation/pages/signup_page.dart';
+import 'package:refocus_app/features/auth/presentation/login/pages/login_page.dart';
+import 'package:refocus_app/features/auth/presentation/signup/pages/confirmation_page.dart';
+import 'package:refocus_app/features/auth/presentation/signup/pages/signup_page.dart';
 import 'package:refocus_app/features/setting/presentation/pages/setting_page.dart';
 import 'package:refocus_app/features/task/presentation/pages/create_project_page.dart';
 import 'package:refocus_app/features/task/presentation/pages/task_page.dart';
@@ -22,6 +23,7 @@ export 'router.gr.dart';
         AutoRoute<dynamic>(page: AppLoaderPage, initial: true),
         AutoRoute<dynamic>(page: LoginPage, fullscreenDialog: true),
         AutoRoute<dynamic>(page: SignupPage, fullscreenDialog: true),
+        AutoRoute<dynamic>(page: ConfirmationPage, fullscreenDialog: true),
         //? Home Page
         AutoRoute<dynamic>(
           page: HomePage,

@@ -19,6 +19,7 @@ dependencies:
   # Logic
   bloc: ^7.1.0
   flutter_bloc: ^7.3.0
+  formz: ^0.4.1
 
   connectivity: ^3.0.6
   dartx: ^0.7.1

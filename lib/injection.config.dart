@@ -29,7 +29,7 @@ import 'features/auth/domain/repositories/auth_repository.dart' as _i5;
 import 'features/auth/domain/usecases/login.dart' as _i16;
 import 'features/auth/domain/usecases/signout.dart' as _i22;
 import 'features/auth/domain/usecases/signup.dart' as _i23;
-import 'features/auth/presentation/bloc/auth_bloc.dart' as _i34;
+import 'features/auth/presentation/authentication/bloc/auth_bloc.dart' as _i34;
 import 'features/calendar/data/datasources/gcal_local_data_source.dart' as _i13;
 import 'features/calendar/data/datasources/gcal_remote_data_source.dart'
     as _i41;

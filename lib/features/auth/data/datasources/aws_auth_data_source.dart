@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify.dart';
 import 'package:injectable/injectable.dart';
 import 'package:refocus_app/core/error/exceptions.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart';
+import 'package:refocus_app/enum/authetication_status.dart';
 import 'package:refocus_app/models/ModelProvider.dart' as aws_model;
 
 abstract class AuthDataSource {
@@ -17,6 +20,8 @@ abstract class AuthDataSource {
   });
   Future<aws_model.User?> attemptAutoLogin();
   Future<void> signOut();
+
+  Stream<AuthenticationStatus> getAuthStatus();
 }
 
 @LazySingleton(as: AuthDataSource)
@@ -146,5 +151,17 @@ class AWSAuthDataSource implements AuthDataSource {
       log.e(e);
       throw ServerException();
     }
+  }
+
+  @override
+  Stream<AuthenticationStatus> getAuthStatus() {
+    final _controller = StreamController<AuthenticationStatus>();
+
+    Amplify.Hub.listen([HubChannel.Auth], (dynamic event) {
+      log.d('Auth Event: $event');
+      log.i('Auth Type: ${event.runtimeType}');
+      _controller.add(AuthenticationStatus.unknown);
+    });
+    return _controller.stream;
   }
 }

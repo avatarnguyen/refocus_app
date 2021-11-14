@@ -1,13 +1,11 @@
-import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_flutter/amplify.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:refocus_app/core/presentation/pages/home_page.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
-import 'package:refocus_app/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:refocus_app/features/auth/presentation/pages/login_page.dart';
-import 'package:refocus_app/features/auth/presentation/pages/signup_page.dart';
+import 'package:refocus_app/features/auth/presentation/authentication/bloc/auth_bloc.dart';
+import 'package:refocus_app/features/auth/presentation/login/pages/login_page.dart';
 import 'package:refocus_app/injection.dart';
 
 class AppLoaderWrapperPage extends StatelessWidget implements AutoRouteWrapper {
