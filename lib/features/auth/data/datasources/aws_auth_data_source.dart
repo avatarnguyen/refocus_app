@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
+import 'package:amplify_core/amplify_core.dart';
 import 'package:amplify_flutter/amplify.dart';
 import 'package:injectable/injectable.dart';
 import 'package:refocus_app/core/error/exceptions.dart';
@@ -20,6 +21,11 @@ abstract class AuthDataSource {
   });
   Future<aws_model.User?> attemptAutoLogin();
   Future<void> signOut();
+
+  Future<bool> confirmSignUp({
+    required String username,
+    required String confirmationCode,
+  });
 
   Stream<AuthenticationStatus> getAuthStatus();
 }
@@ -147,7 +153,7 @@ class AWSAuthDataSource implements AuthDataSource {
         log.d('Sign Up not completed');
         return null;
       }
-    } on AuthException catch (e) {
+    } catch (e) {
       log.e(e);
       throw ServerException();
     }
@@ -157,11 +163,59 @@ class AWSAuthDataSource implements AuthDataSource {
   Stream<AuthenticationStatus> getAuthStatus() {
     final _controller = StreamController<AuthenticationStatus>();
 
+    log.d('Amplify Configured: ${Amplify.isConfigured}');
+    // if (Amplify.isConfigured) {
     Amplify.Hub.listen([HubChannel.Auth], (dynamic event) {
-      log.d('Auth Event: $event');
-      log.i('Auth Type: ${event.runtimeType}');
-      _controller.add(AuthenticationStatus.unknown);
+      if (event is AuthHubEvent) {
+        log.d('Auth Event: ${event.eventName}');
+        switch (event.eventName) {
+          case 'SIGNED_IN':
+            {
+              log.i('USER IS SIGNED IN');
+              _controller.add(AuthenticationStatus.authenticated);
+            }
+            break;
+          case 'SIGNED_OUT':
+            {
+              log.i('USER IS SIGNED OUT');
+              _controller.add(AuthenticationStatus.unauthenticated);
+            }
+            break;
+          case 'SESSION_EXPIRED':
+            {
+              log.i('USER SESSION EXPIRED');
+              _controller.add(AuthenticationStatus.unauthenticated);
+            }
+            break;
+          default:
+            _controller.add(AuthenticationStatus.unknown);
+            break;
+        }
+      }
     });
+
     return _controller.stream;
   }
+
+  @override
+  Future<bool> confirmSignUp({
+    required String username,
+    required String confirmationCode,
+  }) async {
+    try {
+      final result = await Amplify.Auth.confirmSignUp(
+        username: username.trim(),
+        confirmationCode: confirmationCode.trim(),
+      );
+      return result.isSignUpComplete;
+    } catch (e) {
+      log.e(e);
+      throw ServerException();
+    }
+  }
+}
+
+class AuthHubEvent extends HubEvent {
+  AuthHubEvent(String eventName, {HubEventPayload? payload})
+      : super(eventName, payload: payload);
 }
