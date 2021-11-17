@@ -10,22 +10,23 @@ import 'package:refocus_app/enum/authetication_status.dart';
 import 'package:refocus_app/models/ModelProvider.dart' as aws_model;
 
 abstract class AuthDataSource {
-  Future<aws_model.User?> signUp({
+  Future<void> signUp({
     required String username,
     required String email,
     required String password,
   });
-  Future<aws_model.User?> login({
+  Future<void> login({
     required String username,
     required String password,
   });
-  Future<aws_model.User?> attemptAutoLogin();
+  Future<void> attemptAutoLogin();
   Future<void> signOut();
 
   Future<bool> confirmSignUp({
     required String username,
     required String confirmationCode,
   });
+  Future<aws_model.User?> getUserModelFromDataStore();
 
   Stream<AuthenticationStatus> getAuthStatus();
 }
@@ -51,11 +52,13 @@ class AWSAuthDataSource implements AuthDataSource {
     }
   }
 
-  Future<aws_model.User?> _getUserModelFromDataStore(String userId) async {
+  @override
+  Future<aws_model.User?> getUserModelFromDataStore() async {
     try {
+      final _userId = await _getUserIdFromAttributes();
       final fetchedUser = await Amplify.DataStore.query(
           aws_model.User.classType,
-          where: aws_model.User.ID.eq(userId));
+          where: aws_model.User.ID.eq(_userId));
       if (fetchedUser.isNotEmpty) {
         return fetchedUser.first;
       } else {
@@ -68,12 +71,11 @@ class AWSAuthDataSource implements AuthDataSource {
     }
   }
 
-  Future<aws_model.User?> _createUserModelInDataStore(
-      aws_model.User user) async {
+  Future<void> _createUserModelInDataStore(aws_model.User user) async {
     try {
       await Amplify.DataStore.save(user);
 
-      return _getUserModelFromDataStore(user.id);
+      // return _getUserModelFromDataStore(user.id);
     } catch (e) {
       log.e(e);
       throw ServerException();
@@ -81,16 +83,16 @@ class AWSAuthDataSource implements AuthDataSource {
   }
 
   @override
-  Future<aws_model.User?> attemptAutoLogin() async {
+  Future<void> attemptAutoLogin() async {
     try {
       final session = await Amplify.Auth.fetchAuthSession();
 
-      if (session.isSignedIn) {
-        final userId = await _getUserIdFromAttributes();
-        return _getUserModelFromDataStore(userId);
-      } else {
+      if (!session.isSignedIn) {
+        // final userId = await _getUserIdFromAttributes();
+        // return _getUserModelFromDataStore(userId);
+        // } else {
         log.d('No User Session is available');
-        return null;
+        // return null;
       }
     } catch (e) {
       log.e(e);
@@ -99,20 +101,20 @@ class AWSAuthDataSource implements AuthDataSource {
   }
 
   @override
-  Future<aws_model.User?> login(
+  Future<void> login(
       {required String username, required String password}) async {
     try {
-      final result = await Amplify.Auth.signIn(
+      await Amplify.Auth.signIn(
         username: username.trim(),
         password: password.trim(),
       );
 
-      if (result.isSignedIn) {
-        final userId = await _getUserIdFromAttributes();
-        return _getUserModelFromDataStore(userId);
-      } else {
-        return null;
-      }
+      // if (result.isSignedIn) {
+      //   final userId = await _getUserIdFromAttributes();
+      //   return _getUserModelFromDataStore(userId);
+      // } else {
+      //   return null;
+      // }
     } catch (e) {
       log.e(e);
       throw ServerException();
@@ -146,9 +148,7 @@ class AWSAuthDataSource implements AuthDataSource {
           username: username,
           email: email,
         );
-        final result = _createUserModelInDataStore(_newUser);
-
-        return result;
+        await _createUserModelInDataStore(_newUser);
       } else {
         log.d('Sign Up not completed');
         return null;

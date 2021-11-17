@@ -5,30 +5,30 @@ import 'package:mocktail/mocktail.dart';
 import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/features/auth/domain/entities/user_entry.dart';
 import 'package:refocus_app/features/auth/domain/usecases/auth_params.dart';
+import 'package:refocus_app/features/auth/domain/usecases/auth_status.dart';
 import 'package:refocus_app/features/auth/domain/usecases/login.dart';
 import 'package:refocus_app/features/auth/domain/usecases/signout.dart';
-import 'package:refocus_app/features/auth/domain/usecases/signup.dart';
-import 'package:refocus_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:refocus_app/features/auth/presentation/authentication/bloc/auth_bloc.dart';
 
 class MockLogin extends Mock implements Login {}
 
-class MockSignUp extends Mock implements SignUp {}
+class MockAuthStatus extends Mock implements AuthStatus {}
 
 class MockSignOut extends Mock implements SignOut {}
 
 void main() {
   late AuthBloc bloc;
   late MockLogin mockLogin;
-  late MockSignUp mockSignUp;
+  late MockAuthStatus mockAuthStatus;
   late MockSignOut mockSignOut;
 
   setUp(() {
     mockLogin = MockLogin();
-    mockSignUp = MockSignUp();
+    mockAuthStatus = MockAuthStatus();
     mockSignOut = MockSignOut();
     bloc = AuthBloc(
       login: mockLogin,
-      signUp: mockSignUp,
+      authStatus: mockAuthStatus,
       signOut: mockSignOut,
     );
   });
@@ -45,11 +45,21 @@ void main() {
     test(
       'initial state is Loading State',
       () {
-        expect(bloc.state, const AuthState.unknown());
+        expect(bloc.state, const AuthState.loading());
       },
     );
+
+    // blocTest<AuthBloc, AuthState>(
+    //   'emit auth status when check authstatus changed',
+    //     build: () => bloc,
+    //     setUp: () {
+    //       when
+    //     },
+    //     act: (_bloc) {},
+    //   expect: () => <AuthState>[],
+    // );
     blocTest<AuthBloc, AuthState>(
-      'emit success after login event',
+      'emit success after auto login event',
       build: () => bloc,
       setUp: () {
         when(() => mockLogin.call(const AuthParams(
@@ -60,7 +70,7 @@ void main() {
         );
       },
       act: (_bloc) {
-        _bloc.add(const AuthEvent.login(tUsername, tPassword));
+        _bloc.add(const AuthEvent.autoSignInAttempt());
       },
       expect: () => <AuthState>[
         AuthState.authenticated(tUser),
@@ -79,7 +89,7 @@ void main() {
             )).thenAnswer((_) async => Left(ServerFailure()));
       },
       act: (_bloc) {
-        _bloc.add(const AuthEvent.login(tUsername, tPassword));
+        _bloc.add(const AuthEvent.autoSignInAttempt());
       },
       expect: () => const <AuthState>[
         AuthState.unknown(),

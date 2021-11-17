@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 import 'package:refocus_app/core/error/exceptions.dart';
 import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart';
+import 'package:refocus_app/enum/authetication_status.dart';
 
 import 'package:refocus_app/features/auth/data/datasources/aws_auth_data_source.dart';
 import 'package:refocus_app/features/auth/domain/entities/auth_credential.dart';
@@ -18,38 +21,24 @@ class AuthRepositoryImpl implements AuthRepository {
 
   final log = logger(AuthRepositoryImpl);
   @override
-  Future<Either<Failure, UserEntry>> autoLoginAndGetUserEntry() async {
+  Future<Either<Failure, Unit>> authAutoLogin() async {
     try {
-      final _user = await authDataSource.attemptAutoLogin();
-      if (_user != null) {
-        final _userEntry = UserEntry.fromJson(_user.toJson());
-        return Right(_userEntry);
-      } else {
-        log.d(
-            'Cannot login user automatically. User Sesstion might not be available');
-        return Left(AuthFailure());
-      }
+      await authDataSource.attemptAutoLogin();
+      return const Right(unit);
     } on ServerException {
-      log.e('Cannot access AWS');
+      log.e('Cannot access Remote Datasource');
       return Left(ServerFailure());
     }
   }
 
   @override
-  Future<Either<Failure, UserEntry>> loginAndGetUserEntry(
-      AuthCredential authCredential) async {
+  Future<Either<Failure, Unit>> authLogin(AuthCredential authCredential) async {
     try {
-      final _user = await authDataSource.login(
+      await authDataSource.login(
         username: authCredential.username ?? '',
         password: authCredential.password ?? '',
       );
-      if (_user != null) {
-        final _userEntry = UserEntry.fromJson(_user.toJson());
-        return Right(_userEntry);
-      } else {
-        log.d('Cannot find user!');
-        return Left(AuthFailure());
-      }
+      return const Right(unit);
     } on ServerException {
       log.e('Cannot access AWS');
       return Left(ServerFailure());
@@ -57,7 +46,7 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, Unit>> signOut() async {
+  Future<Either<Failure, Unit>> authSignOut() async {
     try {
       await authDataSource.signOut();
       return const Right(unit);
@@ -68,23 +57,69 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, UserEntry>> signUpAndGetUserEntry(
+  Future<Either<Failure, Unit>> authSignUp(
       AuthCredential authCredential) async {
     try {
-      final _user = await authDataSource.signUp(
+      await authDataSource.signUp(
         username: authCredential.username ?? '',
         email: authCredential.email ?? '',
         password: authCredential.password ?? '',
       );
+      return const Right(unit);
+    } on ServerException {
+      log.e('Cannot access AWS');
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
+  Stream<Either<Failure, AuthenticationStatus>> getAuthStatus() async* {
+    var currentStatus = const Right<Failure, AuthenticationStatus>(
+        AuthenticationStatus.unknown);
+    try {
+      final _result = authDataSource.getAuthStatus();
+
+      _result.listen((status) {
+        log.i('New Status Received: $status');
+        currentStatus = Right<Failure, AuthenticationStatus>(status);
+      });
+
+      yield currentStatus;
+    } on ServerException catch (e) {
+      log.e('Cannot access AWS: $e');
+      yield Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> authConfirmedAccount(
+      {required String username, required String confirmationCode}) async {
+    try {
+      final _isConfirmed = await authDataSource.confirmSignUp(
+        username: username,
+        confirmationCode: confirmationCode,
+      );
+
+      return Right(_isConfirmed);
+    } on ServerException {
+      log.e('Cannot access AWS Server');
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, UserEntry>> getAuthUser() async {
+    try {
+      final _user = await authDataSource.getUserModelFromDataStore();
       if (_user != null) {
         final _userEntry = UserEntry.fromJson(_user.toJson());
         return Right(_userEntry);
       } else {
-        log.d('Cannot find user!');
+        log.d('No User Found');
         return Left(AuthFailure());
       }
-    } on ServerException {
-      log.e('Cannot access AWS');
+    } on ServerException catch (e) {
+      log.e('Cannot access Remote Datasoure: $e');
       return Left(ServerFailure());
     }
   }

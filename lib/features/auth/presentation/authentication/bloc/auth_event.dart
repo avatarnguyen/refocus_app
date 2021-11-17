@@ -2,9 +2,9 @@ part of 'auth_bloc.dart';
 
 @freezed
 class AuthEvent with _$AuthEvent {
-  const factory AuthEvent.signUp(
-      {String? username, String? email, String? password}) = _AuthSignUpEvent;
-  const factory AuthEvent.login({String? username, String? password}) =
-      _AuthLoginEvent;
-  const factory AuthEvent.signOut() = _AuthSignOutEvent;
+  const factory AuthEvent.authenticationChanged(AuthenticationStatus status) =
+      _AuthenticationStatusChanged;
+  const factory AuthEvent.signOutRequested() = _AuthSignOutRequested;
+  const factory AuthEvent.autoSignInAttempt() = _AuthAutoSignInAttempt;
+  // const factory AuthEvent.configureAmplify() = _AuthConfigure;
 }

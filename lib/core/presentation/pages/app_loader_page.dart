@@ -1,11 +1,14 @@
 import 'package:amplify_flutter/amplify.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:refocus_app/core/presentation/pages/home_page.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/features/auth/presentation/authentication/bloc/auth_bloc.dart';
+import 'package:refocus_app/features/auth/presentation/authentication/bloc/auth_bloc.dart';
 import 'package:refocus_app/features/auth/presentation/login/pages/login_page.dart';
+import 'package:refocus_app/features/auth/presentation/signup/bloc/signup_bloc.dart';
 import 'package:refocus_app/injection.dart';
 
 class AppLoaderWrapperPage extends StatelessWidget implements AutoRouteWrapper {
@@ -18,8 +21,15 @@ class AppLoaderWrapperPage extends StatelessWidget implements AutoRouteWrapper {
 
   @override
   Widget wrappedRoute(BuildContext context) {
-    return BlocProvider(
-      create: (_) => getIt<AuthBloc>()..add(const AuthEvent.login()),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) => getIt<AuthBloc>(),
+        ),
+        BlocProvider(
+          create: (_) => getIt<SignupBloc>(),
+        ),
+      ],
       child: this,
     );
   }
@@ -31,7 +41,18 @@ class AppLoaderPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final log = logger(AppLoaderPage);
-    return BlocBuilder<AuthBloc, AuthState>(
+
+    return BlocConsumer<AuthBloc, AuthState>(
+      listener: (context, state) {
+        state.when(
+          unknown: () {
+            context.read<AuthBloc>().add(const AuthEvent.autoSignInAttempt());
+          },
+          authenticated: (value) {},
+          unauthenticated: () {},
+          loading: () {},
+        );
+      },
       builder: (context, state) {
         log.d('$state Amplify isConfigured: ${Amplify.isConfigured}');
         return state.maybeWhen(
@@ -45,9 +66,14 @@ class AppLoaderPage extends StatelessWidget {
           unauthenticated: () {
             return const LoginPage();
           },
-          loading: () => const Scaffold(
+          loading: () => Scaffold(
             body: Center(
-              child: progressIndicator,
+              child: PlatformButton(
+                child: const Text('Confirm Account'),
+                onPressed: () {
+                  // context.read<SignupBloc>().add(const SignupEvent.submitted());
+                },
+              ),
             ),
           ),
           orElse: () {

@@ -3,7 +3,6 @@ import 'package:injectable/injectable.dart';
 import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/core/usecases/usecase.dart';
 import 'package:refocus_app/features/auth/domain/entities/auth_credential.dart';
-import 'package:refocus_app/features/auth/domain/entities/user_entry.dart';
 import 'package:refocus_app/features/auth/domain/repositories/auth_repository.dart';
 import 'package:refocus_app/features/auth/domain/usecases/auth_params.dart';
 
@@ -11,22 +10,22 @@ import 'package:refocus_app/features/auth/domain/usecases/auth_params.dart';
 /// login with username and password
 /// attempt to login automatically in case username and password is not given
 @lazySingleton
-class Login implements UseCase<UserEntry, AuthParams> {
+class Login implements UseCase<Unit, AuthParams> {
   Login({required this.repository});
 
   final AuthRepository repository;
 
   @override
-  Future<Either<Failure, UserEntry>> call(AuthParams params) async {
+  Future<Either<Failure, Unit>> call(AuthParams params) async {
     if (params.username != null && params.password != null) {
       final _auth = AuthCredential(
         // email: params.email,
         password: params.password,
         username: params.username,
       );
-      return repository.loginAndGetUserEntry(_auth);
+      return repository.authLogin(_auth);
     } else {
-      return repository.autoLoginAndGetUserEntry();
+      return repository.authAutoLogin();
     }
   }
 }

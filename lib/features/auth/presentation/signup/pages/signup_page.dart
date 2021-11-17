@@ -49,13 +49,13 @@ class _SignupPageState extends State<SignupPage> {
                 onPressed: () {
                   if (_passwordTextCtrl.text.trim() ==
                       _repeatPasswordTextCtrl.text.trim()) {
-                    context.read<AuthBloc>().add(
-                          AuthEvent.signUp(
-                            username: _usernameTextCtrl.text,
-                            email: _emailTextCtrl.text,
-                            password: _passwordTextCtrl.text,
-                          ),
-                        );
+                    // context.read<AuthBloc>().add(
+                    // AuthEvent.signUp(
+                    //   username: _usernameTextCtrl.text,
+                    //   email: _emailTextCtrl.text,
+                    //   password: _passwordTextCtrl.text,
+                    // ),
+                    // );
                     context.popRoute();
                   }
                 },

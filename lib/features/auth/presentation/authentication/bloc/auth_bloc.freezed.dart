@@ -17,23 +17,19 @@ final _privateConstructorUsedError = UnsupportedError(
 class _$AuthEventTearOff {
   const _$AuthEventTearOff();
 
-  _AuthSignUpEvent signUp({String? username, String? email, String? password}) {
-    return _AuthSignUpEvent(
-      username: username,
-      email: email,
-      password: password,
+  _AuthenticationStatusChanged authenticationChanged(
+      AuthenticationStatus status) {
+    return _AuthenticationStatusChanged(
+      status,
     );
   }
 
-  _AuthLoginEvent login({String? username, String? password}) {
-    return _AuthLoginEvent(
-      username: username,
-      password: password,
-    );
+  _AuthSignOutRequested signOutRequested() {
+    return const _AuthSignOutRequested();
   }
 
-  _AuthSignOutEvent signOut() {
-    return const _AuthSignOutEvent();
+  _AuthAutoSignInAttempt autoSignInAttempt() {
+    return const _AuthAutoSignInAttempt();
   }
 }
 
@@ -44,46 +40,47 @@ const $AuthEvent = _$AuthEventTearOff();
 mixin _$AuthEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(String? username, String? email, String? password)
-        signUp,
-    required TResult Function(String? username, String? password) login,
-    required TResult Function() signOut,
+    required TResult Function(AuthenticationStatus status)
+        authenticationChanged,
+    required TResult Function() signOutRequested,
+    required TResult Function() autoSignInAttempt,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(String? username, String? email, String? password)? signUp,
-    TResult Function(String? username, String? password)? login,
-    TResult Function()? signOut,
+    TResult Function(AuthenticationStatus status)? authenticationChanged,
+    TResult Function()? signOutRequested,
+    TResult Function()? autoSignInAttempt,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String? username, String? email, String? password)? signUp,
-    TResult Function(String? username, String? password)? login,
-    TResult Function()? signOut,
+    TResult Function(AuthenticationStatus status)? authenticationChanged,
+    TResult Function()? signOutRequested,
+    TResult Function()? autoSignInAttempt,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
-    required TResult Function(_AuthSignUpEvent value) signUp,
-    required TResult Function(_AuthLoginEvent value) login,
-    required TResult Function(_AuthSignOutEvent value) signOut,
+    required TResult Function(_AuthenticationStatusChanged value)
+        authenticationChanged,
+    required TResult Function(_AuthSignOutRequested value) signOutRequested,
+    required TResult Function(_AuthAutoSignInAttempt value) autoSignInAttempt,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(_AuthSignUpEvent value)? signUp,
-    TResult Function(_AuthLoginEvent value)? login,
-    TResult Function(_AuthSignOutEvent value)? signOut,
+    TResult Function(_AuthenticationStatusChanged value)? authenticationChanged,
+    TResult Function(_AuthSignOutRequested value)? signOutRequested,
+    TResult Function(_AuthAutoSignInAttempt value)? autoSignInAttempt,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
-    TResult Function(_AuthSignUpEvent value)? signUp,
-    TResult Function(_AuthLoginEvent value)? login,
-    TResult Function(_AuthSignOutEvent value)? signOut,
+    TResult Function(_AuthenticationStatusChanged value)? authenticationChanged,
+    TResult Function(_AuthSignOutRequested value)? signOutRequested,
+    TResult Function(_AuthAutoSignInAttempt value)? autoSignInAttempt,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -105,358 +102,184 @@ class _$AuthEventCopyWithImpl<$Res> implements $AuthEventCopyWith<$Res> {
 }
 
 /// @nodoc
-abstract class _$AuthSignUpEventCopyWith<$Res> {
-  factory _$AuthSignUpEventCopyWith(
-          _AuthSignUpEvent value, $Res Function(_AuthSignUpEvent) then) =
-      __$AuthSignUpEventCopyWithImpl<$Res>;
-  $Res call({String? username, String? email, String? password});
+abstract class _$AuthenticationStatusChangedCopyWith<$Res> {
+  factory _$AuthenticationStatusChangedCopyWith(
+          _AuthenticationStatusChanged value,
+          $Res Function(_AuthenticationStatusChanged) then) =
+      __$AuthenticationStatusChangedCopyWithImpl<$Res>;
+  $Res call({AuthenticationStatus status});
 }
 
 /// @nodoc
-class __$AuthSignUpEventCopyWithImpl<$Res> extends _$AuthEventCopyWithImpl<$Res>
-    implements _$AuthSignUpEventCopyWith<$Res> {
-  __$AuthSignUpEventCopyWithImpl(
-      _AuthSignUpEvent _value, $Res Function(_AuthSignUpEvent) _then)
-      : super(_value, (v) => _then(v as _AuthSignUpEvent));
-
-  @override
-  _AuthSignUpEvent get _value => super._value as _AuthSignUpEvent;
-
-  @override
-  $Res call({
-    Object? username = freezed,
-    Object? email = freezed,
-    Object? password = freezed,
-  }) {
-    return _then(_AuthSignUpEvent(
-      username: username == freezed
-          ? _value.username
-          : username // ignore: cast_nullable_to_non_nullable
-              as String?,
-      email: email == freezed
-          ? _value.email
-          : email // ignore: cast_nullable_to_non_nullable
-              as String?,
-      password: password == freezed
-          ? _value.password
-          : password // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ));
-  }
-}
-
-/// @nodoc
-
-class _$_AuthSignUpEvent implements _AuthSignUpEvent {
-  const _$_AuthSignUpEvent({this.username, this.email, this.password});
-
-  @override
-  final String? username;
-  @override
-  final String? email;
-  @override
-  final String? password;
-
-  @override
-  String toString() {
-    return 'AuthEvent.signUp(username: $username, email: $email, password: $password)';
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other is _AuthSignUpEvent &&
-            (identical(other.username, username) ||
-                const DeepCollectionEquality()
-                    .equals(other.username, username)) &&
-            (identical(other.email, email) ||
-                const DeepCollectionEquality().equals(other.email, email)) &&
-            (identical(other.password, password) ||
-                const DeepCollectionEquality()
-                    .equals(other.password, password)));
-  }
-
-  @override
-  int get hashCode =>
-      runtimeType.hashCode ^
-      const DeepCollectionEquality().hash(username) ^
-      const DeepCollectionEquality().hash(email) ^
-      const DeepCollectionEquality().hash(password);
-
-  @JsonKey(ignore: true)
-  @override
-  _$AuthSignUpEventCopyWith<_AuthSignUpEvent> get copyWith =>
-      __$AuthSignUpEventCopyWithImpl<_AuthSignUpEvent>(this, _$identity);
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(String? username, String? email, String? password)
-        signUp,
-    required TResult Function(String? username, String? password) login,
-    required TResult Function() signOut,
-  }) {
-    return signUp(username, email, password);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(String? username, String? email, String? password)? signUp,
-    TResult Function(String? username, String? password)? login,
-    TResult Function()? signOut,
-  }) {
-    return signUp?.call(username, email, password);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String? username, String? email, String? password)? signUp,
-    TResult Function(String? username, String? password)? login,
-    TResult Function()? signOut,
-    required TResult orElse(),
-  }) {
-    if (signUp != null) {
-      return signUp(username, email, password);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(_AuthSignUpEvent value) signUp,
-    required TResult Function(_AuthLoginEvent value) login,
-    required TResult Function(_AuthSignOutEvent value) signOut,
-  }) {
-    return signUp(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(_AuthSignUpEvent value)? signUp,
-    TResult Function(_AuthLoginEvent value)? login,
-    TResult Function(_AuthSignOutEvent value)? signOut,
-  }) {
-    return signUp?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(_AuthSignUpEvent value)? signUp,
-    TResult Function(_AuthLoginEvent value)? login,
-    TResult Function(_AuthSignOutEvent value)? signOut,
-    required TResult orElse(),
-  }) {
-    if (signUp != null) {
-      return signUp(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class _AuthSignUpEvent implements AuthEvent {
-  const factory _AuthSignUpEvent(
-      {String? username, String? email, String? password}) = _$_AuthSignUpEvent;
-
-  String? get username => throw _privateConstructorUsedError;
-  String? get email => throw _privateConstructorUsedError;
-  String? get password => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
-  _$AuthSignUpEventCopyWith<_AuthSignUpEvent> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class _$AuthLoginEventCopyWith<$Res> {
-  factory _$AuthLoginEventCopyWith(
-          _AuthLoginEvent value, $Res Function(_AuthLoginEvent) then) =
-      __$AuthLoginEventCopyWithImpl<$Res>;
-  $Res call({String? username, String? password});
-}
-
-/// @nodoc
-class __$AuthLoginEventCopyWithImpl<$Res> extends _$AuthEventCopyWithImpl<$Res>
-    implements _$AuthLoginEventCopyWith<$Res> {
-  __$AuthLoginEventCopyWithImpl(
-      _AuthLoginEvent _value, $Res Function(_AuthLoginEvent) _then)
-      : super(_value, (v) => _then(v as _AuthLoginEvent));
-
-  @override
-  _AuthLoginEvent get _value => super._value as _AuthLoginEvent;
-
-  @override
-  $Res call({
-    Object? username = freezed,
-    Object? password = freezed,
-  }) {
-    return _then(_AuthLoginEvent(
-      username: username == freezed
-          ? _value.username
-          : username // ignore: cast_nullable_to_non_nullable
-              as String?,
-      password: password == freezed
-          ? _value.password
-          : password // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ));
-  }
-}
-
-/// @nodoc
-
-class _$_AuthLoginEvent implements _AuthLoginEvent {
-  const _$_AuthLoginEvent({this.username, this.password});
-
-  @override
-  final String? username;
-  @override
-  final String? password;
-
-  @override
-  String toString() {
-    return 'AuthEvent.login(username: $username, password: $password)';
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other is _AuthLoginEvent &&
-            (identical(other.username, username) ||
-                const DeepCollectionEquality()
-                    .equals(other.username, username)) &&
-            (identical(other.password, password) ||
-                const DeepCollectionEquality()
-                    .equals(other.password, password)));
-  }
-
-  @override
-  int get hashCode =>
-      runtimeType.hashCode ^
-      const DeepCollectionEquality().hash(username) ^
-      const DeepCollectionEquality().hash(password);
-
-  @JsonKey(ignore: true)
-  @override
-  _$AuthLoginEventCopyWith<_AuthLoginEvent> get copyWith =>
-      __$AuthLoginEventCopyWithImpl<_AuthLoginEvent>(this, _$identity);
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(String? username, String? email, String? password)
-        signUp,
-    required TResult Function(String? username, String? password) login,
-    required TResult Function() signOut,
-  }) {
-    return login(username, password);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(String? username, String? email, String? password)? signUp,
-    TResult Function(String? username, String? password)? login,
-    TResult Function()? signOut,
-  }) {
-    return login?.call(username, password);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String? username, String? email, String? password)? signUp,
-    TResult Function(String? username, String? password)? login,
-    TResult Function()? signOut,
-    required TResult orElse(),
-  }) {
-    if (login != null) {
-      return login(username, password);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(_AuthSignUpEvent value) signUp,
-    required TResult Function(_AuthLoginEvent value) login,
-    required TResult Function(_AuthSignOutEvent value) signOut,
-  }) {
-    return login(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(_AuthSignUpEvent value)? signUp,
-    TResult Function(_AuthLoginEvent value)? login,
-    TResult Function(_AuthSignOutEvent value)? signOut,
-  }) {
-    return login?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(_AuthSignUpEvent value)? signUp,
-    TResult Function(_AuthLoginEvent value)? login,
-    TResult Function(_AuthSignOutEvent value)? signOut,
-    required TResult orElse(),
-  }) {
-    if (login != null) {
-      return login(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class _AuthLoginEvent implements AuthEvent {
-  const factory _AuthLoginEvent({String? username, String? password}) =
-      _$_AuthLoginEvent;
-
-  String? get username => throw _privateConstructorUsedError;
-  String? get password => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
-  _$AuthLoginEventCopyWith<_AuthLoginEvent> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class _$AuthSignOutEventCopyWith<$Res> {
-  factory _$AuthSignOutEventCopyWith(
-          _AuthSignOutEvent value, $Res Function(_AuthSignOutEvent) then) =
-      __$AuthSignOutEventCopyWithImpl<$Res>;
-}
-
-/// @nodoc
-class __$AuthSignOutEventCopyWithImpl<$Res>
+class __$AuthenticationStatusChangedCopyWithImpl<$Res>
     extends _$AuthEventCopyWithImpl<$Res>
-    implements _$AuthSignOutEventCopyWith<$Res> {
-  __$AuthSignOutEventCopyWithImpl(
-      _AuthSignOutEvent _value, $Res Function(_AuthSignOutEvent) _then)
-      : super(_value, (v) => _then(v as _AuthSignOutEvent));
+    implements _$AuthenticationStatusChangedCopyWith<$Res> {
+  __$AuthenticationStatusChangedCopyWithImpl(
+      _AuthenticationStatusChanged _value,
+      $Res Function(_AuthenticationStatusChanged) _then)
+      : super(_value, (v) => _then(v as _AuthenticationStatusChanged));
 
   @override
-  _AuthSignOutEvent get _value => super._value as _AuthSignOutEvent;
+  _AuthenticationStatusChanged get _value =>
+      super._value as _AuthenticationStatusChanged;
+
+  @override
+  $Res call({
+    Object? status = freezed,
+  }) {
+    return _then(_AuthenticationStatusChanged(
+      status == freezed
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
+              as AuthenticationStatus,
+    ));
+  }
 }
 
 /// @nodoc
 
-class _$_AuthSignOutEvent implements _AuthSignOutEvent {
-  const _$_AuthSignOutEvent();
+class _$_AuthenticationStatusChanged implements _AuthenticationStatusChanged {
+  const _$_AuthenticationStatusChanged(this.status);
+
+  @override
+  final AuthenticationStatus status;
 
   @override
   String toString() {
-    return 'AuthEvent.signOut()';
+    return 'AuthEvent.authenticationChanged(status: $status)';
   }
 
   @override
   bool operator ==(dynamic other) {
-    return identical(this, other) || (other is _AuthSignOutEvent);
+    return identical(this, other) ||
+        (other is _AuthenticationStatusChanged &&
+            (identical(other.status, status) ||
+                const DeepCollectionEquality().equals(other.status, status)));
+  }
+
+  @override
+  int get hashCode =>
+      runtimeType.hashCode ^ const DeepCollectionEquality().hash(status);
+
+  @JsonKey(ignore: true)
+  @override
+  _$AuthenticationStatusChangedCopyWith<_AuthenticationStatusChanged>
+      get copyWith => __$AuthenticationStatusChangedCopyWithImpl<
+          _AuthenticationStatusChanged>(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(AuthenticationStatus status)
+        authenticationChanged,
+    required TResult Function() signOutRequested,
+    required TResult Function() autoSignInAttempt,
+  }) {
+    return authenticationChanged(status);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult Function(AuthenticationStatus status)? authenticationChanged,
+    TResult Function()? signOutRequested,
+    TResult Function()? autoSignInAttempt,
+  }) {
+    return authenticationChanged?.call(status);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(AuthenticationStatus status)? authenticationChanged,
+    TResult Function()? signOutRequested,
+    TResult Function()? autoSignInAttempt,
+    required TResult orElse(),
+  }) {
+    if (authenticationChanged != null) {
+      return authenticationChanged(status);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_AuthenticationStatusChanged value)
+        authenticationChanged,
+    required TResult Function(_AuthSignOutRequested value) signOutRequested,
+    required TResult Function(_AuthAutoSignInAttempt value) autoSignInAttempt,
+  }) {
+    return authenticationChanged(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult Function(_AuthenticationStatusChanged value)? authenticationChanged,
+    TResult Function(_AuthSignOutRequested value)? signOutRequested,
+    TResult Function(_AuthAutoSignInAttempt value)? autoSignInAttempt,
+  }) {
+    return authenticationChanged?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_AuthenticationStatusChanged value)? authenticationChanged,
+    TResult Function(_AuthSignOutRequested value)? signOutRequested,
+    TResult Function(_AuthAutoSignInAttempt value)? autoSignInAttempt,
+    required TResult orElse(),
+  }) {
+    if (authenticationChanged != null) {
+      return authenticationChanged(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _AuthenticationStatusChanged implements AuthEvent {
+  const factory _AuthenticationStatusChanged(AuthenticationStatus status) =
+      _$_AuthenticationStatusChanged;
+
+  AuthenticationStatus get status => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  _$AuthenticationStatusChangedCopyWith<_AuthenticationStatusChanged>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$AuthSignOutRequestedCopyWith<$Res> {
+  factory _$AuthSignOutRequestedCopyWith(_AuthSignOutRequested value,
+          $Res Function(_AuthSignOutRequested) then) =
+      __$AuthSignOutRequestedCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$AuthSignOutRequestedCopyWithImpl<$Res>
+    extends _$AuthEventCopyWithImpl<$Res>
+    implements _$AuthSignOutRequestedCopyWith<$Res> {
+  __$AuthSignOutRequestedCopyWithImpl(
+      _AuthSignOutRequested _value, $Res Function(_AuthSignOutRequested) _then)
+      : super(_value, (v) => _then(v as _AuthSignOutRequested));
+
+  @override
+  _AuthSignOutRequested get _value => super._value as _AuthSignOutRequested;
+}
+
+/// @nodoc
+
+class _$_AuthSignOutRequested implements _AuthSignOutRequested {
+  const _$_AuthSignOutRequested();
+
+  @override
+  String toString() {
+    return 'AuthEvent.signOutRequested()';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) || (other is _AuthSignOutRequested);
   }
 
   @override
@@ -465,34 +288,34 @@ class _$_AuthSignOutEvent implements _AuthSignOutEvent {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(String? username, String? email, String? password)
-        signUp,
-    required TResult Function(String? username, String? password) login,
-    required TResult Function() signOut,
+    required TResult Function(AuthenticationStatus status)
+        authenticationChanged,
+    required TResult Function() signOutRequested,
+    required TResult Function() autoSignInAttempt,
   }) {
-    return signOut();
+    return signOutRequested();
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(String? username, String? email, String? password)? signUp,
-    TResult Function(String? username, String? password)? login,
-    TResult Function()? signOut,
+    TResult Function(AuthenticationStatus status)? authenticationChanged,
+    TResult Function()? signOutRequested,
+    TResult Function()? autoSignInAttempt,
   }) {
-    return signOut?.call();
+    return signOutRequested?.call();
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String? username, String? email, String? password)? signUp,
-    TResult Function(String? username, String? password)? login,
-    TResult Function()? signOut,
+    TResult Function(AuthenticationStatus status)? authenticationChanged,
+    TResult Function()? signOutRequested,
+    TResult Function()? autoSignInAttempt,
     required TResult orElse(),
   }) {
-    if (signOut != null) {
-      return signOut();
+    if (signOutRequested != null) {
+      return signOutRequested();
     }
     return orElse();
   }
@@ -500,40 +323,153 @@ class _$_AuthSignOutEvent implements _AuthSignOutEvent {
   @override
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
-    required TResult Function(_AuthSignUpEvent value) signUp,
-    required TResult Function(_AuthLoginEvent value) login,
-    required TResult Function(_AuthSignOutEvent value) signOut,
+    required TResult Function(_AuthenticationStatusChanged value)
+        authenticationChanged,
+    required TResult Function(_AuthSignOutRequested value) signOutRequested,
+    required TResult Function(_AuthAutoSignInAttempt value) autoSignInAttempt,
   }) {
-    return signOut(this);
+    return signOutRequested(this);
   }
 
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(_AuthSignUpEvent value)? signUp,
-    TResult Function(_AuthLoginEvent value)? login,
-    TResult Function(_AuthSignOutEvent value)? signOut,
+    TResult Function(_AuthenticationStatusChanged value)? authenticationChanged,
+    TResult Function(_AuthSignOutRequested value)? signOutRequested,
+    TResult Function(_AuthAutoSignInAttempt value)? autoSignInAttempt,
   }) {
-    return signOut?.call(this);
+    return signOutRequested?.call(this);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
-    TResult Function(_AuthSignUpEvent value)? signUp,
-    TResult Function(_AuthLoginEvent value)? login,
-    TResult Function(_AuthSignOutEvent value)? signOut,
+    TResult Function(_AuthenticationStatusChanged value)? authenticationChanged,
+    TResult Function(_AuthSignOutRequested value)? signOutRequested,
+    TResult Function(_AuthAutoSignInAttempt value)? autoSignInAttempt,
     required TResult orElse(),
   }) {
-    if (signOut != null) {
-      return signOut(this);
+    if (signOutRequested != null) {
+      return signOutRequested(this);
     }
     return orElse();
   }
 }
 
-abstract class _AuthSignOutEvent implements AuthEvent {
-  const factory _AuthSignOutEvent() = _$_AuthSignOutEvent;
+abstract class _AuthSignOutRequested implements AuthEvent {
+  const factory _AuthSignOutRequested() = _$_AuthSignOutRequested;
+}
+
+/// @nodoc
+abstract class _$AuthAutoSignInAttemptCopyWith<$Res> {
+  factory _$AuthAutoSignInAttemptCopyWith(_AuthAutoSignInAttempt value,
+          $Res Function(_AuthAutoSignInAttempt) then) =
+      __$AuthAutoSignInAttemptCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$AuthAutoSignInAttemptCopyWithImpl<$Res>
+    extends _$AuthEventCopyWithImpl<$Res>
+    implements _$AuthAutoSignInAttemptCopyWith<$Res> {
+  __$AuthAutoSignInAttemptCopyWithImpl(_AuthAutoSignInAttempt _value,
+      $Res Function(_AuthAutoSignInAttempt) _then)
+      : super(_value, (v) => _then(v as _AuthAutoSignInAttempt));
+
+  @override
+  _AuthAutoSignInAttempt get _value => super._value as _AuthAutoSignInAttempt;
+}
+
+/// @nodoc
+
+class _$_AuthAutoSignInAttempt implements _AuthAutoSignInAttempt {
+  const _$_AuthAutoSignInAttempt();
+
+  @override
+  String toString() {
+    return 'AuthEvent.autoSignInAttempt()';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) || (other is _AuthAutoSignInAttempt);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(AuthenticationStatus status)
+        authenticationChanged,
+    required TResult Function() signOutRequested,
+    required TResult Function() autoSignInAttempt,
+  }) {
+    return autoSignInAttempt();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult Function(AuthenticationStatus status)? authenticationChanged,
+    TResult Function()? signOutRequested,
+    TResult Function()? autoSignInAttempt,
+  }) {
+    return autoSignInAttempt?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(AuthenticationStatus status)? authenticationChanged,
+    TResult Function()? signOutRequested,
+    TResult Function()? autoSignInAttempt,
+    required TResult orElse(),
+  }) {
+    if (autoSignInAttempt != null) {
+      return autoSignInAttempt();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_AuthenticationStatusChanged value)
+        authenticationChanged,
+    required TResult Function(_AuthSignOutRequested value) signOutRequested,
+    required TResult Function(_AuthAutoSignInAttempt value) autoSignInAttempt,
+  }) {
+    return autoSignInAttempt(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult Function(_AuthenticationStatusChanged value)? authenticationChanged,
+    TResult Function(_AuthSignOutRequested value)? signOutRequested,
+    TResult Function(_AuthAutoSignInAttempt value)? autoSignInAttempt,
+  }) {
+    return autoSignInAttempt?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_AuthenticationStatusChanged value)? authenticationChanged,
+    TResult Function(_AuthSignOutRequested value)? signOutRequested,
+    TResult Function(_AuthAutoSignInAttempt value)? autoSignInAttempt,
+    required TResult orElse(),
+  }) {
+    if (autoSignInAttempt != null) {
+      return autoSignInAttempt(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _AuthAutoSignInAttempt implements AuthEvent {
+  const factory _AuthAutoSignInAttempt() = _$_AuthAutoSignInAttempt;
 }
 
 /// @nodoc

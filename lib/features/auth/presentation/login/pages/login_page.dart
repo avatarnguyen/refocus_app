@@ -44,12 +44,12 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 onPressed: () {
-                  context.read<AuthBloc>().add(
-                        AuthEvent.login(
-                          username: _usernameTextCtrl.text,
-                          password: _passwordTextCtrl.text,
-                        ),
-                      );
+                  // context.read<AuthBloc>().add(
+                  //       AuthEvent.login(
+                  //         username: _usernameTextCtrl.text,
+                  //         password: _passwordTextCtrl.text,
+                  //       ),
+                  //     );
                 },
               ).expanded()
             ],
