@@ -6,6 +6,7 @@ import 'package:refocus_app/config/routes/router.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/features/auth/presentation/authentication/bloc/auth_bloc.dart';
+import 'package:refocus_app/features/auth/presentation/login/bloc/login_bloc.dart';
 import 'package:styled_widget/styled_widget.dart';
 
 class LoginPage extends StatefulWidget {
@@ -44,12 +45,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 onPressed: () {
-                  // context.read<AuthBloc>().add(
-                  //       AuthEvent.login(
-                  //         username: _usernameTextCtrl.text,
-                  //         password: _passwordTextCtrl.text,
-                  //       ),
-                  //     );
+                  context.read<LoginBloc>().add(const LoginEvent.submitted());
                 },
               ).expanded()
             ],

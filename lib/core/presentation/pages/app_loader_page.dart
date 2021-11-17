@@ -7,6 +7,7 @@ import 'package:refocus_app/core/util/helpers/logging.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/features/auth/presentation/authentication/bloc/auth_bloc.dart';
 import 'package:refocus_app/features/auth/presentation/authentication/bloc/auth_bloc.dart';
+import 'package:refocus_app/features/auth/presentation/login/bloc/login_bloc.dart';
 import 'package:refocus_app/features/auth/presentation/login/pages/login_page.dart';
 import 'package:refocus_app/features/auth/presentation/signup/bloc/signup_bloc.dart';
 import 'package:refocus_app/injection.dart';
@@ -28,6 +29,9 @@ class AppLoaderWrapperPage extends StatelessWidget implements AutoRouteWrapper {
         ),
         BlocProvider(
           create: (_) => getIt<SignupBloc>(),
+        ),
+        BlocProvider(
+          create: (_) => getIt<LoginBloc>(),
         ),
       ],
       child: this,
