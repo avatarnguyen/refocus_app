@@ -60,13 +60,12 @@ class _AppLoaderPageState extends State<AppLoaderPage> {
 
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
-        log.d('$state Amplify isConfigured: ${Amplify.isConfigured}');
+        log.i('$state Amplify isConfigured: ${Amplify.isConfigured}');
         return state.maybeWhen(
           unknown: () {
             return const LoginPage();
           },
           authenticated: (userEntry) {
-            log.i('Authenticated: $userEntry');
             return const AutoRouter();
           },
           unauthenticated: () {

@@ -94,8 +94,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   Future<void> _onAuthAutoSignInAttempt(
       _AuthAutoSignInAttempt event, Emitter<AuthState> emit) async {
-    log.v('AUTO SIGNIN METHOD');
-    if (Amplify.isConfigured) {
+    if (Amplify.isConfigured && state is! _AuthAuthenticated) {
       // await _signOut(NoParams());
       log.i('Perform Auto Login');
       final result = await _login(const AuthParams());
@@ -143,10 +142,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     await _signOut(NoParams());
     emit(const AuthState.unauthenticated());
-    // _result.fold(
-    //   (failure) => emit(const AuthState.unknown()),
-    //   (entry) => emit(const AuthState.unauthenticated()),
-    // );
   }
 
   Future _configureAmplify() async {
