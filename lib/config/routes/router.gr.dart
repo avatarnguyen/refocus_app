@@ -11,13 +11,14 @@ import 'package:refocus_app/config/routes/custom_router.dart' as _i12;
 import 'package:refocus_app/core/presentation/pages/app_loader_page.dart'
     as _i1;
 import 'package:refocus_app/core/presentation/pages/home_page.dart' as _i5;
-import 'package:refocus_app/core/presentation/pages/quickadd_page.dart' as _i6;
 import 'package:refocus_app/features/auth/presentation/login/pages/login_page.dart'
     as _i2;
 import 'package:refocus_app/features/auth/presentation/signup/pages/confirmation_page.dart'
     as _i4;
 import 'package:refocus_app/features/auth/presentation/signup/pages/signup_page.dart'
     as _i3;
+import 'package:refocus_app/features/create/presentation/pages/create_page.dart'
+    as _i6;
 import 'package:refocus_app/features/setting/presentation/pages/setting_page.dart'
     as _i9;
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart'
@@ -67,10 +68,10 @@ class AppRouter extends _i10.RootStackRouter {
       return _i10.AdaptivePage<dynamic>(
           routeData: routeData, child: const _i5.HomePageWidget());
     },
-    QuickAddRoute.name: (routeData) {
+    CreateRoute.name: (routeData) {
       return _i10.CustomPage<dynamic>(
           routeData: routeData,
-          child: const _i6.QuickAddPage(),
+          child: const _i6.CreatePage(),
           customRouteBuilder: _i12.modalSheetCustomRouteBuilder,
           opaque: true,
           barrierDismissible: false);
@@ -110,7 +111,7 @@ class AppRouter extends _i10.RootStackRouter {
           _i10.RouteConfig(AppLoaderRoute.name, path: '', children: [
             _i10.RouteConfig(HomeRoute.name, path: '', children: [
               _i10.RouteConfig(HomeRouteWidget.name, path: ''),
-              _i10.RouteConfig(QuickAddRoute.name, path: 'quick-add-page'),
+              _i10.RouteConfig(CreateRoute.name, path: 'create-page'),
               _i10.RouteConfig(CreateProjectRoute.name,
                   path: 'create-project-page'),
               _i10.RouteConfig(TaskRoute.name, path: 'task-page'),
@@ -176,11 +177,11 @@ class HomeRouteWidget extends _i10.PageRouteInfo<void> {
   static const String name = 'HomeRouteWidget';
 }
 
-/// generated route for [_i6.QuickAddPage]
-class QuickAddRoute extends _i10.PageRouteInfo<void> {
-  const QuickAddRoute() : super(name, path: 'quick-add-page');
+/// generated route for [_i6.CreatePage]
+class CreateRoute extends _i10.PageRouteInfo<void> {
+  const CreateRoute() : super(name, path: 'create-page');
 
-  static const String name = 'QuickAddRoute';
+  static const String name = 'CreateRoute';
 }
 
 /// generated route for [_i7.CreateProjectPage]

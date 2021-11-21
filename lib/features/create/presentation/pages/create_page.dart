@@ -5,9 +5,6 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:refocus_app/core/presentation/helper/action_stream.dart';
 import 'package:refocus_app/core/presentation/helper/setting_option.dart';
 import 'package:refocus_app/core/presentation/helper/subtask_stream.dart';
-import 'package:refocus_app/core/presentation/widgets/add_page_widgets/action_panel_widget.dart';
-import 'package:refocus_app/core/presentation/widgets/add_page_widgets/add_textfield_widget.dart';
-import 'package:refocus_app/core/presentation/widgets/add_page_widgets/due_datetime_widget.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/action_selection_type.dart';
 import 'package:refocus_app/enum/today_entry_type.dart';
@@ -15,20 +12,36 @@ import 'package:refocus_app/features/calendar/domain/entities/calendar_entry.dar
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar/calendar_bloc.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar_list/calendar_list_bloc.dart'
     as calList;
+import 'package:refocus_app/features/create/presentation/bloc/create_bloc.dart';
+import 'package:refocus_app/features/create/presentation/widgets/action_panel_widget.dart';
+import 'package:refocus_app/features/create/presentation/widgets/add_textfield_widget.dart';
+import 'package:refocus_app/features/create/presentation/widgets/due_datetime_widget.dart';
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
 import 'package:refocus_app/features/task/presentation/bloc/cubit/subtask_cubit.dart';
 import 'package:refocus_app/features/task/presentation/bloc/project_bloc.dart';
 import 'package:refocus_app/injection.dart';
 import 'package:styled_widget/styled_widget.dart';
 
-class QuickAddPage extends StatefulWidget {
-  const QuickAddPage({Key? key}) : super(key: key);
+class CreatePage extends StatelessWidget {
+  const CreatePage({Key? key}) : super(key: key);
 
   @override
-  _QuickAddPageState createState() => _QuickAddPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider<CreateBloc>(
+      create: (context) => getIt<CreateBloc>(),
+      child: const CreatePageWidget(),
+    );
+  }
 }
 
-class _QuickAddPageState extends State<QuickAddPage> {
+class CreatePageWidget extends StatefulWidget {
+  const CreatePageWidget({Key? key}) : super(key: key);
+
+  @override
+  _CreatePageWidgetState createState() => _CreatePageWidgetState();
+}
+
+class _CreatePageWidgetState extends State<CreatePageWidget> {
   final _settingOption = getIt<SettingOption>();
   final _subTaskStream = getIt<SubTaskStream>();
   final _actionStream = getIt<ActionStream>();

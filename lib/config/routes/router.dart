@@ -2,7 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:refocus_app/config/routes/custom_router.dart';
 import 'package:refocus_app/core/presentation/pages/app_loader_page.dart';
 import 'package:refocus_app/core/presentation/pages/home_page.dart';
-import 'package:refocus_app/core/presentation/pages/quickadd_page.dart';
+import 'package:refocus_app/features/create/presentation/pages/create_page.dart';
 import 'package:refocus_app/features/auth/presentation/login/pages/login_page.dart';
 import 'package:refocus_app/features/auth/presentation/signup/pages/confirmation_page.dart';
 import 'package:refocus_app/features/auth/presentation/signup/pages/signup_page.dart';
@@ -28,7 +28,7 @@ export 'router.gr.dart';
             children: [
               AutoRoute<dynamic>(page: HomePageWidget, initial: true),
               CustomRoute<dynamic>(
-                page: QuickAddPage,
+                page: CreatePage,
                 customRouteBuilder: modalSheetCustomRouteBuilder,
               ),
               CustomRoute<dynamic>(

@@ -4,12 +4,14 @@ import 'package:dartx/dartx.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:refocus_app/config/routes/router.dart';
 import 'package:refocus_app/core/presentation/helper/page_stream.dart';
 import 'package:refocus_app/core/presentation/helper/sliding_body_stream.dart';
 import 'package:refocus_app/core/presentation/widgets/date_picker_widget.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar/datetime_stream.dart';
+import 'package:refocus_app/features/create/presentation/bloc/create_bloc.dart';
 import 'package:refocus_app/injection.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
@@ -141,7 +143,7 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
             size: 33,
           ).gestures(onTap: () {
             widget.closeSheet();
-            context.navigateTo(const QuickAddRoute());
+            context.router.push(const CreateRoute());
           }),
         ].toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween),
         CupertinoSlidingSegmentedControl<int>(
