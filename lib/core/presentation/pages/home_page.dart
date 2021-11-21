@@ -5,6 +5,7 @@ import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:refocus_app/core/presentation/helper/page_stream.dart';
 import 'package:refocus_app/core/presentation/helper/sliding_body_stream.dart';
 import 'package:refocus_app/core/presentation/widgets/slider_header_widget.dart';
@@ -70,6 +71,8 @@ class _HomePageWidgetState extends State<HomePageWidget> {
   );
   final PageStream _pageStream = getIt<PageStream>();
   final SlidingBodyStream _slidingStream = getIt<SlidingBodyStream>();
+  final GoogleSignIn _googleSignIn = getIt<GoogleSignIn>();
+
   late StreamSubscription _slidingBodySub;
 
   int _currentPage = 1;
@@ -81,6 +84,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
 
   @override
   void initState() {
+    _attemptSignInGoogle();
     _slidingBodySub = _slidingStream.pageStream.listen(_slidingPageReceived);
     _sheetController = SheetController();
 
@@ -91,6 +95,11 @@ class _HomePageWidgetState extends State<HomePageWidget> {
     setState(() {
       _currentSlidingBodyPage = newPage;
     });
+  }
+
+  Future _attemptSignInGoogle() async {
+    // Sign in google calendar api
+    await _googleSignIn.signInSilently();
   }
 
   @override

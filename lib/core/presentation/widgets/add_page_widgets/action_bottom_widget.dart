@@ -257,8 +257,8 @@ class _ActionBottomWidgetState extends State<ActionBottomWidget> {
                               id: _taskID,
                               isCompleted: false,
                               dueDate: _settingOption.dueDate,
-                              projectID: _settingOption.projectEntry?.id ??
-                                  'inbox_2021',
+                              projectID: _settingOption.projectEntry!
+                                  .id, //! cannot read projectEntry
                               title: textData,
                               startDateTime: _startDateTime,
                               endDateTime: _endDateTime,

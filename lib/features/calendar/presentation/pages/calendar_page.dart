@@ -74,8 +74,6 @@ class _CalendarWidgetState extends State<CalendarWidget> {
 
   @override
   void initState() {
-    _attemptSignInGoogle();
-
     super.initState();
   }
 
@@ -83,11 +81,6 @@ class _CalendarWidgetState extends State<CalendarWidget> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     _getCurrentUser();
-  }
-
-  Future _attemptSignInGoogle() async {
-    // Sign in google calendar api
-    await _googleSignIn.signInSilently();
   }
 
   //TODO: move this to home page

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
+import 'package:googleapis/oauth2/v2.dart';
 
 // ignore_for_file: sort_constructors_first
 class ProjectEntry extends Equatable {
@@ -10,15 +11,17 @@ class ProjectEntry extends Equatable {
     this.color,
     this.emoji,
     this.taskCount,
+    this.userID,
   });
   final String id;
   final String? title;
   final String? color;
   final String? emoji;
   final int? taskCount;
+  final String? userID;
 
   @override
-  List<Object?> get props => [id, title, color, emoji, taskCount];
+  List<Object?> get props => [id, title, color, emoji, taskCount, userID];
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
@@ -27,6 +30,7 @@ class ProjectEntry extends Equatable {
       'color': color,
       'emoji': emoji,
       'taskCount': taskCount,
+      'userID': userID,
     };
   }
 
@@ -37,6 +41,7 @@ class ProjectEntry extends Equatable {
       color: map.containsKey('color') ? map['color'] as String? : null,
       emoji: map.containsKey('emoji') ? map['emoji'] as String? : null,
       taskCount: map.containsKey('taskCount') ? map['taskCount'] as int? : null,
+      userID: map.containsKey('userID') ? map['userID'] as String? : null,
     );
   }
 
@@ -51,6 +56,7 @@ class ProjectEntry extends Equatable {
     String? color,
     String? emoji,
     int? taskCount,
+    String? userID,
   }) {
     return ProjectEntry(
       id: id ?? this.id,
@@ -58,6 +64,7 @@ class ProjectEntry extends Equatable {
       color: color ?? this.color,
       emoji: emoji ?? this.emoji,
       taskCount: taskCount ?? this.taskCount,
+      userID: userID ?? this.userID,
     );
   }
 }
