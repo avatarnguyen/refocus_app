@@ -64,10 +64,11 @@ class AWSAuthDataSource implements AuthDataSource {
   @override
   Future<aws_model.User?> getUserModelFromDataStore() async {
     try {
-      final _userId = await _getUserIdFromAttributes();
+      final _user = await _getUserIdFromAttributes();
       final fetchedUser = await Amplify.DataStore.query(
-          aws_model.User.classType,
-          where: aws_model.User.ID.eq(_userId));
+        aws_model.User.classType,
+        where: aws_model.User.ID.eq(_user.id),
+      );
       if (fetchedUser.isNotEmpty) {
         return fetchedUser.first;
       } else {
@@ -142,8 +143,8 @@ class AWSAuthDataSource implements AuthDataSource {
     );
     try {
       final result = await Amplify.Auth.signUp(
-        username: username,
-        password: password,
+        username: username.trim(),
+        password: password.trim(),
         options: options,
       );
       if (!result.isSignUpComplete) {

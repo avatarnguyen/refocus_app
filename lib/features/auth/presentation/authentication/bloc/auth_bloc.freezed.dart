@@ -32,9 +32,11 @@ class _$AuthEventTearOff {
     return const _AuthAutoSignInAttempt();
   }
 
-  _AuthConfirmAccount confirmAccount({String? username, String? confirmCode}) {
+  _AuthConfirmAccount confirmAccount(
+      {String? username, String? password, String? confirmCode}) {
     return _AuthConfirmAccount(
       username: username,
+      password: password,
       confirmCode: confirmCode,
     );
   }
@@ -51,7 +53,8 @@ mixin _$AuthEvent {
         authenticationChanged,
     required TResult Function() signOutRequested,
     required TResult Function() autoSignInAttempt,
-    required TResult Function(String? username, String? confirmCode)
+    required TResult Function(
+            String? username, String? password, String? confirmCode)
         confirmAccount,
   }) =>
       throw _privateConstructorUsedError;
@@ -60,7 +63,8 @@ mixin _$AuthEvent {
     TResult Function(AuthenticationStatus status)? authenticationChanged,
     TResult Function()? signOutRequested,
     TResult Function()? autoSignInAttempt,
-    TResult Function(String? username, String? confirmCode)? confirmAccount,
+    TResult Function(String? username, String? password, String? confirmCode)?
+        confirmAccount,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -68,7 +72,8 @@ mixin _$AuthEvent {
     TResult Function(AuthenticationStatus status)? authenticationChanged,
     TResult Function()? signOutRequested,
     TResult Function()? autoSignInAttempt,
-    TResult Function(String? username, String? confirmCode)? confirmAccount,
+    TResult Function(String? username, String? password, String? confirmCode)?
+        confirmAccount,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -188,7 +193,8 @@ class _$_AuthenticationStatusChanged implements _AuthenticationStatusChanged {
         authenticationChanged,
     required TResult Function() signOutRequested,
     required TResult Function() autoSignInAttempt,
-    required TResult Function(String? username, String? confirmCode)
+    required TResult Function(
+            String? username, String? password, String? confirmCode)
         confirmAccount,
   }) {
     return authenticationChanged(status);
@@ -200,7 +206,8 @@ class _$_AuthenticationStatusChanged implements _AuthenticationStatusChanged {
     TResult Function(AuthenticationStatus status)? authenticationChanged,
     TResult Function()? signOutRequested,
     TResult Function()? autoSignInAttempt,
-    TResult Function(String? username, String? confirmCode)? confirmAccount,
+    TResult Function(String? username, String? password, String? confirmCode)?
+        confirmAccount,
   }) {
     return authenticationChanged?.call(status);
   }
@@ -211,7 +218,8 @@ class _$_AuthenticationStatusChanged implements _AuthenticationStatusChanged {
     TResult Function(AuthenticationStatus status)? authenticationChanged,
     TResult Function()? signOutRequested,
     TResult Function()? autoSignInAttempt,
-    TResult Function(String? username, String? confirmCode)? confirmAccount,
+    TResult Function(String? username, String? password, String? confirmCode)?
+        confirmAccount,
     required TResult orElse(),
   }) {
     if (authenticationChanged != null) {
@@ -313,7 +321,8 @@ class _$_AuthSignOutRequested implements _AuthSignOutRequested {
         authenticationChanged,
     required TResult Function() signOutRequested,
     required TResult Function() autoSignInAttempt,
-    required TResult Function(String? username, String? confirmCode)
+    required TResult Function(
+            String? username, String? password, String? confirmCode)
         confirmAccount,
   }) {
     return signOutRequested();
@@ -325,7 +334,8 @@ class _$_AuthSignOutRequested implements _AuthSignOutRequested {
     TResult Function(AuthenticationStatus status)? authenticationChanged,
     TResult Function()? signOutRequested,
     TResult Function()? autoSignInAttempt,
-    TResult Function(String? username, String? confirmCode)? confirmAccount,
+    TResult Function(String? username, String? password, String? confirmCode)?
+        confirmAccount,
   }) {
     return signOutRequested?.call();
   }
@@ -336,7 +346,8 @@ class _$_AuthSignOutRequested implements _AuthSignOutRequested {
     TResult Function(AuthenticationStatus status)? authenticationChanged,
     TResult Function()? signOutRequested,
     TResult Function()? autoSignInAttempt,
-    TResult Function(String? username, String? confirmCode)? confirmAccount,
+    TResult Function(String? username, String? password, String? confirmCode)?
+        confirmAccount,
     required TResult orElse(),
   }) {
     if (signOutRequested != null) {
@@ -432,7 +443,8 @@ class _$_AuthAutoSignInAttempt implements _AuthAutoSignInAttempt {
         authenticationChanged,
     required TResult Function() signOutRequested,
     required TResult Function() autoSignInAttempt,
-    required TResult Function(String? username, String? confirmCode)
+    required TResult Function(
+            String? username, String? password, String? confirmCode)
         confirmAccount,
   }) {
     return autoSignInAttempt();
@@ -444,7 +456,8 @@ class _$_AuthAutoSignInAttempt implements _AuthAutoSignInAttempt {
     TResult Function(AuthenticationStatus status)? authenticationChanged,
     TResult Function()? signOutRequested,
     TResult Function()? autoSignInAttempt,
-    TResult Function(String? username, String? confirmCode)? confirmAccount,
+    TResult Function(String? username, String? password, String? confirmCode)?
+        confirmAccount,
   }) {
     return autoSignInAttempt?.call();
   }
@@ -455,7 +468,8 @@ class _$_AuthAutoSignInAttempt implements _AuthAutoSignInAttempt {
     TResult Function(AuthenticationStatus status)? authenticationChanged,
     TResult Function()? signOutRequested,
     TResult Function()? autoSignInAttempt,
-    TResult Function(String? username, String? confirmCode)? confirmAccount,
+    TResult Function(String? username, String? password, String? confirmCode)?
+        confirmAccount,
     required TResult orElse(),
   }) {
     if (autoSignInAttempt != null) {
@@ -512,7 +526,7 @@ abstract class _$AuthConfirmAccountCopyWith<$Res> {
   factory _$AuthConfirmAccountCopyWith(
           _AuthConfirmAccount value, $Res Function(_AuthConfirmAccount) then) =
       __$AuthConfirmAccountCopyWithImpl<$Res>;
-  $Res call({String? username, String? confirmCode});
+  $Res call({String? username, String? password, String? confirmCode});
 }
 
 /// @nodoc
@@ -529,12 +543,17 @@ class __$AuthConfirmAccountCopyWithImpl<$Res>
   @override
   $Res call({
     Object? username = freezed,
+    Object? password = freezed,
     Object? confirmCode = freezed,
   }) {
     return _then(_AuthConfirmAccount(
       username: username == freezed
           ? _value.username
           : username // ignore: cast_nullable_to_non_nullable
+              as String?,
+      password: password == freezed
+          ? _value.password
+          : password // ignore: cast_nullable_to_non_nullable
               as String?,
       confirmCode: confirmCode == freezed
           ? _value.confirmCode
@@ -547,16 +566,18 @@ class __$AuthConfirmAccountCopyWithImpl<$Res>
 /// @nodoc
 
 class _$_AuthConfirmAccount implements _AuthConfirmAccount {
-  const _$_AuthConfirmAccount({this.username, this.confirmCode});
+  const _$_AuthConfirmAccount({this.username, this.password, this.confirmCode});
 
   @override
   final String? username;
+  @override
+  final String? password;
   @override
   final String? confirmCode;
 
   @override
   String toString() {
-    return 'AuthEvent.confirmAccount(username: $username, confirmCode: $confirmCode)';
+    return 'AuthEvent.confirmAccount(username: $username, password: $password, confirmCode: $confirmCode)';
   }
 
   @override
@@ -566,6 +587,9 @@ class _$_AuthConfirmAccount implements _AuthConfirmAccount {
             (identical(other.username, username) ||
                 const DeepCollectionEquality()
                     .equals(other.username, username)) &&
+            (identical(other.password, password) ||
+                const DeepCollectionEquality()
+                    .equals(other.password, password)) &&
             (identical(other.confirmCode, confirmCode) ||
                 const DeepCollectionEquality()
                     .equals(other.confirmCode, confirmCode)));
@@ -575,6 +599,7 @@ class _$_AuthConfirmAccount implements _AuthConfirmAccount {
   int get hashCode =>
       runtimeType.hashCode ^
       const DeepCollectionEquality().hash(username) ^
+      const DeepCollectionEquality().hash(password) ^
       const DeepCollectionEquality().hash(confirmCode);
 
   @JsonKey(ignore: true)
@@ -589,10 +614,11 @@ class _$_AuthConfirmAccount implements _AuthConfirmAccount {
         authenticationChanged,
     required TResult Function() signOutRequested,
     required TResult Function() autoSignInAttempt,
-    required TResult Function(String? username, String? confirmCode)
+    required TResult Function(
+            String? username, String? password, String? confirmCode)
         confirmAccount,
   }) {
-    return confirmAccount(username, confirmCode);
+    return confirmAccount(username, password, confirmCode);
   }
 
   @override
@@ -601,9 +627,10 @@ class _$_AuthConfirmAccount implements _AuthConfirmAccount {
     TResult Function(AuthenticationStatus status)? authenticationChanged,
     TResult Function()? signOutRequested,
     TResult Function()? autoSignInAttempt,
-    TResult Function(String? username, String? confirmCode)? confirmAccount,
+    TResult Function(String? username, String? password, String? confirmCode)?
+        confirmAccount,
   }) {
-    return confirmAccount?.call(username, confirmCode);
+    return confirmAccount?.call(username, password, confirmCode);
   }
 
   @override
@@ -612,11 +639,12 @@ class _$_AuthConfirmAccount implements _AuthConfirmAccount {
     TResult Function(AuthenticationStatus status)? authenticationChanged,
     TResult Function()? signOutRequested,
     TResult Function()? autoSignInAttempt,
-    TResult Function(String? username, String? confirmCode)? confirmAccount,
+    TResult Function(String? username, String? password, String? confirmCode)?
+        confirmAccount,
     required TResult orElse(),
   }) {
     if (confirmAccount != null) {
-      return confirmAccount(username, confirmCode);
+      return confirmAccount(username, password, confirmCode);
     }
     return orElse();
   }
@@ -661,10 +689,13 @@ class _$_AuthConfirmAccount implements _AuthConfirmAccount {
 }
 
 abstract class _AuthConfirmAccount implements AuthEvent {
-  const factory _AuthConfirmAccount({String? username, String? confirmCode}) =
-      _$_AuthConfirmAccount;
+  const factory _AuthConfirmAccount(
+      {String? username,
+      String? password,
+      String? confirmCode}) = _$_AuthConfirmAccount;
 
   String? get username => throw _privateConstructorUsedError;
+  String? get password => throw _privateConstructorUsedError;
   String? get confirmCode => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
   _$AuthConfirmAccountCopyWith<_AuthConfirmAccount> get copyWith =>

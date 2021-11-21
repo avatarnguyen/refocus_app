@@ -42,6 +42,7 @@ class _SignupPageState extends State<SignupPage> {
           AuthTextFieldWidget(
             controller: _emailTextCtrl,
             placeHolderText: 'Email Adress',
+            keyboardType: TextInputType.emailAddress,
             onChanged: (text) {
               context.read<SignupBloc>().add(SignupEvent.emailChanged(text));
             },

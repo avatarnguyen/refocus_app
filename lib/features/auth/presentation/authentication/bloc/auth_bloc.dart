@@ -1,15 +1,10 @@
 import 'dart:async';
 
-import 'package:amplify_api/amplify_api.dart';
-import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
-import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify.dart';
-import 'package:amplify_flutter/amplify_hub.dart';
 import 'package:bloc/bloc.dart';
 import 'package:dartz/dartz.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
-import 'package:refocus_app/amplifyconfiguration.dart';
 import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/core/usecases/usecase.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart';
@@ -21,7 +16,6 @@ import 'package:refocus_app/features/auth/domain/usecases/confirmation.dart';
 import 'package:refocus_app/features/auth/domain/usecases/get_user.dart';
 import 'package:refocus_app/features/auth/domain/usecases/login.dart';
 import 'package:refocus_app/features/auth/domain/usecases/signout.dart';
-import 'package:refocus_app/models/ModelProvider.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
@@ -45,7 +39,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<_AuthSignOutRequested>(_onSignOutRequested);
     on<_AuthAutoSignInAttempt>(_onAuthAutoSignInAttempt);
     on<_AuthConfirmAccount>(_onAuthConfirmAccount);
-    _configureAmplify();
+    //  _configureAmplify();
   }
   final Login _login;
   final SignOut _signOut;
@@ -78,13 +72,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       },
       (isConfirmed) async {
         if (isConfirmed) {
-          // final user = await _getUser(NoParams());
+          final _loginResult = await _login(AuthParams(
+            username: event.username,
+            password: event.password,
+          ));
+          if (_loginResult is Right) {
+            final user = await _getUser(NoParams());
 
-          // return emit(user.fold(
-          //   (failure) => const AuthState.unauthenticated(),
-          //   (user) => AuthState.authenticated(user),
-          // ));
-          return emit(const AuthState.unauthenticated());
+            return emit(user.fold(
+              (failure) => const AuthState.unauthenticated(),
+              (user) => AuthState.authenticated(user),
+            ));
+          } else {
+            return emit(const AuthState.unauthenticated());
+          }
         } else {
           return emit(const AuthState.unauthenticated());
         }
@@ -94,8 +95,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   Future<void> _onAuthAutoSignInAttempt(
       _AuthAutoSignInAttempt event, Emitter<AuthState> emit) async {
-    if (Amplify.isConfigured && state is! _AuthAuthenticated) {
-      // await _signOut(NoParams());
+    log.d('Auto Login');
+    if (Amplify.isConfigured) {
+      await _configureAmplifyHub();
       log.i('Perform Auto Login');
       final result = await _login(const AuthParams());
       return result.fold(
@@ -144,22 +146,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(const AuthState.unauthenticated());
   }
 
-  Future _configureAmplify() async {
+  Future _configureAmplifyHub() async {
     try {
-      await Amplify.addPlugins([
-        AmplifyAPI(),
-        AmplifyDataStore(modelProvider: ModelProvider.instance),
-        AmplifyAuthCognito(),
-      ]);
+      // await Amplify.addPlugins([
+      //   AmplifyAPI(),
+      //   AmplifyDataStore(modelProvider: ModelProvider.instance),
+      //   AmplifyAuthCognito(),
+      // ]);
 
-      // Once Plugins are added, configure Amplify
-      await Amplify.configure(amplifyconfig);
+      // // Once Plugins are added, configure Amplify
+      // await Amplify.configure(amplifyconfig);
 
       // Listen to Auth Hubchannel for changes
-      //! Not working right now
       _authenticationStatusSubscription = _authStatus().listen((status) {
         status.fold(log.e, (_status) {
-          log.d('--- Status Changed: $_status ---');
           add(AuthEvent.authenticationChanged(_status));
         });
       });

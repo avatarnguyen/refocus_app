@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
+import 'package:refocus_app/features/auth/presentation/authentication/bloc/auth_bloc.dart';
 
 class SettingPage extends StatelessWidget {
   const SettingPage({Key? key}) : super(key: key);
@@ -80,6 +82,14 @@ class SettingPage extends StatelessWidget {
                   ],
                 ),
               ),
+              PlatformButton(
+                child: const Text('Sign Out'),
+                onPressed: () {
+                  context
+                      .read<AuthBloc>()
+                      .add(const AuthEvent.signOutRequested());
+                },
+              )
             ],
           ),
         ),

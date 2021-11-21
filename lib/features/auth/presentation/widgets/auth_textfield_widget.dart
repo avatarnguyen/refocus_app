@@ -11,8 +11,10 @@ class AuthTextFieldWidget extends StatefulWidget {
     this.onChanged,
     this.onEditingComplete,
     this.onSubmitted,
+    this.keyboardType,
     this.obscureText = false,
     this.autocorrect = true,
+    this.autofocus = false,
   }) : super(key: key);
 
   final TextEditingController controller;
@@ -20,8 +22,10 @@ class AuthTextFieldWidget extends StatefulWidget {
   final Function(String)? onChanged;
   final Function()? onEditingComplete;
   final Function(String)? onSubmitted;
+  final TextInputType? keyboardType;
   final bool obscureText;
   final bool autocorrect;
+  final bool autofocus;
 
   @override
   _AuthTextFieldWidgetState createState() => _AuthTextFieldWidgetState();
@@ -38,6 +42,8 @@ class _AuthTextFieldWidgetState extends State<AuthTextFieldWidget> {
       ),
       obscureText: widget.obscureText,
       autocorrect: widget.autocorrect,
+      autofocus: widget.autofocus,
+      keyboardType: widget.keyboardType,
       style: context.bodyText2,
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
       decoration: BoxDecoration(

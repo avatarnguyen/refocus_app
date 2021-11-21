@@ -78,26 +78,22 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Stream<Either<Failure, AuthenticationStatus>> getAuthStatus() async* {
-    // var currentStatus = const Right<Failure, AuthenticationStatus>(
-    //     AuthenticationStatus.unknown);
-    // ignore: omit_local_variable_types
-    final BehaviorSubject<Either<Failure, AuthenticationStatus>> _authStatus =
-        BehaviorSubject.seeded(const Right<Failure, AuthenticationStatus>(
+  Stream<Either<Failure, AuthenticationStatus>> getAuthStatus() {
+    final _authStatus = BehaviorSubject.seeded(
+        const Right<Failure, AuthenticationStatus>(
             AuthenticationStatus.unknown));
     try {
       final _result = authDataSource.getAuthStatus();
       // log.d(_result);
       _result.listen((status) {
         log.i('New Status Received: $status');
-        // currentStatus = Right<Failure, AuthenticationStatus>(status);
         _authStatus.add(Right<Failure, AuthenticationStatus>(status));
       });
-
-      yield _authStatus.stream.value;
+      return _authStatus.stream;
     } on ServerException catch (e) {
       log.e('Cannot access AWS: $e');
-      yield Left(ServerFailure());
+      return Stream.value(Left(ServerFailure()));
+      // yield Left(ServerFailure());
     }
   }
 

@@ -6,6 +6,9 @@ class AuthEvent with _$AuthEvent {
       _AuthenticationStatusChanged;
   const factory AuthEvent.signOutRequested() = _AuthSignOutRequested;
   const factory AuthEvent.autoSignInAttempt() = _AuthAutoSignInAttempt;
-  const factory AuthEvent.confirmAccount(
-      {String? username, String? confirmCode}) = _AuthConfirmAccount;
+  const factory AuthEvent.confirmAccount({
+    String? username,
+    String? password,
+    String? confirmCode,
+  }) = _AuthConfirmAccount;
 }

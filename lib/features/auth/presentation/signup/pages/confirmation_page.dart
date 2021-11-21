@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:refocus_app/core/core.dart';
 import 'package:refocus_app/features/auth/presentation/authentication/bloc/auth_bloc.dart';
+import 'package:refocus_app/features/auth/presentation/login/bloc/login_bloc.dart';
+import 'package:refocus_app/features/auth/presentation/signup/bloc/signup_bloc.dart';
 import 'package:refocus_app/features/auth/presentation/widgets/auth_textfield_widget.dart';
 
 class ConfirmationPage extends StatefulWidget {
@@ -15,6 +17,23 @@ class ConfirmationPage extends StatefulWidget {
 class _ConfirmationPageState extends State<ConfirmationPage> {
   final _usernameTextFieldCtrl = TextEditingController();
   final _confirmationTextFieldCtrl = TextEditingController();
+  late String _password;
+  @override
+  void initState() {
+    super.initState();
+
+    final _signupUsername = BlocProvider.of<SignupBloc>(context).state.username;
+    if (_signupUsername?.value.isNotEmpty == true) {
+      _usernameTextFieldCtrl.text = _signupUsername!.value;
+      _password =
+          BlocProvider.of<SignupBloc>(context).state.password?.value ?? '';
+    } else {
+      final _loginUsername = BlocProvider.of<LoginBloc>(context).state.username;
+      _usernameTextFieldCtrl.text = _loginUsername?.value ?? '';
+      _password =
+          BlocProvider.of<LoginBloc>(context).state.password?.value ?? '';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,8 +52,10 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
           ).padding(vertical: 20),
           AuthTextFieldWidget(
             controller: _confirmationTextFieldCtrl,
-            placeHolderText: 'confirm code',
+            placeHolderText: 'confirmation code',
             autocorrect: false,
+            autofocus: true,
+            keyboardType: TextInputType.number,
           ).padding(vertical: 20),
           Row(
             children: [
@@ -51,6 +72,7 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
                         AuthEvent.confirmAccount(
                           username: _usernameTextFieldCtrl.text,
                           confirmCode: _confirmationTextFieldCtrl.text,
+                          password: _password,
                         ),
                       );
                 },
