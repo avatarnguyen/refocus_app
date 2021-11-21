@@ -1,6 +1,4 @@
-import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify.dart';
-import 'package:dartx/dartx.dart';
 import 'package:injectable/injectable.dart';
 import 'package:refocus_app/core/error/exceptions.dart';
 import 'package:refocus_app/core/util/helpers/date_utils.dart';
@@ -40,20 +38,16 @@ abstract class TaskRemoteDataSource {
 class AWSTaskRemoteDataSource implements TaskRemoteDataSource {
   final log = logger(AWSTaskRemoteDataSource);
 
+  //* Project Methods
+
   @override
   Future<void> createOrUpdateRemoteProject(Project project) async {
     try {
-      await Amplify.DataStore.save(project);
-    } catch (e) {
-      log.e(e);
-      throw ServerException();
-    }
-  }
+      final _userID = project.userID ?? await _getUserIdFromAttributes();
 
-  @override
-  Future<void> createOrUpdateRemoteTask(Task task) async {
-    try {
-      await Amplify.DataStore.save(task);
+      await Amplify.DataStore.save(project.copyWith(
+        userID: _userID,
+      ));
     } catch (e) {
       log.e(e);
       throw ServerException();
@@ -79,9 +73,26 @@ class AWSTaskRemoteDataSource implements TaskRemoteDataSource {
   }
 
   @override
-  Future<void> deleteRemoteTask(Task task) async {
+  Future<List<Project>> getRemoteProject() async {
     try {
-      await Amplify.DataStore.delete(task);
+      final _userID = await _getUserIdFromAttributes();
+      final projects = await Amplify.DataStore.query(
+        Project.classType,
+        where: Project.USERID.eq(_userID),
+      );
+      return projects;
+    } catch (e) {
+      log.e(e);
+      throw ServerException();
+    }
+  }
+
+  //* Task Methods
+
+  @override
+  Future<void> createOrUpdateRemoteTask(Task task) async {
+    try {
+      await Amplify.DataStore.save(task);
     } catch (e) {
       log.e(e);
       throw ServerException();
@@ -89,10 +100,9 @@ class AWSTaskRemoteDataSource implements TaskRemoteDataSource {
   }
 
   @override
-  Future<List<Project>> getRemoteProject() async {
+  Future<void> deleteRemoteTask(Task task) async {
     try {
-      final projects = await Amplify.DataStore.query(Project.classType);
-      return projects;
+      await Amplify.DataStore.delete(task);
     } catch (e) {
       log.e(e);
       throw ServerException();
@@ -195,6 +205,8 @@ class AWSTaskRemoteDataSource implements TaskRemoteDataSource {
     }
   }
 
+  //* Subtask Methods
+
   @override
   Future<void> createOrUpdateRemoteSubTask(Subtask subtask) async {
     try {
@@ -223,6 +235,21 @@ class AWSTaskRemoteDataSource implements TaskRemoteDataSource {
         where: Subtask.TASKID.eq(taskID),
       );
       return subtasks;
+    } catch (e) {
+      log.e(e);
+      throw ServerException();
+    }
+  }
+
+  // Helper Methods
+
+  Future<String> _getUserIdFromAttributes() async {
+    try {
+      final attributes = await Amplify.Auth.fetchUserAttributes();
+      final _userId = attributes
+          .firstWhere((element) => element.userAttributeKey == 'sub')
+          .value as String;
+      return _userId;
     } catch (e) {
       log.e(e);
       throw ServerException();

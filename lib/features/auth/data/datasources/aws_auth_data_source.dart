@@ -39,11 +39,11 @@ class AWSAuthDataSource implements AuthDataSource {
   late StreamSubscription<dynamic> _hubSubscription;
   final log = logger(AWSAuthDataSource);
 
-  Future<aws_model.User> _getUserIdFromAttributes() async {
+  Future<aws_model.User> _getUserFromAttributes() async {
     try {
       final attributes = await Amplify.Auth.fetchUserAttributes();
-      for (var element in attributes) {
-        log.i('key: ${element.userAttributeKey}; value: ${element.value}');
+      for (final element in attributes) {
+        log.v('key: ${element.userAttributeKey}; value: ${element.value}');
       }
       final userId = attributes
           .firstWhere((element) => element.userAttributeKey == 'sub')
@@ -64,7 +64,7 @@ class AWSAuthDataSource implements AuthDataSource {
   @override
   Future<aws_model.User?> getUserModelFromDataStore() async {
     try {
-      final _user = await _getUserIdFromAttributes();
+      final _user = await _getUserFromAttributes();
       final fetchedUser = await Amplify.DataStore.query(
         aws_model.User.classType,
         where: aws_model.User.ID.eq(_user.id),
@@ -114,7 +114,7 @@ class AWSAuthDataSource implements AuthDataSource {
         username: username.trim(),
         password: password.trim(),
       );
-      final _user = await _getUserIdFromAttributes();
+      final _user = await _getUserFromAttributes();
 
       final _newUser = _user.copyWith(username: username);
       await _createUserModelInDataStore(_newUser);
