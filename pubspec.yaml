@@ -7,6 +7,12 @@ environment:
   sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.17.0
+
   # AWS
   amplify_api: ^0.2.6
   amplify_auth_cognito: ^0.2.6
@@ -20,36 +26,37 @@ dependencies:
   bloc: ^7.1.0
   flutter_bloc: ^7.3.0
   formz: ^0.4.1
-
-  connectivity: ^3.0.6
-  dartx: ^0.7.1
   dartz: ^0.10.0-nullsafety.2
   equatable: ^2.0.3
+
+  # Network
+  connectivity: ^3.0.6
+  internet_connection_checker: ^0.0.1+2
+  http: ^0.13.3
+
+  # Google APIs
   extension_google_sign_in_as_googleapis_auth: ^2.0.2
-  flutter:
-    sdk: flutter
-  flutter_localizations:
-    sdk: flutter
-  freezed_annotation: ^0.14.3
-  get_it: ^7.2.0
   google_sign_in: ^5.1.0
   googleapis: ^5.0.0
   googleapis_auth: ^1.1.0
+
+  # Local Data Store
   hive: ^2.0.4
   hive_flutter: ^1.1.0
-  http: ^0.13.3
-  injectable: ^1.5.0
-  internet_connection_checker: ^0.0.1+2
-  intl: ^0.17.0
-  path_provider: ^2.0.3
   shared_preferences: ^2.0.7
 
   # Misc
   logger: ^1.1.0
   rxdart: ^0.27.2
   url_launcher: ^6.0.10
+  freezed_annotation: ^0.14.3
   uuid: ^3.0.4
+  dartx: ^0.7.1
   awesome_flutter_extensions: ^0.0.1+2
+
+  get_it: ^7.2.0
+  injectable: ^1.5.0
+  path_provider: ^2.0.3
 
   # UI
   cupertino_icons: ^1.0.3

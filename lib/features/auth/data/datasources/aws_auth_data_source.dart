@@ -15,11 +15,11 @@ abstract class AuthDataSource {
     required String email,
     required String password,
   });
-  Future<void> login({
+  Future<bool> login({
     required String username,
     required String password,
   });
-  Future<void> attemptAutoLogin();
+  Future<bool> attemptAutoLogin();
   Future<void> signOut();
 
   Future<bool> confirmSignUp({
@@ -29,10 +29,14 @@ abstract class AuthDataSource {
   Future<aws_model.User?> getUserModelFromDataStore();
 
   Stream<AuthenticationStatus> getAuthStatus();
+
+  Future<void> close();
 }
 
 @LazySingleton(as: AuthDataSource)
 class AWSAuthDataSource implements AuthDataSource {
+  late StreamController<AuthenticationStatus> _controller;
+  late StreamSubscription<dynamic> _hubSubscription;
   final log = logger(AWSAuthDataSource);
 
   Future<String> _getUserIdFromAttributes() async {
@@ -73,26 +77,10 @@ class AWSAuthDataSource implements AuthDataSource {
 
   Future<void> _createUserModelInDataStore(aws_model.User user) async {
     try {
-      await Amplify.DataStore.save(user);
-
-      // return _getUserModelFromDataStore(user.id);
-    } catch (e) {
-      log.e(e);
-      throw ServerException();
-    }
-  }
-
-  @override
-  Future<void> attemptAutoLogin() async {
-    try {
-      final session = await Amplify.Auth.fetchAuthSession();
-
-      if (!session.isSignedIn) {
-        // final userId = await _getUserIdFromAttributes();
-        // return _getUserModelFromDataStore(userId);
-        // } else {
-        log.d('No User Session is available');
-        // return null;
+      final _fetchUser = await Amplify.DataStore.query(aws_model.User.classType,
+          where: aws_model.User.ID.eq(user.id));
+      if (_fetchUser.isEmpty) {
+        await Amplify.DataStore.save(user);
       }
     } catch (e) {
       log.e(e);
@@ -101,20 +89,37 @@ class AWSAuthDataSource implements AuthDataSource {
   }
 
   @override
-  Future<void> login(
+  Future<bool> attemptAutoLogin() async {
+    try {
+      final session = await Amplify.Auth.fetchAuthSession();
+      log.v('Auth Session: ${session.isSignedIn}');
+      return session.isSignedIn;
+    } catch (e) {
+      log.e(e);
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<bool> login(
       {required String username, required String password}) async {
     try {
-      await Amplify.Auth.signIn(
+      final result = await Amplify.Auth.signIn(
         username: username.trim(),
         password: password.trim(),
       );
+      final _userId = await _getUserIdFromAttributes();
 
-      // if (result.isSignedIn) {
-      //   final userId = await _getUserIdFromAttributes();
-      //   return _getUserModelFromDataStore(userId);
-      // } else {
-      //   return null;
-      // }
+      final _newUser = aws_model.User(
+        id: _userId,
+        username: username,
+        email: 'email',
+      );
+      await _createUserModelInDataStore(_newUser);
+
+      return result.isSignedIn;
+    } on UserNotConfirmedException {
+      throw NotConfirmedException();
     } catch (e) {
       log.e(e);
       throw ServerException();
@@ -127,7 +132,7 @@ class AWSAuthDataSource implements AuthDataSource {
   }
 
   @override
-  Future<aws_model.User?> signUp(
+  Future<void> signUp(
       {required String username,
       required String email,
       required String password}) async {
@@ -140,18 +145,12 @@ class AWSAuthDataSource implements AuthDataSource {
         password: password,
         options: options,
       );
-      if (result.isSignUpComplete) {
-        final _userId = await _getUserIdFromAttributes();
-
-        final _newUser = aws_model.User(
-          id: _userId,
-          username: username,
-          email: email,
-        );
-        await _createUserModelInDataStore(_newUser);
-      } else {
+      if (!result.isSignUpComplete) {
         log.d('Sign Up not completed');
-        return null;
+        log.d(result.nextStep.signUpStep);
+        if (result.nextStep.signUpStep == 'CONFIRM_SIGN_UP_STEP') {
+          _controller.add(AuthenticationStatus.confirmationRequired);
+        }
       }
     } catch (e) {
       log.e(e);
@@ -161,13 +160,15 @@ class AWSAuthDataSource implements AuthDataSource {
 
   @override
   Stream<AuthenticationStatus> getAuthStatus() {
-    final _controller = StreamController<AuthenticationStatus>();
+    _controller = StreamController<AuthenticationStatus>();
 
-    log.d('Amplify Configured: ${Amplify.isConfigured}');
-    // if (Amplify.isConfigured) {
-    Amplify.Hub.listen([HubChannel.Auth], (dynamic event) {
-      if (event is AuthHubEvent) {
-        log.d('Auth Event: ${event.eventName}');
+    log.v('Amplify Configured: ${Amplify.isConfigured}');
+
+    _hubSubscription = Amplify.Hub.listen([HubChannel.Auth], (event) {
+      log.v('Event Received: $event');
+      if (event != null) {
+        // ignore: avoid_dynamic_calls
+        log.d('--> Auth Event: ${event.eventName}');
         switch (event.eventName) {
           case 'SIGNED_IN':
             {
@@ -212,6 +213,12 @@ class AWSAuthDataSource implements AuthDataSource {
       log.e(e);
       throw ServerException();
     }
+  }
+
+  @override
+  Future<void> close() async {
+    await _hubSubscription.cancel();
+    await _controller.close();
   }
 }
 

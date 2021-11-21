@@ -1,7 +1,10 @@
+import 'dart:developer';
+
 import 'package:bloc/bloc.dart';
 import 'package:formz/formz.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
+import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/features/auth/domain/usecases/auth_params.dart';
 import 'package:refocus_app/features/auth/domain/usecases/login.dart';
 import 'package:refocus_app/features/auth/presentation/models/models.dart';
@@ -49,16 +52,20 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
   Future<void> _onLoginSubmitted(
       _LoginSubmitted event, Emitter<LoginState> emit) async {
-    if (state.status?.isInvalid == true) {
+    if (state.status?.isValid == true) {
       emit(state.copyWith(status: FormzStatus.submissionInProgress));
       try {
-        await _login(AuthParams(
+        final result = await _login(AuthParams(
           username: state.username?.value,
           password: state.password?.value,
         ));
-        emit(state.copyWith(status: FormzStatus.submissionSuccess));
+        result.fold(
+            (failure) => (failure is AuthFailure)
+                ? emit(state.copyWith(status: FormzStatus.submissionCanceled))
+                : emit(state.copyWith(status: FormzStatus.submissionFailure)),
+            (r) => emit(state.copyWith(status: FormzStatus.submissionSuccess)));
       } catch (e) {
-        print(e);
+        log('[Login_Bloc] $e');
         emit(state.copyWith(status: FormzStatus.submissionFailure));
       }
     }

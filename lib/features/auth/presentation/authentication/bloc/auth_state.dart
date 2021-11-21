@@ -7,4 +7,5 @@ class AuthState with _$AuthState {
       _AuthAuthenticated;
   const factory AuthState.unauthenticated() = _AuthUnauthenticated;
   const factory AuthState.loading() = _AuthLoading;
+  const factory AuthState.confirmationRequired() = _AuthConfirmationRequired;
 }

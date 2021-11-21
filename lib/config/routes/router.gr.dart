@@ -106,18 +106,19 @@ class AppRouter extends _i10.RootStackRouter {
   @override
   List<_i10.RouteConfig> get routes => [
         _i10.RouteConfig(AppLoaderWrapperRoute.name, path: '/', children: [
-          _i10.RouteConfig(AppLoaderRoute.name, path: ''),
+          _i10.RouteConfig(AppLoaderRoute.name, path: '', children: [
+            _i10.RouteConfig(HomeRoute.name, path: '', children: [
+              _i10.RouteConfig(HomeRouteWidget.name, path: ''),
+              _i10.RouteConfig(QuickAddRoute.name, path: 'quick-add-page'),
+              _i10.RouteConfig(CreateProjectRoute.name,
+                  path: 'create-project-page'),
+              _i10.RouteConfig(TaskRoute.name, path: 'task-page'),
+              _i10.RouteConfig(SettingRoute.name, path: 'setting-page')
+            ])
+          ]),
           _i10.RouteConfig(LoginRoute.name, path: 'login-page'),
           _i10.RouteConfig(SignupRoute.name, path: 'signup-page'),
-          _i10.RouteConfig(ConfirmationRoute.name, path: 'confirmation-page'),
-          _i10.RouteConfig(HomeRoute.name, path: 'home-page', children: [
-            _i10.RouteConfig(HomeRouteWidget.name, path: ''),
-            _i10.RouteConfig(QuickAddRoute.name, path: 'quick-add-page'),
-            _i10.RouteConfig(CreateProjectRoute.name,
-                path: 'create-project-page'),
-            _i10.RouteConfig(TaskRoute.name, path: 'task-page'),
-            _i10.RouteConfig(SettingRoute.name, path: 'setting-page')
-          ])
+          _i10.RouteConfig(ConfirmationRoute.name, path: 'confirmation-page')
         ])
       ];
 }
@@ -132,7 +133,8 @@ class AppLoaderWrapperRoute extends _i10.PageRouteInfo<void> {
 
 /// generated route for [_i1.AppLoaderPage]
 class AppLoaderRoute extends _i10.PageRouteInfo<void> {
-  const AppLoaderRoute() : super(name, path: '');
+  const AppLoaderRoute({List<_i10.PageRouteInfo>? children})
+      : super(name, path: '', initialChildren: children);
 
   static const String name = 'AppLoaderRoute';
 }
@@ -161,7 +163,7 @@ class ConfirmationRoute extends _i10.PageRouteInfo<void> {
 /// generated route for [_i5.HomePage]
 class HomeRoute extends _i10.PageRouteInfo<void> {
   const HomeRoute({List<_i10.PageRouteInfo>? children})
-      : super(name, path: 'home-page', initialChildren: children);
+      : super(name, path: '', initialChildren: children);
 
   static const String name = 'HomeRoute';
 }

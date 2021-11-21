@@ -8,10 +8,10 @@ abstract class AuthRepository {
   Future<Either<Failure, Unit>> authSignUp(
     AuthCredential authCredential,
   );
-  Future<Either<Failure, Unit>> authLogin(
+  Future<Either<Failure, bool>> authLogin(
     AuthCredential authCredential,
   );
-  Future<Either<Failure, Unit>> authAutoLogin();
+  Future<Either<Failure, bool>> authAutoLogin();
   Future<Either<Failure, Unit>> authSignOut();
   Future<Either<Failure, bool>> authConfirmedAccount({
     required String username,

@@ -6,6 +6,7 @@ import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/features/auth/domain/entities/user_entry.dart';
 import 'package:refocus_app/features/auth/domain/usecases/auth_params.dart';
 import 'package:refocus_app/features/auth/domain/usecases/auth_status.dart';
+import 'package:refocus_app/features/auth/domain/usecases/get_user.dart';
 import 'package:refocus_app/features/auth/domain/usecases/login.dart';
 import 'package:refocus_app/features/auth/domain/usecases/signout.dart';
 import 'package:refocus_app/features/auth/presentation/authentication/bloc/auth_bloc.dart';
@@ -16,20 +17,25 @@ class MockAuthStatus extends Mock implements AuthStatus {}
 
 class MockSignOut extends Mock implements SignOut {}
 
+class MockGetUser extends Mock implements GetUser {}
+
 void main() {
   late AuthBloc bloc;
   late MockLogin mockLogin;
   late MockAuthStatus mockAuthStatus;
   late MockSignOut mockSignOut;
+  late MockGetUser mockGetUser;
 
   setUp(() {
     mockLogin = MockLogin();
     mockAuthStatus = MockAuthStatus();
     mockSignOut = MockSignOut();
+    mockGetUser = MockGetUser();
     bloc = AuthBloc(
       login: mockLogin,
       authStatus: mockAuthStatus,
       signOut: mockSignOut,
+      getUser: mockGetUser,
     );
   });
 
@@ -66,7 +72,7 @@ void main() {
               username: tUsername,
               password: tPassword,
             ))).thenAnswer(
-          (_) async => Right<Failure, UserEntry>(tUser),
+          (_) async => const Right<Failure, Unit>(unit),
         );
       },
       act: (_bloc) {

@@ -29,40 +29,59 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
   final log = logger(SignupBloc);
 
   Future<void> _onSignupUsernameChanged(
-      _SignupUsernameChanged event, Emitter<SignupState> emit) async {}
+      _SignupUsernameChanged event, Emitter<SignupState> emit) async {
+    final _username = Username.dirty(event.username);
+    emit(state.copyWith(
+      username: _username,
+      status: Formz.validate([
+        state.password ?? const Password.pure(),
+        state.email ?? const Email.pure(),
+        _username,
+      ]),
+    ));
+  }
+
   Future<void> _onSignupEmailChanged(
-      _SignupEmailChanged event, Emitter<SignupState> emit) async {}
+      _SignupEmailChanged event, Emitter<SignupState> emit) async {
+    final _email = Email.dirty(event.email);
+    emit(state.copyWith(
+      email: _email,
+      status: Formz.validate([
+        state.password ?? const Password.pure(),
+        state.username ?? const Username.pure(),
+        _email,
+      ]),
+    ));
+  }
+
   Future<void> _onSignupPasswordChanged(
-      _SignupPasswordChanged event, Emitter<SignupState> emit) async {}
+      _SignupPasswordChanged event, Emitter<SignupState> emit) async {
+    final _password = Password.dirty(event.password);
+    emit(state.copyWith(
+      password: _password,
+      status: Formz.validate([
+        state.username ?? const Username.pure(),
+        state.email ?? const Email.pure(),
+        _password,
+      ]),
+    ));
+  }
+
   Future<void> _onSubmitted(
       _SignupSubmitted event, Emitter<SignupState> emit) async {
-    // await _confirmation(const AuthParams(
-    //   username: 'avatar',
-    //   confirmationCode: '778608',
-    // ));
-    // await _signUp(AuthParams(
-    //   email: ''
-    // ));
+    if (state.status?.isValid == true) {
+      emit(state.copyWith(status: FormzStatus.submissionInProgress));
+      try {
+        await _signUp(AuthParams(
+          email: state.email?.value,
+          username: state.username?.value,
+          password: state.password?.value,
+        ));
+        emit(state.copyWith(status: FormzStatus.submissionSuccess));
+      } catch (e) {
+        log.e(e);
+        emit(state.copyWith(status: FormzStatus.submissionFailure));
+      }
+    }
   }
 }
-
-  // Future<void> _onSignUpEvent(
-  //     _AuthSignUpEvent event, Emitter<AuthState> emit) async {
-  //   final _user = await _signUp(
-  //     AuthParams(
-  //       username: event.username,
-  //       email: event.email,
-  //       password: event.password,
-  //     ),
-  //   );
-  //   _user.fold(
-  //     (failure) {
-  //       if (failure is AuthFailure) {
-  //         emit(const AuthState.unauthenticated());
-  //       } else {
-  //         emit(const AuthState.unknown());
-  //       }
-  //     },
-  //     (entry) => emit(AuthState.authenticated(entry)),
-  //   );
-  // }

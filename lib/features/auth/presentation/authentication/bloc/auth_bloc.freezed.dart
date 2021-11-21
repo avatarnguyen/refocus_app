@@ -31,6 +31,13 @@ class _$AuthEventTearOff {
   _AuthAutoSignInAttempt autoSignInAttempt() {
     return const _AuthAutoSignInAttempt();
   }
+
+  _AuthConfirmAccount confirmAccount({String? username, String? confirmCode}) {
+    return _AuthConfirmAccount(
+      username: username,
+      confirmCode: confirmCode,
+    );
+  }
 }
 
 /// @nodoc
@@ -44,6 +51,8 @@ mixin _$AuthEvent {
         authenticationChanged,
     required TResult Function() signOutRequested,
     required TResult Function() autoSignInAttempt,
+    required TResult Function(String? username, String? confirmCode)
+        confirmAccount,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -51,6 +60,7 @@ mixin _$AuthEvent {
     TResult Function(AuthenticationStatus status)? authenticationChanged,
     TResult Function()? signOutRequested,
     TResult Function()? autoSignInAttempt,
+    TResult Function(String? username, String? confirmCode)? confirmAccount,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -58,6 +68,7 @@ mixin _$AuthEvent {
     TResult Function(AuthenticationStatus status)? authenticationChanged,
     TResult Function()? signOutRequested,
     TResult Function()? autoSignInAttempt,
+    TResult Function(String? username, String? confirmCode)? confirmAccount,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -67,6 +78,7 @@ mixin _$AuthEvent {
         authenticationChanged,
     required TResult Function(_AuthSignOutRequested value) signOutRequested,
     required TResult Function(_AuthAutoSignInAttempt value) autoSignInAttempt,
+    required TResult Function(_AuthConfirmAccount value) confirmAccount,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -74,6 +86,7 @@ mixin _$AuthEvent {
     TResult Function(_AuthenticationStatusChanged value)? authenticationChanged,
     TResult Function(_AuthSignOutRequested value)? signOutRequested,
     TResult Function(_AuthAutoSignInAttempt value)? autoSignInAttempt,
+    TResult Function(_AuthConfirmAccount value)? confirmAccount,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -81,6 +94,7 @@ mixin _$AuthEvent {
     TResult Function(_AuthenticationStatusChanged value)? authenticationChanged,
     TResult Function(_AuthSignOutRequested value)? signOutRequested,
     TResult Function(_AuthAutoSignInAttempt value)? autoSignInAttempt,
+    TResult Function(_AuthConfirmAccount value)? confirmAccount,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -174,6 +188,8 @@ class _$_AuthenticationStatusChanged implements _AuthenticationStatusChanged {
         authenticationChanged,
     required TResult Function() signOutRequested,
     required TResult Function() autoSignInAttempt,
+    required TResult Function(String? username, String? confirmCode)
+        confirmAccount,
   }) {
     return authenticationChanged(status);
   }
@@ -184,6 +200,7 @@ class _$_AuthenticationStatusChanged implements _AuthenticationStatusChanged {
     TResult Function(AuthenticationStatus status)? authenticationChanged,
     TResult Function()? signOutRequested,
     TResult Function()? autoSignInAttempt,
+    TResult Function(String? username, String? confirmCode)? confirmAccount,
   }) {
     return authenticationChanged?.call(status);
   }
@@ -194,6 +211,7 @@ class _$_AuthenticationStatusChanged implements _AuthenticationStatusChanged {
     TResult Function(AuthenticationStatus status)? authenticationChanged,
     TResult Function()? signOutRequested,
     TResult Function()? autoSignInAttempt,
+    TResult Function(String? username, String? confirmCode)? confirmAccount,
     required TResult orElse(),
   }) {
     if (authenticationChanged != null) {
@@ -209,6 +227,7 @@ class _$_AuthenticationStatusChanged implements _AuthenticationStatusChanged {
         authenticationChanged,
     required TResult Function(_AuthSignOutRequested value) signOutRequested,
     required TResult Function(_AuthAutoSignInAttempt value) autoSignInAttempt,
+    required TResult Function(_AuthConfirmAccount value) confirmAccount,
   }) {
     return authenticationChanged(this);
   }
@@ -219,6 +238,7 @@ class _$_AuthenticationStatusChanged implements _AuthenticationStatusChanged {
     TResult Function(_AuthenticationStatusChanged value)? authenticationChanged,
     TResult Function(_AuthSignOutRequested value)? signOutRequested,
     TResult Function(_AuthAutoSignInAttempt value)? autoSignInAttempt,
+    TResult Function(_AuthConfirmAccount value)? confirmAccount,
   }) {
     return authenticationChanged?.call(this);
   }
@@ -229,6 +249,7 @@ class _$_AuthenticationStatusChanged implements _AuthenticationStatusChanged {
     TResult Function(_AuthenticationStatusChanged value)? authenticationChanged,
     TResult Function(_AuthSignOutRequested value)? signOutRequested,
     TResult Function(_AuthAutoSignInAttempt value)? autoSignInAttempt,
+    TResult Function(_AuthConfirmAccount value)? confirmAccount,
     required TResult orElse(),
   }) {
     if (authenticationChanged != null) {
@@ -292,6 +313,8 @@ class _$_AuthSignOutRequested implements _AuthSignOutRequested {
         authenticationChanged,
     required TResult Function() signOutRequested,
     required TResult Function() autoSignInAttempt,
+    required TResult Function(String? username, String? confirmCode)
+        confirmAccount,
   }) {
     return signOutRequested();
   }
@@ -302,6 +325,7 @@ class _$_AuthSignOutRequested implements _AuthSignOutRequested {
     TResult Function(AuthenticationStatus status)? authenticationChanged,
     TResult Function()? signOutRequested,
     TResult Function()? autoSignInAttempt,
+    TResult Function(String? username, String? confirmCode)? confirmAccount,
   }) {
     return signOutRequested?.call();
   }
@@ -312,6 +336,7 @@ class _$_AuthSignOutRequested implements _AuthSignOutRequested {
     TResult Function(AuthenticationStatus status)? authenticationChanged,
     TResult Function()? signOutRequested,
     TResult Function()? autoSignInAttempt,
+    TResult Function(String? username, String? confirmCode)? confirmAccount,
     required TResult orElse(),
   }) {
     if (signOutRequested != null) {
@@ -327,6 +352,7 @@ class _$_AuthSignOutRequested implements _AuthSignOutRequested {
         authenticationChanged,
     required TResult Function(_AuthSignOutRequested value) signOutRequested,
     required TResult Function(_AuthAutoSignInAttempt value) autoSignInAttempt,
+    required TResult Function(_AuthConfirmAccount value) confirmAccount,
   }) {
     return signOutRequested(this);
   }
@@ -337,6 +363,7 @@ class _$_AuthSignOutRequested implements _AuthSignOutRequested {
     TResult Function(_AuthenticationStatusChanged value)? authenticationChanged,
     TResult Function(_AuthSignOutRequested value)? signOutRequested,
     TResult Function(_AuthAutoSignInAttempt value)? autoSignInAttempt,
+    TResult Function(_AuthConfirmAccount value)? confirmAccount,
   }) {
     return signOutRequested?.call(this);
   }
@@ -347,6 +374,7 @@ class _$_AuthSignOutRequested implements _AuthSignOutRequested {
     TResult Function(_AuthenticationStatusChanged value)? authenticationChanged,
     TResult Function(_AuthSignOutRequested value)? signOutRequested,
     TResult Function(_AuthAutoSignInAttempt value)? autoSignInAttempt,
+    TResult Function(_AuthConfirmAccount value)? confirmAccount,
     required TResult orElse(),
   }) {
     if (signOutRequested != null) {
@@ -404,6 +432,8 @@ class _$_AuthAutoSignInAttempt implements _AuthAutoSignInAttempt {
         authenticationChanged,
     required TResult Function() signOutRequested,
     required TResult Function() autoSignInAttempt,
+    required TResult Function(String? username, String? confirmCode)
+        confirmAccount,
   }) {
     return autoSignInAttempt();
   }
@@ -414,6 +444,7 @@ class _$_AuthAutoSignInAttempt implements _AuthAutoSignInAttempt {
     TResult Function(AuthenticationStatus status)? authenticationChanged,
     TResult Function()? signOutRequested,
     TResult Function()? autoSignInAttempt,
+    TResult Function(String? username, String? confirmCode)? confirmAccount,
   }) {
     return autoSignInAttempt?.call();
   }
@@ -424,6 +455,7 @@ class _$_AuthAutoSignInAttempt implements _AuthAutoSignInAttempt {
     TResult Function(AuthenticationStatus status)? authenticationChanged,
     TResult Function()? signOutRequested,
     TResult Function()? autoSignInAttempt,
+    TResult Function(String? username, String? confirmCode)? confirmAccount,
     required TResult orElse(),
   }) {
     if (autoSignInAttempt != null) {
@@ -439,6 +471,7 @@ class _$_AuthAutoSignInAttempt implements _AuthAutoSignInAttempt {
         authenticationChanged,
     required TResult Function(_AuthSignOutRequested value) signOutRequested,
     required TResult Function(_AuthAutoSignInAttempt value) autoSignInAttempt,
+    required TResult Function(_AuthConfirmAccount value) confirmAccount,
   }) {
     return autoSignInAttempt(this);
   }
@@ -449,6 +482,7 @@ class _$_AuthAutoSignInAttempt implements _AuthAutoSignInAttempt {
     TResult Function(_AuthenticationStatusChanged value)? authenticationChanged,
     TResult Function(_AuthSignOutRequested value)? signOutRequested,
     TResult Function(_AuthAutoSignInAttempt value)? autoSignInAttempt,
+    TResult Function(_AuthConfirmAccount value)? confirmAccount,
   }) {
     return autoSignInAttempt?.call(this);
   }
@@ -459,6 +493,7 @@ class _$_AuthAutoSignInAttempt implements _AuthAutoSignInAttempt {
     TResult Function(_AuthenticationStatusChanged value)? authenticationChanged,
     TResult Function(_AuthSignOutRequested value)? signOutRequested,
     TResult Function(_AuthAutoSignInAttempt value)? autoSignInAttempt,
+    TResult Function(_AuthConfirmAccount value)? confirmAccount,
     required TResult orElse(),
   }) {
     if (autoSignInAttempt != null) {
@@ -470,6 +505,170 @@ class _$_AuthAutoSignInAttempt implements _AuthAutoSignInAttempt {
 
 abstract class _AuthAutoSignInAttempt implements AuthEvent {
   const factory _AuthAutoSignInAttempt() = _$_AuthAutoSignInAttempt;
+}
+
+/// @nodoc
+abstract class _$AuthConfirmAccountCopyWith<$Res> {
+  factory _$AuthConfirmAccountCopyWith(
+          _AuthConfirmAccount value, $Res Function(_AuthConfirmAccount) then) =
+      __$AuthConfirmAccountCopyWithImpl<$Res>;
+  $Res call({String? username, String? confirmCode});
+}
+
+/// @nodoc
+class __$AuthConfirmAccountCopyWithImpl<$Res>
+    extends _$AuthEventCopyWithImpl<$Res>
+    implements _$AuthConfirmAccountCopyWith<$Res> {
+  __$AuthConfirmAccountCopyWithImpl(
+      _AuthConfirmAccount _value, $Res Function(_AuthConfirmAccount) _then)
+      : super(_value, (v) => _then(v as _AuthConfirmAccount));
+
+  @override
+  _AuthConfirmAccount get _value => super._value as _AuthConfirmAccount;
+
+  @override
+  $Res call({
+    Object? username = freezed,
+    Object? confirmCode = freezed,
+  }) {
+    return _then(_AuthConfirmAccount(
+      username: username == freezed
+          ? _value.username
+          : username // ignore: cast_nullable_to_non_nullable
+              as String?,
+      confirmCode: confirmCode == freezed
+          ? _value.confirmCode
+          : confirmCode // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$_AuthConfirmAccount implements _AuthConfirmAccount {
+  const _$_AuthConfirmAccount({this.username, this.confirmCode});
+
+  @override
+  final String? username;
+  @override
+  final String? confirmCode;
+
+  @override
+  String toString() {
+    return 'AuthEvent.confirmAccount(username: $username, confirmCode: $confirmCode)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other is _AuthConfirmAccount &&
+            (identical(other.username, username) ||
+                const DeepCollectionEquality()
+                    .equals(other.username, username)) &&
+            (identical(other.confirmCode, confirmCode) ||
+                const DeepCollectionEquality()
+                    .equals(other.confirmCode, confirmCode)));
+  }
+
+  @override
+  int get hashCode =>
+      runtimeType.hashCode ^
+      const DeepCollectionEquality().hash(username) ^
+      const DeepCollectionEquality().hash(confirmCode);
+
+  @JsonKey(ignore: true)
+  @override
+  _$AuthConfirmAccountCopyWith<_AuthConfirmAccount> get copyWith =>
+      __$AuthConfirmAccountCopyWithImpl<_AuthConfirmAccount>(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(AuthenticationStatus status)
+        authenticationChanged,
+    required TResult Function() signOutRequested,
+    required TResult Function() autoSignInAttempt,
+    required TResult Function(String? username, String? confirmCode)
+        confirmAccount,
+  }) {
+    return confirmAccount(username, confirmCode);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult Function(AuthenticationStatus status)? authenticationChanged,
+    TResult Function()? signOutRequested,
+    TResult Function()? autoSignInAttempt,
+    TResult Function(String? username, String? confirmCode)? confirmAccount,
+  }) {
+    return confirmAccount?.call(username, confirmCode);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(AuthenticationStatus status)? authenticationChanged,
+    TResult Function()? signOutRequested,
+    TResult Function()? autoSignInAttempt,
+    TResult Function(String? username, String? confirmCode)? confirmAccount,
+    required TResult orElse(),
+  }) {
+    if (confirmAccount != null) {
+      return confirmAccount(username, confirmCode);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_AuthenticationStatusChanged value)
+        authenticationChanged,
+    required TResult Function(_AuthSignOutRequested value) signOutRequested,
+    required TResult Function(_AuthAutoSignInAttempt value) autoSignInAttempt,
+    required TResult Function(_AuthConfirmAccount value) confirmAccount,
+  }) {
+    return confirmAccount(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult Function(_AuthenticationStatusChanged value)? authenticationChanged,
+    TResult Function(_AuthSignOutRequested value)? signOutRequested,
+    TResult Function(_AuthAutoSignInAttempt value)? autoSignInAttempt,
+    TResult Function(_AuthConfirmAccount value)? confirmAccount,
+  }) {
+    return confirmAccount?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_AuthenticationStatusChanged value)? authenticationChanged,
+    TResult Function(_AuthSignOutRequested value)? signOutRequested,
+    TResult Function(_AuthAutoSignInAttempt value)? autoSignInAttempt,
+    TResult Function(_AuthConfirmAccount value)? confirmAccount,
+    required TResult orElse(),
+  }) {
+    if (confirmAccount != null) {
+      return confirmAccount(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _AuthConfirmAccount implements AuthEvent {
+  const factory _AuthConfirmAccount({String? username, String? confirmCode}) =
+      _$_AuthConfirmAccount;
+
+  String? get username => throw _privateConstructorUsedError;
+  String? get confirmCode => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  _$AuthConfirmAccountCopyWith<_AuthConfirmAccount> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
@@ -493,6 +692,10 @@ class _$AuthStateTearOff {
   _AuthLoading loading() {
     return const _AuthLoading();
   }
+
+  _AuthConfirmationRequired confirmationRequired() {
+    return const _AuthConfirmationRequired();
+  }
 }
 
 /// @nodoc
@@ -506,6 +709,7 @@ mixin _$AuthState {
     required TResult Function(UserEntry userEntry) authenticated,
     required TResult Function() unauthenticated,
     required TResult Function() loading,
+    required TResult Function() confirmationRequired,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -514,6 +718,7 @@ mixin _$AuthState {
     TResult Function(UserEntry userEntry)? authenticated,
     TResult Function()? unauthenticated,
     TResult Function()? loading,
+    TResult Function()? confirmationRequired,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -522,6 +727,7 @@ mixin _$AuthState {
     TResult Function(UserEntry userEntry)? authenticated,
     TResult Function()? unauthenticated,
     TResult Function()? loading,
+    TResult Function()? confirmationRequired,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -531,6 +737,8 @@ mixin _$AuthState {
     required TResult Function(_AuthAuthenticated value) authenticated,
     required TResult Function(_AuthUnauthenticated value) unauthenticated,
     required TResult Function(_AuthLoading value) loading,
+    required TResult Function(_AuthConfirmationRequired value)
+        confirmationRequired,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -539,6 +747,7 @@ mixin _$AuthState {
     TResult Function(_AuthAuthenticated value)? authenticated,
     TResult Function(_AuthUnauthenticated value)? unauthenticated,
     TResult Function(_AuthLoading value)? loading,
+    TResult Function(_AuthConfirmationRequired value)? confirmationRequired,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -547,6 +756,7 @@ mixin _$AuthState {
     TResult Function(_AuthAuthenticated value)? authenticated,
     TResult Function(_AuthUnauthenticated value)? unauthenticated,
     TResult Function(_AuthLoading value)? loading,
+    TResult Function(_AuthConfirmationRequired value)? confirmationRequired,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -610,6 +820,7 @@ class _$_AuthUnknown implements _AuthUnknown {
     required TResult Function(UserEntry userEntry) authenticated,
     required TResult Function() unauthenticated,
     required TResult Function() loading,
+    required TResult Function() confirmationRequired,
   }) {
     return unknown();
   }
@@ -621,6 +832,7 @@ class _$_AuthUnknown implements _AuthUnknown {
     TResult Function(UserEntry userEntry)? authenticated,
     TResult Function()? unauthenticated,
     TResult Function()? loading,
+    TResult Function()? confirmationRequired,
   }) {
     return unknown?.call();
   }
@@ -632,6 +844,7 @@ class _$_AuthUnknown implements _AuthUnknown {
     TResult Function(UserEntry userEntry)? authenticated,
     TResult Function()? unauthenticated,
     TResult Function()? loading,
+    TResult Function()? confirmationRequired,
     required TResult orElse(),
   }) {
     if (unknown != null) {
@@ -647,6 +860,8 @@ class _$_AuthUnknown implements _AuthUnknown {
     required TResult Function(_AuthAuthenticated value) authenticated,
     required TResult Function(_AuthUnauthenticated value) unauthenticated,
     required TResult Function(_AuthLoading value) loading,
+    required TResult Function(_AuthConfirmationRequired value)
+        confirmationRequired,
   }) {
     return unknown(this);
   }
@@ -658,6 +873,7 @@ class _$_AuthUnknown implements _AuthUnknown {
     TResult Function(_AuthAuthenticated value)? authenticated,
     TResult Function(_AuthUnauthenticated value)? unauthenticated,
     TResult Function(_AuthLoading value)? loading,
+    TResult Function(_AuthConfirmationRequired value)? confirmationRequired,
   }) {
     return unknown?.call(this);
   }
@@ -669,6 +885,7 @@ class _$_AuthUnknown implements _AuthUnknown {
     TResult Function(_AuthAuthenticated value)? authenticated,
     TResult Function(_AuthUnauthenticated value)? unauthenticated,
     TResult Function(_AuthLoading value)? loading,
+    TResult Function(_AuthConfirmationRequired value)? confirmationRequired,
     required TResult orElse(),
   }) {
     if (unknown != null) {
@@ -761,6 +978,7 @@ class _$_AuthAuthenticated implements _AuthAuthenticated {
     required TResult Function(UserEntry userEntry) authenticated,
     required TResult Function() unauthenticated,
     required TResult Function() loading,
+    required TResult Function() confirmationRequired,
   }) {
     return authenticated(userEntry);
   }
@@ -772,6 +990,7 @@ class _$_AuthAuthenticated implements _AuthAuthenticated {
     TResult Function(UserEntry userEntry)? authenticated,
     TResult Function()? unauthenticated,
     TResult Function()? loading,
+    TResult Function()? confirmationRequired,
   }) {
     return authenticated?.call(userEntry);
   }
@@ -783,6 +1002,7 @@ class _$_AuthAuthenticated implements _AuthAuthenticated {
     TResult Function(UserEntry userEntry)? authenticated,
     TResult Function()? unauthenticated,
     TResult Function()? loading,
+    TResult Function()? confirmationRequired,
     required TResult orElse(),
   }) {
     if (authenticated != null) {
@@ -798,6 +1018,8 @@ class _$_AuthAuthenticated implements _AuthAuthenticated {
     required TResult Function(_AuthAuthenticated value) authenticated,
     required TResult Function(_AuthUnauthenticated value) unauthenticated,
     required TResult Function(_AuthLoading value) loading,
+    required TResult Function(_AuthConfirmationRequired value)
+        confirmationRequired,
   }) {
     return authenticated(this);
   }
@@ -809,6 +1031,7 @@ class _$_AuthAuthenticated implements _AuthAuthenticated {
     TResult Function(_AuthAuthenticated value)? authenticated,
     TResult Function(_AuthUnauthenticated value)? unauthenticated,
     TResult Function(_AuthLoading value)? loading,
+    TResult Function(_AuthConfirmationRequired value)? confirmationRequired,
   }) {
     return authenticated?.call(this);
   }
@@ -820,6 +1043,7 @@ class _$_AuthAuthenticated implements _AuthAuthenticated {
     TResult Function(_AuthAuthenticated value)? authenticated,
     TResult Function(_AuthUnauthenticated value)? unauthenticated,
     TResult Function(_AuthLoading value)? loading,
+    TResult Function(_AuthConfirmationRequired value)? confirmationRequired,
     required TResult orElse(),
   }) {
     if (authenticated != null) {
@@ -882,6 +1106,7 @@ class _$_AuthUnauthenticated implements _AuthUnauthenticated {
     required TResult Function(UserEntry userEntry) authenticated,
     required TResult Function() unauthenticated,
     required TResult Function() loading,
+    required TResult Function() confirmationRequired,
   }) {
     return unauthenticated();
   }
@@ -893,6 +1118,7 @@ class _$_AuthUnauthenticated implements _AuthUnauthenticated {
     TResult Function(UserEntry userEntry)? authenticated,
     TResult Function()? unauthenticated,
     TResult Function()? loading,
+    TResult Function()? confirmationRequired,
   }) {
     return unauthenticated?.call();
   }
@@ -904,6 +1130,7 @@ class _$_AuthUnauthenticated implements _AuthUnauthenticated {
     TResult Function(UserEntry userEntry)? authenticated,
     TResult Function()? unauthenticated,
     TResult Function()? loading,
+    TResult Function()? confirmationRequired,
     required TResult orElse(),
   }) {
     if (unauthenticated != null) {
@@ -919,6 +1146,8 @@ class _$_AuthUnauthenticated implements _AuthUnauthenticated {
     required TResult Function(_AuthAuthenticated value) authenticated,
     required TResult Function(_AuthUnauthenticated value) unauthenticated,
     required TResult Function(_AuthLoading value) loading,
+    required TResult Function(_AuthConfirmationRequired value)
+        confirmationRequired,
   }) {
     return unauthenticated(this);
   }
@@ -930,6 +1159,7 @@ class _$_AuthUnauthenticated implements _AuthUnauthenticated {
     TResult Function(_AuthAuthenticated value)? authenticated,
     TResult Function(_AuthUnauthenticated value)? unauthenticated,
     TResult Function(_AuthLoading value)? loading,
+    TResult Function(_AuthConfirmationRequired value)? confirmationRequired,
   }) {
     return unauthenticated?.call(this);
   }
@@ -941,6 +1171,7 @@ class _$_AuthUnauthenticated implements _AuthUnauthenticated {
     TResult Function(_AuthAuthenticated value)? authenticated,
     TResult Function(_AuthUnauthenticated value)? unauthenticated,
     TResult Function(_AuthLoading value)? loading,
+    TResult Function(_AuthConfirmationRequired value)? confirmationRequired,
     required TResult orElse(),
   }) {
     if (unauthenticated != null) {
@@ -997,6 +1228,7 @@ class _$_AuthLoading implements _AuthLoading {
     required TResult Function(UserEntry userEntry) authenticated,
     required TResult Function() unauthenticated,
     required TResult Function() loading,
+    required TResult Function() confirmationRequired,
   }) {
     return loading();
   }
@@ -1008,6 +1240,7 @@ class _$_AuthLoading implements _AuthLoading {
     TResult Function(UserEntry userEntry)? authenticated,
     TResult Function()? unauthenticated,
     TResult Function()? loading,
+    TResult Function()? confirmationRequired,
   }) {
     return loading?.call();
   }
@@ -1019,6 +1252,7 @@ class _$_AuthLoading implements _AuthLoading {
     TResult Function(UserEntry userEntry)? authenticated,
     TResult Function()? unauthenticated,
     TResult Function()? loading,
+    TResult Function()? confirmationRequired,
     required TResult orElse(),
   }) {
     if (loading != null) {
@@ -1034,6 +1268,8 @@ class _$_AuthLoading implements _AuthLoading {
     required TResult Function(_AuthAuthenticated value) authenticated,
     required TResult Function(_AuthUnauthenticated value) unauthenticated,
     required TResult Function(_AuthLoading value) loading,
+    required TResult Function(_AuthConfirmationRequired value)
+        confirmationRequired,
   }) {
     return loading(this);
   }
@@ -1045,6 +1281,7 @@ class _$_AuthLoading implements _AuthLoading {
     TResult Function(_AuthAuthenticated value)? authenticated,
     TResult Function(_AuthUnauthenticated value)? unauthenticated,
     TResult Function(_AuthLoading value)? loading,
+    TResult Function(_AuthConfirmationRequired value)? confirmationRequired,
   }) {
     return loading?.call(this);
   }
@@ -1056,6 +1293,7 @@ class _$_AuthLoading implements _AuthLoading {
     TResult Function(_AuthAuthenticated value)? authenticated,
     TResult Function(_AuthUnauthenticated value)? unauthenticated,
     TResult Function(_AuthLoading value)? loading,
+    TResult Function(_AuthConfirmationRequired value)? confirmationRequired,
     required TResult orElse(),
   }) {
     if (loading != null) {
@@ -1067,4 +1305,128 @@ class _$_AuthLoading implements _AuthLoading {
 
 abstract class _AuthLoading implements AuthState {
   const factory _AuthLoading() = _$_AuthLoading;
+}
+
+/// @nodoc
+abstract class _$AuthConfirmationRequiredCopyWith<$Res> {
+  factory _$AuthConfirmationRequiredCopyWith(_AuthConfirmationRequired value,
+          $Res Function(_AuthConfirmationRequired) then) =
+      __$AuthConfirmationRequiredCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$AuthConfirmationRequiredCopyWithImpl<$Res>
+    extends _$AuthStateCopyWithImpl<$Res>
+    implements _$AuthConfirmationRequiredCopyWith<$Res> {
+  __$AuthConfirmationRequiredCopyWithImpl(_AuthConfirmationRequired _value,
+      $Res Function(_AuthConfirmationRequired) _then)
+      : super(_value, (v) => _then(v as _AuthConfirmationRequired));
+
+  @override
+  _AuthConfirmationRequired get _value =>
+      super._value as _AuthConfirmationRequired;
+}
+
+/// @nodoc
+
+class _$_AuthConfirmationRequired implements _AuthConfirmationRequired {
+  const _$_AuthConfirmationRequired();
+
+  @override
+  String toString() {
+    return 'AuthState.confirmationRequired()';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) || (other is _AuthConfirmationRequired);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() unknown,
+    required TResult Function(UserEntry userEntry) authenticated,
+    required TResult Function() unauthenticated,
+    required TResult Function() loading,
+    required TResult Function() confirmationRequired,
+  }) {
+    return confirmationRequired();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult Function()? unknown,
+    TResult Function(UserEntry userEntry)? authenticated,
+    TResult Function()? unauthenticated,
+    TResult Function()? loading,
+    TResult Function()? confirmationRequired,
+  }) {
+    return confirmationRequired?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? unknown,
+    TResult Function(UserEntry userEntry)? authenticated,
+    TResult Function()? unauthenticated,
+    TResult Function()? loading,
+    TResult Function()? confirmationRequired,
+    required TResult orElse(),
+  }) {
+    if (confirmationRequired != null) {
+      return confirmationRequired();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_AuthUnknown value) unknown,
+    required TResult Function(_AuthAuthenticated value) authenticated,
+    required TResult Function(_AuthUnauthenticated value) unauthenticated,
+    required TResult Function(_AuthLoading value) loading,
+    required TResult Function(_AuthConfirmationRequired value)
+        confirmationRequired,
+  }) {
+    return confirmationRequired(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult Function(_AuthUnknown value)? unknown,
+    TResult Function(_AuthAuthenticated value)? authenticated,
+    TResult Function(_AuthUnauthenticated value)? unauthenticated,
+    TResult Function(_AuthLoading value)? loading,
+    TResult Function(_AuthConfirmationRequired value)? confirmationRequired,
+  }) {
+    return confirmationRequired?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_AuthUnknown value)? unknown,
+    TResult Function(_AuthAuthenticated value)? authenticated,
+    TResult Function(_AuthUnauthenticated value)? unauthenticated,
+    TResult Function(_AuthLoading value)? loading,
+    TResult Function(_AuthConfirmationRequired value)? confirmationRequired,
+    required TResult orElse(),
+  }) {
+    if (confirmationRequired != null) {
+      return confirmationRequired(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _AuthConfirmationRequired implements AuthState {
+  const factory _AuthConfirmationRequired() = _$_AuthConfirmationRequired;
 }

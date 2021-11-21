@@ -40,8 +40,8 @@ import 'features/calendar/data/datasources/gcal_remote_data_source.dart'
     as _i46;
 import 'features/calendar/data/repositories/calendar_repository_impl.dart'
     as _i55;
-import 'features/calendar/domain/entities/calendar_entry.dart' as _i11;
-import 'features/calendar/domain/entities/calendar_event_entry.dart' as _i10;
+import 'features/calendar/domain/entities/calendar_entry.dart' as _i10;
+import 'features/calendar/domain/entities/calendar_event_entry.dart' as _i11;
 import 'features/calendar/domain/repositories/calendar_repository.dart' as _i54;
 import 'features/calendar/domain/usecases/add_event.dart' as _i63;
 import 'features/calendar/domain/usecases/delete_event.dart' as _i56;
@@ -93,21 +93,21 @@ Future<_i1.GetIt> $initGetIt(_i1.GetIt get,
   gh.lazySingleton<_i7.AuthStatus>(
       () => _i7.AuthStatus(repository: get<_i5.AuthRepository>()));
   gh.lazySingleton<_i8.AwsStream>(() => _i8.AwsStream());
-  await gh.factoryAsync<_i9.Box<_i10.CalendarEventEntry>>(
-      () => registerModule.gcalEventsBox,
-      preResolve: true);
-  await gh.factoryAsync<_i9.Box<_i11.CalendarEntry>>(
+  await gh.factoryAsync<_i9.Box<_i10.CalendarEntry>>(
       () => registerModule.calendarBox,
       preResolve: true);
   await gh.factoryAsync<_i9.Box<String>>(() => registerModule.projectColorBox,
+      preResolve: true);
+  await gh.factoryAsync<_i9.Box<_i11.CalendarEventEntry>>(
+      () => registerModule.gcalEventsBox,
       preResolve: true);
   gh.lazySingleton<_i12.Confirmation>(
       () => _i12.Confirmation(repository: get<_i5.AuthRepository>()));
   gh.singleton<_i13.DateTimeStream>(_i13.DateTimeStream());
   gh.singleton<_i14.EditTaskStream>(_i14.EditTaskStream());
   gh.lazySingleton<_i15.GCalLocalDataSource>(() => _i15.HiveGCalLocalDataSource(
-      calendarBox: get<_i9.Box<_i11.CalendarEntry>>(),
-      gcalEventsBox: get<_i9.Box<_i10.CalendarEventEntry>>()));
+      calendarBox: get<_i9.Box<_i10.CalendarEntry>>(),
+      gcalEventsBox: get<_i9.Box<_i11.CalendarEventEntry>>()));
   gh.lazySingleton<_i16.GetUser>(
       () => _i16.GetUser(repository: get<_i5.AuthRepository>()));
   gh.singleton<_i17.GoogleSignIn>(registerModule.gCalSignIn);
@@ -149,6 +149,7 @@ Future<_i1.GetIt> $initGetIt(_i1.GetIt get,
       login: get<_i19.Login>(),
       signOut: get<_i26.SignOut>(),
       authStatus: get<_i7.AuthStatus>(),
+      confirmation: get<_i12.Confirmation>(),
       getUser: get<_i16.GetUser>()));
   gh.lazySingleton<_i40.CreateProject>(
       () => _i40.CreateProject(get<_i33.TaskRepository>()));

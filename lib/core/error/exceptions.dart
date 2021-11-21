@@ -8,3 +8,5 @@ class ServerException implements Exception {
 class CacheException implements Exception {}
 
 class ArgumentException implements Exception {}
+
+class NotConfirmedException implements Exception {}

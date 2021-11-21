@@ -24,3 +24,4 @@ linter:
     require_trailing_commas: false
     no_default_cases: false
     flutter_style_todos: false
+    sort_pub_dependencies: false

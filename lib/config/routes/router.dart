@@ -20,33 +20,35 @@ export 'router.gr.dart';
       page: AppLoaderWrapperPage,
       initial: true,
       children: [
-        AutoRoute<dynamic>(page: AppLoaderPage, initial: true),
+        AutoRoute<dynamic>(page: AppLoaderPage, initial: true, children: [
+          //? Home Page
+          AutoRoute<dynamic>(
+            page: HomePage,
+            initial: true,
+            children: [
+              AutoRoute<dynamic>(page: HomePageWidget, initial: true),
+              CustomRoute<dynamic>(
+                page: QuickAddPage,
+                customRouteBuilder: modalSheetCustomRouteBuilder,
+              ),
+              CustomRoute<dynamic>(
+                page: CreateProjectPage,
+                customRouteBuilder: modalSheetCustomRouteBuilder,
+              ),
+              CustomRoute<dynamic>(
+                page: TaskPage,
+                customRouteBuilder: modalSheetCustomRouteBuilder,
+              ),
+              CustomRoute<dynamic>(
+                page: SettingPage,
+                customRouteBuilder: modalSheetCustomRouteBuilder,
+              ),
+            ],
+          ),
+        ]),
         AutoRoute<dynamic>(page: LoginPage, fullscreenDialog: true),
         AutoRoute<dynamic>(page: SignupPage, fullscreenDialog: true),
         AutoRoute<dynamic>(page: ConfirmationPage, fullscreenDialog: true),
-        //? Home Page
-        AutoRoute<dynamic>(
-          page: HomePage,
-          children: [
-            AutoRoute<dynamic>(page: HomePageWidget, initial: true),
-            CustomRoute<dynamic>(
-              page: QuickAddPage,
-              customRouteBuilder: modalSheetCustomRouteBuilder,
-            ),
-            CustomRoute<dynamic>(
-              page: CreateProjectPage,
-              customRouteBuilder: modalSheetCustomRouteBuilder,
-            ),
-            CustomRoute<dynamic>(
-              page: TaskPage,
-              customRouteBuilder: modalSheetCustomRouteBuilder,
-            ),
-            CustomRoute<dynamic>(
-              page: SettingPage,
-              customRouteBuilder: modalSheetCustomRouteBuilder,
-            ),
-          ],
-        ),
       ],
     ),
   ],

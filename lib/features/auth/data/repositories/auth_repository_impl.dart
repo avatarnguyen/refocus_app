@@ -11,6 +11,7 @@ import 'package:refocus_app/features/auth/data/datasources/aws_auth_data_source.
 import 'package:refocus_app/features/auth/domain/entities/auth_credential.dart';
 import 'package:refocus_app/features/auth/domain/entities/user_entry.dart';
 import 'package:refocus_app/features/auth/domain/repositories/auth_repository.dart';
+import 'package:rxdart/subjects.dart';
 
 @LazySingleton(as: AuthRepository)
 class AuthRepositoryImpl implements AuthRepository {
@@ -21,27 +22,31 @@ class AuthRepositoryImpl implements AuthRepository {
 
   final log = logger(AuthRepositoryImpl);
   @override
-  Future<Either<Failure, Unit>> authAutoLogin() async {
+  Future<Either<Failure, bool>> authAutoLogin() async {
     try {
-      await authDataSource.attemptAutoLogin();
-      return const Right(unit);
+      final result = await authDataSource.attemptAutoLogin();
+      return Right(result);
     } on ServerException {
       log.e('Cannot access Remote Datasource');
       return Left(ServerFailure());
+    } on NotConfirmedException {
+      return Left(AuthFailure());
     }
   }
 
   @override
-  Future<Either<Failure, Unit>> authLogin(AuthCredential authCredential) async {
+  Future<Either<Failure, bool>> authLogin(AuthCredential authCredential) async {
     try {
-      await authDataSource.login(
+      final result = await authDataSource.login(
         username: authCredential.username ?? '',
         password: authCredential.password ?? '',
       );
-      return const Right(unit);
+      return Right(result);
     } on ServerException {
       log.e('Cannot access AWS');
       return Left(ServerFailure());
+    } on NotConfirmedException {
+      return Left(AuthFailure());
     }
   }
 
@@ -74,17 +79,22 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Stream<Either<Failure, AuthenticationStatus>> getAuthStatus() async* {
-    var currentStatus = const Right<Failure, AuthenticationStatus>(
-        AuthenticationStatus.unknown);
+    // var currentStatus = const Right<Failure, AuthenticationStatus>(
+    //     AuthenticationStatus.unknown);
+    // ignore: omit_local_variable_types
+    final BehaviorSubject<Either<Failure, AuthenticationStatus>> _authStatus =
+        BehaviorSubject.seeded(const Right<Failure, AuthenticationStatus>(
+            AuthenticationStatus.unknown));
     try {
       final _result = authDataSource.getAuthStatus();
-
+      // log.d(_result);
       _result.listen((status) {
         log.i('New Status Received: $status');
-        currentStatus = Right<Failure, AuthenticationStatus>(status);
+        // currentStatus = Right<Failure, AuthenticationStatus>(status);
+        _authStatus.add(Right<Failure, AuthenticationStatus>(status));
       });
 
-      yield currentStatus;
+      yield _authStatus.stream.value;
     } on ServerException catch (e) {
       log.e('Cannot access AWS: $e');
       yield Left(ServerFailure());
