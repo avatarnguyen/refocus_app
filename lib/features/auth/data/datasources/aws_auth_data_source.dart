@@ -7,6 +7,7 @@ import 'package:injectable/injectable.dart';
 import 'package:refocus_app/core/error/exceptions.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart';
 import 'package:refocus_app/enum/authetication_status.dart';
+import 'package:refocus_app/features/task/data/datasources/aws_data_source.dart';
 import 'package:refocus_app/models/ModelProvider.dart' as aws_model;
 
 abstract class AuthDataSource {
@@ -87,11 +88,23 @@ class AWSAuthDataSource implements AuthDataSource {
           where: aws_model.User.ID.eq(user.id));
       if (_fetchUser.isEmpty) {
         await Amplify.DataStore.save(user);
+        await _createExampleProjectAtFirstSignIn(user.id);
       }
     } catch (e) {
       log.e(e);
       throw ServerException();
     }
+  }
+
+  Future<void> _createExampleProjectAtFirstSignIn(String userID) async {
+    final _remoteDataSource = AWSTaskRemoteDataSource();
+    final _newProject = aws_model.Project(
+      title: 'Inbox',
+      userID: userID,
+      color: '#8879FC',
+      id: 'inbox_$userID',
+    );
+    await _remoteDataSource.createOrUpdateRemoteProject(_newProject);
   }
 
   @override
