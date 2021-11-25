@@ -14,7 +14,7 @@ import 'package:refocus_app/features/calendar/presentation/bloc/calendar_list/ca
     as calList;
 import 'package:refocus_app/features/create/presentation/bloc/create_bloc.dart';
 import 'package:refocus_app/features/create/presentation/widgets/action_panel_widget.dart';
-import 'package:refocus_app/features/create/presentation/widgets/add_textfield_widget.dart';
+import 'package:refocus_app/features/create/presentation/widgets/create_title_input_widget.dart';
 import 'package:refocus_app/features/create/presentation/widgets/due_datetime_widget.dart';
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
 import 'package:refocus_app/features/task/presentation/bloc/cubit/subtask_cubit.dart';
@@ -43,8 +43,8 @@ class CreatePageWidget extends StatefulWidget {
 
 class _CreatePageWidgetState extends State<CreatePageWidget> {
   final _settingOption = getIt<SettingOption>();
-  final _subTaskStream = getIt<SubTaskStream>();
-  final _actionStream = getIt<ActionStream>();
+  // final _subTaskStream = getIt<SubTaskStream>();
+  // final _actionStream = getIt<ActionStream>();
 
   ProjectEntry? _currentProject;
   CalendarEntry? _currentCalendar;
@@ -57,23 +57,24 @@ class _CreatePageWidgetState extends State<CreatePageWidget> {
 
   @override
   void dispose() {
-    _settingOption.broadCastCurrentDueDateEntry(null);
-    _settingOption.broadCastCurrentStartTimeEntry(null);
-    _settingOption.broadCastCurrentEndTimeEntry(null);
-    _settingOption.broadCastCurrentTypeEntry(TodayEntryType.task);
-    _actionStream.broadCastCurrentActionType(ActionSelectionType.task);
-    _subTaskStream.broadCastCurrentSubTaskListEntry([]);
+    // _settingOption.broadCastCurrentDueDateEntry(null);
+    // _settingOption.broadCastCurrentStartTimeEntry(null);
+    // _settingOption.broadCastCurrentEndTimeEntry(null);
+    // _settingOption.broadCastCurrentTypeEntry(TodayEntryType.task);
+    // _actionStream.broadCastCurrentActionType(ActionSelectionType.task);
+    // _subTaskStream.broadCastCurrentSubTaskListEntry([]);
 
     super.dispose();
   }
 
+  // TODO: Transform this
   void _showIOSPicker({
     List<CalendarEntry>? calendars,
     List<ProjectEntry>? projects,
   }) {
     showCupertinoModalPopup<dynamic>(
       context: context,
-      builder: (context) {
+      builder: (ctx) {
         if (calendars != null) {
           _currentCalendar = calendars.first;
         } else {
@@ -88,7 +89,7 @@ class _CreatePageWidgetState extends State<CreatePageWidget> {
               buildPicker(projects!)
           ],
           cancelButton: CupertinoActionSheetAction(
-            onPressed: () => context.router.pop(),
+            onPressed: ctx.router.pop,
             child: 'Cancel'.toButtonText(color: kcError500),
           ),
         );
@@ -358,7 +359,7 @@ class _CreatePageWidgetState extends State<CreatePageWidget> {
           [
             BlocProvider<ProjectBloc>.value(
               value: BlocProvider.of<ProjectBloc>(context),
-              child: const AddTextFieldWidget(),
+              child: const CreateTitleInputWidget(),
             ),
             const SetPlannedDateTimeWidget(),
           ]
