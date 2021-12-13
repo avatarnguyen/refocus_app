@@ -20,7 +20,6 @@ class ProjectItem extends StatefulWidget {
 
 class _ProjectItemState extends State<ProjectItem> {
   late ProjectEntry _currentProject;
-  final SlidableController _slidableController = SlidableController();
 
   @override
   void initState() {
@@ -46,38 +45,36 @@ class _ProjectItemState extends State<ProjectItem> {
 
     return Slidable(
       key: widget.key ?? Key(_currentProject.title ?? 'project_item'),
-      controller: _slidableController,
-      actionPane: const SlidableStrechActionPane(),
-      secondaryActions: [
-        IconSlideAction(
-          icon: Icons.edit,
-          color: Colors.transparent,
-          foregroundColor: context.colorScheme.onPrimary,
-          onTap: () {
-            context.navigateTo(CreateProjectRoute(project: _currentProject));
-          },
-        ),
-        IconSlideAction(
-          icon: Icons.delete,
-          color: Colors.transparent,
-          foregroundColor: context.colorScheme.error,
-          onTap: () async {
+      endActionPane: ActionPane(
+        motion: const StretchMotion(),
+        dismissible: DismissiblePane(
+          confirmDismiss: () async {
             final _result = await _showDeleteAlertDialog();
-            if (_result) {
-              _deleteProject();
-            }
+            return _result;
           },
-        )
-      ],
-      dismissal: SlidableDismissal(
-        child: const SlidableDrawerDismissal(),
-        onWillDismiss: (actionType) async {
-          final _result = await _showDeleteAlertDialog();
-          return _result;
-        },
-        onDismissed: (actionType) {
-          _deleteProject();
-        },
+          onDismissed: _deleteProject,
+        ),
+        children: [
+          SlidableAction(
+            icon: Icons.edit,
+            backgroundColor: Colors.transparent,
+            foregroundColor: context.colorScheme.onPrimary,
+            onPressed: (_) {
+              context.navigateTo(CreateProjectRoute(project: _currentProject));
+            },
+          ),
+          SlidableAction(
+            icon: Icons.delete,
+            backgroundColor: Colors.transparent,
+            foregroundColor: context.colorScheme.error,
+            onPressed: (_) async {
+              final _result = await _showDeleteAlertDialog();
+              if (_result) {
+                _deleteProject();
+              }
+            },
+          )
+        ],
       ),
       child: [
         Text(

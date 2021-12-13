@@ -91,7 +91,7 @@ class DetailEventView extends StatelessWidget {
             verticalSpaceMedium,
             BlocBuilder<CalendarListBloc, CalendarListState>(
               builder: (context, state) {
-                if (state is Loaded) {
+                if (state is CalendarListLoaded) {
                   final _calList = state.calendarList;
                   final _currentCal = _calList
                       .singleWhere((_cal) => _cal.id == event!.projectOrCalID);

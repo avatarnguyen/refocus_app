@@ -249,14 +249,14 @@ class _$_CreateIdChanged implements _CreateIdChanged {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other is _CreateIdChanged &&
-            (identical(other.id, id) ||
-                const DeepCollectionEquality().equals(other.id, id)));
+        (other.runtimeType == runtimeType &&
+            other is _CreateIdChanged &&
+            const DeepCollectionEquality().equals(other.id, id));
   }
 
   @override
   int get hashCode =>
-      runtimeType.hashCode ^ const DeepCollectionEquality().hash(id);
+      Object.hash(runtimeType, const DeepCollectionEquality().hash(id));
 
   @JsonKey(ignore: true)
   @override
@@ -387,7 +387,7 @@ class _$_CreateIdChanged implements _CreateIdChanged {
 abstract class _CreateIdChanged implements CreateEvent {
   const factory _CreateIdChanged(String id) = _$_CreateIdChanged;
 
-  String get id => throw _privateConstructorUsedError;
+  String get id;
   @JsonKey(ignore: true)
   _$CreateIdChangedCopyWith<_CreateIdChanged> get copyWith =>
       throw _privateConstructorUsedError;
@@ -441,14 +441,14 @@ class _$_CreateTitleChanged implements _CreateTitleChanged {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other is _CreateTitleChanged &&
-            (identical(other.title, title) ||
-                const DeepCollectionEquality().equals(other.title, title)));
+        (other.runtimeType == runtimeType &&
+            other is _CreateTitleChanged &&
+            const DeepCollectionEquality().equals(other.title, title));
   }
 
   @override
   int get hashCode =>
-      runtimeType.hashCode ^ const DeepCollectionEquality().hash(title);
+      Object.hash(runtimeType, const DeepCollectionEquality().hash(title));
 
   @JsonKey(ignore: true)
   @override
@@ -579,7 +579,7 @@ class _$_CreateTitleChanged implements _CreateTitleChanged {
 abstract class _CreateTitleChanged implements CreateEvent {
   const factory _CreateTitleChanged(String? title) = _$_CreateTitleChanged;
 
-  String? get title => throw _privateConstructorUsedError;
+  String? get title;
   @JsonKey(ignore: true)
   _$CreateTitleChangedCopyWith<_CreateTitleChanged> get copyWith =>
       throw _privateConstructorUsedError;
@@ -633,15 +633,14 @@ class _$_CreateDueDateChanged implements _CreateDueDateChanged {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other is _CreateDueDateChanged &&
-            (identical(other.dateTime, dateTime) ||
-                const DeepCollectionEquality()
-                    .equals(other.dateTime, dateTime)));
+        (other.runtimeType == runtimeType &&
+            other is _CreateDueDateChanged &&
+            const DeepCollectionEquality().equals(other.dateTime, dateTime));
   }
 
   @override
   int get hashCode =>
-      runtimeType.hashCode ^ const DeepCollectionEquality().hash(dateTime);
+      Object.hash(runtimeType, const DeepCollectionEquality().hash(dateTime));
 
   @JsonKey(ignore: true)
   @override
@@ -774,7 +773,7 @@ abstract class _CreateDueDateChanged implements CreateEvent {
   const factory _CreateDueDateChanged(DateTime? dateTime) =
       _$_CreateDueDateChanged;
 
-  DateTime? get dateTime => throw _privateConstructorUsedError;
+  DateTime? get dateTime;
   @JsonKey(ignore: true)
   _$CreateDueDateChangedCopyWith<_CreateDueDateChanged> get copyWith =>
       throw _privateConstructorUsedError;
@@ -830,15 +829,14 @@ class _$_CreateStartDateTimeChanged implements _CreateStartDateTimeChanged {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other is _CreateStartDateTimeChanged &&
-            (identical(other.dateTime, dateTime) ||
-                const DeepCollectionEquality()
-                    .equals(other.dateTime, dateTime)));
+        (other.runtimeType == runtimeType &&
+            other is _CreateStartDateTimeChanged &&
+            const DeepCollectionEquality().equals(other.dateTime, dateTime));
   }
 
   @override
   int get hashCode =>
-      runtimeType.hashCode ^ const DeepCollectionEquality().hash(dateTime);
+      Object.hash(runtimeType, const DeepCollectionEquality().hash(dateTime));
 
   @JsonKey(ignore: true)
   @override
@@ -971,7 +969,7 @@ abstract class _CreateStartDateTimeChanged implements CreateEvent {
   const factory _CreateStartDateTimeChanged(DateTime? dateTime) =
       _$_CreateStartDateTimeChanged;
 
-  DateTime? get dateTime => throw _privateConstructorUsedError;
+  DateTime? get dateTime;
   @JsonKey(ignore: true)
   _$CreateStartDateTimeChangedCopyWith<_CreateStartDateTimeChanged>
       get copyWith => throw _privateConstructorUsedError;
@@ -1026,15 +1024,14 @@ class _$_CreateEndDateTimeChanged implements _CreateEndDateTimeChanged {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other is _CreateEndDateTimeChanged &&
-            (identical(other.dateTime, dateTime) ||
-                const DeepCollectionEquality()
-                    .equals(other.dateTime, dateTime)));
+        (other.runtimeType == runtimeType &&
+            other is _CreateEndDateTimeChanged &&
+            const DeepCollectionEquality().equals(other.dateTime, dateTime));
   }
 
   @override
   int get hashCode =>
-      runtimeType.hashCode ^ const DeepCollectionEquality().hash(dateTime);
+      Object.hash(runtimeType, const DeepCollectionEquality().hash(dateTime));
 
   @JsonKey(ignore: true)
   @override
@@ -1167,7 +1164,7 @@ abstract class _CreateEndDateTimeChanged implements CreateEvent {
   const factory _CreateEndDateTimeChanged(DateTime? dateTime) =
       _$_CreateEndDateTimeChanged;
 
-  DateTime? get dateTime => throw _privateConstructorUsedError;
+  DateTime? get dateTime;
   @JsonKey(ignore: true)
   _$CreateEndDateTimeChangedCopyWith<_CreateEndDateTimeChanged> get copyWith =>
       throw _privateConstructorUsedError;
@@ -1221,16 +1218,15 @@ class _$_CreateTypeEntryChanged implements _CreateTypeEntryChanged {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other is _CreateTypeEntryChanged &&
-            (identical(other.todayEntryType, todayEntryType) ||
-                const DeepCollectionEquality()
-                    .equals(other.todayEntryType, todayEntryType)));
+        (other.runtimeType == runtimeType &&
+            other is _CreateTypeEntryChanged &&
+            const DeepCollectionEquality()
+                .equals(other.todayEntryType, todayEntryType));
   }
 
   @override
-  int get hashCode =>
-      runtimeType.hashCode ^
-      const DeepCollectionEquality().hash(todayEntryType);
+  int get hashCode => Object.hash(
+      runtimeType, const DeepCollectionEquality().hash(todayEntryType));
 
   @JsonKey(ignore: true)
   @override
@@ -1363,7 +1359,7 @@ abstract class _CreateTypeEntryChanged implements CreateEvent {
   const factory _CreateTypeEntryChanged(TodayEntryType? todayEntryType) =
       _$_CreateTypeEntryChanged;
 
-  TodayEntryType? get todayEntryType => throw _privateConstructorUsedError;
+  TodayEntryType? get todayEntryType;
   @JsonKey(ignore: true)
   _$CreateTypeEntryChangedCopyWith<_CreateTypeEntryChanged> get copyWith =>
       throw _privateConstructorUsedError;
@@ -1418,15 +1414,15 @@ class _$_CreateActionTypeChanged implements _CreateActionTypeChanged {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other is _CreateActionTypeChanged &&
-            (identical(other.actionType, actionType) ||
-                const DeepCollectionEquality()
-                    .equals(other.actionType, actionType)));
+        (other.runtimeType == runtimeType &&
+            other is _CreateActionTypeChanged &&
+            const DeepCollectionEquality()
+                .equals(other.actionType, actionType));
   }
 
   @override
   int get hashCode =>
-      runtimeType.hashCode ^ const DeepCollectionEquality().hash(actionType);
+      Object.hash(runtimeType, const DeepCollectionEquality().hash(actionType));
 
   @JsonKey(ignore: true)
   @override
@@ -1559,7 +1555,7 @@ abstract class _CreateActionTypeChanged implements CreateEvent {
   const factory _CreateActionTypeChanged(ActionSelectionType? actionType) =
       _$_CreateActionTypeChanged;
 
-  ActionSelectionType? get actionType => throw _privateConstructorUsedError;
+  ActionSelectionType? get actionType;
   @JsonKey(ignore: true)
   _$CreateActionTypeChangedCopyWith<_CreateActionTypeChanged> get copyWith =>
       throw _privateConstructorUsedError;
@@ -1613,14 +1609,14 @@ class _$_CreateProjectChanged implements _CreateProjectChanged {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other is _CreateProjectChanged &&
-            (identical(other.project, project) ||
-                const DeepCollectionEquality().equals(other.project, project)));
+        (other.runtimeType == runtimeType &&
+            other is _CreateProjectChanged &&
+            const DeepCollectionEquality().equals(other.project, project));
   }
 
   @override
   int get hashCode =>
-      runtimeType.hashCode ^ const DeepCollectionEquality().hash(project);
+      Object.hash(runtimeType, const DeepCollectionEquality().hash(project));
 
   @JsonKey(ignore: true)
   @override
@@ -1753,7 +1749,7 @@ abstract class _CreateProjectChanged implements CreateEvent {
   const factory _CreateProjectChanged(ProjectEntry? project) =
       _$_CreateProjectChanged;
 
-  ProjectEntry? get project => throw _privateConstructorUsedError;
+  ProjectEntry? get project;
   @JsonKey(ignore: true)
   _$CreateProjectChangedCopyWith<_CreateProjectChanged> get copyWith =>
       throw _privateConstructorUsedError;
@@ -1807,15 +1803,14 @@ class _$_CreateCalendarChanged implements _CreateCalendarChanged {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other is _CreateCalendarChanged &&
-            (identical(other.calendar, calendar) ||
-                const DeepCollectionEquality()
-                    .equals(other.calendar, calendar)));
+        (other.runtimeType == runtimeType &&
+            other is _CreateCalendarChanged &&
+            const DeepCollectionEquality().equals(other.calendar, calendar));
   }
 
   @override
   int get hashCode =>
-      runtimeType.hashCode ^ const DeepCollectionEquality().hash(calendar);
+      Object.hash(runtimeType, const DeepCollectionEquality().hash(calendar));
 
   @JsonKey(ignore: true)
   @override
@@ -1948,7 +1943,7 @@ abstract class _CreateCalendarChanged implements CreateEvent {
   const factory _CreateCalendarChanged(CalendarEntry? calendar) =
       _$_CreateCalendarChanged;
 
-  CalendarEntry? get calendar => throw _privateConstructorUsedError;
+  CalendarEntry? get calendar;
   @JsonKey(ignore: true)
   _$CreateCalendarChangedCopyWith<_CreateCalendarChanged> get copyWith =>
       throw _privateConstructorUsedError;
@@ -2003,15 +1998,14 @@ class _$_CreateSubTaskListChanged implements _CreateSubTaskListChanged {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other is _CreateSubTaskListChanged &&
-            (identical(other.subTasks, subTasks) ||
-                const DeepCollectionEquality()
-                    .equals(other.subTasks, subTasks)));
+        (other.runtimeType == runtimeType &&
+            other is _CreateSubTaskListChanged &&
+            const DeepCollectionEquality().equals(other.subTasks, subTasks));
   }
 
   @override
   int get hashCode =>
-      runtimeType.hashCode ^ const DeepCollectionEquality().hash(subTasks);
+      Object.hash(runtimeType, const DeepCollectionEquality().hash(subTasks));
 
   @JsonKey(ignore: true)
   @override
@@ -2144,7 +2138,7 @@ abstract class _CreateSubTaskListChanged implements CreateEvent {
   const factory _CreateSubTaskListChanged(List<SubTaskEntry> subTasks) =
       _$_CreateSubTaskListChanged;
 
-  List<SubTaskEntry> get subTasks => throw _privateConstructorUsedError;
+  List<SubTaskEntry> get subTasks;
   @JsonKey(ignore: true)
   _$CreateSubTaskListChangedCopyWith<_CreateSubTaskListChanged> get copyWith =>
       throw _privateConstructorUsedError;
@@ -2181,7 +2175,8 @@ class _$_CreateSubmission implements _CreateSubmission {
 
   @override
   bool operator ==(dynamic other) {
-    return identical(this, other) || (other is _CreateSubmission);
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _CreateSubmission);
   }
 
   @override
@@ -2688,54 +2683,39 @@ class _$_CreateStateCurrent implements _CreateStateCurrent {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other is _CreateStateCurrent &&
-            (identical(other.id, id) ||
-                const DeepCollectionEquality().equals(other.id, id)) &&
-            (identical(other.title, title) ||
-                const DeepCollectionEquality().equals(other.title, title)) &&
-            (identical(other.dueDate, dueDate) ||
-                const DeepCollectionEquality()
-                    .equals(other.dueDate, dueDate)) &&
-            (identical(other.start, start) ||
-                const DeepCollectionEquality().equals(other.start, start)) &&
-            (identical(other.end, end) ||
-                const DeepCollectionEquality().equals(other.end, end)) &&
-            (identical(other.todayEntryType, todayEntryType) ||
-                const DeepCollectionEquality()
-                    .equals(other.todayEntryType, todayEntryType)) &&
-            (identical(other.actionType, actionType) ||
-                const DeepCollectionEquality()
-                    .equals(other.actionType, actionType)) &&
-            (identical(other.project, project) ||
-                const DeepCollectionEquality()
-                    .equals(other.project, project)) &&
-            (identical(other.calendar, calendar) ||
-                const DeepCollectionEquality()
-                    .equals(other.calendar, calendar)) &&
-            (identical(other.subTasks, subTasks) ||
-                const DeepCollectionEquality()
-                    .equals(other.subTasks, subTasks)) &&
-            (identical(other.prio, prio) ||
-                const DeepCollectionEquality().equals(other.prio, prio)) &&
-            (identical(other.isHabit, isHabit) ||
-                const DeepCollectionEquality().equals(other.isHabit, isHabit)));
+        (other.runtimeType == runtimeType &&
+            other is _CreateStateCurrent &&
+            const DeepCollectionEquality().equals(other.id, id) &&
+            const DeepCollectionEquality().equals(other.title, title) &&
+            const DeepCollectionEquality().equals(other.dueDate, dueDate) &&
+            const DeepCollectionEquality().equals(other.start, start) &&
+            const DeepCollectionEquality().equals(other.end, end) &&
+            const DeepCollectionEquality()
+                .equals(other.todayEntryType, todayEntryType) &&
+            const DeepCollectionEquality()
+                .equals(other.actionType, actionType) &&
+            const DeepCollectionEquality().equals(other.project, project) &&
+            const DeepCollectionEquality().equals(other.calendar, calendar) &&
+            const DeepCollectionEquality().equals(other.subTasks, subTasks) &&
+            const DeepCollectionEquality().equals(other.prio, prio) &&
+            const DeepCollectionEquality().equals(other.isHabit, isHabit));
   }
 
   @override
-  int get hashCode =>
-      runtimeType.hashCode ^
-      const DeepCollectionEquality().hash(id) ^
-      const DeepCollectionEquality().hash(title) ^
-      const DeepCollectionEquality().hash(dueDate) ^
-      const DeepCollectionEquality().hash(start) ^
-      const DeepCollectionEquality().hash(end) ^
-      const DeepCollectionEquality().hash(todayEntryType) ^
-      const DeepCollectionEquality().hash(actionType) ^
-      const DeepCollectionEquality().hash(project) ^
-      const DeepCollectionEquality().hash(calendar) ^
-      const DeepCollectionEquality().hash(subTasks) ^
-      const DeepCollectionEquality().hash(prio) ^
-      const DeepCollectionEquality().hash(isHabit);
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(id),
+      const DeepCollectionEquality().hash(title),
+      const DeepCollectionEquality().hash(dueDate),
+      const DeepCollectionEquality().hash(start),
+      const DeepCollectionEquality().hash(end),
+      const DeepCollectionEquality().hash(todayEntryType),
+      const DeepCollectionEquality().hash(actionType),
+      const DeepCollectionEquality().hash(project),
+      const DeepCollectionEquality().hash(calendar),
+      const DeepCollectionEquality().hash(subTasks),
+      const DeepCollectionEquality().hash(prio),
+      const DeepCollectionEquality().hash(isHabit));
 
   @JsonKey(ignore: true)
   @override
@@ -2857,29 +2837,29 @@ abstract class _CreateStateCurrent implements CreateState {
       bool? isHabit}) = _$_CreateStateCurrent;
 
   @override
-  String get id => throw _privateConstructorUsedError;
+  String get id;
   @override
-  String? get title => throw _privateConstructorUsedError;
+  String? get title;
   @override
-  DateTime? get dueDate => throw _privateConstructorUsedError;
+  DateTime? get dueDate;
   @override
-  DateTime? get start => throw _privateConstructorUsedError;
+  DateTime? get start;
   @override
-  DateTime? get end => throw _privateConstructorUsedError;
+  DateTime? get end;
   @override
-  TodayEntryType? get todayEntryType => throw _privateConstructorUsedError;
+  TodayEntryType? get todayEntryType;
   @override
-  ActionSelectionType? get actionType => throw _privateConstructorUsedError;
+  ActionSelectionType? get actionType;
   @override
-  ProjectEntry? get project => throw _privateConstructorUsedError;
+  ProjectEntry? get project;
   @override
-  CalendarEntry? get calendar => throw _privateConstructorUsedError;
+  CalendarEntry? get calendar;
   @override
-  List<SubTaskEntry>? get subTasks => throw _privateConstructorUsedError;
+  List<SubTaskEntry>? get subTasks;
   @override
-  int? get prio => throw _privateConstructorUsedError;
+  int? get prio;
   @override
-  bool? get isHabit => throw _privateConstructorUsedError;
+  bool? get isHabit;
   @override
   @JsonKey(ignore: true)
   _$CreateStateCurrentCopyWith<_CreateStateCurrent> get copyWith =>

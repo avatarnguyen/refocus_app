@@ -46,7 +46,7 @@ void main() {
     mockDeleteEvent = MockDeleteEvent();
     // mockLocalDataSource = MockLocalDataSource();
 
-    bloc = CalendarBloc(
+    bloc = CalendarBloc._CalendarBloc(
       getCalendarEntry: mockGetAllCalendarEntry,
       addEvent: mockAddEvent,
       deleteEvent: mockDeleteEvent,

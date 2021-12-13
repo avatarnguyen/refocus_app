@@ -129,7 +129,8 @@ class _$_Initial implements _Initial {
 
   @override
   bool operator ==(dynamic other) {
-    return identical(this, other) || (other is _Initial);
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _Initial);
   }
 
   @override
@@ -256,15 +257,14 @@ class _$_SubTaskLoaded implements _SubTaskLoaded {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other is _SubTaskLoaded &&
-            (identical(other.subtasks, subtasks) ||
-                const DeepCollectionEquality()
-                    .equals(other.subtasks, subtasks)));
+        (other.runtimeType == runtimeType &&
+            other is _SubTaskLoaded &&
+            const DeepCollectionEquality().equals(other.subtasks, subtasks));
   }
 
   @override
   int get hashCode =>
-      runtimeType.hashCode ^ const DeepCollectionEquality().hash(subtasks);
+      Object.hash(runtimeType, const DeepCollectionEquality().hash(subtasks));
 
   @JsonKey(ignore: true)
   @override
@@ -343,7 +343,7 @@ class _$_SubTaskLoaded implements _SubTaskLoaded {
 abstract class _SubTaskLoaded implements SubtaskState {
   const factory _SubTaskLoaded(List<SubTaskEntry> subtasks) = _$_SubTaskLoaded;
 
-  List<SubTaskEntry> get subtasks => throw _privateConstructorUsedError;
+  List<SubTaskEntry> get subtasks;
   @JsonKey(ignore: true)
   _$SubTaskLoadedCopyWith<_SubTaskLoaded> get copyWith =>
       throw _privateConstructorUsedError;
@@ -396,15 +396,15 @@ class _$_SubTaskError implements _SubTaskError {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other is _SubTaskError &&
-            (identical(other.errorMessage, errorMessage) ||
-                const DeepCollectionEquality()
-                    .equals(other.errorMessage, errorMessage)));
+        (other.runtimeType == runtimeType &&
+            other is _SubTaskError &&
+            const DeepCollectionEquality()
+                .equals(other.errorMessage, errorMessage));
   }
 
   @override
-  int get hashCode =>
-      runtimeType.hashCode ^ const DeepCollectionEquality().hash(errorMessage);
+  int get hashCode => Object.hash(
+      runtimeType, const DeepCollectionEquality().hash(errorMessage));
 
   @JsonKey(ignore: true)
   @override
@@ -483,7 +483,7 @@ class _$_SubTaskError implements _SubTaskError {
 abstract class _SubTaskError implements SubtaskState {
   const factory _SubTaskError(String errorMessage) = _$_SubTaskError;
 
-  String get errorMessage => throw _privateConstructorUsedError;
+  String get errorMessage;
   @JsonKey(ignore: true)
   _$SubTaskErrorCopyWith<_SubTaskError> get copyWith =>
       throw _privateConstructorUsedError;

@@ -10,13 +10,15 @@ class MessageDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: MediaQuery.of(context).size.height / 3,
-      child: Center(
-        child: Text(
-          message,
-          style: const TextStyle(fontSize: 25),
-          textAlign: TextAlign.center,
+    return Material(
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height / 3,
+        child: Center(
+          child: Text(
+            message,
+            style: const TextStyle(fontSize: 25),
+            textAlign: TextAlign.center,
+          ),
         ),
       ),
     );

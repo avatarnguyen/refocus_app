@@ -1,4 +1,4 @@
-import 'dart:developer' as developer;
+import 'dart:developer';
 
 import 'package:logger/logger.dart';
 
@@ -28,7 +28,7 @@ class ConsoleOutput extends LogOutput {
   @override
   void output(OutputEvent event) {
     for (var line in event.lines) {
-      developer.log(line);
+      log(line);
     }
   }
 }

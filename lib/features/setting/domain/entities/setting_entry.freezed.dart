@@ -28,7 +28,7 @@ class _$SettingEntryTearOff {
     );
   }
 
-  SettingEntry fromJson(Map<String, Object> json) {
+  SettingEntry fromJson(Map<String, Object?> json) {
     return SettingEntry.fromJson(json);
   }
 }
@@ -140,18 +140,17 @@ class _$_SettingEntry implements _SettingEntry {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other is _SettingEntry &&
-            (identical(other.id, id) ||
-                const DeepCollectionEquality().equals(other.id, id)) &&
-            (identical(other.data, data) ||
-                const DeepCollectionEquality().equals(other.data, data)));
+        (other.runtimeType == runtimeType &&
+            other is _SettingEntry &&
+            const DeepCollectionEquality().equals(other.id, id) &&
+            const DeepCollectionEquality().equals(other.data, data));
   }
 
   @override
-  int get hashCode =>
-      runtimeType.hashCode ^
-      const DeepCollectionEquality().hash(id) ^
-      const DeepCollectionEquality().hash(data);
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(id),
+      const DeepCollectionEquality().hash(data));
 
   @JsonKey(ignore: true)
   @override
@@ -171,9 +170,9 @@ abstract class _SettingEntry implements SettingEntry {
       _$_SettingEntry.fromJson;
 
   @override
-  String get id => throw _privateConstructorUsedError;
+  String get id;
   @override
-  String? get data => throw _privateConstructorUsedError;
+  String? get data;
   @override
   @JsonKey(ignore: true)
   _$SettingEntryCopyWith<_SettingEntry> get copyWith =>

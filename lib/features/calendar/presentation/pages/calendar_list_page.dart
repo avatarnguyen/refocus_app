@@ -14,7 +14,7 @@ class CalendarListPage extends StatelessWidget {
         if (state is CalendarListInitial) {
           return const LoadingWidget();
         }
-        if (state is Loaded) {
+        if (state is CalendarListLoaded) {
           final calendars = state.calendarList;
           return SafeArea(
             top: false,
@@ -27,16 +27,12 @@ class CalendarListPage extends StatelessWidget {
                   CalendarListItem(calendar: calendars[index]),
             ),
           );
-        } else if (state is Error) {
-          return MessageDisplay(
-            message: state.message,
-          );
-        } else if (state is Loading) {
+        } else if (state is CalendarListLoading) {
           return const LoadingWidget();
+        } else if (state is CalendarListError) {
+          return MessageDisplay(message: state.message);
         } else {
-          return const MessageDisplay(
-            message: 'Unexpected State',
-          );
+          return const MessageDisplay(message: 'Unexpected State');
         }
       },
     );

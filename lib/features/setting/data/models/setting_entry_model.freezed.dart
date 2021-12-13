@@ -27,7 +27,7 @@ class _$SettingEntryModelTearOff {
     );
   }
 
-  SettingEntryModel fromJson(Map<String, Object> json) {
+  SettingEntryModel fromJson(Map<String, Object?> json) {
     return SettingEntryModel.fromJson(json);
   }
 }
@@ -140,15 +140,15 @@ class _$_SettingEntryModel implements _SettingEntryModel {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other is _SettingEntryModel &&
-            (identical(other.settingEntry, settingEntry) ||
-                const DeepCollectionEquality()
-                    .equals(other.settingEntry, settingEntry)));
+        (other.runtimeType == runtimeType &&
+            other is _SettingEntryModel &&
+            const DeepCollectionEquality()
+                .equals(other.settingEntry, settingEntry));
   }
 
   @override
-  int get hashCode =>
-      runtimeType.hashCode ^ const DeepCollectionEquality().hash(settingEntry);
+  int get hashCode => Object.hash(
+      runtimeType, const DeepCollectionEquality().hash(settingEntry));
 
   @JsonKey(ignore: true)
   @override
@@ -169,7 +169,7 @@ abstract class _SettingEntryModel implements SettingEntryModel {
       _$_SettingEntryModel.fromJson;
 
   @override
-  SettingEntry get settingEntry => throw _privateConstructorUsedError;
+  SettingEntry get settingEntry;
   @override
   @JsonKey(ignore: true)
   _$SettingEntryModelCopyWith<_SettingEntryModel> get copyWith =>

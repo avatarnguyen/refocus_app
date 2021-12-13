@@ -3,16 +3,13 @@ import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/features/task/domain/entities/subtask_entry.dart';
 
 class CreateSubtaskInputWidget extends StatefulWidget {
-  const CreateSubtaskInputWidget(
-      {Key? key, required this.subtask, this.onChanged})
-      : super(key: key);
+  const CreateSubtaskInputWidget({Key? key, required this.subtask, this.onChanged}) : super(key: key);
 
   final SubTaskEntry subtask;
   final void Function(String)? onChanged;
 
   @override
-  _CreateSubtaskInputWidgetState createState() =>
-      _CreateSubtaskInputWidgetState();
+  _CreateSubtaskInputWidgetState createState() => _CreateSubtaskInputWidgetState();
 }
 
 class _CreateSubtaskInputWidgetState extends State<CreateSubtaskInputWidget> {

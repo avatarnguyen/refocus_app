@@ -31,38 +31,38 @@ class SubTaskItem extends StatelessWidget {
     final _color = backgroundColor ?? kcPrimary500;
 
     return Slidable(
-      key: key ?? UniqueKey(),
-      actionPane: const SlidableStrechActionPane(),
-      actions: [
-        IconSlideAction(
-          icon: Icons.check_circle_outline,
-          foregroundColor: _color,
-          color: Colors.transparent,
-        ),
-      ],
-      dismissal: SlidableDismissal(
-        onDismissed: (actionTyp) {
-          context.read<SubtaskCubit>().updateSubtaskWithoutReload(
-              subTask.copyWith(isCompleted: !subTask.isCompleted));
+      key: key ?? const ValueKey(0),
+      startActionPane: ActionPane(
+        motion: const StretchMotion(),
+        dismissible: DismissiblePane(
+          dismissThreshold: .5,
+          onDismissed: () {
+            context.read<SubtaskCubit>().updateSubtaskWithoutReload(
+                subTask.copyWith(isCompleted: !subTask.isCompleted));
 
-          if (type != null) {
-            if (type == TodayEventType.specificDate) {
-              final _selectedDate = _dateTimeStream.selectedDate;
-              context.read<TodayBloc>().add(
-                  UpdateTaskEntries(eventType: type!, date: _selectedDate));
+            if (type != null) {
+              if (type == TodayEventType.specificDate) {
+                final _selectedDate = _dateTimeStream.selectedDate;
+                context.read<TodayBloc>().add(
+                    UpdateTaskEntries(eventType: type!, date: _selectedDate));
+              } else {
+                context
+                    .read<TodayBloc>()
+                    .add(UpdateTaskEntries(eventType: type!));
+              }
             } else {
-              context
-                  .read<TodayBloc>()
-                  .add(UpdateTaskEntries(eventType: type!));
+              context.read<TodayBloc>().add(const GetTodayEntries());
             }
-          } else {
-            context.read<TodayBloc>().add(const GetTodayEntries());
-          }
-        },
-        dismissThresholds: const <SlideActionType, double>{
-          SlideActionType.primary: .5,
-        },
-        child: const SlidableDrawerDismissal(),
+          },
+        ),
+        children: [
+          SlidableAction(
+            icon: Icons.check_circle_outline,
+            foregroundColor: _color,
+            backgroundColor: Colors.transparent,
+            onPressed: (context) {},
+          ),
+        ],
       ),
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 2),

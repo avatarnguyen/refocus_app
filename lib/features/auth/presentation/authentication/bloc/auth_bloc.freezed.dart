@@ -171,14 +171,14 @@ class _$_AuthenticationStatusChanged implements _AuthenticationStatusChanged {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other is _AuthenticationStatusChanged &&
-            (identical(other.status, status) ||
-                const DeepCollectionEquality().equals(other.status, status)));
+        (other.runtimeType == runtimeType &&
+            other is _AuthenticationStatusChanged &&
+            const DeepCollectionEquality().equals(other.status, status));
   }
 
   @override
   int get hashCode =>
-      runtimeType.hashCode ^ const DeepCollectionEquality().hash(status);
+      Object.hash(runtimeType, const DeepCollectionEquality().hash(status));
 
   @JsonKey(ignore: true)
   @override
@@ -271,7 +271,7 @@ abstract class _AuthenticationStatusChanged implements AuthEvent {
   const factory _AuthenticationStatusChanged(AuthenticationStatus status) =
       _$_AuthenticationStatusChanged;
 
-  AuthenticationStatus get status => throw _privateConstructorUsedError;
+  AuthenticationStatus get status;
   @JsonKey(ignore: true)
   _$AuthenticationStatusChangedCopyWith<_AuthenticationStatusChanged>
       get copyWith => throw _privateConstructorUsedError;
@@ -308,7 +308,8 @@ class _$_AuthSignOutRequested implements _AuthSignOutRequested {
 
   @override
   bool operator ==(dynamic other) {
-    return identical(this, other) || (other is _AuthSignOutRequested);
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _AuthSignOutRequested);
   }
 
   @override
@@ -430,7 +431,8 @@ class _$_AuthAutoSignInAttempt implements _AuthAutoSignInAttempt {
 
   @override
   bool operator ==(dynamic other) {
-    return identical(this, other) || (other is _AuthAutoSignInAttempt);
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _AuthAutoSignInAttempt);
   }
 
   @override
@@ -583,24 +585,20 @@ class _$_AuthConfirmAccount implements _AuthConfirmAccount {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other is _AuthConfirmAccount &&
-            (identical(other.username, username) ||
-                const DeepCollectionEquality()
-                    .equals(other.username, username)) &&
-            (identical(other.password, password) ||
-                const DeepCollectionEquality()
-                    .equals(other.password, password)) &&
-            (identical(other.confirmCode, confirmCode) ||
-                const DeepCollectionEquality()
-                    .equals(other.confirmCode, confirmCode)));
+        (other.runtimeType == runtimeType &&
+            other is _AuthConfirmAccount &&
+            const DeepCollectionEquality().equals(other.username, username) &&
+            const DeepCollectionEquality().equals(other.password, password) &&
+            const DeepCollectionEquality()
+                .equals(other.confirmCode, confirmCode));
   }
 
   @override
-  int get hashCode =>
-      runtimeType.hashCode ^
-      const DeepCollectionEquality().hash(username) ^
-      const DeepCollectionEquality().hash(password) ^
-      const DeepCollectionEquality().hash(confirmCode);
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(username),
+      const DeepCollectionEquality().hash(password),
+      const DeepCollectionEquality().hash(confirmCode));
 
   @JsonKey(ignore: true)
   @override
@@ -694,9 +692,9 @@ abstract class _AuthConfirmAccount implements AuthEvent {
       String? password,
       String? confirmCode}) = _$_AuthConfirmAccount;
 
-  String? get username => throw _privateConstructorUsedError;
-  String? get password => throw _privateConstructorUsedError;
-  String? get confirmCode => throw _privateConstructorUsedError;
+  String? get username;
+  String? get password;
+  String? get confirmCode;
   @JsonKey(ignore: true)
   _$AuthConfirmAccountCopyWith<_AuthConfirmAccount> get copyWith =>
       throw _privateConstructorUsedError;
@@ -838,7 +836,8 @@ class _$_AuthUnknown implements _AuthUnknown {
 
   @override
   bool operator ==(dynamic other) {
-    return identical(this, other) || (other is _AuthUnknown);
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _AuthUnknown);
   }
 
   @override
@@ -987,15 +986,14 @@ class _$_AuthAuthenticated implements _AuthAuthenticated {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other is _AuthAuthenticated &&
-            (identical(other.userEntry, userEntry) ||
-                const DeepCollectionEquality()
-                    .equals(other.userEntry, userEntry)));
+        (other.runtimeType == runtimeType &&
+            other is _AuthAuthenticated &&
+            const DeepCollectionEquality().equals(other.userEntry, userEntry));
   }
 
   @override
   int get hashCode =>
-      runtimeType.hashCode ^ const DeepCollectionEquality().hash(userEntry);
+      Object.hash(runtimeType, const DeepCollectionEquality().hash(userEntry));
 
   @JsonKey(ignore: true)
   @override
@@ -1087,7 +1085,7 @@ class _$_AuthAuthenticated implements _AuthAuthenticated {
 abstract class _AuthAuthenticated implements AuthState {
   const factory _AuthAuthenticated(UserEntry userEntry) = _$_AuthAuthenticated;
 
-  UserEntry get userEntry => throw _privateConstructorUsedError;
+  UserEntry get userEntry;
   @JsonKey(ignore: true)
   _$AuthAuthenticatedCopyWith<_AuthAuthenticated> get copyWith =>
       throw _privateConstructorUsedError;
@@ -1124,7 +1122,8 @@ class _$_AuthUnauthenticated implements _AuthUnauthenticated {
 
   @override
   bool operator ==(dynamic other) {
-    return identical(this, other) || (other is _AuthUnauthenticated);
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _AuthUnauthenticated);
   }
 
   @override
@@ -1246,7 +1245,8 @@ class _$_AuthLoading implements _AuthLoading {
 
   @override
   bool operator ==(dynamic other) {
-    return identical(this, other) || (other is _AuthLoading);
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _AuthLoading);
   }
 
   @override
@@ -1370,7 +1370,9 @@ class _$_AuthConfirmationRequired implements _AuthConfirmationRequired {
 
   @override
   bool operator ==(dynamic other) {
-    return identical(this, other) || (other is _AuthConfirmationRequired);
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _AuthConfirmationRequired);
   }
 
   @override

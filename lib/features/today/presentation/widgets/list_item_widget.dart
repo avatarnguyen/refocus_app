@@ -1,8 +1,5 @@
 import 'package:dartx/dartx.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -29,7 +26,6 @@ import 'package:refocus_app/features/today/domain/today_entry.dart';
 import 'package:refocus_app/features/today/presentation/widgets/sub_task_item.dart';
 import 'package:refocus_app/injection.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
-import 'package:styled_widget/styled_widget.dart';
 
 const timeLineWidth = 48.0;
 
@@ -172,142 +168,98 @@ class _ListItemWidgetState extends State<ListItemWidget> {
       _eventBlocType = TodayEventType.specificDate;
     }
 
-    return Slidable.builder(
+    return Slidable(
       key: widget.key ?? Key(_id),
-      actionPane: const SlidableStrechActionPane(),
-      actionExtentRatio: .32,
-      actionDelegate: _isEvent
-          ? null
-          : SlideActionBuilderDelegate(
-              builder: (context, index, animation, step) {
-                return IconSlideAction(
-                  color: step == SlidableRenderingMode.dismiss
-                      ? kcSuccess500
-                      : Colors.transparent,
-                  foregroundColor: step == SlidableRenderingMode.slide
-                      ? kcPrimary500.withOpacity(animation!.value)
-                      : (step == SlidableRenderingMode.dismiss
-                          ? Colors.white
-                          : kcPrimary500),
-                  icon: Icons.check,
-                  caption: animation!.value > 0.96 ? 'Mark as Done' : null,
-                  onTap: () {
-                    widget.markItemAsDone?.call();
-                  },
-                );
-              },
-              actionCount: 1,
-            ),
-      secondaryActionDelegate: SlideActionBuilderDelegate(
-        actionCount: _isEvent ? 1 : 2,
-        builder: (context, index, animation, step) {
-          if (index == 0) {
-            return IconSlideAction(
-              icon: Icons.calendar_today_rounded,
-              foregroundColor: step != SlidableRenderingMode.dismiss
-                  ? _color
-                  : widget.project != null
-                      ? kcError500
-                      : kcWarning500,
-              color: step != SlidableRenderingMode.dismiss
-                  ? Colors.transparent
-                  : widget.project != null
-                      ? kcError500
-                      : kcWarning500,
-              caption: animation!.value >= 0.8 ? 'change date' : null,
-              onTap: () {
-                if (widget.changeItemDate != null) {
-                  widget.changeItemDate?.call();
-                }
-              },
-            );
-          } else {
-            if (widget.project != null) {
-              return IconSlideAction(
-                icon: Icons.delete,
-                foregroundColor: step == SlidableRenderingMode.slide
-                    ? kcPrimary500.withOpacity(
-                        animation!.value <= 0.7 ? animation.value + 0.3 : 1.0,
-                      )
-                    : (step == SlidableRenderingMode.dismiss
-                        ? kcPrimary500
-                        : kcError500),
-                color: step == SlidableRenderingMode.dismiss
-                    ? kcError500
+      startActionPane: ActionPane(
+        motion: const StretchMotion(),
+        children: [
+          SlidableAction(
+            backgroundColor:
+                Slidable.of(context)?.actionPaneType.value == ActionPaneType.end
+                    ? kcSuccess500
                     : Colors.transparent,
-                caption: animation!.value >= 0.8 ? 'delete item' : null,
-                onTap: () async {
-                  if (widget.deleteItem != null) {
-                    final _result = await _showDeleteAlertDialog();
-                    if (_result) {
-                      widget.deleteItem!();
-                    }
-                  }
-                },
-              );
-            } else {
-              return IconSlideAction(
-                icon: Icons.arrow_forward_outlined,
-                foregroundColor: step == SlidableRenderingMode.slide
-                    ? kcPrimary500.withOpacity(
-                        animation!.value <= 0.7 ? animation.value + 0.3 : 1.0,
-                      )
-                    : (step == SlidableRenderingMode.dismiss
-                        ? kcPrimary500
-                        : kcError500),
-                color: step == SlidableRenderingMode.dismiss
-                    ? kcWarning500
-                    : Colors.transparent,
-                caption: animation!.value >= 0.8 ? 'to next day' : null,
-                onTap: () async {
-                  // final state = Slidable.of(context);
-                  if (widget.postponeItem != null) {
-                    widget.postponeItem?.call();
-                  }
-                },
-              );
-            }
-          }
-        },
+            foregroundColor: Slidable.of(context)?.actionPaneType.value ==
+                    ActionPaneType.start
+                ? kcPrimary500
+                : Colors.white,
+            label: Slidable.of(context)!.animation.value > 0.96
+                ? 'Mark as Done'
+                : null,
+            icon: Icons.check,
+            onPressed: (_) {},
+          ),
+        ],
       ),
-      dismissal: SlidableDismissal(
-        onDismissed: (actionTyp) {
-          if (_isEvent) {
-            if (widget.changeItemDate != null) {
-              // ignore: prefer_null_aware_method_calls
-              widget.changeItemDate!();
-            }
-          } else {
-            if (actionTyp == SlideActionType.primary) {
-              // Mark Task as Done
-              if (widget.markItemAsDone != null) {
-                widget.markItemAsDone?.call();
+      endActionPane: ActionPane(
+        motion: const StretchMotion(),
+        children: [
+          SlidableAction(
+            icon: Icons.calendar_today_rounded,
+            foregroundColor: Slidable.of(context)?.isDismissibleReady == true
+                ? _color
+                : widget.project != null
+                    ? kcError500
+                    : kcWarning500,
+            backgroundColor: Slidable.of(context)?.isDismissibleReady == true
+                ? Colors.transparent
+                : widget.project != null
+                    ? kcError500
+                    : kcWarning500,
+            label: Slidable.of(context)!.animation.value >= 0.8
+                ? 'change date'
+                : null,
+            onPressed: (_) {
+              if (widget.changeItemDate != null) {
+                widget.changeItemDate?.call();
               }
-            } else {
-              if (widget.postponeItem != null) {
-                widget.postponeItem!();
-              } else {
-                if (widget.deleteItem != null) {
-                  widget.deleteItem?.call();
-                }
-              }
-            }
-          }
-        },
-        dismissThresholds: <SlideActionType, double>{
-          SlideActionType.primary: .4,
-          SlideActionType.secondary: _isEvent ? 1.0 : .5,
-        },
-        onWillDismiss: (actionType) async {
-          if (actionType == SlideActionType.primary &&
-              widget.deleteItem != null) {
-            final _result = await _showDeleteAlertDialog();
-            return _result;
-          } else {
-            return true;
-          }
-        },
-        child: const SlidableDrawerDismissal(),
+            },
+          )
+          //     if (widget.project != null)
+          // SlidableAction(
+          //     icon: Icons.delete,
+          //     foregroundColor: step == SlidableRenderingMode.slide
+          //         ? kcPrimary500.withOpacity(
+          //       animation!.value <= 0.7 ? animation.value + 0.3 : 1.0,
+          //     )
+          //         : (step == SlidableRenderingMode.dismiss
+          //         ? kcPrimary500
+          //         : kcError500),
+          //     color: step == SlidableRenderingMode.dismiss
+          //         ? kcError500
+          //         : Colors.transparent,
+          //     caption: animation!.value >= 0.8 ? 'delete item' : null,
+          //     onTap: () async {
+          //       if (widget.deleteItem != null) {
+          //         final _result = await _showDeleteAlertDialog();
+          //         if (_result) {
+          //           widget.deleteItem!();
+          //         }
+          //       }
+          //     },
+          //   )
+          //  else
+          // SlidableAction(
+          // icon: Icons.arrow_forward_outlined,
+          // foregroundColor: step == SlidableRenderingMode.slide
+          // ? kcPrimary500.withOpacity(
+          // animation!.value <= 0.7 ? animation.value + 0.3 : 1.0,
+          // )
+          //     : (step == SlidableRenderingMode.dismiss
+          // ? kcPrimary500
+          //     : kcError500),
+          // color: step == SlidableRenderingMode.dismiss
+          // ? kcWarning500
+          //     : Colors.transparent,
+          // caption: animation!.value >= 0.8 ? 'to next day' : null,
+          // onTap: () async {
+          // // final state = Slidable.of(context);
+          // if (widget.postponeItem != null) {
+          // widget.postponeItem?.call();
+          // }
+          // },
+          // );
+          // }
+        ],
       ),
       child: Container(
         decoration: BoxDecoration(

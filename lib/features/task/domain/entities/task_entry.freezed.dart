@@ -52,7 +52,7 @@ class _$TaskEntryTearOff {
     );
   }
 
-  TaskEntry fromJson(Map<String, Object> json) {
+  TaskEntry fromJson(Map<String, Object?> json) {
     return TaskEntry.fromJson(json);
   }
 }
@@ -351,61 +351,45 @@ class _$_TaskEntry implements _TaskEntry {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other is _TaskEntry &&
-            (identical(other.id, id) ||
-                const DeepCollectionEquality().equals(other.id, id)) &&
-            (identical(other.isCompleted, isCompleted) ||
-                const DeepCollectionEquality()
-                    .equals(other.isCompleted, isCompleted)) &&
-            (identical(other.projectID, projectID) ||
-                const DeepCollectionEquality()
-                    .equals(other.projectID, projectID)) &&
-            (identical(other.calendarID, calendarID) ||
-                const DeepCollectionEquality()
-                    .equals(other.calendarID, calendarID)) &&
-            (identical(other.colorID, colorID) ||
-                const DeepCollectionEquality()
-                    .equals(other.colorID, colorID)) &&
-            (identical(other.title, title) ||
-                const DeepCollectionEquality().equals(other.title, title)) &&
-            (identical(other.description, description) ||
-                const DeepCollectionEquality()
-                    .equals(other.description, description)) &&
-            (identical(other.dueDate, dueDate) ||
-                const DeepCollectionEquality()
-                    .equals(other.dueDate, dueDate)) &&
-            (identical(other.completedDate, completedDate) ||
-                const DeepCollectionEquality()
-                    .equals(other.completedDate, completedDate)) &&
-            (identical(other.startDateTime, startDateTime) ||
-                const DeepCollectionEquality()
-                    .equals(other.startDateTime, startDateTime)) &&
-            (identical(other.endDateTime, endDateTime) ||
-                const DeepCollectionEquality()
-                    .equals(other.endDateTime, endDateTime)) &&
-            (identical(other.priority, priority) ||
-                const DeepCollectionEquality()
-                    .equals(other.priority, priority)) &&
-            (identical(other.isHabit, isHabit) ||
-                const DeepCollectionEquality().equals(other.isHabit, isHabit)));
+        (other.runtimeType == runtimeType &&
+            other is _TaskEntry &&
+            const DeepCollectionEquality().equals(other.id, id) &&
+            const DeepCollectionEquality()
+                .equals(other.isCompleted, isCompleted) &&
+            const DeepCollectionEquality().equals(other.projectID, projectID) &&
+            const DeepCollectionEquality()
+                .equals(other.calendarID, calendarID) &&
+            const DeepCollectionEquality().equals(other.colorID, colorID) &&
+            const DeepCollectionEquality().equals(other.title, title) &&
+            const DeepCollectionEquality()
+                .equals(other.description, description) &&
+            const DeepCollectionEquality().equals(other.dueDate, dueDate) &&
+            const DeepCollectionEquality()
+                .equals(other.completedDate, completedDate) &&
+            const DeepCollectionEquality()
+                .equals(other.startDateTime, startDateTime) &&
+            const DeepCollectionEquality()
+                .equals(other.endDateTime, endDateTime) &&
+            const DeepCollectionEquality().equals(other.priority, priority) &&
+            const DeepCollectionEquality().equals(other.isHabit, isHabit));
   }
 
   @override
-  int get hashCode =>
-      runtimeType.hashCode ^
-      const DeepCollectionEquality().hash(id) ^
-      const DeepCollectionEquality().hash(isCompleted) ^
-      const DeepCollectionEquality().hash(projectID) ^
-      const DeepCollectionEquality().hash(calendarID) ^
-      const DeepCollectionEquality().hash(colorID) ^
-      const DeepCollectionEquality().hash(title) ^
-      const DeepCollectionEquality().hash(description) ^
-      const DeepCollectionEquality().hash(dueDate) ^
-      const DeepCollectionEquality().hash(completedDate) ^
-      const DeepCollectionEquality().hash(startDateTime) ^
-      const DeepCollectionEquality().hash(endDateTime) ^
-      const DeepCollectionEquality().hash(priority) ^
-      const DeepCollectionEquality().hash(isHabit);
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(id),
+      const DeepCollectionEquality().hash(isCompleted),
+      const DeepCollectionEquality().hash(projectID),
+      const DeepCollectionEquality().hash(calendarID),
+      const DeepCollectionEquality().hash(colorID),
+      const DeepCollectionEquality().hash(title),
+      const DeepCollectionEquality().hash(description),
+      const DeepCollectionEquality().hash(dueDate),
+      const DeepCollectionEquality().hash(completedDate),
+      const DeepCollectionEquality().hash(startDateTime),
+      const DeepCollectionEquality().hash(endDateTime),
+      const DeepCollectionEquality().hash(priority),
+      const DeepCollectionEquality().hash(isHabit));
 
   @JsonKey(ignore: true)
   @override
@@ -438,35 +422,35 @@ abstract class _TaskEntry implements TaskEntry {
       _$_TaskEntry.fromJson;
 
   @override
-  String get id => throw _privateConstructorUsedError;
+  String get id;
   @override
-  bool get isCompleted => throw _privateConstructorUsedError;
+  bool get isCompleted;
   @override
-  String get projectID => throw _privateConstructorUsedError;
+  String get projectID;
   @override
-  String? get calendarID => throw _privateConstructorUsedError;
+  String? get calendarID;
   @override
-  String? get colorID => throw _privateConstructorUsedError;
+  String? get colorID;
   @override
-  String? get title => throw _privateConstructorUsedError;
+  String? get title;
   @override
-  String? get description => throw _privateConstructorUsedError;
-  @override
-  @DateSerialiser()
-  DateTime? get dueDate => throw _privateConstructorUsedError;
+  String? get description;
   @override
   @DateSerialiser()
-  DateTime? get completedDate => throw _privateConstructorUsedError;
+  DateTime? get dueDate;
+  @override
+  @DateSerialiser()
+  DateTime? get completedDate;
   @override
   @DateTimeSerialiser()
-  DateTime? get startDateTime => throw _privateConstructorUsedError;
+  DateTime? get startDateTime;
   @override
   @DateTimeSerialiser()
-  DateTime? get endDateTime => throw _privateConstructorUsedError;
+  DateTime? get endDateTime;
   @override
-  int? get priority => throw _privateConstructorUsedError;
+  int? get priority;
   @override
-  bool? get isHabit => throw _privateConstructorUsedError;
+  bool? get isHabit;
   @override
   @JsonKey(ignore: true)
   _$TaskEntryCopyWith<_TaskEntry> get copyWith =>

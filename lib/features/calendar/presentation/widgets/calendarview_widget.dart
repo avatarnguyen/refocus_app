@@ -113,8 +113,8 @@ class _CalendarViewWidgetState extends State<CalendarViewWidget> {
     return Expanded(
       child: SfCalendar(
         controller: _controller,
-        dataSource: widget.state is Loaded
-            ? (widget.state as Loaded).calendarData
+        dataSource: widget.state is CalendarLoaded
+            ? (widget.state as CalendarLoaded).calendarData
             : null,
         loadMoreWidgetBuilder: loadMoreWidget,
         headerHeight: 0,

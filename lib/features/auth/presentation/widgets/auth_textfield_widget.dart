@@ -47,7 +47,7 @@ class _AuthTextFieldWidgetState extends State<AuthTextFieldWidget> {
       style: context.bodyText2,
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
       decoration: BoxDecoration(
-        borderRadius: kBorderRadTextField,
+        borderRadius: kBorderRadiusTF,
         border: Border.all(
           color: Colors.grey.shade300,
           width: 2,

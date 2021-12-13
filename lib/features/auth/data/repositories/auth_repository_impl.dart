@@ -6,7 +6,6 @@ import 'package:refocus_app/core/error/exceptions.dart';
 import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart';
 import 'package:refocus_app/enum/authetication_status.dart';
-
 import 'package:refocus_app/features/auth/data/datasources/aws_auth_data_source.dart';
 import 'package:refocus_app/features/auth/domain/entities/auth_credential.dart';
 import 'package:refocus_app/features/auth/domain/entities/user_entry.dart';
@@ -24,6 +23,7 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<Either<Failure, bool>> authAutoLogin() async {
     try {
+      // await authDataSource.signOut();
       final result = await authDataSource.attemptAutoLogin();
       return Right(result);
     } on ServerException {

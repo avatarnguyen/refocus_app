@@ -34,7 +34,7 @@ class _$UserEntryTearOff {
     );
   }
 
-  UserEntry fromJson(Map<String, Object> json) {
+  UserEntry fromJson(Map<String, Object?> json) {
     return UserEntry.fromJson(json);
   }
 }
@@ -169,26 +169,21 @@ class _$_UserEntry implements _UserEntry {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other is _UserEntry &&
-            (identical(other.id, id) ||
-                const DeepCollectionEquality().equals(other.id, id)) &&
-            (identical(other.username, username) ||
-                const DeepCollectionEquality()
-                    .equals(other.username, username)) &&
-            (identical(other.email, email) ||
-                const DeepCollectionEquality().equals(other.email, email)) &&
-            (identical(other.avatarKey, avatarKey) ||
-                const DeepCollectionEquality()
-                    .equals(other.avatarKey, avatarKey)));
+        (other.runtimeType == runtimeType &&
+            other is _UserEntry &&
+            const DeepCollectionEquality().equals(other.id, id) &&
+            const DeepCollectionEquality().equals(other.username, username) &&
+            const DeepCollectionEquality().equals(other.email, email) &&
+            const DeepCollectionEquality().equals(other.avatarKey, avatarKey));
   }
 
   @override
-  int get hashCode =>
-      runtimeType.hashCode ^
-      const DeepCollectionEquality().hash(id) ^
-      const DeepCollectionEquality().hash(username) ^
-      const DeepCollectionEquality().hash(email) ^
-      const DeepCollectionEquality().hash(avatarKey);
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(id),
+      const DeepCollectionEquality().hash(username),
+      const DeepCollectionEquality().hash(email),
+      const DeepCollectionEquality().hash(avatarKey));
 
   @JsonKey(ignore: true)
   @override
@@ -212,13 +207,13 @@ abstract class _UserEntry implements UserEntry {
       _$_UserEntry.fromJson;
 
   @override
-  String get id => throw _privateConstructorUsedError;
+  String get id;
   @override
-  String? get username => throw _privateConstructorUsedError;
+  String? get username;
   @override
-  String? get email => throw _privateConstructorUsedError;
+  String? get email;
   @override
-  String? get avatarKey => throw _privateConstructorUsedError;
+  String? get avatarKey;
   @override
   @JsonKey(ignore: true)
   _$UserEntryCopyWith<_UserEntry> get copyWith =>

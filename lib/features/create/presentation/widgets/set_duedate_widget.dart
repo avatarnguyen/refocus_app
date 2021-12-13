@@ -16,8 +16,6 @@ class SetDueDateWidget extends StatefulWidget {
 }
 
 class _SetDueDateWidgetState extends State<SetDueDateWidget> {
-  final _settingOption = getIt<SettingOption>();
-
   final _dueDateSelectionItems = [
     DueDateSelectionType.today,
     DueDateSelectionType.tomorrow,
@@ -27,22 +25,6 @@ class _SetDueDateWidgetState extends State<SetDueDateWidget> {
   DueDateSelectionType? _currentSelectedDueDate;
 
   late DateTime _dueDate;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _dueDate = _settingOption.dueDate ?? DateTime.now();
-    _currentSelectedDueDate = _getCurrentDueDateSelectionType(_dueDate);
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (_settingOption.dueDate == null) {
-      _settingOption.broadCastCurrentDueDateEntry(_dueDate);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +67,7 @@ class _SetDueDateWidgetState extends State<SetDueDateWidget> {
         'Today',
         'Tomorrow',
         'Next Week',
-        'Custom'
+        'Custom',
       ];
       return _dueDateString[item.index];
     } else {
@@ -113,12 +95,12 @@ class _SetDueDateWidgetState extends State<SetDueDateWidget> {
       }
 
       _dueDate = _date;
-      _settingOption.broadCastCurrentDueDateEntry(_date);
+      //TODO
+      // _settingOption.broadCastCurrentDueDateEntry(_date);
     }
   }
 
-  dynamic _showDatePickerBottomSheet(BuildContext parentContext,
-      {bool isEndDate = false}) async {
+  dynamic _showDatePickerBottomSheet(BuildContext parentContext, {bool isEndDate = false}) async {
     final _currentDateTime = _dueDate;
 
     final dynamic result = await showSlidingBottomSheet<dynamic>(
@@ -147,15 +129,15 @@ class _SetDueDateWidgetState extends State<SetDueDateWidget> {
                   todayHighlightColor: parentContext.colorScheme.secondary,
                   cancelText: 'CLEAR',
                   onCancel: () {
-                    _settingOption.broadCastCurrentDueDateEntry(null);
+                    //TODO
+                    // _settingOption.broadCastCurrentDueDateEntry(null);
                     setState(() {
                       _currentSelectedDueDate = null;
                       _dueDate = DateTime.now();
                     });
                     context.router.pop();
                   },
-                  onSelectionChanged:
-                      (DateRangePickerSelectionChangedArgs args) {
+                  onSelectionChanged: (DateRangePickerSelectionChangedArgs args) {
                     _onSelectionChanged(args, isEndDate);
                   },
                   onSubmit: (Object value) {
@@ -171,11 +153,10 @@ class _SetDueDateWidgetState extends State<SetDueDateWidget> {
     return result;
   }
 
-  void _onSelectionChanged(
-      DateRangePickerSelectionChangedArgs args, bool isEndDate) {
+  void _onSelectionChanged(DateRangePickerSelectionChangedArgs args, bool isEndDate) {
     final dynamic picked = args.value;
     if (picked is DateTime) {
-      _settingOption.broadCastCurrentDueDateEntry(picked);
+      // _settingOption.broadCastCurrentDueDateEntry(picked);
       _dueDate = picked;
 
       setState(() {});

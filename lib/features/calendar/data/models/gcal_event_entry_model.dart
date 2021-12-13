@@ -1,3 +1,4 @@
+import 'package:googleapis/calendar/v3.dart' as google_api;
 import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
 
 // ignore_for_file: implicit_dynamic_parameter
@@ -38,12 +39,16 @@ class GCalEventEntryModel extends CalendarEventEntry {
 
   factory GCalEventEntryModel.fromJson(Map<String, dynamic> json) {
     final startEvent = json.containsKey('start')
-        ? (json['start'] as Map<String, dynamic>)
+        ? ((json['start'] as google_api.EventDateTime).toJson()
+            as Map<String, dynamic>)
         : null;
-    final endEvent =
-        json.containsKey('end') ? (json['end'] as Map<String, dynamic>) : null;
+    final endEvent = json.containsKey('end')
+        ? ((json['end'] as google_api.EventDateTime).toJson()
+            as Map<String, dynamic>)
+        : null;
     final organizerMap = json.containsKey('organizer')
-        ? (json['organizer'] as Map<String, dynamic>)
+        ? ((json['organizer'] as google_api.EventOrganizer).toJson()
+            as Map<String, dynamic>)
         : null;
 
     return GCalEventEntryModel(

@@ -3,14 +3,10 @@ import 'dart:io';
 import 'package:dartx/dartx.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
-import 'package:refocus_app/features/calendar/domain/entities/calendar_entry.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/helpers/event_params.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar/calendar_bloc.dart'
@@ -102,7 +98,7 @@ class _EditTaskViewState extends State<EditTaskView> {
       backgroundColor: context.backgroundColor,
       appBar: PlatformAppBar(
         trailingActions: [
-          PlatformButton(
+          PlatformTextButton(
             padding: EdgeInsets.zero,
             onPressed: _saveEditedTask,
             child: const Text('Save'),
@@ -310,7 +306,7 @@ class _EditTaskViewState extends State<EditTaskView> {
             ),
           verticalSpaceMedium,
           if (fetchedTask != null)
-            PlatformButton(
+            PlatformElevatedButton(
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 32),
               child: Text('Delete Task',
                   style: context.bodyText2.copyWith(color: kcError500)),
@@ -377,7 +373,7 @@ class _EditTaskViewState extends State<EditTaskView> {
       ),
       child: BlocBuilder<CalendarListBloc, CalendarListState>(
         builder: (context, state) {
-          if (state is Loaded) {
+          if (state is CalendarListLoaded) {
             final _calList = state.calendarList;
             final _currentCal =
                 _calList.singleWhere((_cal) => _cal.id == _calendarID);
@@ -548,8 +544,8 @@ class _EditTaskViewState extends State<EditTaskView> {
                       context.router.pop();
                     },
                   ),
-                  PlatformButton(
-                    color: context.colorScheme.primary,
+                  PlatformElevatedButton(
+                    // color: context.colorScheme.primary,
                     child: 'Save'.toButtonText(),
                     onPressed: () {
                       setState(() {});

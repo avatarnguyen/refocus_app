@@ -149,15 +149,14 @@ class _$_LoginUsernameChanged implements _LoginUsernameChanged {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other is _LoginUsernameChanged &&
-            (identical(other.username, username) ||
-                const DeepCollectionEquality()
-                    .equals(other.username, username)));
+        (other.runtimeType == runtimeType &&
+            other is _LoginUsernameChanged &&
+            const DeepCollectionEquality().equals(other.username, username));
   }
 
   @override
   int get hashCode =>
-      runtimeType.hashCode ^ const DeepCollectionEquality().hash(username);
+      Object.hash(runtimeType, const DeepCollectionEquality().hash(username));
 
   @JsonKey(ignore: true)
   @override
@@ -238,7 +237,7 @@ abstract class _LoginUsernameChanged implements LoginEvent {
   const factory _LoginUsernameChanged(String username) =
       _$_LoginUsernameChanged;
 
-  String get username => throw _privateConstructorUsedError;
+  String get username;
   @JsonKey(ignore: true)
   _$LoginUsernameChangedCopyWith<_LoginUsernameChanged> get copyWith =>
       throw _privateConstructorUsedError;
@@ -292,15 +291,14 @@ class _$_LoginPasswordChanged implements _LoginPasswordChanged {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other is _LoginPasswordChanged &&
-            (identical(other.password, password) ||
-                const DeepCollectionEquality()
-                    .equals(other.password, password)));
+        (other.runtimeType == runtimeType &&
+            other is _LoginPasswordChanged &&
+            const DeepCollectionEquality().equals(other.password, password));
   }
 
   @override
   int get hashCode =>
-      runtimeType.hashCode ^ const DeepCollectionEquality().hash(password);
+      Object.hash(runtimeType, const DeepCollectionEquality().hash(password));
 
   @JsonKey(ignore: true)
   @override
@@ -381,7 +379,7 @@ abstract class _LoginPasswordChanged implements LoginEvent {
   const factory _LoginPasswordChanged(String password) =
       _$_LoginPasswordChanged;
 
-  String get password => throw _privateConstructorUsedError;
+  String get password;
   @JsonKey(ignore: true)
   _$LoginPasswordChangedCopyWith<_LoginPasswordChanged> get copyWith =>
       throw _privateConstructorUsedError;
@@ -417,7 +415,8 @@ class _$_LoginSubmitted implements _LoginSubmitted {
 
   @override
   bool operator ==(dynamic other) {
-    return identical(this, other) || (other is _LoginSubmitted);
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _LoginSubmitted);
   }
 
   @override
@@ -666,23 +665,19 @@ class _$_LoginStateCurrent implements _LoginStateCurrent {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other is _LoginStateCurrent &&
-            (identical(other.status, status) ||
-                const DeepCollectionEquality().equals(other.status, status)) &&
-            (identical(other.username, username) ||
-                const DeepCollectionEquality()
-                    .equals(other.username, username)) &&
-            (identical(other.password, password) ||
-                const DeepCollectionEquality()
-                    .equals(other.password, password)));
+        (other.runtimeType == runtimeType &&
+            other is _LoginStateCurrent &&
+            const DeepCollectionEquality().equals(other.status, status) &&
+            const DeepCollectionEquality().equals(other.username, username) &&
+            const DeepCollectionEquality().equals(other.password, password));
   }
 
   @override
-  int get hashCode =>
-      runtimeType.hashCode ^
-      const DeepCollectionEquality().hash(status) ^
-      const DeepCollectionEquality().hash(username) ^
-      const DeepCollectionEquality().hash(password);
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(status),
+      const DeepCollectionEquality().hash(username),
+      const DeepCollectionEquality().hash(password));
 
   @JsonKey(ignore: true)
   @override
@@ -759,11 +754,11 @@ abstract class _LoginStateCurrent implements LoginState {
       Password? password}) = _$_LoginStateCurrent;
 
   @override
-  FormzStatus? get status => throw _privateConstructorUsedError;
+  FormzStatus? get status;
   @override
-  Username? get username => throw _privateConstructorUsedError;
+  Username? get username;
   @override
-  Password? get password => throw _privateConstructorUsedError;
+  Password? get password;
   @override
   @JsonKey(ignore: true)
   _$LoginStateCurrentCopyWith<_LoginStateCurrent> get copyWith =>

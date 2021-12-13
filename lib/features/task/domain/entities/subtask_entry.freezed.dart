@@ -38,7 +38,7 @@ class _$SubTaskEntryTearOff {
     );
   }
 
-  SubTaskEntry fromJson(Map<String, Object> json) {
+  SubTaskEntry fromJson(Map<String, Object?> json) {
     return SubTaskEntry.fromJson(json);
   }
 }
@@ -222,33 +222,27 @@ class _$_SubTaskEntry implements _SubTaskEntry {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other is _SubTaskEntry &&
-            (identical(other.id, id) ||
-                const DeepCollectionEquality().equals(other.id, id)) &&
-            (identical(other.isCompleted, isCompleted) ||
-                const DeepCollectionEquality()
-                    .equals(other.isCompleted, isCompleted)) &&
-            (identical(other.taskID, taskID) ||
-                const DeepCollectionEquality().equals(other.taskID, taskID)) &&
-            (identical(other.title, title) ||
-                const DeepCollectionEquality().equals(other.title, title)) &&
-            (identical(other.completedDate, completedDate) ||
-                const DeepCollectionEquality()
-                    .equals(other.completedDate, completedDate)) &&
-            (identical(other.priority, priority) ||
-                const DeepCollectionEquality()
-                    .equals(other.priority, priority)));
+        (other.runtimeType == runtimeType &&
+            other is _SubTaskEntry &&
+            const DeepCollectionEquality().equals(other.id, id) &&
+            const DeepCollectionEquality()
+                .equals(other.isCompleted, isCompleted) &&
+            const DeepCollectionEquality().equals(other.taskID, taskID) &&
+            const DeepCollectionEquality().equals(other.title, title) &&
+            const DeepCollectionEquality()
+                .equals(other.completedDate, completedDate) &&
+            const DeepCollectionEquality().equals(other.priority, priority));
   }
 
   @override
-  int get hashCode =>
-      runtimeType.hashCode ^
-      const DeepCollectionEquality().hash(id) ^
-      const DeepCollectionEquality().hash(isCompleted) ^
-      const DeepCollectionEquality().hash(taskID) ^
-      const DeepCollectionEquality().hash(title) ^
-      const DeepCollectionEquality().hash(completedDate) ^
-      const DeepCollectionEquality().hash(priority);
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(id),
+      const DeepCollectionEquality().hash(isCompleted),
+      const DeepCollectionEquality().hash(taskID),
+      const DeepCollectionEquality().hash(title),
+      const DeepCollectionEquality().hash(completedDate),
+      const DeepCollectionEquality().hash(priority));
 
   @JsonKey(ignore: true)
   @override
@@ -274,18 +268,18 @@ abstract class _SubTaskEntry implements SubTaskEntry {
       _$_SubTaskEntry.fromJson;
 
   @override
-  String get id => throw _privateConstructorUsedError;
+  String get id;
   @override
-  bool get isCompleted => throw _privateConstructorUsedError;
+  bool get isCompleted;
   @override
-  String get taskID => throw _privateConstructorUsedError;
+  String get taskID;
   @override
-  String? get title => throw _privateConstructorUsedError;
+  String? get title;
   @override
   @DateSerialiser()
-  DateTime? get completedDate => throw _privateConstructorUsedError;
+  DateTime? get completedDate;
   @override
-  int? get priority => throw _privateConstructorUsedError;
+  int? get priority;
   @override
   @JsonKey(ignore: true)
   _$SubTaskEntryCopyWith<_SubTaskEntry> get copyWith =>

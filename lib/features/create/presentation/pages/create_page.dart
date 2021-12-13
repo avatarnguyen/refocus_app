@@ -2,20 +2,17 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:refocus_app/core/presentation/helper/action_stream.dart';
-import 'package:refocus_app/core/presentation/helper/setting_option.dart';
-import 'package:refocus_app/core/presentation/helper/subtask_stream.dart';
+import 'package:refocus_app/core/presentation/widgets/custom_bottom_menu_widget.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
-import 'package:refocus_app/enum/action_selection_type.dart';
 import 'package:refocus_app/enum/today_entry_type.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_entry.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar/calendar_bloc.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar_list/calendar_list_bloc.dart'
-    as calList;
+    as cal_list;
 import 'package:refocus_app/features/create/presentation/bloc/create_bloc.dart';
-import 'package:refocus_app/features/create/presentation/widgets/action_panel_widget.dart';
+import 'package:refocus_app/features/create/presentation/widgets/action_bottom_widget.dart';
 import 'package:refocus_app/features/create/presentation/widgets/create_title_input_widget.dart';
-import 'package:refocus_app/features/create/presentation/widgets/due_datetime_widget.dart';
+import 'package:refocus_app/features/create/presentation/widgets/planned_datatime_picker_widget.dart';
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
 import 'package:refocus_app/features/task/presentation/bloc/cubit/subtask_cubit.dart';
 import 'package:refocus_app/features/task/presentation/bloc/project_bloc.dart';
@@ -28,7 +25,8 @@ class CreatePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<CreateBloc>(
-      create: (context) => getIt<CreateBloc>(),
+      create: (context) => getIt<CreateBloc>()
+        ..add(const CreateEvent.typeEntryChanged(TodayEntryType.task)),
       child: const CreatePageWidget(),
     );
   }
@@ -42,202 +40,12 @@ class CreatePageWidget extends StatefulWidget {
 }
 
 class _CreatePageWidgetState extends State<CreatePageWidget> {
-  final _settingOption = getIt<SettingOption>();
-  // final _subTaskStream = getIt<SubTaskStream>();
-  // final _actionStream = getIt<ActionStream>();
-
   ProjectEntry? _currentProject;
   CalendarEntry? _currentCalendar;
 
   @override
-  void initState() {
-    super.initState();
-    _currentProject = _settingOption.projectEntry;
-  }
-
-  @override
-  void dispose() {
-    // _settingOption.broadCastCurrentDueDateEntry(null);
-    // _settingOption.broadCastCurrentStartTimeEntry(null);
-    // _settingOption.broadCastCurrentEndTimeEntry(null);
-    // _settingOption.broadCastCurrentTypeEntry(TodayEntryType.task);
-    // _actionStream.broadCastCurrentActionType(ActionSelectionType.task);
-    // _subTaskStream.broadCastCurrentSubTaskListEntry([]);
-
-    super.dispose();
-  }
-
-  // TODO: Transform this
-  void _showIOSPicker({
-    List<CalendarEntry>? calendars,
-    List<ProjectEntry>? projects,
-  }) {
-    showCupertinoModalPopup<dynamic>(
-      context: context,
-      builder: (ctx) {
-        if (calendars != null) {
-          _currentCalendar = calendars.first;
-        } else {
-          _currentProject = projects!.first;
-        }
-
-        return CupertinoActionSheet(
-          actions: [
-            if (calendars != null)
-              buildPicker(calendars)
-            else
-              buildPicker(projects!)
-          ],
-          cancelButton: CupertinoActionSheetAction(
-            onPressed: ctx.router.pop,
-            child: 'Cancel'.toButtonText(color: kcError500),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget materialDropDownMenu({
-    List<CalendarEntry>? calendars,
-    List<ProjectEntry>? projects,
-  }) {
-    late List items;
-    if (calendars != null) {
-      items = calendars;
-    } else {
-      items = projects!;
-    }
-
-    return Container(
-      padding: const EdgeInsets.all(6),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        color: context.colorScheme.background,
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          isDense: true,
-          focusColor: Colors.white,
-          iconEnabledColor: Colors.white,
-          value: _currentCalendar?.name,
-          dropdownColor: context.colorScheme.background,
-          alignment: AlignmentDirectional.center,
-          style: context.subtitle1.copyWith(
-            color: Colors.white,
-          ),
-          items: items.map<DropdownMenuItem<String>>(
-            (dynamic _item) {
-              if (_item is CalendarEntry) {
-                return DropdownMenuItem<String>(
-                  value: _item.name,
-                  child: Text(
-                    _item.name,
-                    textAlign: TextAlign.center,
-                    style: context.subtitle1.copyWith(
-                      color: Colors.white,
-                    ),
-                  ),
-                );
-              } else if (_item is ProjectEntry) {
-                return DropdownMenuItem<String>(
-                  value: _item.title,
-                  child: Text(
-                    _item.title ?? '',
-                    textAlign: TextAlign.center,
-                    style: context.subtitle1.copyWith(
-                      color: Colors.white,
-                    ),
-                  ),
-                );
-              } else {
-                return const DropdownMenuItem<String>(
-                  value: '',
-                  child: Text(''),
-                );
-              }
-            },
-          ).toList(),
-          hint: Text(
-            calendars != null ? 'Select a calendar' : 'Select a project',
-            textAlign: TextAlign.center,
-            style: context.subtitle1.copyWith(
-              color: Colors.white,
-            ),
-          ),
-          onChanged: (String? newValue) {
-            if (items is List<CalendarEntry>) {
-              final selectedCal = items.singleWhere(
-                (element) => element.name == newValue,
-              );
-              _settingOption.broadCastCurrentCalendarEntry(selectedCal);
-              setState(() {
-                _currentCalendar = selectedCal;
-              });
-            }
-            if (items is List<ProjectEntry>) {
-              final _selectedProject = items.singleWhere(
-                (element) => element.title == newValue,
-              );
-              _settingOption.broadCastCurrentProjectEntry(_selectedProject);
-              setState(() {
-                _currentProject = _selectedProject;
-              });
-            }
-          },
-        ),
-      ),
-    );
-  }
-
-  Widget buildPicker(List items) => SizedBox(
-        height: 240,
-        child: CupertinoPicker(
-          backgroundColor: context.backgroundColor,
-          itemExtent: 40,
-          onSelectedItemChanged: (index) {
-            if (items is List<CalendarEntry>) {
-              _settingOption.broadCastCurrentCalendarEntry(items[index]);
-              setState(() {
-                _currentCalendar = items[index];
-              });
-            }
-            if (items is List<ProjectEntry>) {
-              _settingOption.broadCastCurrentProjectEntry(items[index]);
-              setState(() {
-                _currentProject = items[index];
-              });
-            }
-          },
-          children: items.map<Widget>((dynamic item) {
-            final _itemTextStyle = context.bodyText2;
-            if (item is CalendarEntry) {
-              final _currentColor =
-                  StyleUtils.getColorFromString(item.color ?? '#8879FC');
-              return Center(
-                child: Text(
-                  item.name,
-                  style: _itemTextStyle.copyWith(color: _currentColor),
-                ),
-              );
-            } else if (item is ProjectEntry) {
-              final _currentColor =
-                  StyleUtils.getColorFromString(item.color ?? '#8879FC');
-              return Center(
-                child: Text(
-                  item.title ?? '',
-                  style: _itemTextStyle.copyWith(color: _currentColor),
-                ),
-              );
-            } else {
-              return const SizedBox.shrink();
-            }
-          }).toList(),
-        ),
-      );
-
-  @override
   Widget build(BuildContext context) {
-    final _projectTextStyle = context.bodyText1.copyWith(
+    final _topMenuStyle = context.bodyText1.copyWith(
       decoration: TextDecoration.underline,
       color: kcPrimary100,
     );
@@ -245,114 +53,90 @@ class _CreatePageWidgetState extends State<CreatePageWidget> {
     return Material(
       child: PlatformScaffold(
         backgroundColor: context.colorScheme.background,
-        material: (_, __) => MaterialScaffoldData(
-          appBar: AppBar(
-            automaticallyImplyLeading: false,
-            title: StreamBuilder<TodayEntryType>(
-              stream: _settingOption.typeStream,
-              builder: (context, snapshot) {
-                final _entryType = snapshot.data;
-                if (_entryType != null) {
-                  if (_entryType == TodayEntryType.event) {
-                    return BlocBuilder<calList.CalendarListBloc,
-                        calList.CalendarListState>(
-                      builder: (context, state) {
-                        if (state is calList.Loaded) {
-                          final calendars = state.calendarList;
-                          return Text(
-                            _currentCalendar?.name ?? 'Tap to choose',
-                            style: _projectTextStyle,
-                          ).gestures(
-                            onTap: () =>
-                                materialDropDownMenu(calendars: calendars),
-                          );
-                        } else {
-                          return progressIndicator;
-                        }
-                      },
-                    );
-                  } else {
-                    return BlocBuilder<ProjectBloc, ProjectState>(
-                      builder: (context, state) {
-                        if (state is ProjectLoaded) {
-                          final _projects = state.project;
-                          return Text(
-                            _currentProject?.title ?? 'Tap to choose',
-                            style: _projectTextStyle,
-                          ).gestures(
-                            onTap: () =>
-                                materialDropDownMenu(projects: _projects),
-                          );
-                        } else {
-                          return progressIndicator;
-                        }
-                      },
-                    );
-                  }
+        appBar: PlatformAppBar(
+          backgroundColor: Colors.transparent,
+          title: BlocBuilder<CreateBloc, CreateState>(
+            buildWhen: (previous, current) =>
+                previous.todayEntryType != current.todayEntryType,
+            builder: (context, state) {
+              final _entryType = state.todayEntryType;
+              if (_entryType != null) {
+                if (_entryType == TodayEntryType.event) {
+                  _currentCalendar = state.calendar;
+                  return BlocBuilder<cal_list.CalendarListBloc,
+                      cal_list.CalendarListState>(
+                    builder: (context, cState) {
+                      if (cState is cal_list.CalendarListLoaded) {
+                        final _calendars = cState.calendarList;
+                        return PlatformButton(
+                          padding: EdgeInsets.zero,
+                          child: Text(
+                            _currentCalendar?.name ?? _calendars.first.name,
+                            style: _topMenuStyle,
+                          ),
+                          onPressed: () async {
+                            final _optionsMenu = <String, CalendarEntry>{};
+                            await Future.forEach(_calendars,
+                                (CalendarEntry _calendar) {
+                              _optionsMenu.addAll({_calendar.name: _calendar});
+                            });
+                            final _menuResult =
+                                await showCustomBottomMenu<CalendarEntry>(
+                              context: context,
+                              menuOptionBuilder: () => _optionsMenu,
+                            );
+                            if (_menuResult != null) {
+                              // ignore: use_build_context_synchronously
+                              context.read<CreateBloc>().add(
+                                  CreateEvent.calendarChanged(_menuResult));
+                            }
+                          },
+                        );
+                      } else {
+                        return progressIndicator;
+                      }
+                    },
+                  );
+                } else {
+                  _currentProject = state.project;
+                  return BlocBuilder<ProjectBloc, ProjectState>(
+                    builder: (context, pState) {
+                      if (pState is ProjectLoaded) {
+                        final _projects = pState.project;
+                        return PlatformButton(
+                          padding: EdgeInsets.zero,
+                          child: Text(
+                            _currentProject?.title ?? _projects.first.title!,
+                            style: _topMenuStyle,
+                          ),
+                          onPressed: () async {
+                            final _optionsMenu = <String, ProjectEntry>{};
+                            await Future.forEach(_projects,
+                                (ProjectEntry _project) {
+                              _optionsMenu.addAll({_project.title!: _project});
+                            });
+                            final _menuResult =
+                                await showCustomBottomMenu<ProjectEntry>(
+                              context: context,
+                              menuOptionBuilder: () => _optionsMenu,
+                            );
+                            if (_menuResult != null) {
+                              // ignore: use_build_context_synchronously
+                              context
+                                  .read<CreateBloc>()
+                                  .add(CreateEvent.projectChanged(_menuResult));
+                            }
+                          },
+                        );
+                      } else {
+                        return progressIndicator;
+                      }
+                    },
+                  );
                 }
-                return const SizedBox.shrink();
-              },
-            ),
-          ),
-        ),
-        cupertino: (_, __) => CupertinoPageScaffoldData(
-          navigationBar: CupertinoNavigationBar(
-            backgroundColor: context.colorScheme.background,
-            border: null,
-            automaticallyImplyLeading: false,
-            middle: StreamBuilder<TodayEntryType>(
-              stream: _settingOption.typeStream,
-              builder: (context, snapshot) {
-                final _entryType = snapshot.data;
-                if (_entryType != null) {
-                  if (_entryType == TodayEntryType.event) {
-                    return BlocBuilder<calList.CalendarListBloc,
-                        calList.CalendarListState>(
-                      builder: (context, state) {
-                        if (state is calList.Loaded) {
-                          final calendars = state.calendarList;
-                          final _currentColor = StyleUtils.getColorFromString(
-                            _currentCalendar?.color ?? '#8879FC',
-                          );
-                          return Text(
-                            _currentCalendar?.name ?? 'Select a calendar',
-                            style: _projectTextStyle.copyWith(
-                              color: _currentColor,
-                            ),
-                          ).gestures(
-                            onTap: () => _showIOSPicker(calendars: calendars),
-                          );
-                        } else {
-                          return progressIndicator;
-                        }
-                      },
-                    );
-                  } else {
-                    return BlocBuilder<ProjectBloc, ProjectState>(
-                      builder: (context, state) {
-                        if (state is ProjectLoaded) {
-                          final _projects = state.project;
-                          final _currentColor = StyleUtils.getColorFromString(
-                            _currentProject?.color ?? '#8879FC',
-                          );
-                          return Text(
-                            _currentProject?.title ?? 'Select a project',
-                            style: _projectTextStyle.copyWith(
-                              color: _currentColor,
-                            ),
-                          ).gestures(
-                            onTap: () => _showIOSPicker(projects: _projects),
-                          );
-                        } else {
-                          return progressIndicator;
-                        }
-                      },
-                    );
-                  }
-                }
-                return const SizedBox.shrink();
-              },
-            ),
+              }
+              return const SizedBox.shrink();
+            },
           ),
         ),
         body: [
@@ -361,7 +145,7 @@ class _CreatePageWidgetState extends State<CreatePageWidget> {
               value: BlocProvider.of<ProjectBloc>(context),
               child: const CreateTitleInputWidget(),
             ),
-            const SetPlannedDateTimeWidget(),
+            const PlannedDatetimePickerWidget(),
           ]
               .toColumn(
                 mainAxisSize: MainAxisSize.min,
@@ -378,7 +162,7 @@ class _CreatePageWidgetState extends State<CreatePageWidget> {
                 value: BlocProvider.of<SubtaskCubit>(context),
               ),
             ],
-            child: const ActionPanelWidget(),
+            child: const ActionBottomWidget(),
           ),
         ]
             .toColumn(mainAxisAlignment: MainAxisAlignment.spaceBetween)

@@ -123,6 +123,7 @@ class AWSAuthDataSource implements AuthDataSource {
   Future<bool> login(
       {required String username, required String password}) async {
     try {
+      // await Amplify.Auth.signOut();
       final result = await Amplify.Auth.signIn(
         username: username.trim(),
         password: password.trim(),

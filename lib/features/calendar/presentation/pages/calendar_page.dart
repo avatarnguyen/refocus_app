@@ -92,8 +92,12 @@ class _CalendarWidgetState extends State<CalendarWidget> {
         _currentUser = account;
       });
       if (_currentUser != null) {
-        BlocProvider.of<CalendarBloc>(context, listen: false)
-            .add(GetCalendarEntries());
+        //TODO: Define Start and End
+        final _start = DateTime.now();
+        final _end = DateTime.now();
+        context
+            .read<CalendarBloc>()
+            .add(GetCalendarEntries(start: _start, end: _end));
       }
     });
   }
@@ -188,7 +192,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
         // Calendar View
         BlocBuilder<CalendarBloc, CalendarState>(
           builder: (context, state) {
-            if (state is GcalInitial) {
+            if (state is CalendarInitial) {
               return [
                 const MessageDisplay(message: 'Sign In'),
                 ElevatedButton(
@@ -198,20 +202,16 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                   child: const Text('Sign In Google'),
                 ).center(),
               ].toColumn();
-            } else if (state is Loading) {
+            } else if (state is CalendarLoading) {
               return const LoadingWidget();
-            } else if (state is Error) {
-              return MessageDisplay(
-                message: state.message,
-              );
-            } else if (state is Loaded) {
+            } else if (state is CalendarError) {
+              return MessageDisplay(message: state.message);
+            } else if (state is CalendarLoaded) {
               return showMonthView
                   ? CalendarMonthViewWidget(state: state)
                   : CalendarViewWidget(state: state);
             } else {
-              return const MessageDisplay(
-                message: 'Unexpected State',
-              );
+              return const MessageDisplay(message: 'Unexpected State');
             }
           },
         ),

@@ -161,15 +161,14 @@ class _$_SignupUsernameChanged implements _SignupUsernameChanged {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other is _SignupUsernameChanged &&
-            (identical(other.username, username) ||
-                const DeepCollectionEquality()
-                    .equals(other.username, username)));
+        (other.runtimeType == runtimeType &&
+            other is _SignupUsernameChanged &&
+            const DeepCollectionEquality().equals(other.username, username));
   }
 
   @override
   int get hashCode =>
-      runtimeType.hashCode ^ const DeepCollectionEquality().hash(username);
+      Object.hash(runtimeType, const DeepCollectionEquality().hash(username));
 
   @JsonKey(ignore: true)
   @override
@@ -256,7 +255,7 @@ abstract class _SignupUsernameChanged implements SignupEvent {
   const factory _SignupUsernameChanged(String username) =
       _$_SignupUsernameChanged;
 
-  String get username => throw _privateConstructorUsedError;
+  String get username;
   @JsonKey(ignore: true)
   _$SignupUsernameChangedCopyWith<_SignupUsernameChanged> get copyWith =>
       throw _privateConstructorUsedError;
@@ -310,14 +309,14 @@ class _$_SignupEmailChanged implements _SignupEmailChanged {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other is _SignupEmailChanged &&
-            (identical(other.email, email) ||
-                const DeepCollectionEquality().equals(other.email, email)));
+        (other.runtimeType == runtimeType &&
+            other is _SignupEmailChanged &&
+            const DeepCollectionEquality().equals(other.email, email));
   }
 
   @override
   int get hashCode =>
-      runtimeType.hashCode ^ const DeepCollectionEquality().hash(email);
+      Object.hash(runtimeType, const DeepCollectionEquality().hash(email));
 
   @JsonKey(ignore: true)
   @override
@@ -402,7 +401,7 @@ class _$_SignupEmailChanged implements _SignupEmailChanged {
 abstract class _SignupEmailChanged implements SignupEvent {
   const factory _SignupEmailChanged(String email) = _$_SignupEmailChanged;
 
-  String get email => throw _privateConstructorUsedError;
+  String get email;
   @JsonKey(ignore: true)
   _$SignupEmailChangedCopyWith<_SignupEmailChanged> get copyWith =>
       throw _privateConstructorUsedError;
@@ -456,15 +455,14 @@ class _$_SignupPasswordChanged implements _SignupPasswordChanged {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other is _SignupPasswordChanged &&
-            (identical(other.password, password) ||
-                const DeepCollectionEquality()
-                    .equals(other.password, password)));
+        (other.runtimeType == runtimeType &&
+            other is _SignupPasswordChanged &&
+            const DeepCollectionEquality().equals(other.password, password));
   }
 
   @override
   int get hashCode =>
-      runtimeType.hashCode ^ const DeepCollectionEquality().hash(password);
+      Object.hash(runtimeType, const DeepCollectionEquality().hash(password));
 
   @JsonKey(ignore: true)
   @override
@@ -551,7 +549,7 @@ abstract class _SignupPasswordChanged implements SignupEvent {
   const factory _SignupPasswordChanged(String password) =
       _$_SignupPasswordChanged;
 
-  String get password => throw _privateConstructorUsedError;
+  String get password;
   @JsonKey(ignore: true)
   _$SignupPasswordChangedCopyWith<_SignupPasswordChanged> get copyWith =>
       throw _privateConstructorUsedError;
@@ -588,7 +586,8 @@ class _$_SignupSubmitted implements _SignupSubmitted {
 
   @override
   bool operator ==(dynamic other) {
-    return identical(this, other) || (other is _SignupSubmitted);
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _SignupSubmitted);
   }
 
   @override
@@ -869,26 +868,21 @@ class _$_SignupStateCurrent implements _SignupStateCurrent {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other is _SignupStateCurrent &&
-            (identical(other.status, status) ||
-                const DeepCollectionEquality().equals(other.status, status)) &&
-            (identical(other.username, username) ||
-                const DeepCollectionEquality()
-                    .equals(other.username, username)) &&
-            (identical(other.email, email) ||
-                const DeepCollectionEquality().equals(other.email, email)) &&
-            (identical(other.password, password) ||
-                const DeepCollectionEquality()
-                    .equals(other.password, password)));
+        (other.runtimeType == runtimeType &&
+            other is _SignupStateCurrent &&
+            const DeepCollectionEquality().equals(other.status, status) &&
+            const DeepCollectionEquality().equals(other.username, username) &&
+            const DeepCollectionEquality().equals(other.email, email) &&
+            const DeepCollectionEquality().equals(other.password, password));
   }
 
   @override
-  int get hashCode =>
-      runtimeType.hashCode ^
-      const DeepCollectionEquality().hash(status) ^
-      const DeepCollectionEquality().hash(username) ^
-      const DeepCollectionEquality().hash(email) ^
-      const DeepCollectionEquality().hash(password);
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(status),
+      const DeepCollectionEquality().hash(username),
+      const DeepCollectionEquality().hash(email),
+      const DeepCollectionEquality().hash(password));
 
   @JsonKey(ignore: true)
   @override
@@ -966,13 +960,13 @@ abstract class _SignupStateCurrent implements SignupState {
       Password? password}) = _$_SignupStateCurrent;
 
   @override
-  FormzStatus? get status => throw _privateConstructorUsedError;
+  FormzStatus? get status;
   @override
-  Username? get username => throw _privateConstructorUsedError;
+  Username? get username;
   @override
-  Email? get email => throw _privateConstructorUsedError;
+  Email? get email;
   @override
-  Password? get password => throw _privateConstructorUsedError;
+  Password? get password;
   @override
   @JsonKey(ignore: true)
   _$SignupStateCurrentCopyWith<_SignupStateCurrent> get copyWith =>

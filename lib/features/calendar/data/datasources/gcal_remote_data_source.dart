@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/calendar/v3.dart' as google_api;
@@ -42,6 +40,7 @@ class GoogleAPIGCalRemoteDataSoure implements GCalRemoteDataSource {
   GoogleAPIGCalRemoteDataSoure({required this.gCalSignIn});
 
   final GoogleSignIn gCalSignIn;
+  final log = logger(GCalRemoteDataSource);
 
   @override
   Future<List<GCalEventEntryModel>> getRemoteGoogleEventsData({
@@ -49,10 +48,7 @@ class GoogleAPIGCalRemoteDataSoure implements GCalRemoteDataSource {
     required DateTime timeMin,
     required DateTime timeMax,
   }) async {
-    final log = logger(GCalRemoteDataSource);
-
     final appointments = <GCalEventEntryModel>[];
-
     final client = await gCalSignIn.authenticatedClient();
 
     if (client != null) {
@@ -67,6 +63,7 @@ class GoogleAPIGCalRemoteDataSoure implements GCalRemoteDataSource {
                 timeMin: timeMin,
                 timeMax: timeMax,
               );
+              log.d('Retrieved Events: $calEvents');
               _insertEventsToAppointments(
                 calEvents,
                 appointments,
@@ -80,6 +77,7 @@ class GoogleAPIGCalRemoteDataSoure implements GCalRemoteDataSource {
             timeMin: timeMin,
             timeMax: timeMax,
           );
+          log.d('Retrieved Events from primary calendar: $calEvents');
           _insertEventsToAppointments(calEvents, appointments);
         }
       } catch (e) {
@@ -87,7 +85,8 @@ class GoogleAPIGCalRemoteDataSoure implements GCalRemoteDataSource {
         throw ServerException();
       }
     } else {
-      await gCalSignIn.signIn();
+      //TODO
+      // await gCalSignIn.signIn();
     }
 
     print('Appointments: ${appointments.length}');
@@ -101,9 +100,11 @@ class GoogleAPIGCalRemoteDataSoure implements GCalRemoteDataSource {
       google_api.Events calEvents, List<GCalEventEntryModel> appointments,
       {GCalEntryModel? calendar}) {
     if (calEvents.items != null && calEvents.items!.isNotEmpty) {
-      log('Items Total #: ${calEvents.items!.length}');
+      log.d('Items Total #: ${calEvents.items!.length}');
+      log.i('Items: ${calEvents.items?[0]}');
       for (var i = 0; i < calEvents.items!.length; i++) {
         final event = calEvents.items![i];
+        log.d(event.toJson());
         if (event.start != null) {
           final eventJson = event.toJson();
 
@@ -129,7 +130,7 @@ class GoogleAPIGCalRemoteDataSoure implements GCalRemoteDataSource {
         final request = google_api.Event.fromJson(eventModel.toJson());
         await calendarApi.events.insert(request, calendarId ?? 'primary');
       } catch (e) {
-        log('Catched: ${e.toString()}');
+        log.e('Catched: ${e.toString()}');
         throw ServerException();
       }
     } else {
@@ -158,11 +159,11 @@ class GoogleAPIGCalRemoteDataSoure implements GCalRemoteDataSource {
             eventModel.id!,
           );
         } else {
-          log('Event ID is null');
+          log.e('Event ID is null');
           throw ServerException();
         }
       } catch (e) {
-        log('Catched: ${e.toString()}');
+        log.e('Catched: ${e.toString()}');
         throw ServerException();
       }
     } else {
@@ -183,11 +184,11 @@ class GoogleAPIGCalRemoteDataSoure implements GCalRemoteDataSource {
         if (eventModel.id != null) {
           await calendarApi.events.delete(calendarId, eventModel.id!);
         } else {
-          log('Event ID is null');
+          log.e('Event ID is null');
           throw ServerException();
         }
       } catch (e) {
-        log('Catched: ${e.toString()}');
+        log.e('Catched: ${e.toString()}');
         throw ServerException();
       }
     } else {
@@ -198,7 +199,6 @@ class GoogleAPIGCalRemoteDataSoure implements GCalRemoteDataSource {
   @override
   Future<List<GCalEntryModel>> getRemoteGoogleCalendar() async {
     final calendars = <GCalEntryModel>[];
-    final log = logger(GCalRemoteDataSource);
 
     var client = await gCalSignIn.authenticatedClient();
     if (client != null) {

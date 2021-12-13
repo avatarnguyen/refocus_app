@@ -66,7 +66,7 @@ class _CalendarListItemState extends State<CalendarListItem> {
     final _bloc = context.read<CalendarListBloc>();
 
     _bloc.add(
-      UpdateCalendarEvent(CalendarParams(
+      UpdateCalendarListEvent(CalendarParams(
         calendar: widget.calendar.copyWith(selected: newValue),
       )),
     );

@@ -1,16 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
+import 'package:refocus_app/features/calendar/presentation/bloc/calendar/calendar_bloc.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar/datetime_stream.dart';
 import 'package:refocus_app/features/calendar/presentation/widgets/appointment_widget.dart';
 import 'package:refocus_app/features/calendar/presentation/widgets/day_event_widget.dart';
 import 'package:refocus_app/injection.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
-
-import 'package:refocus_app/core/util/ui/ui_helper.dart';
-
-import '../bloc/calendar/calendar_bloc.dart';
 
 class CalendarMonthViewWidget extends StatefulWidget {
   const CalendarMonthViewWidget({
@@ -116,8 +114,8 @@ class _CalendarMonthViewWidgetState extends State<CalendarMonthViewWidget> {
         controller: _controller,
         view: CalendarView.month,
         initialSelectedDate: DateTime.now(),
-        dataSource: widget.state is Loaded
-            ? (widget.state as Loaded).calendarData
+        dataSource: widget.state is CalendarLoaded
+            ? (widget.state as CalendarLoaded).calendarData
             : null,
         loadMoreWidgetBuilder: loadMoreWidget,
         headerHeight: 48,

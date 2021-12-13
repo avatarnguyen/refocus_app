@@ -13,7 +13,6 @@ import 'package:flutter/widgets.dart';
 // import 'package:flutter_loggy/flutter_loggy.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-
 import 'package:refocus_app/app/app.dart';
 import 'package:refocus_app/app/app_bloc_observer.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_entry.dart';
@@ -21,7 +20,10 @@ import 'package:refocus_app/features/calendar/domain/entities/calendar_event_ent
 import 'package:refocus_app/injection.dart';
 
 void main() async {
-  Bloc.observer = AppBlocObserver();
+  BlocOverrides.runZoned(
+    () {},
+    blocObserver: AppBlocObserver(),
+  );
   FlutterError.onError = (details) {
     log(details.exceptionAsString(), stackTrace: details.stack);
   };

@@ -2,31 +2,32 @@ part of 'calendar_bloc.dart';
 
 abstract class CalendarState extends Equatable {
   const CalendarState();
-
-  @override
-  List<Object> get props => [];
 }
 
-class GcalInitial extends CalendarState {}
+class CalendarInitial extends CalendarState {
+  @override
+  List<Object?> get props => [];
+}
 
-class Empty extends CalendarState {}
+class CalendarLoading extends CalendarState {
+  @override
+  List<Object?> get props => [];
+}
 
-class Loading extends CalendarState {}
-
-class Loaded extends CalendarState {
-  const Loaded({required this.calendarData});
+class CalendarLoaded extends CalendarState {
+  const CalendarLoaded({required this.calendarData});
 
   final CalendarData calendarData;
 
   @override
-  List<Object> get props => (calendarData.props.map((e) => e!).toList());
+  List<Object?> get props => calendarData.props.map((e) => e).toList();
 }
 
-class Error extends CalendarState {
-  const Error({required this.message});
+class CalendarError extends CalendarState {
+  const CalendarError({required this.message});
 
   final String message;
 
   @override
-  List<Object> get props => [message];
+  List<Object?> get props => [message];
 }
