@@ -6,8 +6,8 @@ import 'package:mocktail/mocktail.dart';
 import 'package:refocus_app/features/calendar/data/models/gcal_entry_model.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_entry.dart';
 import 'package:refocus_app/features/calendar/domain/repositories/calendar_repository.dart';
+import 'package:refocus_app/features/calendar/domain/usecases/calendar_list/update_calendar_list.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/helpers/calendar_params.dart';
-import 'package:refocus_app/features/calendar/domain/usecases/update_calendar_list.dart';
 
 import '../../../../fixtures/fixture_reader.dart';
 

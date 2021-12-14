@@ -4,17 +4,17 @@ import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/core/usecases/usecase.dart';
 import 'package:refocus_app/features/calendar/domain/repositories/calendar_repository.dart';
 
-import 'helpers/event_params.dart';
+import '../helpers/event_params.dart';
 
 @lazySingleton
-class UpdateEvent implements UseCase<Unit, EventParams> {
-  UpdateEvent({required this.repository});
+class AddEvent implements UseCase<Unit, EventParams> {
+  AddEvent({required this.repository});
 
   final CalendarRepository repository;
 
   @override
   Future<Either<Failure, Unit>> call(EventParams params) async {
-    return repository.updateEventsData(
+    return await repository.addEventsData(
       params.eventEntry,
       calendarId: params.calendarId,
     );

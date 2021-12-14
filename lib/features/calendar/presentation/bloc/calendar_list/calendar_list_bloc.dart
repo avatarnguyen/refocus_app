@@ -8,9 +8,9 @@ import 'package:refocus_app/constants/failure_message.dart';
 import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/core/usecases/usecase.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_entry.dart';
-import 'package:refocus_app/features/calendar/domain/usecases/get_calendar_list.dart';
+import 'package:refocus_app/features/calendar/domain/usecases/calendar_list/get_calendar_list.dart';
+import 'package:refocus_app/features/calendar/domain/usecases/calendar_list/update_calendar_list.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/helpers/calendar_params.dart';
-import 'package:refocus_app/features/calendar/domain/usecases/update_calendar_list.dart';
 
 part 'calendar_list_event.dart';
 part 'calendar_list_state.dart';

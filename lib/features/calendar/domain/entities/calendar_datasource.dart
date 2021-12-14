@@ -7,7 +7,7 @@ import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
-import 'package:refocus_app/features/calendar/domain/usecases/get_events_between.dart';
+import 'package:refocus_app/features/calendar/domain/usecases/calendar_event/get_events_between.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/helpers/date_range_query_params.dart';
 import 'package:refocus_app/injection.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';

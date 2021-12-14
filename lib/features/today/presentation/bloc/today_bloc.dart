@@ -13,7 +13,7 @@ import 'package:refocus_app/core/util/helpers/logging.dart';
 import 'package:refocus_app/enum/today_entry_type.dart';
 import 'package:refocus_app/enum/today_event_type.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
-import 'package:refocus_app/features/calendar/domain/usecases/get_events_between.dart';
+import 'package:refocus_app/features/calendar/domain/usecases/calendar_event/get_events_between.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/helpers/date_range_query_params.dart';
 import 'package:refocus_app/features/task/domain/entities/subtask_entry.dart';
 import 'package:refocus_app/features/task/domain/entities/task_entry.dart';

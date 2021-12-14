@@ -9,7 +9,6 @@ import 'package:refocus_app/features/calendar/data/datasources/gcal_local_data_s
 import 'package:refocus_app/features/calendar/data/datasources/gcal_remote_data_source.dart';
 import 'package:refocus_app/features/calendar/data/models/gcal_entry_model.dart';
 import 'package:refocus_app/features/calendar/data/models/gcal_event_entry_model.dart';
-import 'package:refocus_app/features/calendar/domain/entities/calendar_datasource.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_entry.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
 import 'package:refocus_app/features/calendar/domain/repositories/calendar_repository.dart';
@@ -25,49 +24,13 @@ class CalendarRepositoryImpl implements CalendarRepository {
   final GCalLocalDataSource localCalDataSource;
   final NetworkInfo networkInfo;
 
-  @override
-  Future<Either<Failure, CalendarData>> getEventsData() async {
-    final log = logger(CalendarRepositoryImpl);
+  final log = logger(CalendarRepositoryImpl);
 
-    if (await networkInfo.isConnected) {
-      try {
-        final timeMin = CustomDateUtils.firstDayOfCurrentMonth();
-        final timeMax = CustomDateUtils.lastDayOfFutureMonthIn(2);
-
-        var _calendarList = await _filterSelectedCalendars();
-
-        final remoteGCalEntries =
-            await remoteCalDataSource.getRemoteGoogleEventsData(
-          calendarList: _calendarList,
-          timeMin: timeMin,
-          timeMax: timeMax,
-        );
-
-        await localCalDataSource.cacheGoogleCalendarEntry(remoteGCalEntries);
-
-        final calendarData = CalendarData(events: remoteGCalEntries);
-        log.i('Appointments: ${calendarData.appointments?.length}');
-        return Right(calendarData);
-      } on ServerException {
-        return Left(ServerFailure());
-      }
-    } else {
-      try {
-        final localGCalEntry =
-            await localCalDataSource.getLastCalendarEventEntry();
-        var calendarData = CalendarData(events: localGCalEntry);
-        return Right(calendarData);
-      } on CacheException {
-        return Left(CacheFailure());
-      }
-    }
-  }
+  //TODO:       final calendarData = CalendarData(events: remoteGCalEntries);
 
   //* Fetch Calendar List from Local Database
   // Filter selected calendars
   Future<List<GCalEntryModel>> _filterSelectedCalendars() async {
-    final log = logger(CalendarRepositoryImpl);
-
     final _calendarList = <GCalEntryModel>[];
     final _storedCalendars =
         await localCalDataSource.getLastCachedGoogleCalendar();
@@ -87,28 +50,38 @@ class CalendarRepositoryImpl implements CalendarRepository {
   @override
   Future<Either<Failure, List<CalendarEventEntry>>> getEventsDataBetween(
       DateTime startDate, DateTime endDate) async {
-    final log = logger(CalendarRepositoryImpl);
-
     final timeMin = CustomDateUtils.toGoogleRFCDateTime(startDate);
     final timeMax = CustomDateUtils.toGoogleRFCDateTime(endDate);
 
-    log.v('TimeMin: $timeMin - TimeMax: $timeMax');
+    if (await networkInfo.isConnected) {
+      try {
+        final _calendarList = await _filterSelectedCalendars();
 
-    try {
-      var _calendarList = await _filterSelectedCalendars();
+        final remoteGCalEntries =
+            await remoteCalDataSource.getRemoteGoogleEventsData(
+          calendarList: _calendarList,
+          timeMin: timeMin,
+          timeMax: timeMax,
+        );
 
-      final remoteGCalEntries =
-          await remoteCalDataSource.getRemoteGoogleEventsData(
-        calendarList: _calendarList,
-        timeMin: timeMin,
-        timeMax: timeMax,
-      );
+        await localCalDataSource.cacheGoogleCalendarEntry(remoteGCalEntries);
 
-      log.i('[getEventsDataBetween] Appointments: ${remoteGCalEntries.length}');
-      return Right(remoteGCalEntries);
-    } on ServerException {
-      log.e('ServerException');
-      return Left(ServerFailure());
+        log.i(
+            '[getEventsDataBetween] Appointments: ${remoteGCalEntries.length}');
+        return Right(remoteGCalEntries);
+      } on ServerException {
+        log.e('ServerException');
+        return Left(ServerFailure());
+      }
+    } else {
+      try {
+        //TODO: Filter last cached according to time
+        final localGCalEntry =
+            await localCalDataSource.getLastCalendarEventEntry();
+        return Right(localGCalEntry);
+      } on CacheException {
+        return Left(CacheFailure());
+      }
     }
   }
 
@@ -211,7 +184,7 @@ class CalendarRepositoryImpl implements CalendarRepository {
         final localCalendar =
             await localCalDataSource.getLastCachedGoogleCalendar();
 
-        for (var calendar in localCalendar) {
+        for (final calendar in localCalendar) {
           // final calendarEntry = CalendarEntry.fromJson(calendar.toJson());
           calendars.add(calendar);
         }

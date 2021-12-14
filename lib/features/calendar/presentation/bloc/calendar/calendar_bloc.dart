@@ -6,12 +6,12 @@ import 'package:refocus_app/constants/failure_message.dart';
 import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/core/usecases/usecase.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_datasource.dart';
-import 'package:refocus_app/features/calendar/domain/usecases/add_event.dart';
-import 'package:refocus_app/features/calendar/domain/usecases/delete_event.dart';
-import 'package:refocus_app/features/calendar/domain/usecases/get_calendar_list.dart';
-import 'package:refocus_app/features/calendar/domain/usecases/get_events.dart';
+import 'package:refocus_app/features/calendar/domain/usecases/calendar_event/add_event.dart';
+import 'package:refocus_app/features/calendar/domain/usecases/calendar_event/delete_event.dart';
+import 'package:refocus_app/features/calendar/domain/usecases/calendar_event/get_events.dart';
+import 'package:refocus_app/features/calendar/domain/usecases/calendar_event/update_event.dart';
+import 'package:refocus_app/features/calendar/domain/usecases/calendar_list/get_calendar_list.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/helpers/event_params.dart';
-import 'package:refocus_app/features/calendar/domain/usecases/update_event.dart';
 
 part 'calendar_event.dart';
 part 'calendar_state.dart';

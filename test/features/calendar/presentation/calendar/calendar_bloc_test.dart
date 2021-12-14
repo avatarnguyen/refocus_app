@@ -9,11 +9,11 @@ import 'package:refocus_app/features/calendar/data/models/gcal_entry_model.dart'
 import 'package:refocus_app/features/calendar/domain/entities/calendar_datasource.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_entry.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
-import 'package:refocus_app/features/calendar/domain/usecases/add_event.dart';
-import 'package:refocus_app/features/calendar/domain/usecases/delete_event.dart';
-import 'package:refocus_app/features/calendar/domain/usecases/get_calendar_list.dart';
-import 'package:refocus_app/features/calendar/domain/usecases/get_events.dart';
-import 'package:refocus_app/features/calendar/domain/usecases/update_event.dart';
+import 'package:refocus_app/features/calendar/domain/usecases/calendar_event/add_event.dart';
+import 'package:refocus_app/features/calendar/domain/usecases/calendar_event/delete_event.dart';
+import 'package:refocus_app/features/calendar/domain/usecases/calendar_event/get_events.dart';
+import 'package:refocus_app/features/calendar/domain/usecases/calendar_event/update_event.dart';
+import 'package:refocus_app/features/calendar/domain/usecases/calendar_list/get_calendar_list.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar/calendar_bloc.dart';
 
 class MockGetAllCalendar extends Mock implements GetCalendarList {}

@@ -1,11 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:injectable/injectable.dart';
+import 'package:refocus_app/core/error/exceptions.dart';
 import 'package:refocus_app/features/calendar/data/models/gcal_entry_model.dart';
+import 'package:refocus_app/features/calendar/data/models/gcal_event_entry_model.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_entry.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
-
-import '../../../../core/error/exceptions.dart';
-import '../models/gcal_event_entry_model.dart';
 
 abstract class GCalLocalDataSource {
   /// Gets the cached [GCalEventEntryModel] which was gotten the last time
@@ -60,8 +60,7 @@ class HiveGCalLocalDataSource implements GCalLocalDataSource {
 
       return gcalEventsBox.putAll(calendarEntry);
     } catch (e) {
-      // ignore: avoid_print
-      print(e);
+      debugPrint(e.toString());
       throw CacheException();
     }
   }
@@ -114,8 +113,7 @@ class HiveGCalLocalDataSource implements GCalLocalDataSource {
         );
       });
     } catch (e) {
-      // ignore: avoid_print
-      print(e);
+      debugPrint(e.toString());
       throw CacheException();
     }
   }
@@ -129,8 +127,7 @@ class HiveGCalLocalDataSource implements GCalLocalDataSource {
       );
       return Future.value(calendarBox.get(calendar.id));
     } catch (e) {
-      // ignore: avoid_print
-      print(e);
+      debugPrint(e.toString());
       throw CacheException();
     }
   }

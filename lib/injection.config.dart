@@ -38,13 +38,20 @@ import 'features/calendar/data/repositories/calendar_repository_impl.dart'
 import 'features/calendar/domain/entities/calendar_entry.dart' as _i10;
 import 'features/calendar/domain/entities/calendar_event_entry.dart' as _i9;
 import 'features/calendar/domain/repositories/calendar_repository.dart' as _i49;
-import 'features/calendar/domain/usecases/add_event.dart' as _i59;
-import 'features/calendar/domain/usecases/delete_event.dart' as _i52;
-import 'features/calendar/domain/usecases/get_calendar_list.dart' as _i53;
-import 'features/calendar/domain/usecases/get_events.dart' as _i54;
-import 'features/calendar/domain/usecases/get_events_between.dart' as _i55;
-import 'features/calendar/domain/usecases/update_calendar_list.dart' as _i57;
-import 'features/calendar/domain/usecases/update_event.dart' as _i58;
+import 'features/calendar/domain/usecases/calendar_event/add_event.dart'
+    as _i59;
+import 'features/calendar/domain/usecases/calendar_event/delete_event.dart'
+    as _i52;
+import 'features/calendar/domain/usecases/calendar_event/get_events.dart'
+    as _i54;
+import 'features/calendar/domain/usecases/calendar_event/get_events_between.dart'
+    as _i55;
+import 'features/calendar/domain/usecases/calendar_event/update_event.dart'
+    as _i58;
+import 'features/calendar/domain/usecases/calendar_list/get_calendar_list.dart'
+    as _i53;
+import 'features/calendar/domain/usecases/calendar_list/update_calendar_list.dart'
+    as _i57;
 import 'features/calendar/presentation/bloc/calendar/calendar_bloc.dart'
     as _i60;
 import 'features/calendar/presentation/bloc/calendar/datetime_stream.dart'
