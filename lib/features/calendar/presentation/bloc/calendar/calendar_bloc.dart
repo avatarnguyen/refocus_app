@@ -6,6 +6,7 @@ import 'package:refocus_app/constants/failure_message.dart';
 import 'package:refocus_app/core/error/failures.dart';
 import 'package:refocus_app/core/usecases/usecase.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_datasource.dart';
+import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/calendar_event/add_event.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/calendar_event/delete_event.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/calendar_event/get_events.dart';
@@ -90,11 +91,11 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
     _handleResult(_calendarResult, emit);
   }
 
-  void _handleResult(
-      Either<Failure, CalendarData> data, Emitter<CalendarState> emit) {
+  void _handleResult(Either<Failure, List<CalendarEventEntry>> data,
+      Emitter<CalendarState> emit) {
     emit(data.fold(
       (failure) => CalendarError(message: _mapFailureToMessage(failure)),
-      (entry) => CalendarLoaded(calendarData: entry),
+      (entries) => CalendarLoaded(calendarData: CalendarData(events: entries)),
     ));
   }
 

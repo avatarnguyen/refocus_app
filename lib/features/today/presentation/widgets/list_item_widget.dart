@@ -353,7 +353,7 @@ class _ListItemWidgetState extends State<ListItemWidget> {
                     ),
                     if (_subtasks!.length > 1)
                       SubTaskItem(
-                        subTask: _subtasks!.second!,
+                        subTask: _subtasks!.second,
                         backgroundColor: _color,
                         type: _eventBlocType,
                       ),

@@ -21,18 +21,10 @@ class TodayError extends TodayState {
 class TodayLoaded extends TodayState {
   const TodayLoaded({
     required this.todayEntries,
-    this.tomorrowEntries,
-    this.upcomingTasks,
   });
 
   final List<TodayEntry> todayEntries;
-  final List<TodayEntry>? tomorrowEntries;
-  final List<TodayEntry>? upcomingTasks;
 
   @override
-  List<Object> get props => [
-        todayEntries,
-        tomorrowEntries ?? <TodayEntry>[],
-        upcomingTasks ?? <TodayEntry>[]
-      ];
+  List<Object> get props => [todayEntries];
 }

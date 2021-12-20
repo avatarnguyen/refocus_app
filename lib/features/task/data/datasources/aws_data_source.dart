@@ -1,3 +1,4 @@
+import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify.dart';
 import 'package:injectable/injectable.dart';
 import 'package:refocus_app/core/error/exceptions.dart';
@@ -142,8 +143,11 @@ class AWSTaskRemoteDataSource implements TaskRemoteDataSource {
 
         log.i('Get AWS Task by Time Range: from $startTime until $endTime');
 
-        final _start = CustomDateUtils.getBeginngOfDay(startTime);
-        final _end = CustomDateUtils.getEndOfDay(endTime);
+        final _startDateTime = CustomDateUtils.getBeginngOfDay(startTime);
+        final _endDataTime = CustomDateUtils.getEndOfDay(endTime);
+        final _start = TemporalDateTime(_startDateTime);
+        final _end = TemporalDateTime(_endDataTime);
+        log.i('\nTemporal DateTime: $_start - $_end \n');
 
         final _fetchedTasksByStartTime = await Amplify.DataStore.query(
           Task.classType,
@@ -165,12 +169,16 @@ class AWSTaskRemoteDataSource implements TaskRemoteDataSource {
       } else {
         //? Get Task that either due or start with given datetime
 
-        final _startDay = CustomDateUtils.getBeginngOfDay(
+        final _startDayDateTime = CustomDateUtils.getBeginngOfDay(
           dueDate ?? startTime ?? DateTime.now(),
         );
-        final _endDay = CustomDateUtils.getEndOfDay(
+        final _endDayDateTime = CustomDateUtils.getEndOfDay(
           dueDate ?? startTime ?? DateTime.now(),
         );
+        final _startDay = TemporalDateTime(_startDayDateTime);
+        final _endDay = TemporalDateTime(_endDayDateTime);
+
+        log.i('\nTemporal DateTime: $_startDay - $_endDay \n');
         if (dueDate != null) {
           log.i('Get AWS Task with DueDate: $dueDate');
           final _tasks = await Amplify.DataStore.query(

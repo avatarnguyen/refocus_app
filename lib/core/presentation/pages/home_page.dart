@@ -33,7 +33,8 @@ class HomePage extends StatelessWidget implements AutoRouteWrapper {
     return MultiBlocProvider(
       providers: [
         BlocProvider<ProjectBloc>(
-          create: (_) => getIt<ProjectBloc>()..add(GetProjectEntriesEvent()),
+          create: (_) =>
+              getIt<ProjectBloc>(), //..add(GetProjectEntriesEvent()),
         ), //..add(GetProjectEntriesEvent())),
         BlocProvider<TaskBloc>(
           create: (_) => getIt<TaskBloc>(),

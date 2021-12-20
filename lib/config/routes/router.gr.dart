@@ -10,6 +10,7 @@
 
 import 'package:auto_route/auto_route.dart' as _i10;
 import 'package:flutter/material.dart' as _i11;
+import 'package:flutter/widgets.dart' as _i13;
 import 'package:refocus_app/config/routes/custom_router.dart' as _i12;
 import 'package:refocus_app/core/presentation/pages/app_loader_page.dart'
     as _i1;
@@ -25,7 +26,7 @@ import 'package:refocus_app/features/create/presentation/pages/create_page.dart'
 import 'package:refocus_app/features/setting/presentation/pages/setting_page.dart'
     as _i9;
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart'
-    as _i13;
+    as _i14;
 import 'package:refocus_app/features/task/presentation/pages/create_project_page.dart'
     as _i7;
 import 'package:refocus_app/features/task/presentation/pages/task_page.dart'
@@ -212,7 +213,7 @@ class CreateRoute extends _i10.PageRouteInfo<void> {
 /// generated route for
 /// [_i7.CreateProjectPage]
 class CreateProjectRoute extends _i10.PageRouteInfo<CreateProjectRouteArgs> {
-  CreateProjectRoute({_i11.Key? key, _i13.ProjectEntry? project})
+  CreateProjectRoute({_i13.Key? key, _i14.ProjectEntry? project})
       : super(CreateProjectRoute.name,
             path: 'create-project-page',
             args: CreateProjectRouteArgs(key: key, project: project));
@@ -223,9 +224,9 @@ class CreateProjectRoute extends _i10.PageRouteInfo<CreateProjectRouteArgs> {
 class CreateProjectRouteArgs {
   const CreateProjectRouteArgs({this.key, this.project});
 
-  final _i11.Key? key;
+  final _i13.Key? key;
 
-  final _i13.ProjectEntry? project;
+  final _i14.ProjectEntry? project;
 
   @override
   String toString() {
@@ -236,7 +237,7 @@ class CreateProjectRouteArgs {
 /// generated route for
 /// [_i8.TaskPage]
 class TaskRoute extends _i10.PageRouteInfo<TaskRouteArgs> {
-  TaskRoute({_i11.Key? key, required _i13.ProjectEntry project})
+  TaskRoute({_i13.Key? key, required _i14.ProjectEntry project})
       : super(TaskRoute.name,
             path: 'task-page', args: TaskRouteArgs(key: key, project: project));
 
@@ -246,9 +247,9 @@ class TaskRoute extends _i10.PageRouteInfo<TaskRouteArgs> {
 class TaskRouteArgs {
   const TaskRouteArgs({this.key, required this.project});
 
-  final _i11.Key? key;
+  final _i13.Key? key;
 
-  final _i13.ProjectEntry project;
+  final _i14.ProjectEntry project;
 
   @override
   String toString() {

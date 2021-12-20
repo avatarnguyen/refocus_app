@@ -7,7 +7,7 @@ import 'package:refocus_app/enum/today_event_type.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar/datetime_stream.dart';
 import 'package:refocus_app/features/task/domain/entities/subtask_entry.dart';
 import 'package:refocus_app/features/task/presentation/bloc/cubit/subtask_cubit.dart';
-import 'package:refocus_app/features/today/presentation/bloc/today_bloc.dart';
+import 'package:refocus_app/features/today/presentation/bloc/today/today_bloc.dart';
 import 'package:refocus_app/injection.dart';
 
 class SubTaskItem extends StatelessWidget {
@@ -51,7 +51,7 @@ class SubTaskItem extends StatelessWidget {
                     .add(UpdateTaskEntries(eventType: type!));
               }
             } else {
-              context.read<TodayBloc>().add(const GetTodayEntries());
+              // context.read<TodayBloc>().add(const GetTodayEntries());
             }
           },
         ),

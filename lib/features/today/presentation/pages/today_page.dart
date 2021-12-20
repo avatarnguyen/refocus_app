@@ -1,16 +1,13 @@
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:refocus_app/config/routes/router.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart' as custom_log;
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
-import 'package:refocus_app/features/today/presentation/bloc/today_bloc.dart';
+import 'package:refocus_app/features/today/presentation/bloc/today/today_bloc.dart';
+import 'package:refocus_app/features/today/presentation/bloc/tomorrow/tomorrow_bloc.dart';
+import 'package:refocus_app/features/today/presentation/bloc/upcoming/upcoming_cubit.dart';
 import 'package:refocus_app/features/today/presentation/widgets/persistent_header_delegate.dart';
 import 'package:refocus_app/features/today/presentation/widgets/today_list_widget.dart';
 import 'package:refocus_app/injection.dart';
@@ -67,112 +64,54 @@ class _TodayPageState extends State<TodayPage> {
   Widget build(BuildContext context) {
     final today = DateTime.now();
 
-    return BlocProvider<TodayBloc>(
-      create: (context) => getIt<TodayBloc>()..add(const GetTodayEntries()),
-      child: Platform.isIOS
-          ? CupertinoPageScaffold(
-              child: NestedScrollView(
-                controller: _sController,
-                headerSliverBuilder: (context, innerBoxIsScrolled) => [
-                  CupertinoSliverNavigationBar(
-                    border: null,
-                    backgroundColor: kcLightBackground,
-                    padding: const EdgeInsetsDirectional.all(8),
-                    stretch: true,
-                    largeTitle: Text(
-                      _getGreeting(),
-                      // style: isAtTop
-                      //     ? null
-                      //     : context.h2.copyWith(color: kcPrimary600),
-                    ),
-                    // : const Icon(CupertinoIcons.sun_max_fill),
-                    leading: CupertinoButton(
-                      padding: EdgeInsets.zero,
-                      child: const Icon(CupertinoIcons.calendar),
-                      onPressed: () {
-                        widget.changePage();
-                      },
-                    ),
-                    trailing: CupertinoButton(
-                      padding: EdgeInsets.zero,
-                      child: const Icon(Icons.settings_outlined),
-                      onPressed: () {
-                        context.navigateTo(const SettingRoute());
-                      },
-                    ),
-                  ),
-                  SliverPersistentHeader(
-                    pinned: true,
-                    delegate: PersistentHeaderDelegate(
-                      returnDate(today),
-                      minSize: 30,
-                      maxSize: 30,
-                    ),
-                  ),
-                ],
-                body: const TodayListWidget(),
-              ).parent(todayPageParent),
-            )
-          : Scaffold(
-              body: NestedScrollView(
-                controller: _sController,
-                headerSliverBuilder: (context, innerBoxIsScrolled) => [
-                  SliverAppBar(
-                    // backgroundColor: context.theme.backgroundColor,
-                    // foregroundColor: context.theme.primaryColor,
-                    pinned: true,
-                    elevation: 0,
-                    expandedHeight: 114,
-                    leading: IconButton(
-                      padding: EdgeInsets.zero,
-                      icon: const Icon(Icons.calendar_today),
-                      onPressed: () {
-                        widget.changePage();
-                      },
-                    ),
-                    actions: [
-                      IconButton(
-                        padding: EdgeInsets.zero,
-                        icon: const Icon(Icons.search),
-                        onPressed: () {
-                          widget.changePage();
-                        },
-                      ),
-                      // IconButton(
-                      //   padding: EdgeInsets.zero,
-                      //   icon: const Icon(Icons.inbox),
-                      //   onPressed: () {},
-                      // ),
-                      IconButton(
-                        padding: EdgeInsets.zero,
-                        icon: const Icon(Icons.settings_outlined),
-                        onPressed: () {
-                          context.navigateTo(const SettingRoute());
-                        },
-                      ),
-                    ],
-                    flexibleSpace: FlexibleSpaceBar(
-                        centerTitle: isAtTop,
-                        titlePadding: !isAtTop
-                            ? const EdgeInsets.only(left: 16, bottom: 4)
-                            : const EdgeInsets.only(bottom: 16),
-                        title: Text(_getGreeting())
-                        // : const Icon(CupertinoIcons.sun_max_fill),
-                        ),
-                  ),
-                  SliverPersistentHeader(
-                    pinned: true,
-                    delegate: PersistentHeaderDelegate(
-                      returnDate(today),
-                      backgroundColor: kcPrimary500,
-                      minSize: 30,
-                      maxSize: 30,
-                    ),
-                  ),
-                ],
-                body: const TodayListWidget(),
-              ).parent(todayPageParent),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<TodayBloc>(
+          create: (context) =>
+              getIt<TodayBloc>()..add(GetCurrentDayEntries(today)),
+        ),
+        BlocProvider(create: (context) => getIt<TomorrowBloc>()),
+        BlocProvider(create: (context) => getIt<UpcomingCubit>()),
+      ],
+      child: CupertinoPageScaffold(
+        child: NestedScrollView(
+          controller: _sController,
+          headerSliverBuilder: (context, innerBoxIsScrolled) => [
+            CupertinoSliverNavigationBar(
+              border: null,
+              backgroundColor: kcLightBackground,
+              padding: const EdgeInsetsDirectional.all(8),
+              stretch: true,
+              largeTitle: Text(
+                _getGreeting(),
+              ),
+              leading: CupertinoButton(
+                padding: EdgeInsets.zero,
+                child: const Icon(CupertinoIcons.calendar),
+                onPressed: () {
+                  widget.changePage();
+                },
+              ),
+              trailing: CupertinoButton(
+                padding: EdgeInsets.zero,
+                child: const Icon(Icons.settings_outlined),
+                onPressed: () {
+                  context.navigateTo(const SettingRoute());
+                },
+              ),
             ),
+            SliverPersistentHeader(
+              pinned: true,
+              delegate: PersistentHeaderDelegate(
+                returnDate(today),
+                minSize: 30,
+                maxSize: 30,
+              ),
+            ),
+          ],
+          body: const TodayListWidget(),
+        ).parent(todayPageParent),
+      ),
     );
   }
 

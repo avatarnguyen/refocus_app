@@ -37,6 +37,7 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<Either<Failure, bool>> authLogin(AuthCredential authCredential) async {
     try {
+      await authDataSource.signOut();
       final result = await authDataSource.login(
         username: authCredential.username ?? '',
         password: authCredential.password ?? '',
