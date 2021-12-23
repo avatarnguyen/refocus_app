@@ -1,5 +1,4 @@
-import 'dart:developer';
-
+import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 
 // ignore: prefer_function_declarations_over_variables
@@ -27,8 +26,8 @@ class CustomPrinter extends LogPrinter {
 class ConsoleOutput extends LogOutput {
   @override
   void output(OutputEvent event) {
-    for (var line in event.lines) {
-      log(line);
+    for (final line in event.lines) {
+      debugPrint(line);
     }
   }
 }

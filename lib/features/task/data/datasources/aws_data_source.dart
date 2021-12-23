@@ -1,6 +1,7 @@
 import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify.dart';
 import 'package:injectable/injectable.dart';
+import 'package:refocus_app/core/core.dart';
 import 'package:refocus_app/core/error/exceptions.dart';
 import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart';
@@ -119,7 +120,6 @@ class AWSTaskRemoteDataSource implements TaskRemoteDataSource {
     DateTime? dueDate,
   }) async {
     var _todos = <Task>[];
-
     try {
       if (todoID != null) {
         _todos = await Amplify.DataStore.query(
@@ -141,20 +141,26 @@ class AWSTaskRemoteDataSource implements TaskRemoteDataSource {
       } else if (startTime != null && endTime != null) {
         //? Get Task between a certain time range
 
+        log.v('----------------------------------------------------');
+        log.v('Get Task between a certain time range');
+        log.v('----------------------------------------------------\n');
         log.i('Get AWS Task by Time Range: from $startTime until $endTime');
 
         final _startDateTime = CustomDateUtils.getBeginngOfDay(startTime);
         final _endDataTime = CustomDateUtils.getEndOfDay(endTime);
-        final _start = TemporalDateTime(_startDateTime);
-        final _end = TemporalDateTime(_endDataTime);
+
+        final _start = TemporalDate(DateTime(2021, 10, 1));
+        final _end = TemporalDate(DateTime(2021, 12, 1));
+        // final _start = TemporalDateTime(_startDateTime);
+        // final _end = TemporalDateTime(_endDataTime);
         log.i('\nTemporal DateTime: $_start - $_end \n');
 
         final _fetchedTasksByStartTime = await Amplify.DataStore.query(
           Task.classType,
           where: Task.ISCOMPLETED
               .eq(false)
-              .and(Task.STARTDATETIME.gt(_start))
-              .and(Task.STARTDATETIME.lt(_end)),
+              .and(Task.STARTDATETIME.between(_start, _end)),
+          // .and(Task.STARTDATETIME.lt(_end)),
         );
         final _fetchedTasksByDueDate = await Amplify.DataStore.query(
           Task.classType,
@@ -163,11 +169,15 @@ class AWSTaskRemoteDataSource implements TaskRemoteDataSource {
               .and(Task.DUEDATE.gt(_start))
               .and(Task.DUEDATE.lt(_end)),
         );
+        log.i('Fetched: $_fetchedTasksByStartTime + $_fetchedTasksByDueDate');
 
         _todos.addAll(_fetchedTasksByStartTime);
         _todos.addAll(_fetchedTasksByDueDate);
       } else {
         //? Get Task that either due or start with given datetime
+        log.v('----------------------------------------------------');
+        log.v('Get Task that either due or start with given datetime');
+        log.v('----------------------------------------------------');
 
         final _startDayDateTime = CustomDateUtils.getBeginngOfDay(
           dueDate ?? startTime ?? DateTime.now(),
@@ -175,8 +185,8 @@ class AWSTaskRemoteDataSource implements TaskRemoteDataSource {
         final _endDayDateTime = CustomDateUtils.getEndOfDay(
           dueDate ?? startTime ?? DateTime.now(),
         );
-        final _startDay = TemporalDateTime(_startDayDateTime);
-        final _endDay = TemporalDateTime(_endDayDateTime);
+        final _startDay = TemporalDate(DateTime(2021, 10, 1));
+        final _endDay = TemporalDate(DateTime(2021, 12, 1));
 
         log.i('\nTemporal DateTime: $_startDay - $_endDay \n');
         if (dueDate != null) {
@@ -199,8 +209,9 @@ class AWSTaskRemoteDataSource implements TaskRemoteDataSource {
             Task.classType,
             where: Task.ISCOMPLETED
                 .eq(false)
-                .and(Task.STARTDATETIME.gt(_startDay))
-                .and(Task.STARTDATETIME.lt(_endDay)),
+                .and(Task.STARTDATETIME.between(_startDay, _endDay)),
+            // .and(Task.STARTDATETIME.gt(_startDay))
+            // .and(Task.STARTDATETIME.lt(_endDay)),
           );
           log.d('Resulted Task with StartTime: $_tasks');
           _todos.addAll(_tasks);

@@ -23,8 +23,8 @@ class _$TaskEntryTearOff {
 
   _TaskEntry call(
       {required String id,
-      required bool isCompleted,
-      required String projectID,
+      bool? isCompleted,
+      String? projectID,
       String? calendarID,
       String? colorID,
       String? title,
@@ -63,8 +63,8 @@ const $TaskEntry = _$TaskEntryTearOff();
 /// @nodoc
 mixin _$TaskEntry {
   String get id => throw _privateConstructorUsedError;
-  bool get isCompleted => throw _privateConstructorUsedError;
-  String get projectID => throw _privateConstructorUsedError;
+  bool? get isCompleted => throw _privateConstructorUsedError;
+  String? get projectID => throw _privateConstructorUsedError;
   String? get calendarID => throw _privateConstructorUsedError;
   String? get colorID => throw _privateConstructorUsedError;
   String? get title => throw _privateConstructorUsedError;
@@ -92,8 +92,8 @@ abstract class $TaskEntryCopyWith<$Res> {
       _$TaskEntryCopyWithImpl<$Res>;
   $Res call(
       {String id,
-      bool isCompleted,
-      String projectID,
+      bool? isCompleted,
+      String? projectID,
       String? calendarID,
       String? colorID,
       String? title,
@@ -138,11 +138,11 @@ class _$TaskEntryCopyWithImpl<$Res> implements $TaskEntryCopyWith<$Res> {
       isCompleted: isCompleted == freezed
           ? _value.isCompleted
           : isCompleted // ignore: cast_nullable_to_non_nullable
-              as bool,
+              as bool?,
       projectID: projectID == freezed
           ? _value.projectID
           : projectID // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       calendarID: calendarID == freezed
           ? _value.calendarID
           : calendarID // ignore: cast_nullable_to_non_nullable
@@ -195,8 +195,8 @@ abstract class _$TaskEntryCopyWith<$Res> implements $TaskEntryCopyWith<$Res> {
   @override
   $Res call(
       {String id,
-      bool isCompleted,
-      String projectID,
+      bool? isCompleted,
+      String? projectID,
       String? calendarID,
       String? colorID,
       String? title,
@@ -242,11 +242,11 @@ class __$TaskEntryCopyWithImpl<$Res> extends _$TaskEntryCopyWithImpl<$Res>
       isCompleted: isCompleted == freezed
           ? _value.isCompleted
           : isCompleted // ignore: cast_nullable_to_non_nullable
-              as bool,
+              as bool?,
       projectID: projectID == freezed
           ? _value.projectID
           : projectID // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       calendarID: calendarID == freezed
           ? _value.calendarID
           : calendarID // ignore: cast_nullable_to_non_nullable
@@ -296,8 +296,8 @@ class __$TaskEntryCopyWithImpl<$Res> extends _$TaskEntryCopyWithImpl<$Res>
 class _$_TaskEntry implements _TaskEntry {
   _$_TaskEntry(
       {required this.id,
-      required this.isCompleted,
-      required this.projectID,
+      this.isCompleted,
+      this.projectID,
       this.calendarID,
       this.colorID,
       this.title,
@@ -315,9 +315,9 @@ class _$_TaskEntry implements _TaskEntry {
   @override
   final String id;
   @override
-  final bool isCompleted;
+  final bool? isCompleted;
   @override
-  final String projectID;
+  final String? projectID;
   @override
   final String? calendarID;
   @override
@@ -405,8 +405,8 @@ class _$_TaskEntry implements _TaskEntry {
 abstract class _TaskEntry implements TaskEntry {
   factory _TaskEntry(
       {required String id,
-      required bool isCompleted,
-      required String projectID,
+      bool? isCompleted,
+      String? projectID,
       String? calendarID,
       String? colorID,
       String? title,
@@ -424,9 +424,9 @@ abstract class _TaskEntry implements TaskEntry {
   @override
   String get id;
   @override
-  bool get isCompleted;
+  bool? get isCompleted;
   @override
-  String get projectID;
+  String? get projectID;
   @override
   String? get calendarID;
   @override

@@ -182,7 +182,8 @@ class _ListItemWidgetState extends State<ListItemWidget> {
                     ActionPaneType.start
                 ? kcPrimary500
                 : Colors.white,
-            label: Slidable.of(context)!.animation.value > 0.96
+            label: Slidable.of(context) != null &&
+                    Slidable.of(context)!.animation.value > 0.96
                 ? 'Mark as Done'
                 : null,
             icon: Icons.check,
@@ -205,7 +206,8 @@ class _ListItemWidgetState extends State<ListItemWidget> {
                 : widget.project != null
                     ? kcError500
                     : kcWarning500,
-            label: Slidable.of(context)!.animation.value >= 0.8
+            label: Slidable.of(context) != null &&
+                    Slidable.of(context)!.animation.value >= 0.8
                 ? 'change date'
                 : null,
             onPressed: (_) {

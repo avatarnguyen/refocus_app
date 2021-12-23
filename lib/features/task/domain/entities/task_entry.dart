@@ -10,8 +10,8 @@ part 'task_entry.g.dart';
 class TaskEntry with _$TaskEntry {
   factory TaskEntry({
     required String id,
-    required bool isCompleted,
-    required String projectID,
+    bool? isCompleted,
+    String? projectID,
     String? calendarID,
     String? colorID,
     String? title,

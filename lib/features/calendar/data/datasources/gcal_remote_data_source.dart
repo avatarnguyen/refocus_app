@@ -63,7 +63,7 @@ class GoogleAPIGCalRemoteDataSoure implements GCalRemoteDataSource {
                 timeMin: timeMin,
                 timeMax: timeMax,
               );
-              log.d('Retrieved Events: $calEvents');
+              // log.d('Retrieved Events: $calEvents');
               _insertEventsToAppointments(
                 calEvents,
                 appointments,

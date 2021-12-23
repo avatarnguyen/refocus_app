@@ -8,8 +8,8 @@ part of 'task_entry.dart';
 
 _$_TaskEntry _$$_TaskEntryFromJson(Map<String, dynamic> json) => _$_TaskEntry(
       id: json['id'] as String,
-      isCompleted: json['isCompleted'] as bool,
-      projectID: json['projectID'] as String,
+      isCompleted: json['isCompleted'] as bool?,
+      projectID: json['projectID'] as String?,
       calendarID: json['calendarID'] as String?,
       colorID: json['colorID'] as String?,
       title: json['title'] as String?,
