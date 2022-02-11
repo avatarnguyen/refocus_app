@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:go_router/go_router.dart';
 import 'package:refocus_app/config/routes/router.dart';
 import 'package:refocus_app/core/core.dart';
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
@@ -30,8 +31,8 @@ class _ProjectItemState extends State<ProjectItem> {
 
   void _deleteProject() {
     context.read<ProjectBloc>().add(
-          DeleteProjectEntriesEvent(
-            ProjectParams(_currentProject),
+          ProjectEvent.delete(
+            project: ProjectParams(_currentProject),
           ),
         );
   }
@@ -136,12 +137,12 @@ class _ProjectItemState extends State<ProjectItem> {
           actions: [
             PlatformButton(
               color: Colors.transparent,
-              onPressed: () => context.router.pop(false),
+              onPressed: () => context.pop(),
               child: 'Cancel'.toButtonText(color: context.colorScheme.primary),
             ),
             PlatformButton(
               color: Colors.transparent,
-              onPressed: () => context.router.pop(true),
+              onPressed: () => context.pop(),
               child: 'Delete Project'.toButtonText(color: context.colorScheme.error),
             ),
           ],

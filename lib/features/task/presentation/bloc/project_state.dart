@@ -1,33 +1,9 @@
 part of 'project_bloc.dart';
 
-abstract class ProjectState extends Equatable {
-  const ProjectState();
-}
-
-// class TaskInitial extends TaskState {
-//   @override
-//   List<Object> get props => [];
-// }
-
-class ProjectLoading extends ProjectState {
-  @override
-  List<Object?> get props => [];
-}
-
-class ProjectError extends ProjectState {
-  const ProjectError(this.message);
-
-  final String message;
-
-  @override
-  List<Object?> get props => [message];
-}
-
-class ProjectLoaded extends ProjectState {
-  const ProjectLoaded({required this.project});
-
-  final List<ProjectEntry> project;
-
-  @override
-  List<Object?> get props => project;
+@freezed
+class ProjectState with _$ProjectState {
+  const factory ProjectState.initial() = _ProjectInitial;
+  const factory ProjectState.loading() = _ProjectLoading;
+  const factory ProjectState.error(String message) = _ProjectError;
+  const factory ProjectState.loaded({List<ProjectEntry>? project}) = _ProjectLoaded;
 }

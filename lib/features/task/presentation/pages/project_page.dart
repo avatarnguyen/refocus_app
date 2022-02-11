@@ -33,58 +33,54 @@ class _ProjectPageState extends State<ProjectPage> {
       backgroundColor: Colors.transparent,
       body: BlocBuilder<ProjectBloc, ProjectState>(
         builder: (context, state) {
-          log('Task Bloc Rebuild');
-          if (state is ProjectLoaded) {
-            final _projects = state.project;
-            return ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              padding: const EdgeInsets.only(top: 16),
-              itemCount: _projects.length + 1,
-              itemBuilder: (context, index) {
-                // if (index == 0) {
-                //   return const ProjectItem();
-                // }
-                if (index == _projects.length) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    child: PlatformButton(
-                      cupertino: (context, platform) => CupertinoButtonData(
-                        color: Colors.white,
-                        borderRadius: const BorderRadius.all(Radius.circular(16)),
+          return state.maybeWhen(
+            loaded: (project) {
+              final _projects = project ?? [];
+              return ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                padding: const EdgeInsets.only(top: 16),
+                itemCount: _projects.length + 1,
+                itemBuilder: (context, index) {
+                  // if (index == 0) {
+                  //   return const ProjectItem();
+                  // }
+                  if (index == _projects.length) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
                       ),
-                      material: (context, platform) => MaterialRaisedButtonData(
-                        color: Colors.white,
+                      child: PlatformButton(
+                        cupertino: (context, platform) => CupertinoButtonData(
+                          color: Colors.white,
+                          borderRadius: const BorderRadius.all(Radius.circular(16)),
+                        ),
+                        material: (context, platform) => MaterialRaisedButtonData(
+                          color: Colors.white,
+                        ),
+                        onPressed: () {
+                          // context.navigateTo(CreateProjectRoute());
+                        }, //_showCreateProjectBottomSheet,
+                        child: Icon(
+                          Icons.add,
+                          size: 28,
+                          color: context.colorScheme.primaryVariant,
+                        ),
                       ),
-                      onPressed: () {
-                        // context.navigateTo(CreateProjectRoute());
-                      }, //_showCreateProjectBottomSheet,
-                      child: Icon(
-                        Icons.add,
-                        size: 28,
-                        color: context.colorScheme.primaryVariant,
-                      ),
-                    ),
+                    );
+                  }
+                  // index -= 1;
+                  final _project = _projects[index];
+                  return ProjectItem(
+                    key: Key('${_project.id}_${_project.title}_${_project.color}'),
+                    project: _project,
                   );
-                }
-                // index -= 1;
-                final _project = _projects[index];
-                return ProjectItem(
-                  key: Key('${_project.id}_${_project.title}_${_project.color}'),
-                  project: _project,
-                );
-              },
-            ).safeArea(top: false);
-          } else if (state is ProjectLoading) {
-            return progressIndicator;
-          } else {
-            return const MessageDisplay(
-              message: 'Unexpected State',
-            );
-          }
+                },
+              ).safeArea(top: false);
+            },
+            orElse: () => progressIndicator,
+          );
         },
       ),
     );

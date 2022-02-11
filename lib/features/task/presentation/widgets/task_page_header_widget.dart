@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:refocus_app/core/core.dart';
 
 class TaskPageHeaderWidget extends StatelessWidget {
@@ -17,24 +18,12 @@ class TaskPageHeaderWidget extends StatelessWidget {
           Icons.clear,
           color: kcPrimary500,
           size: 28,
-        )
-            .padding(all: 4)
-            .decorated(
-                color: kcPrimary100, borderRadius: BorderRadius.circular(12))
-            .ripple()
-            .padding(left: 16)
-            .gestures(onTap: context.router.pop),
+        ).padding(all: 4).decorated(color: kcPrimary100, borderRadius: BorderRadius.circular(12)).ripple().padding(left: 16).gestures(onTap: context.pop),
         const Icon(
           Icons.add,
           color: kcPrimary500,
           size: 28,
-        )
-            .padding(all: 4)
-            .decorated(
-                color: kcPrimary100, borderRadius: BorderRadius.circular(12))
-            .ripple()
-            .padding(right: 16)
-            .gestures(onTap: context.router.pop),
+        ).padding(all: 4).decorated(color: kcPrimary100, borderRadius: BorderRadius.circular(12)).ripple().padding(right: 16).gestures(onTap: context.pop),
       ].toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween),
     );
   }
