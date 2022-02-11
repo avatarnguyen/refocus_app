@@ -141,7 +141,7 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
             size: 33,
           ).gestures(onTap: () {
             widget.closeSheet();
-            context.goNamed('create', extra: context);
+            context.goNamed('create');
           }),
         ].toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween),
         CupertinoSlidingSegmentedControl<int>(
@@ -198,9 +198,9 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
               onSelectionChanged: _onSelectionChanged,
               onCancelPressed: () {
                 _dateTimeStream.broadCastCurrentDate(DateTime.now());
-                context.router.pop();
+                context.pop();
               },
-              onSubmitPressed: () async => context.router.pop(),
+              onSubmitPressed: () async => context.pop(),
             );
           },
         );

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:refocus_app/core/core.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:styled_widget/styled_widget.dart';
 
@@ -49,20 +50,18 @@ class _EditTaskHeaderState extends State<EditTaskHeader> {
         )
             .padding(all: 4)
             .decorated(
-                color: _backgroudColor, borderRadius: BorderRadius.circular(12))
+              color: _backgroudColor,
+              borderRadius: BorderRadius.circular(12),
+            )
             .ripple()
             .padding(left: 16)
-            .gestures(onTap: context.router.pop),
+            .gestures(
+              onTap: context.pop,
+            ),
         Text(
           'Edit',
           style: _textBtnStyle,
-        )
-            .padding(vertical: 8, horizontal: 10)
-            .decorated(
-                color: _backgroudColor, borderRadius: BorderRadius.circular(12))
-            .ripple()
-            .padding(right: 16)
-            .gestures(onTap: () => widget.getEditView()),
+        ).padding(vertical: 8, horizontal: 10).decorated(color: _backgroudColor, borderRadius: BorderRadius.circular(12)).ripple().padding(right: 16).gestures(onTap: () => widget.getEditView()),
       ].toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween),
     );
   }

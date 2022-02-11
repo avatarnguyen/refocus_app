@@ -1,29 +1,31 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:formz/formz.dart';
-import 'package:refocus_app/config/routes/router.dart';
-import 'package:refocus_app/core/util/helpers/logging.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/authetication_status.dart';
 import 'package:refocus_app/features/auth/presentation/authentication/bloc/auth_bloc.dart';
 import 'package:refocus_app/features/auth/presentation/login/bloc/login_bloc.dart';
 import 'package:refocus_app/features/auth/presentation/widgets/auth_textfield_widget.dart';
+import 'package:refocus_app/injection.dart';
 import 'package:styled_widget/styled_widget.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends StatelessWidget {
   const LoginPage({Key? key}) : super(key: key);
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => getIt<LoginBloc>(),
+      child: const _LoginWidget(),
+    );
+  }
 }
 
-class _LoginPageState extends State<LoginPage> {
-  final log = logger(LoginPage);
-
-  final _usernameTextCtrl = TextEditingController();
-  final _passwordTextCtrl = TextEditingController();
+class _LoginWidget extends StatelessWidget {
+  const _LoginWidget({
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -53,14 +55,14 @@ class _LoginPageState extends State<LoginPage> {
               style: context.h1,
             ).padding(bottom: 40),
             AuthTextFieldWidget(
-              controller: _usernameTextCtrl,
+              // controller: _usernameTextCtrl,
               placeHolderText: 'Username',
               onChanged: (text) {
                 context.read<LoginBloc>().add(LoginEvent.usernameChanged(text));
               },
             ).padding(vertical: 20),
             AuthTextFieldWidget(
-              controller: _passwordTextCtrl,
+              // controller: _passwordTextCtrl,
               placeHolderText: 'Password',
               obscureText: true,
               onChanged: (text) {

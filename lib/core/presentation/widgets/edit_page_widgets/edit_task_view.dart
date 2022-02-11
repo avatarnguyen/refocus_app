@@ -5,12 +5,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:refocus_app/core/core.dart';
 import 'package:refocus_app/core/util/helpers/date_utils.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_event_entry.dart';
 import 'package:refocus_app/features/calendar/domain/usecases/helpers/event_params.dart';
-import 'package:refocus_app/features/calendar/presentation/bloc/calendar/calendar_bloc.dart'
-    as cal;
+import 'package:refocus_app/features/calendar/presentation/bloc/calendar/calendar_bloc.dart' as cal;
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar_list/calendar_list_bloc.dart';
 import 'package:refocus_app/features/calendar/presentation/widgets/message_widget.dart';
 import 'package:refocus_app/features/task/domain/entities/subtask_entry.dart';
@@ -78,9 +78,7 @@ class _EditTaskViewState extends State<EditTaskView> {
       _endDateTime ??= widget.task!.endDateTime;
       _dueDateTime ??= widget.task!.dueDate;
     } else {
-      context
-          .read<TaskBloc>()
-          .add(GetSingleTaskEntryEvent(taskID: widget.taskID!));
+      context.read<TaskBloc>().add(GetSingleTaskEntryEvent(taskID: widget.taskID!));
 
       context.read<SubtaskCubit>().getSubTasksFromTask(widget.taskID!);
     }
@@ -164,11 +162,9 @@ class _EditTaskViewState extends State<EditTaskView> {
               )).padding(top: 6, bottom: 4),
 
           PlatformTextField(
-            controller: TextEditingController(
-                text: _title ?? fetchedTask?.title)
+            controller: TextEditingController(text: _title ?? fetchedTask?.title)
               ..selection = TextSelection.fromPosition(
-                TextPosition(
-                    offset: _title?.length ?? fetchedTask?.title?.length ?? 0),
+                TextPosition(offset: _title?.length ?? fetchedTask?.title?.length ?? 0),
               ),
             onChanged: (text) {
               _title = text;
@@ -178,8 +174,7 @@ class _EditTaskViewState extends State<EditTaskView> {
             textAlign: TextAlign.center,
             material: (context, platform) => materialTextField(),
             cupertino: (context, platform) => cupertinoTextField(),
-            style: context.h4
-                .copyWith(fontWeight: FontWeight.w500, color: _textColor),
+            style: context.h4.copyWith(fontWeight: FontWeight.w500, color: _textColor),
           ),
 
           verticalSpaceMedium,
@@ -201,9 +196,7 @@ class _EditTaskViewState extends State<EditTaskView> {
               },
             ),
           if (_endDateTime != null) ...[
-            Text('Until', style: _dateTextStyle)
-                .alignment(Alignment.center)
-                .padding(vertical: 4),
+            Text('Until', style: _dateTextStyle).alignment(Alignment.center).padding(vertical: 4),
             _buildEditDateTimeCell(
               _endDateTime!.toLocal(),
               _editTimeTextStyle,
@@ -223,9 +216,7 @@ class _EditTaskViewState extends State<EditTaskView> {
 
           if (widget.entry != null && widget.task == null) ...[
             verticalSpaceMedium,
-            Text('Calendar', style: _dateTextStyle)
-                .alignment(Alignment.center)
-                .padding(vertical: 4),
+            Text('Calendar', style: _dateTextStyle).alignment(Alignment.center).padding(vertical: 4),
             _buildCalendarSelection(_editTimeTextStyle)
           ],
 
@@ -282,8 +273,7 @@ class _EditTaskViewState extends State<EditTaskView> {
                         return const SizedBox.shrink();
                       }
                     },
-                    error: (errorMessage) =>
-                        MessageDisplay(message: errorMessage),
+                    error: (errorMessage) => MessageDisplay(message: errorMessage),
                   );
                 },
               ),
@@ -308,8 +298,7 @@ class _EditTaskViewState extends State<EditTaskView> {
           if (fetchedTask != null)
             PlatformElevatedButton(
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 32),
-              child: Text('Delete Task',
-                  style: context.bodyText2.copyWith(color: kcError500)),
+              child: Text('Delete Task', style: context.bodyText2.copyWith(color: kcError500)),
               onPressed: () {
                 //TODO: Delete Task
               },
@@ -319,8 +308,7 @@ class _EditTaskViewState extends State<EditTaskView> {
     );
   }
 
-  Widget _buildSubTaskEditTextField(
-      BuildContext context, SubTaskEntry subTaskEntry, Color? textColor) {
+  Widget _buildSubTaskEditTextField(BuildContext context, SubTaskEntry subTaskEntry, Color? textColor) {
     return PlatformTextField(
       controller: TextEditingController(text: subTaskEntry.title)
         ..selection = TextSelection.fromPosition(
@@ -338,12 +326,9 @@ class _EditTaskViewState extends State<EditTaskView> {
     ).padding(vertical: 4);
   }
 
-  Widget _buildEditDateTimeCell(
-      DateTime dateTime, TextStyle textStyle, DateTimeSelected type) {
+  Widget _buildEditDateTimeCell(DateTime dateTime, TextStyle textStyle, DateTimeSelected type) {
     final _date = CustomDateUtils.returnDateWithDay(dateTime);
-    final _time = type != DateTimeSelected.due
-        ? ' at ${CustomDateUtils.returnTime(dateTime)}'
-        : '';
+    final _time = type != DateTimeSelected.due ? ' at ${CustomDateUtils.returnTime(dateTime)}' : '';
     final _color = StyleUtils.getColorFromString(widget.colorID ?? '#115FFB');
     final _backgroudColor = StyleUtils.lighten(_color, 0.32);
 
@@ -375,8 +360,7 @@ class _EditTaskViewState extends State<EditTaskView> {
         builder: (context, state) {
           if (state is CalendarListLoaded) {
             final _calList = state.calendarList;
-            final _currentCal =
-                _calList.singleWhere((_cal) => _cal.id == _calendarID);
+            final _currentCal = _calList.singleWhere((_cal) => _cal.id == _calendarID);
             return Text(
               _currentCal.name,
               textAlign: TextAlign.center,
@@ -414,8 +398,7 @@ class _EditTaskViewState extends State<EditTaskView> {
     ).padding(vertical: 4);
   }
 
-  CupertinoTextFieldData cupertinoTextField(
-      {EdgeInsetsGeometry? customPadding, bool? shouldShowIcon}) {
+  CupertinoTextFieldData cupertinoTextField({EdgeInsetsGeometry? customPadding, bool? shouldShowIcon}) {
     final _color = StyleUtils.getColorFromString(widget.colorID ?? '#115FFB');
     final _backgroudColor = StyleUtils.lighten(_color, 0.32);
     final _textColor = StyleUtils.darken(_color, 0.32);
@@ -446,8 +429,7 @@ class _EditTaskViewState extends State<EditTaskView> {
     );
   }
 
-  MaterialTextFieldData materialTextField(
-      {EdgeInsetsGeometry? customPadding, bool? shouldShowIcon}) {
+  MaterialTextFieldData materialTextField({EdgeInsetsGeometry? customPadding, bool? shouldShowIcon}) {
     final _color = StyleUtils.getColorFromString(widget.colorID ?? '#115FFB');
     final _backgroudColor = StyleUtils.lighten(_color, 0.32);
     final _textColor = StyleUtils.darken(_color, 0.32);
@@ -505,9 +487,7 @@ class _EditTaskViewState extends State<EditTaskView> {
               SizedBox(
                 height: MediaQuery.of(context).copyWith().size.height / 3.8,
                 child: CupertinoDatePicker(
-                  mode: type != DateTimeSelected.due
-                      ? CupertinoDatePickerMode.dateAndTime
-                      : CupertinoDatePickerMode.date,
+                  mode: type != DateTimeSelected.due ? CupertinoDatePickerMode.dateAndTime : CupertinoDatePickerMode.date,
                   onDateTimeChanged: (picked) {
                     if (picked != currentDateTime) {
                       if (type == DateTimeSelected.start) {
@@ -541,7 +521,7 @@ class _EditTaskViewState extends State<EditTaskView> {
                       } else {
                         _dueDateTime = currentDateTime;
                       }
-                      context.router.pop();
+                      context.pop();
                     },
                   ),
                   PlatformElevatedButton(
@@ -549,7 +529,7 @@ class _EditTaskViewState extends State<EditTaskView> {
                     child: 'Save'.toButtonText(),
                     onPressed: () {
                       setState(() {});
-                      context.router.pop();
+                      context.pop();
                     },
                   ),
                 ].toRow(mainAxisAlignment: MainAxisAlignment.spaceEvenly),
@@ -571,9 +551,7 @@ class _EditTaskViewState extends State<EditTaskView> {
         currentTask = currentTask!.copyWith(title: _title);
       }
 
-      if (currentTask!.dueDate != _dueDateTime ||
-          currentTask!.startDateTime != _startDateTime ||
-          currentTask!.endDateTime != _endDateTime) {
+      if (currentTask!.dueDate != _dueDateTime || currentTask!.startDateTime != _startDateTime || currentTask!.endDateTime != _endDateTime) {
         shouldUpdateTask = true;
 
         currentTask = currentTask!.copyWith(
@@ -601,24 +579,20 @@ class _EditTaskViewState extends State<EditTaskView> {
             );
         // context.read<TaskBloc>().add(
         //     GetSingleTaskEntryEvent(taskID: widget.task?.id ?? widget.taskID!));
-        context.router.pop(currentTask);
+        //TODO:
+        context.pop();
       } else {
-        context.router.pop();
+        context.pop();
       }
     } else if (widget.entry != null) {
-      if (_title != widget.entry!.title ||
-          _startDateTime != widget.entry!.startDateTime ||
-          _endDateTime != widget.entry!.endDateTime ||
-          _calendarID != widget.entry!.projectOrCalID) {
+      if (_title != widget.entry!.title || _startDateTime != widget.entry!.startDateTime || _endDateTime != widget.entry!.endDateTime || _calendarID != widget.entry!.projectOrCalID) {
         final _calendarEventEntry = CalendarEventEntry(
           id: widget.entry!.id,
           subject: _title ?? widget.entry!.title ?? '',
           colorId: widget.entry!.color,
           calendarId: widget.entry!.projectOrCalID,
-          startDateTime: CustomDateUtils.toGoogleRFCDateTime(
-              _startDateTime ?? widget.entry!.startDateTime!),
-          endDateTime: CustomDateUtils.toGoogleRFCDateTime(
-              _endDateTime ?? widget.entry!.endDateTime!),
+          startDateTime: CustomDateUtils.toGoogleRFCDateTime(_startDateTime ?? widget.entry!.startDateTime!),
+          endDateTime: CustomDateUtils.toGoogleRFCDateTime(_endDateTime ?? widget.entry!.endDateTime!),
           allDay: false,
         );
         context.read<cal.CalendarBloc>().add(
@@ -628,9 +602,11 @@ class _EditTaskViewState extends State<EditTaskView> {
                 ),
               ),
             );
-        context.router.pop(_calendarEventEntry);
+        //TODO:
+        // context.router.pop(_calendarEventEntry);
+        context.pop();
       } else {
-        context.router.pop();
+        context.pop();
       }
     }
   }

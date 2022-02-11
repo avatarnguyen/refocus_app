@@ -51,11 +51,15 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    _attemptSignInGoogle();
     _slidingBodySub = _slidingStream.pageStream.listen(_slidingPageReceived);
     _sheetController = SheetController();
 
     super.initState();
+    _attemptSignInGoogle();
+    context.read<CalendarListBloc>().add(
+          GetCalendarListEvent(),
+        );
+    context.read<ProjectBloc>().add(const ProjectEvent.get());
   }
 
   void _slidingPageReceived(int newPage) {

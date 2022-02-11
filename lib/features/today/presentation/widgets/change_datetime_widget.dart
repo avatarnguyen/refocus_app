@@ -1,12 +1,11 @@
 import 'package:dartx/dartx.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:refocus_app/core/core.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
-import 'package:styled_widget/styled_widget.dart';
 
 class ChangeDateTimeWidget extends StatefulWidget {
-  const ChangeDateTimeWidget({Key? key, this.startDateTime, this.endDateTime})
-      : super(key: key);
+  const ChangeDateTimeWidget({Key? key, this.startDateTime, this.endDateTime}) : super(key: key);
   final DateTime? startDateTime;
   final DateTime? endDateTime;
 
@@ -57,8 +56,7 @@ class _ChangeDateTimeWidgetState extends State<ChangeDateTimeWidget> {
             child: CupertinoDatePicker(
               key: Key('index_$_currentIdx'),
               onDateTimeChanged: (picked) {
-                final _currentDateTime =
-                    _currentIdx == 0 ? _pStartDateTime : _pEndDateTime;
+                final _currentDateTime = _currentIdx == 0 ? _pStartDateTime : _pEndDateTime;
 
                 if (picked != _currentDateTime) {
                   if (_currentIdx == 0) {
@@ -74,8 +72,7 @@ class _ChangeDateTimeWidgetState extends State<ChangeDateTimeWidget> {
                   }
                 }
               },
-              initialDateTime:
-                  _currentIdx == 0 ? _pStartDateTime : _pEndDateTime,
+              initialDateTime: _currentIdx == 0 ? _pStartDateTime : _pEndDateTime,
               minimumYear: 2020,
               maximumYear: 2025,
             ),
@@ -86,14 +83,14 @@ class _ChangeDateTimeWidgetState extends State<ChangeDateTimeWidget> {
               PlatformTextButton(
                 child: const Text('Cancel'),
                 onPressed: () {
-                  context.router.pop(null);
+                  context.pop();
                 },
               ),
               PlatformButton(
                 color: context.colorScheme.primary,
                 child: 'Save'.toButtonText(),
                 onPressed: () {
-                  context.router.pop([_pStartDateTime, _pEndDateTime]);
+                  context.pop();
                 },
               ),
             ].toRow(mainAxisAlignment: MainAxisAlignment.spaceEvenly),

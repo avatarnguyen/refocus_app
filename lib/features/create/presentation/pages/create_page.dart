@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -8,7 +7,6 @@ import 'package:refocus_app/enum/today_entry_type.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_entry.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar/calendar_bloc.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar_list/calendar_list_bloc.dart' as cal_list;
-import 'package:refocus_app/features/calendar/presentation/bloc/calendar_list/calendar_list_bloc.dart';
 import 'package:refocus_app/features/create/presentation/bloc/create_bloc.dart';
 import 'package:refocus_app/features/create/presentation/widgets/action_bottom_widget.dart';
 import 'package:refocus_app/features/create/presentation/widgets/create_title_input_widget.dart';
@@ -16,37 +14,27 @@ import 'package:refocus_app/features/create/presentation/widgets/planned_datatim
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
 import 'package:refocus_app/features/task/presentation/bloc/cubit/subtask_cubit.dart';
 import 'package:refocus_app/features/task/presentation/bloc/project_bloc.dart';
-import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
 import 'package:refocus_app/injection.dart';
-import 'package:styled_widget/styled_widget.dart';
 
-class CreatePage extends StatelessWidget {
+class CreatePage extends StatefulWidget {
   const CreatePage({
     Key? key,
-    required this.blocContext,
   }) : super(key: key);
 
-  final BuildContext blocContext;
+  @override
+  State<CreatePage> createState() => _CreatePageState();
+}
+
+class _CreatePageState extends State<CreatePage> {
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        /* BlocProvider.value(
-          value: blocContext.read<ProjectBloc>(),
-        ),
-        BlocProvider.value(
-          value: blocContext.read<TaskBloc>(),
-        ),
-        BlocProvider.value(
-          value: blocContext.read<SubtaskCubit>(),
-        ),
-        BlocProvider.value(
-          value: blocContext.read<CalendarListBloc>(),
-        ),
-        BlocProvider.value(
-          value: blocContext.read<CalendarBloc>(),
-        ), */
         BlocProvider<CreateBloc>(
           create: (_) => getIt<CreateBloc>()..add(const CreateEvent.typeEntryChanged(TodayEntryType.task)),
         ),
@@ -120,7 +108,8 @@ class _CreatePageWidgetState extends State<CreatePageWidget> {
                   _currentProject = state.project;
                   return BlocBuilder<ProjectBloc, ProjectState>(
                     builder: (context, pState) {
-                      if (pState is ProjectLoaded) {
+                      return progressIndicator;
+                      /* if (pState is ProjectLoaded) {
                         final _projects = pState.project;
                         return PlatformElevatedButton(
                           padding: EdgeInsets.zero,
@@ -145,7 +134,7 @@ class _CreatePageWidgetState extends State<CreatePageWidget> {
                         );
                       } else {
                         return progressIndicator;
-                      }
+                      } */
                     },
                   );
                 }

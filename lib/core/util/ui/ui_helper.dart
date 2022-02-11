@@ -1,4 +1,3 @@
-export 'package:auto_route/auto_route.dart';
 export 'package:awesome_flutter_extensions/all.dart' hide NavigatorX;
 export 'package:refocus_app/core/util/helpers/string_extension.dart';
 export 'package:refocus_app/core/util/ui/border_contants.dart';

@@ -63,7 +63,7 @@ class _ActionBottomWidgetState extends State<ActionBottomWidget> {
                 Icons.close,
                 size: 28,
                 color: kcSecondary100,
-              ).gestures(onTap: context.router.pop),
+              ).gestures(onTap: context.pop),
               //* Adding Event/Task Switch when selecting date
 
               CupertinoSlidingSegmentedControl<int>(
@@ -74,13 +74,11 @@ class _ActionBottomWidgetState extends State<ActionBottomWidget> {
                 children: {
                   0: Icon(
                     Icons.task_alt_rounded,
-                    color:
-                        _currentSegmentedIdx == 0 ? kcPrimary800 : kcPrimary100,
+                    color: _currentSegmentedIdx == 0 ? kcPrimary800 : kcPrimary100,
                   ),
                   1: Icon(
                     CupertinoIcons.calendar,
-                    color:
-                        _currentSegmentedIdx == 1 ? kcPrimary800 : kcPrimary100,
+                    color: _currentSegmentedIdx == 1 ? kcPrimary800 : kcPrimary100,
                   ),
                 },
                 onValueChanged: (value) {
@@ -90,16 +88,10 @@ class _ActionBottomWidgetState extends State<ActionBottomWidget> {
                     // _onChangingSelection(ActionSelectionType.task);
 
                     if (value == 0) {
-                      context.read<CreateBloc>().add(
-                          const CreateEvent.typeEntryChanged(
-                              TodayEntryType.task));
+                      context.read<CreateBloc>().add(const CreateEvent.typeEntryChanged(TodayEntryType.task));
                     } else {
-                      context.read<CreateBloc>().add(
-                          const CreateEvent.typeEntryChanged(
-                              TodayEntryType.event));
-                      context
-                          .read<CreateBloc>()
-                          .add(const CreateEvent.dueDateChanged(null));
+                      context.read<CreateBloc>().add(const CreateEvent.typeEntryChanged(TodayEntryType.event));
+                      context.read<CreateBloc>().add(const CreateEvent.dueDateChanged(null));
                     }
                   }
                 },
@@ -109,17 +101,14 @@ class _ActionBottomWidgetState extends State<ActionBottomWidget> {
                   //* Adding due dates
                   ActionIcon(
                     icon: Icons.today_rounded,
-                    color: _onSelectingDueDate
-                        ? context.colorScheme.secondary
-                        : kcSecondary200,
+                    color: _onSelectingDueDate ? context.colorScheme.secondary : kcSecondary200,
                     onTap: () {},
                   ),
                   ActionIcon(
                     icon: Icons.flag,
                     onTap: () {
                       if (_currentPrio == null) {
-                        context.read<CreateBloc>().add(CreateEvent.titleChanged(
-                            '${_currentText ?? ''} !'));
+                        context.read<CreateBloc>().add(CreateEvent.titleChanged('${_currentText ?? ''} !'));
 
                         _currentPrio = PrioType.low;
                       }
@@ -129,9 +118,7 @@ class _ActionBottomWidgetState extends State<ActionBottomWidget> {
                   ActionIcon(
                     icon: Icons.add,
                     onTap: () {
-                      final _currentSubtasks =
-                          context.read<CreateBloc>().state.subTasks ??
-                              <SubTaskEntry>[];
+                      final _currentSubtasks = context.read<CreateBloc>().state.subTasks ?? <SubTaskEntry>[];
                       _currentSubtasks.add(
                         SubTaskEntry(
                           id: uuid.v1(),
@@ -140,8 +127,7 @@ class _ActionBottomWidgetState extends State<ActionBottomWidget> {
                         ),
                       );
 
-                      context.read<CreateBloc>().add(
-                          CreateEvent.subTaskListChanged(_currentSubtasks));
+                      context.read<CreateBloc>().add(CreateEvent.subTaskListChanged(_currentSubtasks));
                     },
                   )
                 ]

@@ -6,7 +6,7 @@ import 'package:refocus_app/core/util/ui/ui_helper.dart';
 class AuthTextFieldWidget extends StatefulWidget {
   const AuthTextFieldWidget({
     Key? key,
-    required this.controller,
+    this.controller,
     this.placeHolderText,
     this.onChanged,
     this.onEditingComplete,
@@ -17,7 +17,7 @@ class AuthTextFieldWidget extends StatefulWidget {
     this.autofocus = false,
   }) : super(key: key);
 
-  final TextEditingController controller;
+  final TextEditingController? controller;
   final String? placeHolderText;
   final Function(String)? onChanged;
   final Function()? onEditingComplete;

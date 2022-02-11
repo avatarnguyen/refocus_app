@@ -26,8 +26,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     on<_LoginSubmitted>(_onLoginSubmitted);
   }
 
-  void _onLoginUsernameChanged(
-      _LoginUsernameChanged event, Emitter<LoginState> emit) {
+  void _onLoginUsernameChanged(_LoginUsernameChanged event, Emitter<LoginState> emit) {
     final _username = Username.dirty(event.username);
     emit(state.copyWith(
       username: _username,
@@ -38,8 +37,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     ));
   }
 
-  void _onLoginPasswordChanged(
-      _LoginPasswordChanged event, Emitter<LoginState> emit) {
+  void _onLoginPasswordChanged(_LoginPasswordChanged event, Emitter<LoginState> emit) {
     final _password = Password.dirty(event.password);
     emit(state.copyWith(
       password: _password,
@@ -50,8 +48,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     ));
   }
 
-  Future<void> _onLoginSubmitted(
-      _LoginSubmitted event, Emitter<LoginState> emit) async {
+  Future<void> _onLoginSubmitted(_LoginSubmitted event, Emitter<LoginState> emit) async {
     if (state.status?.isValid == true) {
       emit(state.copyWith(status: FormzStatus.submissionInProgress));
       try {
@@ -59,10 +56,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           username: state.username?.value,
           password: state.password?.value,
         ));
-        result.fold(
-            (failure) => (failure is AuthFailure)
-                ? emit(state.copyWith(status: FormzStatus.submissionCanceled))
-                : emit(state.copyWith(status: FormzStatus.submissionFailure)),
+        result.fold((failure) => (failure is AuthFailure) ? emit(state.copyWith(status: FormzStatus.submissionCanceled)) : emit(state.copyWith(status: FormzStatus.submissionFailure)),
             (r) => emit(state.copyWith(status: FormzStatus.submissionSuccess)));
       } catch (e) {
         log('[Login_Bloc] $e');

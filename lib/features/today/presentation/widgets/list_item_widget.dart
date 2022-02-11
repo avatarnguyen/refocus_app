@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:refocus_app/core/core.dart';
 import 'package:refocus_app/core/presentation/widgets/edit_page_widgets/detail_event_view.dart';
 import 'package:refocus_app/core/presentation/widgets/edit_page_widgets/detail_task_view.dart';
 import 'package:refocus_app/core/presentation/widgets/edit_page_widgets/edit_task_header.dart';
@@ -107,10 +108,8 @@ class _ListItemWidgetState extends State<ListItemWidget> {
   @override
   Widget build(BuildContext context) {
     final _isEvent = _type == TodayEntryType.event;
-    final _isPassed =
-        _endDateTime != null && _endDateTime!.compareTo(DateTime.now()) <= 0;
-    final _color = StyleUtils.getColorFromString(
-        _colorID ?? widget.project?.color ?? '#115FFB');
+    final _isPassed = _endDateTime != null && _endDateTime!.compareTo(DateTime.now()) <= 0;
+    final _color = StyleUtils.getColorFromString(_colorID ?? widget.project?.color ?? '#115FFB');
     final _backgroudColor = StyleUtils.lighten(_color, 0.32);
     final _textColor = StyleUtils.darken(_color, 0.2);
 
@@ -126,8 +125,7 @@ class _ListItemWidgetState extends State<ListItemWidget> {
     // and whether the time is start time or due time
     if (widget.project != null) {
       if (_startDateTime != null) {
-        final _startDateTimeStr =
-            CustomDateUtils.returnTime(_startDateTime!.toLocal());
+        final _startDateTimeStr = CustomDateUtils.returnTime(_startDateTime!.toLocal());
         _startTimeStr = _startDateTimeStr;
         // Get Today Event Type for TodayBloc
         if (_endDateTime != null) {
@@ -136,8 +134,7 @@ class _ListItemWidgetState extends State<ListItemWidget> {
         }
       }
     } else if (widget.selectedDate != null) {
-      if (_dueDateTime != null &&
-          widget.selectedDate!.day == _dueDateTime!.day) {
+      if (_dueDateTime != null && widget.selectedDate!.day == _dueDateTime!.day) {
         _startTimeStr = 'due today';
         // Get Today Event Type for TodayBloc
         _eventBlocType = _dueDateTime!.isToday
@@ -146,8 +143,7 @@ class _ListItemWidgetState extends State<ListItemWidget> {
                 ? TodayEventType.tomorrow
                 : TodayEventType.upcoming;
       } else if (_startDateTime != null) {
-        final _startDateTimeStr =
-            CustomDateUtils.returnTime(_startDateTime!.toLocal());
+        final _startDateTimeStr = CustomDateUtils.returnTime(_startDateTime!.toLocal());
         _startTimeStr = _startDateTimeStr;
         // Get Today Event Type for TodayBloc
         _eventBlocType = _startDateTime!.isToday
@@ -163,8 +159,7 @@ class _ListItemWidgetState extends State<ListItemWidget> {
     }
 
     // Change to specific Date when selected Date is chose
-    if (_dateTimeStream.selectedDate != null &&
-        _dateTimeStream.selectedDate!.isToday == false) {
+    if (_dateTimeStream.selectedDate != null && _dateTimeStream.selectedDate!.isToday == false) {
       _eventBlocType = TodayEventType.specificDate;
     }
 
@@ -174,18 +169,9 @@ class _ListItemWidgetState extends State<ListItemWidget> {
         motion: const StretchMotion(),
         children: [
           SlidableAction(
-            backgroundColor:
-                Slidable.of(context)?.actionPaneType.value == ActionPaneType.end
-                    ? kcSuccess500
-                    : Colors.transparent,
-            foregroundColor: Slidable.of(context)?.actionPaneType.value ==
-                    ActionPaneType.start
-                ? kcPrimary500
-                : Colors.white,
-            label: Slidable.of(context) != null &&
-                    Slidable.of(context)!.animation.value > 0.96
-                ? 'Mark as Done'
-                : null,
+            backgroundColor: Slidable.of(context)?.actionPaneType.value == ActionPaneType.end ? kcSuccess500 : Colors.transparent,
+            foregroundColor: Slidable.of(context)?.actionPaneType.value == ActionPaneType.start ? kcPrimary500 : Colors.white,
+            label: Slidable.of(context) != null && Slidable.of(context)!.animation.value > 0.96 ? 'Mark as Done' : null,
             icon: Icons.check,
             onPressed: (_) {},
           ),
@@ -206,10 +192,7 @@ class _ListItemWidgetState extends State<ListItemWidget> {
                 : widget.project != null
                     ? kcError500
                     : kcWarning500,
-            label: Slidable.of(context) != null &&
-                    Slidable.of(context)!.animation.value >= 0.8
-                ? 'change date'
-                : null,
+            label: Slidable.of(context) != null && Slidable.of(context)!.animation.value >= 0.8 ? 'change date' : null,
             onPressed: (_) {
               if (widget.changeItemDate != null) {
                 widget.changeItemDate?.call();
@@ -271,8 +254,7 @@ class _ListItemWidgetState extends State<ListItemWidget> {
         padding: const EdgeInsets.only(left: 8),
         child: Container(
                 width: context.width - (8 + 28 + 8), //8 is hori padding
-                padding:
-                    const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+                padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
                 decoration: BoxDecoration(
                   color: _isEvent ? Colors.white : _backgroudColor,
                   borderRadius: const BorderRadius.only(
@@ -294,9 +276,7 @@ class _ListItemWidgetState extends State<ListItemWidget> {
                       style: context.bodyText1.copyWith(
                         color: _textColor,
                         fontSize: kSmallTextSize,
-                        decoration: _isEvent && _isPassed
-                            ? TextDecoration.lineThrough
-                            : null,
+                        decoration: _isEvent && _isPassed ? TextDecoration.lineThrough : null,
                       ),
                     ).expanded(),
                   ].toRow(),
@@ -316,9 +296,7 @@ class _ListItemWidgetState extends State<ListItemWidget> {
                             : _taskTimeTextStyle,
                       ),
                       if (_endDateTime != null && _endTimeStr != null) ...[
-                        Icon(Icons.arrow_right_alt_rounded,
-                                size: 20, color: _textColor)
-                            .padding(horizontal: 2),
+                        Icon(Icons.arrow_right_alt_rounded, size: 20, color: _textColor).padding(horizontal: 2),
                         Text(
                           _endTimeStr,
                           overflow: TextOverflow.clip,
@@ -337,16 +315,10 @@ class _ListItemWidgetState extends State<ListItemWidget> {
                         textScaleFactor: context.textScaleFactor,
                         style: _taskTimeTextStyle,
                       ),
-                  ].toRow(
-                      mainAxisAlignment:
-                          (widget.project != null && _dueDateTime != null)
-                              ? MainAxisAlignment.spaceBetween
-                              : MainAxisAlignment.start),
+                  ].toRow(mainAxisAlignment: (widget.project != null && _dueDateTime != null) ? MainAxisAlignment.spaceBetween : MainAxisAlignment.start),
 
                   //* Subtask
-                  if (!_isEvent &&
-                      _subtasks != null &&
-                      _subtasks!.isNotEmpty) ...[
+                  if (!_isEvent && _subtasks != null && _subtasks!.isNotEmpty) ...[
                     verticalSpaceTiny,
                     SubTaskItem(
                       subTask: _subtasks!.first,
@@ -505,17 +477,16 @@ class _ListItemWidgetState extends State<ListItemWidget> {
       builder: (context) {
         return PlatformAlertDialog(
           title: 'Delete Task'.toH5(color: context.colorScheme.primary),
-          content: 'Do you want to delete this task permanently?'
-              .toSubtitle1(color: context.colorScheme.primary),
+          content: 'Do you want to delete this task permanently?'.toSubtitle1(color: context.colorScheme.primary),
           actions: [
             PlatformButton(
               color: Colors.transparent,
-              onPressed: () => context.router.pop(false),
+              onPressed: () => context.pop(),
               child: 'Cancel'.toButtonText(color: context.colorScheme.primary),
             ),
             PlatformButton(
               color: Colors.transparent,
-              onPressed: () => context.router.pop(true),
+              onPressed: () => context.pop(),
               child: 'Delete'.toButtonText(color: context.colorScheme.error),
             ),
           ],

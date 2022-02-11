@@ -16,12 +16,7 @@ class SetDueDateWidget extends StatefulWidget {
 }
 
 class _SetDueDateWidgetState extends State<SetDueDateWidget> {
-  final _dueDateSelectionItems = [
-    DueDateSelectionType.today,
-    DueDateSelectionType.tomorrow,
-    DueDateSelectionType.nextWeek,
-    DueDateSelectionType.custom
-  ];
+  final _dueDateSelectionItems = [DueDateSelectionType.today, DueDateSelectionType.tomorrow, DueDateSelectionType.nextWeek, DueDateSelectionType.custom];
   DueDateSelectionType? _currentSelectedDueDate;
 
   late DateTime _dueDate;
@@ -135,13 +130,13 @@ class _SetDueDateWidgetState extends State<SetDueDateWidget> {
                       _currentSelectedDueDate = null;
                       _dueDate = DateTime.now();
                     });
-                    context.router.pop();
+                    context.pop();
                   },
                   onSelectionChanged: (DateRangePickerSelectionChangedArgs args) {
                     _onSelectionChanged(args, isEndDate);
                   },
                   onSubmit: (Object value) {
-                    context.router.pop();
+                    context.pop();
                   },
                 ).padding(all: 8),
               ),

@@ -25,12 +25,10 @@ class PlannedDatetimePickerWidget extends StatefulWidget {
   final Color? textColor;
 
   @override
-  _PlannedDatetimePickerWidgetState createState() =>
-      _PlannedDatetimePickerWidgetState();
+  _PlannedDatetimePickerWidgetState createState() => _PlannedDatetimePickerWidgetState();
 }
 
-class _PlannedDatetimePickerWidgetState
-    extends State<PlannedDatetimePickerWidget> {
+class _PlannedDatetimePickerWidgetState extends State<PlannedDatetimePickerWidget> {
   final log = logger(PlannedDatetimePickerWidget);
 
   DateTime? _plannedStartDate;
@@ -41,10 +39,8 @@ class _PlannedDatetimePickerWidgetState
   bool _isDateRange = false;
   bool _isSomeday = false;
 
-  final FixedExtentScrollController _endTimeScrollCtrl =
-      FixedExtentScrollController(initialItem: 30);
-  final FixedExtentScrollController _startTimeScrollCtrl =
-      FixedExtentScrollController(initialItem: 30);
+  final FixedExtentScrollController _endTimeScrollCtrl = FixedExtentScrollController(initialItem: 30);
+  final FixedExtentScrollController _startTimeScrollCtrl = FixedExtentScrollController(initialItem: 30);
 
   @override
   void initState() {
@@ -64,8 +60,7 @@ class _PlannedDatetimePickerWidgetState
   @override
   Widget build(BuildContext context) {
     final _textColor = widget.textColor ?? kcPrimary100;
-    final _kDayTextStyle =
-        context.h3.copyWith(color: _textColor, fontWeight: FontWeight.w400);
+    final _kDayTextStyle = context.h3.copyWith(color: _textColor, fontWeight: FontWeight.w400);
 
     return BlocBuilder<CreateBloc, CreateState>(
       builder: (context, state) {
@@ -76,9 +71,7 @@ class _PlannedDatetimePickerWidgetState
           height: 280,
           child: [
             if (_isSomeday)
-              Text('Someday',
-                  style: context.h3
-                      .copyWith(color: _textColor, fontWeight: FontWeight.w400))
+              Text('Someday', style: context.h3.copyWith(color: _textColor, fontWeight: FontWeight.w400))
             else
               [
                 Text(
@@ -87,8 +80,7 @@ class _PlannedDatetimePickerWidgetState
                 ).ripple().gestures(onTap: () {
                   _showDatePickerBottomSheet(context);
                 }),
-                Icon(Icons.arrow_right_alt_rounded, color: _textColor)
-                    .padding(horizontal: 8),
+                Icon(Icons.arrow_right_alt_rounded, color: _textColor).padding(horizontal: 8),
                 if (!_isAllDay && !_isDateRange && !_isSomeday)
                   Text(
                     _formatDateToHumanLang(_plannedEndDate),
@@ -176,29 +168,20 @@ class _PlannedDatetimePickerWidgetState
             //   }).padding(top: 8),
             if (_isAllDay || _isDateRange || _isSomeday) verticalSpaceRegular,
             [
-              _buildSelectionMode(
-                  context, 'all date', DateSelectionType.allDate),
+              _buildSelectionMode(context, 'all date', DateSelectionType.allDate),
               if (state.todayEntryType == TodayEntryType.event)
-                _buildSelectionMode(
-                    context, 'date range', DateSelectionType.dateRange)
+                _buildSelectionMode(context, 'date range', DateSelectionType.dateRange)
               else
-                _buildSelectionMode(
-                    context, 'someday', DateSelectionType.someday),
-            ]
-                .toRow(mainAxisAlignment: MainAxisAlignment.spaceEvenly)
-                .padding(top: 8),
-            if (state.todayEntryType != TodayEntryType.event)
-              const AddTimeBlockWidget().padding(bottom: 4)
-            else
-              verticalSpaceMedium,
+                _buildSelectionMode(context, 'someday', DateSelectionType.someday),
+            ].toRow(mainAxisAlignment: MainAxisAlignment.spaceEvenly).padding(top: 8),
+            if (state.todayEntryType != TodayEntryType.event) const AddTimeBlockWidget().padding(bottom: 4) else verticalSpaceMedium,
           ].toColumn(mainAxisAlignment: MainAxisAlignment.end),
         );
       },
     );
   }
 
-  Widget _buildSelectionMode(
-      BuildContext context, String title, DateSelectionType type) {
+  Widget _buildSelectionMode(BuildContext context, String title, DateSelectionType type) {
     return ChoiceChip(
       backgroundColor: context.colorScheme.background,
       selectedColor: context.colorScheme.secondary,
@@ -255,8 +238,7 @@ class _PlannedDatetimePickerWidgetState
     }
   }
 
-  dynamic _showDatePickerBottomSheet(BuildContext parentContext,
-      {bool isEndDate = false}) async {
+  dynamic _showDatePickerBottomSheet(BuildContext parentContext, {bool isEndDate = false}) async {
     final _sheetController = SheetController();
     final _currentDateTime = isEndDate ? _plannedEndDate : _plannedStartDate;
 
@@ -284,11 +266,11 @@ class _PlannedDatetimePickerWidgetState
                 context.read<CreateBloc>()
                   ..add(CreateEvent.startDateTimeChanged(DateTime.now()))
                   ..add(CreateEvent.endDateTimeChanged(1.hours.fromNow));
-                context.router.pop();
+                context.pop();
               },
               onSubmitPressed: () async {
                 await _sheetController.collapse();
-                await context.router.pop();
+                context.pop();
               },
             );
           },
@@ -297,29 +279,20 @@ class _PlannedDatetimePickerWidgetState
     );
   }
 
-  void _onSelectionChanged(
-      DateRangePickerSelectionChangedArgs args, bool isEndDate) {
+  void _onSelectionChanged(DateRangePickerSelectionChangedArgs args, bool isEndDate) {
     final dynamic picked = args.value;
     if (picked is DateTime) {
       if (_isDateRange) {
         if (isEndDate) {
-          context
-              .read<CreateBloc>()
-              .add(CreateEvent.endDateTimeChanged(picked));
+          context.read<CreateBloc>().add(CreateEvent.endDateTimeChanged(picked));
           // _plannedEndDate = picked;
         } else {
-          context
-              .read<CreateBloc>()
-              .add(CreateEvent.startDateTimeChanged(picked));
+          context.read<CreateBloc>().add(CreateEvent.startDateTimeChanged(picked));
           // _plannedStartDate = picked;
         }
       } else if (_isAllDay) {
-        context
-            .read<CreateBloc>()
-            .add(const CreateEvent.endDateTimeChanged(null));
-        context
-            .read<CreateBloc>()
-            .add(CreateEvent.startDateTimeChanged(picked));
+        context.read<CreateBloc>().add(const CreateEvent.endDateTimeChanged(null));
+        context.read<CreateBloc>().add(CreateEvent.startDateTimeChanged(picked));
       } else {
         _plannedStartDate = picked.copyWith(
           hour: _plannedStartDate?.hour,
@@ -327,9 +300,7 @@ class _PlannedDatetimePickerWidgetState
           second: _plannedStartDate?.second,
         );
 
-        context
-            .read<CreateBloc>()
-            .add(CreateEvent.startDateTimeChanged(_plannedStartDate));
+        context.read<CreateBloc>().add(CreateEvent.startDateTimeChanged(_plannedStartDate));
         // context.read<CreateBloc>().add(CreateEvent.endDateTimeChanged(
         //     _plannedStartDate + _currentDuration));
       }

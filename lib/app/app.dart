@@ -15,6 +15,11 @@ import 'package:refocus_app/core/util/ui/theme.dart';
 import 'package:refocus_app/features/auth/presentation/authentication/bloc/auth_bloc.dart';
 import 'package:refocus_app/features/auth/presentation/login/bloc/login_bloc.dart';
 import 'package:refocus_app/features/auth/presentation/signup/bloc/signup_bloc.dart';
+import 'package:refocus_app/features/calendar/presentation/bloc/calendar/calendar_bloc.dart';
+import 'package:refocus_app/features/calendar/presentation/bloc/calendar_list/calendar_list_bloc.dart';
+import 'package:refocus_app/features/task/presentation/bloc/cubit/subtask_cubit.dart';
+import 'package:refocus_app/features/task/presentation/bloc/project_bloc.dart';
+import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
 import 'package:refocus_app/injection.dart';
 import 'package:refocus_app/l10n/l10n.dart';
 
@@ -43,16 +48,28 @@ class _AppState extends State<App> {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (_) => getIt<AuthBloc>()
-            ..add(
-              const AuthEvent.autoSignInAttempt(),
-            ),
+          create: (_) => getIt<AuthBloc>(),
         ),
         BlocProvider(
           create: (_) => getIt<SignupBloc>(),
         ),
+        // BlocProvider(
+        //   create: (_) => getIt<LoginBloc>(),
+        // ),
+        BlocProvider<ProjectBloc>(
+          create: (_) => getIt<ProjectBloc>(),
+        ),
+        BlocProvider<TaskBloc>(
+          create: (_) => getIt<TaskBloc>(),
+        ),
         BlocProvider(
-          create: (_) => getIt<LoginBloc>(),
+          create: (_) => getIt<SubtaskCubit>(),
+        ),
+        BlocProvider<CalendarListBloc>(
+          create: (_) => getIt<CalendarListBloc>(),
+        ),
+        BlocProvider<CalendarBloc>(
+          create: (_) => getIt<CalendarBloc>(),
         ),
       ],
       child: const _AppWidget(),
@@ -60,10 +77,23 @@ class _AppState extends State<App> {
   }
 }
 
-class _AppWidget extends StatelessWidget {
+class _AppWidget extends StatefulWidget {
   const _AppWidget({
     Key? key,
   }) : super(key: key);
+
+  @override
+  State<_AppWidget> createState() => _AppWidgetState();
+}
+
+class _AppWidgetState extends State<_AppWidget> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<AuthBloc>().add(
+          const AuthEvent.autoSignInAttempt(),
+        );
+  }
 
   @override
   Widget build(BuildContext context) {

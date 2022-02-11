@@ -24,49 +24,16 @@ const kRouteConfirmation = 'confirmation';
 const kRouteCreate = 'create';
 
 GoRouter getRouterConfig(BuildContext appContext) => GoRouter(
-      // navigatorBuilder: (context, state, child) {
-      //   print(context);
-      //   print(state.location);
-      //   final _isCreating = state.location == '/create';
-      //   if (_isCreating) {
-      //     return MultiBlocProvider(
-      //       providers: [
-      //         BlocProvider.value(
-      //           value: context.read<ProjectBloc>(),
-      //         ),
-      //         BlocProvider.value(
-      //           value: context.read<TaskBloc>(),
-      //         ),
-      //         BlocProvider.value(
-      //           value: context.read<SubtaskCubit>(),
-      //         ),
-      //         BlocProvider.value(
-      //           value: context.read<CalendarListBloc>(),
-      //         ),
-      //         BlocProvider.value(
-      //           value: context.read<CalendarBloc>(),
-      //         ),
-      //       ],
-      //       child: child,
-      //     );
-      //   } else {
-      //     return child;
-      //   }
-      // },
       routes: [
         GoRoute(
           name: kRouteAppLoader,
           path: '/',
           builder: (context, state) => const AppLoaderPage(),
-          // routes: [],
         ),
         GoRoute(
           name: kRouteCreate,
           path: '/create',
-          builder: (context, state) {
-            final _context = state.extra! as BuildContext;
-            return CreatePage(blocContext: _context);
-          },
+          builder: (context, state) => const CreatePage(),
         ),
         GoRoute(
           name: kRouteConfirmation,
