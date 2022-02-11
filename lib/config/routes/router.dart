@@ -1,56 +1,73 @@
-import 'package:auto_route/auto_route.dart';
-import 'package:refocus_app/config/routes/custom_router.dart';
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:refocus_app/core/presentation/pages/app_loader_page.dart';
 import 'package:refocus_app/core/presentation/pages/home_page.dart';
-import 'package:refocus_app/features/create/presentation/pages/create_page.dart';
+import 'package:refocus_app/features/auth/presentation/authentication/bloc/auth_bloc.dart';
 import 'package:refocus_app/features/auth/presentation/login/pages/login_page.dart';
-import 'package:refocus_app/features/auth/presentation/signup/pages/confirmation_page.dart';
-import 'package:refocus_app/features/auth/presentation/signup/pages/signup_page.dart';
-import 'package:refocus_app/features/setting/presentation/pages/setting_page.dart';
-import 'package:refocus_app/features/task/presentation/pages/create_project_page.dart';
-import 'package:refocus_app/features/task/presentation/pages/task_page.dart';
+import 'package:refocus_app/injection.dart';
 
-export 'router.gr.dart';
+const kRouteAppLoader = 'app_loader';
+const kRouteHome = 'home';
+const kRouteLogin = 'login';
 
-// TODO: maybe change to @CustomAutoRouter to ios style modalsheet to work
-@AdaptiveAutoRouter(
-  replaceInRouteName: 'Page,Route',
-  routes: <AutoRoute>[
-    AutoRoute<dynamic>(
-      page: AppLoaderWrapperPage,
-      initial: true,
-      children: [
-        AutoRoute<dynamic>(page: AppLoaderPage, initial: true, children: [
-          //? Home Page
-          AutoRoute<dynamic>(
-            page: HomePage,
-            initial: true,
-            children: [
-              AutoRoute<dynamic>(page: HomePageWidget, initial: true),
-              CustomRoute<dynamic>(
-                page: CreatePage,
-                customRouteBuilder: modalSheetCustomRouteBuilder,
-              ),
-              CustomRoute<dynamic>(
-                page: CreateProjectPage,
-                customRouteBuilder: modalSheetCustomRouteBuilder,
-              ),
-              CustomRoute<dynamic>(
-                page: TaskPage,
-                customRouteBuilder: modalSheetCustomRouteBuilder,
-              ),
-              CustomRoute<dynamic>(
-                page: SettingPage,
-                customRouteBuilder: modalSheetCustomRouteBuilder,
-              ),
-            ],
-          ),
-        ]),
-        AutoRoute<dynamic>(page: LoginPage, fullscreenDialog: true),
-        AutoRoute<dynamic>(page: SignupPage, fullscreenDialog: true),
-        AutoRoute<dynamic>(page: ConfirmationPage, fullscreenDialog: true),
-      ],
+final goRouter = GoRouter(
+  // navigatorBuilder: (context, state, child) {
+  // },
+  // initialLocation: '/home',
+  routes: [
+    GoRoute(
+      name: kRouteAppLoader,
+      path: '/',
+      builder: (context, state) => const AppLoaderPage(),
+    ),
+    GoRoute(
+      name: kRouteHome,
+      path: '/home',
+      builder: (context, state) => const HomePage(),
+    ),
+    GoRoute(
+      name: kRouteLogin,
+      path: '/login',
+      builder: (context, state) => const LoginPage(),
     ),
   ],
-)
-class $AppRouter {}
+  redirect: (state) {
+    final _authState = getIt<AuthBloc>().state;
+
+    // final loginloc = state.namedLocation('login');
+    return _authState.maybeWhen(
+      authenticated: (_) => state.location,
+      unauthenticated: () => '/login',
+      orElse: () => null,
+    );
+  },
+  refreshListenable: GoRouterRefreshStream(getIt<AuthBloc>().stream),
+  debugLogDiagnostics: true,
+  errorPageBuilder: (context, state) => MaterialPage(
+    key: state.pageKey,
+    child: Scaffold(
+      body: Center(
+        child: Text(state.error.toString()),
+      ),
+    ),
+  ),
+);
+
+/* class AuthStateNotifier extends ChangeNotifier {
+  AuthStateNotifier(AuthBloc bloc) {
+   _authBlocStream  = bloc.stream.listen((event) {
+      notifyListeners();
+    });
+  }
+
+  late final StreamSubscription<AuthState> _authBlocStream;
+
+  @override
+  void dispose() {
+    super.dispose();
+    _authBlocStream.cancel();
+  }
+} */

@@ -25,7 +25,7 @@ import 'package:sliding_sheet/sliding_sheet.dart';
 
 // const rightPaddingSize = 8.0;
 
-class HomePage extends StatelessWidget implements AutoRouteWrapper {
+/* class HomePage extends StatelessWidget implements AutoRouteWrapper {
   const HomePage({Key? key}) : super(key: key);
 
   @override
@@ -57,16 +57,16 @@ class HomePage extends StatelessWidget implements AutoRouteWrapper {
   Widget build(BuildContext context) {
     return const AutoRouter();
   }
-}
+} */
 
-class HomePageWidget extends StatefulWidget {
-  const HomePageWidget({Key? key}) : super(key: key);
+class HomePage extends StatefulWidget {
+  const HomePage({Key? key}) : super(key: key);
 
   @override
-  _HomePageWidgetState createState() => _HomePageWidgetState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageWidgetState extends State<HomePageWidget> {
+class _HomePageState extends State<HomePage> {
   final PageController _pageController = PageController(
     initialPage: 1,
   );
@@ -111,8 +111,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
   }
 
   void switchToPageView() {
-    _pageController.animateToPage(_currentPage == 0 ? 1 : 0,
-        duration: 400.milliseconds, curve: Curves.easeInOut);
+    _pageController.animateToPage(_currentPage == 0 ? 1 : 0, duration: 400.milliseconds, curve: Curves.easeInOut);
   }
 
   @override
@@ -138,8 +137,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
         closeOnBackdropTap: true,
         closeOnBackButtonPressed: Platform.isAndroid,
         headerBuilder: (context, state) => SheetListenerBuilder(
-          buildWhen: (oldState, newState) =>
-              oldState.isExpanded != newState.isExpanded,
+          buildWhen: (oldState, newState) => oldState.isExpanded != newState.isExpanded,
           builder: (context, state) {
             return SlidingHeaderWidget(
               sheetState: state,

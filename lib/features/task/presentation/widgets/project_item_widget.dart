@@ -38,8 +38,7 @@ class _ProjectItemState extends State<ProjectItem> {
 
   @override
   Widget build(BuildContext context) {
-    final _color =
-        StyleUtils.getColorFromString(_currentProject.color ?? '#8879FC');
+    final _color = StyleUtils.getColorFromString(_currentProject.color ?? '#8879FC');
     final _backgroundColor = StyleUtils.darken(_color);
     final _textColor = StyleUtils.darken(_color, 0.4);
 
@@ -60,7 +59,7 @@ class _ProjectItemState extends State<ProjectItem> {
             backgroundColor: Colors.transparent,
             foregroundColor: context.colorScheme.onPrimary,
             onPressed: (_) {
-              context.navigateTo(CreateProjectRoute(project: _currentProject));
+              // context.navigateTo(CreateProjectRoute(project: _currentProject));
             },
           ),
           SlidableAction(
@@ -119,9 +118,9 @@ class _ProjectItemState extends State<ProjectItem> {
           context.read<TaskBloc>().add(
                 GetTaskEntriesEvent(project: _currentProject),
               );
-          context.router.push(TaskRoute(
-            project: _currentProject,
-          ));
+          // context.router.push(TaskRoute(
+          //   project: _currentProject,
+          // ));
         },
       ),
     );
@@ -133,9 +132,7 @@ class _ProjectItemState extends State<ProjectItem> {
       builder: (context) {
         return PlatformAlertDialog(
           title: 'Delete Project'.toH5(color: context.colorScheme.primary),
-          content:
-              'Do you want to delete this project permanently? All Tasks inside the project will be deleted as well!'
-                  .toSubtitle1(color: context.colorScheme.primary),
+          content: 'Do you want to delete this project permanently? All Tasks inside the project will be deleted as well!'.toSubtitle1(color: context.colorScheme.primary),
           actions: [
             PlatformButton(
               color: Colors.transparent,
@@ -145,8 +142,7 @@ class _ProjectItemState extends State<ProjectItem> {
             PlatformButton(
               color: Colors.transparent,
               onPressed: () => context.router.pop(true),
-              child: 'Delete Project'
-                  .toButtonText(color: context.colorScheme.error),
+              child: 'Delete Project'.toButtonText(color: context.colorScheme.error),
             ),
           ],
         );

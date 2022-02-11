@@ -54,14 +54,13 @@ class _ProjectPageState extends State<ProjectPage> {
                     child: PlatformButton(
                       cupertino: (context, platform) => CupertinoButtonData(
                         color: Colors.white,
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(16)),
+                        borderRadius: const BorderRadius.all(Radius.circular(16)),
                       ),
                       material: (context, platform) => MaterialRaisedButtonData(
                         color: Colors.white,
                       ),
                       onPressed: () {
-                        context.navigateTo(CreateProjectRoute());
+                        // context.navigateTo(CreateProjectRoute());
                       }, //_showCreateProjectBottomSheet,
                       child: Icon(
                         Icons.add,
@@ -74,8 +73,7 @@ class _ProjectPageState extends State<ProjectPage> {
                 // index -= 1;
                 final _project = _projects[index];
                 return ProjectItem(
-                  key:
-                      Key('${_project.id}_${_project.title}_${_project.color}'),
+                  key: Key('${_project.id}_${_project.title}_${_project.color}'),
                   project: _project,
                 );
               },

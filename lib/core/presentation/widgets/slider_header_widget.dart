@@ -47,8 +47,7 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
   @override
   void initState() {
     _pageSub = _pageStream.pageStream.listen(_pageIndexReceived);
-    _segmentedControlSub =
-        _slidingStream.pageStream.listen(_slidingIndexReceived);
+    _segmentedControlSub = _slidingStream.pageStream.listen(_slidingIndexReceived);
     super.initState();
   }
 
@@ -134,16 +133,14 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
                 decoration: TextDecoration.underline,
               ),
             ),
-          ].toRow(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start),
+          ].toRow(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start),
           const Icon(
             Icons.add,
             color: kcSecondary100,
             size: 33,
           ).gestures(onTap: () {
             widget.closeSheet();
-            context.router.push(const CreateRoute());
+            // context.router.push(const CreateRoute());
           }),
         ].toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween),
         CupertinoSlidingSegmentedControl<int>(
@@ -196,9 +193,7 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
           builder: (context, state) {
             return DatePickerWidget(
               initialDate: _dateTimeStream.selectedDate,
-              pickerView: _isMonthCal
-                  ? DateRangePickerView.year
-                  : DateRangePickerView.month,
+              pickerView: _isMonthCal ? DateRangePickerView.year : DateRangePickerView.month,
               onSelectionChanged: _onSelectionChanged,
               onCancelPressed: () {
                 _dateTimeStream.broadCastCurrentDate(DateTime.now());

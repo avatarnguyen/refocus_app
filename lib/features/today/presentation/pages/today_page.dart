@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:refocus_app/config/routes/router.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart' as custom_log;
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/features/today/presentation/bloc/today/today_bloc.dart';
@@ -67,8 +66,7 @@ class _TodayPageState extends State<TodayPage> {
     return MultiBlocProvider(
       providers: [
         BlocProvider<TodayBloc>(
-          create: (context) =>
-              getIt<TodayBloc>()..add(GetCurrentDayEntries(today)),
+          create: (context) => getIt<TodayBloc>()..add(GetCurrentDayEntries(today)),
         ),
         BlocProvider(create: (context) => getIt<TomorrowBloc>()),
         BlocProvider(create: (context) => getIt<UpcomingCubit>()),
@@ -96,7 +94,7 @@ class _TodayPageState extends State<TodayPage> {
                 padding: EdgeInsets.zero,
                 child: const Icon(Icons.settings_outlined),
                 onPressed: () {
-                  context.navigateTo(const SettingRoute());
+                  // context.navigateTo(const SettingRoute());
                 },
               ),
             ),

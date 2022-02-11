@@ -46,12 +46,8 @@ class AWSAuthDataSource implements AuthDataSource {
       for (final element in attributes) {
         log.v('key: ${element.userAttributeKey}; value: ${element.value}');
       }
-      final userId = attributes
-          .firstWhere((element) => element.userAttributeKey == 'sub')
-          .value as String;
-      final userEmail = attributes
-          .firstWhere((element) => element.userAttributeKey == 'email')
-          .value as String;
+      final userId = attributes.firstWhere((element) => element.userAttributeKey == 'sub').value as String;
+      final userEmail = attributes.firstWhere((element) => element.userAttributeKey == 'email').value as String;
       return aws_model.User(
         id: userId,
         email: userEmail,
@@ -84,8 +80,7 @@ class AWSAuthDataSource implements AuthDataSource {
 
   Future<void> _createUserModelInDataStore(aws_model.User user) async {
     try {
-      final _fetchUser = await Amplify.DataStore.query(aws_model.User.classType,
-          where: aws_model.User.ID.eq(user.id));
+      final _fetchUser = await Amplify.DataStore.query(aws_model.User.classType, where: aws_model.User.ID.eq(user.id));
       if (_fetchUser.isEmpty) {
         await Amplify.DataStore.save(user);
         await _createExampleProjectAtFirstSignIn(user.id);
@@ -120,8 +115,7 @@ class AWSAuthDataSource implements AuthDataSource {
   }
 
   @override
-  Future<bool> login(
-      {required String username, required String password}) async {
+  Future<bool> login({required String username, required String password}) async {
     try {
       // await Amplify.Auth.signOut();
       final result = await Amplify.Auth.signIn(
@@ -148,10 +142,7 @@ class AWSAuthDataSource implements AuthDataSource {
   }
 
   @override
-  Future<void> signUp(
-      {required String username,
-      required String email,
-      required String password}) async {
+  Future<void> signUp({required String username, required String email, required String password}) async {
     final options = CognitoSignUpOptions(
       userAttributes: {'email': email.trim()},
     );
@@ -180,12 +171,12 @@ class AWSAuthDataSource implements AuthDataSource {
 
     log.v('Amplify Configured: ${Amplify.isConfigured}');
 
-    _hubSubscription = Amplify.Hub.listen([HubChannel.Auth], (event) {
+    _hubSubscription = Amplify.Hub.listen([HubChannel.Auth], (dynamic event) {
       log.v('Event Received: $event');
       if (event != null) {
-        // ignore: avoid_dynamic_calls
-        log.d('--> Auth Event: ${event.eventName}');
-        switch (event.eventName) {
+        final _event = event as AuthHubEvent;
+        log.d('--> Auth Event: ${_event.eventName}');
+        switch (_event.eventName) {
           case 'SIGNED_IN':
             {
               log.i('USER IS SIGNED IN');
@@ -239,6 +230,5 @@ class AWSAuthDataSource implements AuthDataSource {
 }
 
 class AuthHubEvent extends HubEvent {
-  AuthHubEvent(String eventName, {HubEventPayload? payload})
-      : super(eventName, payload: payload);
+  AuthHubEvent(String eventName, {HubEventPayload? payload}) : super(eventName, payload: payload);
 }
