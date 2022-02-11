@@ -17,22 +17,16 @@ abstract class GCalRemoteDataSource {
   /// Calls the google calendar api endpoint.
   ///
   /// Throws a [ServerException] for all error codes.
-  Future<List<GCalEventEntryModel>> getRemoteGoogleEventsData(
-      {List<GCalEntryModel>? calendarList,
-      required DateTime timeMin,
-      required DateTime timeMax});
+  Future<List<GCalEventEntryModel>> getRemoteGoogleEventsData({List<GCalEntryModel>? calendarList, required DateTime timeMin, required DateTime timeMax});
 
   /// Add New Event to Google Calendar
-  Future<void> addRemoteGoogleEvent(
-      {String? calendarId, required GCalEventEntryModel eventModel});
+  Future<void> addRemoteGoogleEvent({String? calendarId, required GCalEventEntryModel eventModel});
 
   /// Update Event in Google Calendar
-  Future<void> updateRemoteGoogleEvent(
-      {String? calendarId, required GCalEventEntryModel eventModel});
+  Future<void> updateRemoteGoogleEvent({String? calendarId, required GCalEventEntryModel eventModel});
 
   /// Delete Event in Google Calendar
-  Future<void> deleteRemoteGoogleEvent(
-      {required String calendarId, required GCalEventEntryModel eventModel});
+  Future<void> deleteRemoteGoogleEvent({required String calendarId, required GCalEventEntryModel eventModel});
 }
 
 @LazySingleton(as: GCalRemoteDataSource)
@@ -96,15 +90,13 @@ class GoogleAPIGCalRemoteDataSoure implements GCalRemoteDataSource {
     return appointments;
   }
 
-  List<GCalEventEntryModel> _insertEventsToAppointments(
-      google_api.Events calEvents, List<GCalEventEntryModel> appointments,
-      {GCalEntryModel? calendar}) {
+  List<GCalEventEntryModel> _insertEventsToAppointments(google_api.Events calEvents, List<GCalEventEntryModel> appointments, {GCalEntryModel? calendar}) {
     if (calEvents.items != null && calEvents.items!.isNotEmpty) {
       log.d('Items Total #: ${calEvents.items!.length}');
       log.i('Items: ${calEvents.items?[0]}');
       for (var i = 0; i < calEvents.items!.length; i++) {
         final event = calEvents.items![i];
-        log.d(event.toJson());
+        log.v(event.toJson());
         if (event.start != null) {
           final eventJson = event.toJson();
 
@@ -150,9 +142,9 @@ class GoogleAPIGCalRemoteDataSoure implements GCalRemoteDataSource {
       try {
         if (eventModel.id != null) {
           final request = google_api.Event.fromJson(eventModel.toJson());
-          print(eventModel.toJson());
-          print(request.toJson());
-          print('Calendar ID: $calendarId');
+          log.v(eventModel.toJson());
+          log.v(request.toJson());
+          log.v('Calendar ID: $calendarId');
           await calendarApi.events.update(
             request,
             calendarId ?? 'primary',
@@ -232,10 +224,8 @@ class GoogleAPIClient extends io.IOClient {
   final Map<String, String> _headers;
 
   @override
-  Future<io.IOStreamedResponse> send(http.BaseRequest request) =>
-      super.send(request..headers.addAll(_headers));
+  Future<io.IOStreamedResponse> send(http.BaseRequest request) => super.send(request..headers.addAll(_headers));
 
   @override
-  Future<http.Response> head(Uri url, {Map<String, String>? headers}) =>
-      super.head(url, headers: headers?..addAll(_headers));
+  Future<http.Response> head(Uri url, {Map<String, String>? headers}) => super.head(url, headers: headers?..addAll(_headers));
 }

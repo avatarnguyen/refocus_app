@@ -25,40 +25,6 @@ import 'package:sliding_sheet/sliding_sheet.dart';
 
 // const rightPaddingSize = 8.0;
 
-/* class HomePage extends StatelessWidget implements AutoRouteWrapper {
-  const HomePage({Key? key}) : super(key: key);
-
-  @override
-  Widget wrappedRoute(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<ProjectBloc>(
-          create: (_) =>
-              getIt<ProjectBloc>(), //..add(GetProjectEntriesEvent()),
-        ), //..add(GetProjectEntriesEvent())),
-        BlocProvider<TaskBloc>(
-          create: (_) => getIt<TaskBloc>(),
-        ),
-        BlocProvider(
-          create: (_) => getIt<SubtaskCubit>(),
-        ),
-        BlocProvider<CalendarListBloc>(
-          create: (_) => getIt<CalendarListBloc>()..add(GetCalendarListEvent()),
-        ),
-        BlocProvider<CalendarBloc>(
-          create: (_) => getIt<CalendarBloc>(),
-        ),
-      ],
-      child: this,
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return const AutoRouter();
-  }
-} */
-
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -98,7 +64,7 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  Future _attemptSignInGoogle() async {
+  Future<void> _attemptSignInGoogle() async {
     // Sign in google calendar api
     await _googleSignIn.signInSilently();
   }
@@ -119,7 +85,7 @@ class _HomePageState extends State<HomePage> {
     return _drawerBody(context);
   }
 
-  PlatformScaffold _drawerBody(BuildContext context) {
+  Widget _drawerBody(BuildContext context) {
     return PlatformScaffold(
       body: SlidingSheet(
         controller: _sheetController,
@@ -175,7 +141,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _collapseBottomSheet() {
-    log.i('Collapse Sheet');
+    // log.i('Collapse Sheet');
     _sheetController.collapse();
   }
 

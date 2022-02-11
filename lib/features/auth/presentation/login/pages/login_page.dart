@@ -69,8 +69,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             Row(
               children: [
-                PlatformButton(
-                  color: context.colorScheme.primary,
+                PlatformElevatedButton(
                   child: Text(
                     'Login',
                     style: context.bodyText1.copyWith(

@@ -33,30 +33,33 @@ class _TodayPageState extends State<TodayPage> {
 
   @override
   void initState() {
-    super.initState();
     _sController = ScrollController();
-    _sController.addListener(() {
-      // log.i(_sController.offset);
-      if (_sController.offset > 37) {
-        if (!isAtTop) {
-          setState(() {
-            isAtTop = true;
-          });
-        }
-      } else {
-        if (isAtTop) {
-          setState(() {
-            isAtTop = false;
-          });
-        }
+    _sController.addListener(_onScroll);
+    super.initState();
+  }
+
+  void _onScroll() {
+    if (_sController.offset > 37) {
+      if (!isAtTop) {
+        setState(() {
+          isAtTop = true;
+        });
       }
-    });
+    } else {
+      if (isAtTop) {
+        setState(() {
+          isAtTop = false;
+        });
+      }
+    }
   }
 
   @override
   void dispose() {
+    _sController
+      ..removeListener(_onScroll)
+      ..dispose();
     super.dispose();
-    _sController.removeListener(() {});
   }
 
   @override

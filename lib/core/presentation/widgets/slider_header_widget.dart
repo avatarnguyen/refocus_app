@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:refocus_app/config/routes/router.dart';
 import 'package:refocus_app/core/presentation/helper/page_stream.dart';
 import 'package:refocus_app/core/presentation/helper/sliding_body_stream.dart';
@@ -140,7 +141,7 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
             size: 33,
           ).gestures(onTap: () {
             widget.closeSheet();
-            // context.router.push(const CreateRoute());
+            context.goNamed('create', extra: context);
           }),
         ].toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween),
         CupertinoSlidingSegmentedControl<int>(

@@ -7,8 +7,8 @@ import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/today_entry_type.dart';
 import 'package:refocus_app/features/calendar/domain/entities/calendar_entry.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar/calendar_bloc.dart';
-import 'package:refocus_app/features/calendar/presentation/bloc/calendar_list/calendar_list_bloc.dart'
-    as cal_list;
+import 'package:refocus_app/features/calendar/presentation/bloc/calendar_list/calendar_list_bloc.dart' as cal_list;
+import 'package:refocus_app/features/calendar/presentation/bloc/calendar_list/calendar_list_bloc.dart';
 import 'package:refocus_app/features/create/presentation/bloc/create_bloc.dart';
 import 'package:refocus_app/features/create/presentation/widgets/action_bottom_widget.dart';
 import 'package:refocus_app/features/create/presentation/widgets/create_title_input_widget.dart';
@@ -16,17 +16,41 @@ import 'package:refocus_app/features/create/presentation/widgets/planned_datatim
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
 import 'package:refocus_app/features/task/presentation/bloc/cubit/subtask_cubit.dart';
 import 'package:refocus_app/features/task/presentation/bloc/project_bloc.dart';
+import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
 import 'package:refocus_app/injection.dart';
 import 'package:styled_widget/styled_widget.dart';
 
 class CreatePage extends StatelessWidget {
-  const CreatePage({Key? key}) : super(key: key);
+  const CreatePage({
+    Key? key,
+    required this.blocContext,
+  }) : super(key: key);
+
+  final BuildContext blocContext;
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<CreateBloc>(
-      create: (context) => getIt<CreateBloc>()
-        ..add(const CreateEvent.typeEntryChanged(TodayEntryType.task)),
+    return MultiBlocProvider(
+      providers: [
+        /* BlocProvider.value(
+          value: blocContext.read<ProjectBloc>(),
+        ),
+        BlocProvider.value(
+          value: blocContext.read<TaskBloc>(),
+        ),
+        BlocProvider.value(
+          value: blocContext.read<SubtaskCubit>(),
+        ),
+        BlocProvider.value(
+          value: blocContext.read<CalendarListBloc>(),
+        ),
+        BlocProvider.value(
+          value: blocContext.read<CalendarBloc>(),
+        ), */
+        BlocProvider<CreateBloc>(
+          create: (_) => getIt<CreateBloc>()..add(const CreateEvent.typeEntryChanged(TodayEntryType.task)),
+        ),
+      ],
       child: const CreatePageWidget(),
     );
   }
@@ -56,19 +80,17 @@ class _CreatePageWidgetState extends State<CreatePageWidget> {
         appBar: PlatformAppBar(
           backgroundColor: Colors.transparent,
           title: BlocBuilder<CreateBloc, CreateState>(
-            buildWhen: (previous, current) =>
-                previous.todayEntryType != current.todayEntryType,
+            buildWhen: (previous, current) => previous.todayEntryType != current.todayEntryType,
             builder: (context, state) {
               final _entryType = state.todayEntryType;
               if (_entryType != null) {
                 if (_entryType == TodayEntryType.event) {
                   _currentCalendar = state.calendar;
-                  return BlocBuilder<cal_list.CalendarListBloc,
-                      cal_list.CalendarListState>(
+                  return BlocBuilder<cal_list.CalendarListBloc, cal_list.CalendarListState>(
                     builder: (context, cState) {
                       if (cState is cal_list.CalendarListLoaded) {
                         final _calendars = cState.calendarList;
-                        return PlatformButton(
+                        return PlatformElevatedButton(
                           padding: EdgeInsets.zero,
                           child: Text(
                             _currentCalendar?.name ?? _calendars.first.name,
@@ -76,19 +98,16 @@ class _CreatePageWidgetState extends State<CreatePageWidget> {
                           ),
                           onPressed: () async {
                             final _optionsMenu = <String, CalendarEntry>{};
-                            await Future.forEach(_calendars,
-                                (CalendarEntry _calendar) {
+                            await Future.forEach(_calendars, (CalendarEntry _calendar) {
                               _optionsMenu.addAll({_calendar.name: _calendar});
                             });
-                            final _menuResult =
-                                await showCustomBottomMenu<CalendarEntry>(
+                            final _menuResult = await showCustomBottomMenu<CalendarEntry>(
                               context: context,
                               menuOptionBuilder: () => _optionsMenu,
                             );
                             if (_menuResult != null) {
                               // ignore: use_build_context_synchronously
-                              context.read<CreateBloc>().add(
-                                  CreateEvent.calendarChanged(_menuResult));
+                              context.read<CreateBloc>().add(CreateEvent.calendarChanged(_menuResult));
                             }
                           },
                         );
@@ -103,7 +122,7 @@ class _CreatePageWidgetState extends State<CreatePageWidget> {
                     builder: (context, pState) {
                       if (pState is ProjectLoaded) {
                         final _projects = pState.project;
-                        return PlatformButton(
+                        return PlatformElevatedButton(
                           padding: EdgeInsets.zero,
                           child: Text(
                             _currentProject?.title ?? _projects.first.title!,
@@ -111,20 +130,16 @@ class _CreatePageWidgetState extends State<CreatePageWidget> {
                           ),
                           onPressed: () async {
                             final _optionsMenu = <String, ProjectEntry>{};
-                            await Future.forEach(_projects,
-                                (ProjectEntry _project) {
+                            await Future.forEach(_projects, (ProjectEntry _project) {
                               _optionsMenu.addAll({_project.title!: _project});
                             });
-                            final _menuResult =
-                                await showCustomBottomMenu<ProjectEntry>(
+                            final _menuResult = await showCustomBottomMenu<ProjectEntry>(
                               context: context,
                               menuOptionBuilder: () => _optionsMenu,
                             );
                             if (_menuResult != null) {
                               // ignore: use_build_context_synchronously
-                              context
-                                  .read<CreateBloc>()
-                                  .add(CreateEvent.projectChanged(_menuResult));
+                              context.read<CreateBloc>().add(CreateEvent.projectChanged(_menuResult));
                             }
                           },
                         );
@@ -164,9 +179,7 @@ class _CreatePageWidgetState extends State<CreatePageWidget> {
             ],
             child: const ActionBottomWidget(),
           ),
-        ]
-            .toColumn(mainAxisAlignment: MainAxisAlignment.spaceBetween)
-            .safeArea(),
+        ].toColumn(mainAxisAlignment: MainAxisAlignment.spaceBetween).safeArea(),
       ),
     );
   }

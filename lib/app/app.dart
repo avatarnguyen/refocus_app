@@ -40,7 +40,6 @@ class _AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
-    // final _router = getRouterConfig(context);
     return MultiBlocProvider(
       providers: [
         BlocProvider(
@@ -56,18 +55,30 @@ class _AppState extends State<App> {
           create: (_) => getIt<LoginBloc>(),
         ),
       ],
-      child: MaterialApp.router(
-        routerDelegate: goRouter.routerDelegate,
-        routeInformationParser: goRouter.routeInformationParser,
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-        ],
-        // supportedLocales: AppLocalizations.supportedLocales,
-        theme: materialThemeData,
-        darkTheme: materialDarkThemeData,
-        themeMode: ThemeMode.light,
-      ),
+      child: const _AppWidget(),
+    );
+  }
+}
+
+class _AppWidget extends StatelessWidget {
+  const _AppWidget({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final _router = getRouterConfig(context);
+    return MaterialApp.router(
+      routerDelegate: _router.routerDelegate,
+      routeInformationParser: _router.routeInformationParser,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+      ],
+      // supportedLocales: AppLocalizations.supportedLocales,
+      theme: materialThemeData,
+      darkTheme: materialDarkThemeData,
+      themeMode: ThemeMode.light,
     );
   }
 }

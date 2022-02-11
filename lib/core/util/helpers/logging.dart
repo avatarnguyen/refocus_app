@@ -7,7 +7,7 @@ final logger = (Type type) => Logger(
       printer: PrefixPrinter(
         PrettyPrinter(
           colors: !Platform.isIOS,
-          methodCount: Platform.isIOS ? 2 : 0,
+          methodCount: 0,
           lineLength: 90,
         ),
         location: '[${type.toString()}] ',
@@ -53,6 +53,6 @@ class PrefixPrinter extends LogPrinter {
 
   @override
   List<String> log(LogEvent event) {
-    return _realPrinter.log(event).map((s) => s).toList();
+    return _realPrinter.log(event).map((s) => '$location $s').toList();
   }
 }
