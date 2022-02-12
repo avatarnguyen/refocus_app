@@ -23,66 +23,64 @@ const kRouteLogin = 'login';
 const kRouteConfirmation = 'confirmation';
 const kRouteCreate = 'create';
 
-GoRouter getRouterConfig(BuildContext appContext) => GoRouter(
-      routes: [
-        GoRoute(
-          name: kRouteAppLoader,
-          path: '/',
-          builder: (context, state) => const AppLoaderPage(),
-        ),
-        GoRoute(
-          name: kRouteCreate,
-          path: '/create',
-          builder: (context, state) => const CreatePage(),
-        ),
-        GoRoute(
-          name: kRouteConfirmation,
-          path: '/confirmation',
-          builder: (context, state) => const ConfirmationPage(),
-        ),
-        GoRoute(
-          name: kRouteLogin,
-          path: '/login',
-          builder: (context, state) => const LoginPage(),
-        ),
-      ],
-      redirect: (state) {
-        final _authState = appContext.read<AuthBloc>().state;
-        final _isLogginIn = state.location == '/login';
-        // print("Current Location: ${state.location}");
+class AppRouter {
+  AppRouter(this.appContext);
 
-        // final loginloc = state.namedLocation('login');
-        return _authState.maybeWhen(
-          // authenticated: (_) => null,
-          unauthenticated: () => _isLogginIn ? null : '/login',
-          confirmationRequired: () => '/confirmation',
-          orElse: () => null,
-        );
-      },
-      refreshListenable: GoRouterRefreshStream(appContext.read<AuthBloc>().stream),
-      debugLogDiagnostics: true,
-      errorPageBuilder: (context, state) => MaterialPage(
-        key: state.pageKey,
-        child: Scaffold(
-          body: Center(
-            child: Text(state.error.toString()),
-          ),
+  final BuildContext appContext;
+
+  final _projectBloc = getIt<ProjectBloc>();
+
+  late final router = GoRouter(
+    routes: [
+      GoRoute(
+        name: kRouteAppLoader,
+        path: '/',
+        builder: (context, state) => BlocProvider.value(
+          value: _projectBloc,
+          child: const AppLoaderPage(),
         ),
       ),
-    );
+      GoRoute(
+        name: kRouteCreate,
+        path: '/create',
+        builder: (context, state) => BlocProvider.value(
+          value: _projectBloc,
+          child: const CreatePage(),
+        ),
+      ),
+      GoRoute(
+        name: kRouteConfirmation,
+        path: '/confirmation',
+        builder: (context, state) => const ConfirmationPage(),
+      ),
+      GoRoute(
+        name: kRouteLogin,
+        path: '/login',
+        builder: (context, state) => const LoginPage(),
+      ),
+    ],
+    redirect: (state) {
+      final _authState = appContext.read<AuthBloc>().state;
+      final _isLogginIn = state.location == '/login';
+      // print("Current Location: ${state.location}");
 
-/* class AuthStateNotifier extends ChangeNotifier {
-  AuthStateNotifier(AuthBloc bloc) {
-   _authBlocStream  = bloc.stream.listen((event) {
-      notifyListeners();
-    });
-  }
-
-  late final StreamSubscription<AuthState> _authBlocStream;
-
-  @override
-  void dispose() {
-    super.dispose();
-    _authBlocStream.cancel();
-  }
-} */
+      // final loginloc = state.namedLocation('login');
+      return _authState.maybeWhen(
+        // authenticated: (_) => null,
+        unauthenticated: () => _isLogginIn ? null : '/login',
+        confirmationRequired: () => '/confirmation',
+        orElse: () => null,
+      );
+    },
+    refreshListenable: GoRouterRefreshStream(appContext.read<AuthBloc>().stream),
+    debugLogDiagnostics: true,
+    errorPageBuilder: (context, state) => MaterialPage(
+      key: state.pageKey,
+      child: Scaffold(
+        body: Center(
+          child: Text(state.error.toString()),
+        ),
+      ),
+    ),
+  );
+}

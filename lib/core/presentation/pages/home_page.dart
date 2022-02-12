@@ -4,6 +4,7 @@ import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:refocus_app/core/core.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart';
 import 'package:refocus_app/core/util/ui/theme.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
@@ -117,7 +118,9 @@ class _HomePageState extends State<HomePage> {
                 FloatingActionButton.small(
                   backgroundColor: Colors.blue,
                   child: const Icon(Icons.add),
-                  onPressed: () {},
+                  onPressed: () {
+                    context.goNamed(kRouteCreate);
+                  },
                 ),
             ],
           ),

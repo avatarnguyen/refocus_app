@@ -51,15 +51,15 @@ class _AppState extends State<App> {
         BlocProvider(
           create: (_) => getIt<AuthBloc>(),
         ),
-        BlocProvider(
-          create: (_) => getIt<SignupBloc>(),
-        ),
+        // BlocProvider(
+        //   create: (_) => getIt<SignupBloc>(),
+        // ),
         // BlocProvider(
         //   create: (_) => getIt<LoginBloc>(),
         // ),
-        BlocProvider<ProjectBloc>(
-          create: (_) => getIt<ProjectBloc>(),
-        ),
+        // BlocProvider<ProjectBloc>(
+        //   create: (_) => getIt<ProjectBloc>(),
+        // ),
         BlocProvider<TaskBloc>(
           create: (_) => getIt<TaskBloc>(),
         ),
@@ -98,7 +98,8 @@ class _AppWidgetState extends State<_AppWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final _router = getRouterConfig(context);
+    final _appRouter = AppRouter(context);
+    final _router = _appRouter.router;
     return PlatformApp.router(
       routerDelegate: _router.routerDelegate,
       routeInformationParser: _router.routeInformationParser,

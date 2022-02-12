@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:refocus_app/core/core.dart';
 import 'package:refocus_app/core/presentation/widgets/custom_bottom_menu_widget.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/today_entry_type.dart';
@@ -12,11 +14,12 @@ import 'package:refocus_app/features/create/presentation/widgets/action_bottom_w
 import 'package:refocus_app/features/create/presentation/widgets/create_title_input_widget.dart';
 import 'package:refocus_app/features/create/presentation/widgets/planned_datatime_picker_widget.dart';
 import 'package:refocus_app/features/task/domain/entities/project_entry.dart';
+import 'package:refocus_app/features/task/domain/usecases/task/create_tasks.dart';
 import 'package:refocus_app/features/task/presentation/bloc/cubit/subtask_cubit.dart';
 import 'package:refocus_app/features/task/presentation/bloc/project_bloc.dart';
 import 'package:refocus_app/injection.dart';
 
-class CreatePage extends StatefulWidget {
+/* class CreatePage extends StatefulWidget {
   const CreatePage({
     Key? key,
   }) : super(key: key);
@@ -42,25 +45,29 @@ class _CreatePageState extends State<CreatePage> {
       child: const CreatePageWidget(),
     );
   }
-}
+} */
 
-class CreatePageWidget extends StatefulWidget {
-  const CreatePageWidget({Key? key}) : super(key: key);
-
-  @override
-  _CreatePageWidgetState createState() => _CreatePageWidgetState();
-}
-
-class _CreatePageWidgetState extends State<CreatePageWidget> {
-  ProjectEntry? _currentProject;
-  CalendarEntry? _currentCalendar;
+class CreatePage extends HookWidget {
+  const CreatePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    ProjectEntry? _currentProject;
+    CalendarEntry? _currentCalendar;
+
     final _topMenuStyle = context.bodyText1.copyWith(
       decoration: TextDecoration.underline,
       color: kcPrimary100,
     );
+
+    final _createBloc = useBloc(() => CreateBloc(
+          createTasks: getIt<CreateTasks>(),
+        ));
+
+    useEffect(() {
+      _createBloc.add(const CreateEvent.typeEntryChanged(TodayEntryType.task));
+      return null;
+    }, []);
 
     return Material(
       child: PlatformScaffold(
@@ -68,6 +75,7 @@ class _CreatePageWidgetState extends State<CreatePageWidget> {
         appBar: PlatformAppBar(
           backgroundColor: Colors.transparent,
           title: BlocBuilder<CreateBloc, CreateState>(
+            bloc: _createBloc,
             buildWhen: (previous, current) => previous.todayEntryType != current.todayEntryType,
             builder: (context, state) {
               final _entryType = state.todayEntryType;
