@@ -12,7 +12,7 @@ const Widget horizontalSpaceLarge = SizedBox(width: 48);
 const Widget verticalSpaceTiny = SizedBox(height: 4);
 const Widget verticalSpaceSmall = SizedBox(height: 8);
 const Widget verticalSpaceRegular = SizedBox(height: 16);
-const verticalSpaceMedium = SizedBox(height: 24);
+const Widget verticalSpaceMedium = SizedBox(height: 24);
 const Widget verticalSpaceLarge = SizedBox(height: 48);
 const Widget verticalSpaceMassive = SizedBox(height: 120);
 
@@ -28,10 +28,8 @@ double screenHeight(BuildContext context) => MediaQuery.of(context).size.height;
 
 /// Returns the pixel amount for the percentage of the screen height. [percentage] should
 /// be between 0 and 1 where 0 is 0% and 100 is 100% of the screens height
-double screenHeightPercentage(BuildContext context, {double percentage = 1}) =>
-    screenHeight(context) * percentage;
+double screenHeightPercentage(BuildContext context, {double percentage = 1}) => screenHeight(context) * percentage;
 
 /// Returns the pixel amount for the percentage of the screen width. [percentage] should
 /// be between 0 and 1 where 0 is 0% and 100 is 100% of the screens width
-double screenWidthPercentage(BuildContext context, {double percentage = 1}) =>
-    screenWidth(context) * percentage;
+double screenWidthPercentage(BuildContext context, {double percentage = 1}) => screenWidth(context) * percentage;

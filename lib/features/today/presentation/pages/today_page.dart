@@ -1,20 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart' as custom_log;
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/features/today/presentation/bloc/today/today_bloc.dart';
-import 'package:refocus_app/features/today/presentation/bloc/tomorrow/tomorrow_bloc.dart';
-import 'package:refocus_app/features/today/presentation/bloc/upcoming/upcoming_cubit.dart';
-import 'package:refocus_app/features/today/presentation/widgets/persistent_header_delegate.dart';
-import 'package:refocus_app/features/today/presentation/widgets/today_list_widget.dart';
 import 'package:refocus_app/injection.dart';
 
 class TodayPage extends StatefulWidget {
-  const TodayPage({Key? key, required this.changePage}) : super(key: key);
-
-  final VoidCallback changePage;
+  const TodayPage({Key? key}) : super(key: key);
 
   @override
   _TodayPageState createState() => _TodayPageState();
@@ -71,10 +66,33 @@ class _TodayPageState extends State<TodayPage> {
         BlocProvider<TodayBloc>(
           create: (context) => getIt<TodayBloc>()..add(GetCurrentDayEntries(today)),
         ),
-        BlocProvider(create: (context) => getIt<TomorrowBloc>()),
-        BlocProvider(create: (context) => getIt<UpcomingCubit>()),
+        // BlocProvider(create: (context) => getIt<TomorrowBloc>()),
+        // BlocProvider(create: (context) => getIt<UpcomingCubit>()),
       ],
-      child: CupertinoPageScaffold(
+      child: SafeArea(
+        child: SizedBox(
+          height: screenHeight(context),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                _getGreeting(),
+                overflow: TextOverflow.clip,
+                maxLines: 2,
+                softWrap: true,
+                textScaleFactor: context.textScaleFactor,
+                style: context.h3,
+              ).padding(right: 40),
+              PlatformText('Task test example'),
+              PlatformText('Task test example'),
+              PlatformText('Task test example'),
+              verticalSpaceLarge,
+            ],
+          ),
+        ),
+      ),
+      /* CupertinoPageScaffold(
         child: NestedScrollView(
           controller: _sController,
           headerSliverBuilder: (context, innerBoxIsScrolled) => [
@@ -89,9 +107,7 @@ class _TodayPageState extends State<TodayPage> {
               leading: CupertinoButton(
                 padding: EdgeInsets.zero,
                 child: const Icon(CupertinoIcons.calendar),
-                onPressed: () {
-                  widget.changePage();
-                },
+                onPressed: () {},
               ),
               trailing: CupertinoButton(
                 padding: EdgeInsets.zero,
@@ -112,7 +128,7 @@ class _TodayPageState extends State<TodayPage> {
           ],
           body: const TodayListWidget(),
         ).parent(todayPageParent),
-      ),
+      ), */
     );
   }
 

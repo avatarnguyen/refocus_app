@@ -149,7 +149,7 @@ class _CreatePageWidgetState extends State<CreatePageWidget> {
               value: BlocProvider.of<ProjectBloc>(context),
               child: const CreateTitleInputWidget(),
             ),
-            const PlannedDatetimePickerWidget(),
+            // const PlannedDatetimePickerWidget(),
           ]
               .toColumn(
                 mainAxisSize: MainAxisSize.min,

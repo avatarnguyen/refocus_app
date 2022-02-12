@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 
@@ -20,9 +21,7 @@ final materialThemeData = ThemeData(
   backgroundColor: kcLightBackground,
   colorScheme: const ColorScheme(
     primary: kcPrimary500,
-    primaryVariant: kcPrimary600,
     secondary: kcSecondary400,
-    secondaryVariant: kcSecondary500,
     surface: Colors.white70,
     background: kcDarkBackground,
     error: kcError500,
@@ -42,9 +41,7 @@ final materialDarkThemeData = ThemeData(
   backgroundColor: kcDarkBackground,
   colorScheme: const ColorScheme(
     primary: kcPrimary500,
-    primaryVariant: kcPrimary600,
     secondary: kcSecondary500,
-    secondaryVariant: kcSecondary600,
     surface: Colors.white70,
     background: kcLightBackground,
     error: kcError500,
@@ -57,4 +54,20 @@ final materialDarkThemeData = ThemeData(
   ),
   textTheme: _materialTextTheme,
   brightness: Brightness.light,
+);
+
+// -----------------------------------------------------------------------
+// CUpertino Themes
+const cupertinoLightTheme = CupertinoThemeData(
+  brightness: Brightness.light,
+  primaryColor: kcPrimary500,
+  scaffoldBackgroundColor: kcLightBackground,
+  textTheme: cupertinoTextLightTheme,
+);
+
+const cupertinoTextLightTheme = CupertinoTextThemeData(
+  primaryColor: kcPrimary500,
+  textStyle: kBodyStyleRegular,
+  navTitleTextStyle: kHeadline2StyleRegular,
+  navLargeTitleTextStyle: kHeadline1StyleBold,
 );

@@ -26,7 +26,6 @@ import 'package:refocus_app/features/task/presentation/bloc/task_bloc.dart';
 import 'package:refocus_app/features/today/domain/today_entry.dart';
 import 'package:refocus_app/features/today/presentation/widgets/sub_task_item.dart';
 import 'package:refocus_app/injection.dart';
-import 'package:sliding_sheet/sliding_sheet.dart';
 
 const timeLineWidth = 48.0;
 
@@ -58,7 +57,6 @@ class ListItemWidget extends StatefulWidget {
 
 class _ListItemWidgetState extends State<ListItemWidget> {
   final DateTimeStream _dateTimeStream = getIt<DateTimeStream>();
-  final SheetController _sheetController = SheetController();
 
   final _log = logger(ListItemWidget);
 
@@ -253,92 +251,92 @@ class _ListItemWidgetState extends State<ListItemWidget> {
         ),
         padding: const EdgeInsets.only(left: 8),
         child: Container(
-                width: context.width - (8 + 28 + 8), //8 is hori padding
-                padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
-                decoration: BoxDecoration(
-                  color: _isEvent ? Colors.white : _backgroudColor,
-                  borderRadius: const BorderRadius.only(
-                    topRight: Radius.circular(8),
-                    bottomRight: Radius.circular(8),
-                  ),
-                  boxShadow: const [
-                    kShadowLightBase,
-                    kShadowLight20,
-                  ],
+          width: context.width - (8 + 28 + 8), //8 is hori padding
+          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+          decoration: BoxDecoration(
+            color: _isEvent ? Colors.white : _backgroudColor,
+            borderRadius: const BorderRadius.only(
+              topRight: Radius.circular(8),
+              bottomRight: Radius.circular(8),
+            ),
+            boxShadow: const [
+              kShadowLightBase,
+              kShadowLight20,
+            ],
+          ),
+          child: [
+            [
+              Text(
+                _title ?? '',
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+                textScaleFactor: context.textScaleFactor,
+                style: context.bodyText1.copyWith(
+                  color: _textColor,
+                  fontSize: kSmallTextSize,
+                  decoration: _isEvent && _isPassed ? TextDecoration.lineThrough : null,
                 ),
-                child: [
-                  [
-                    Text(
-                      _title ?? '',
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 2,
-                      textScaleFactor: context.textScaleFactor,
-                      style: context.bodyText1.copyWith(
-                        color: _textColor,
-                        fontSize: kSmallTextSize,
-                        decoration: _isEvent && _isPassed ? TextDecoration.lineThrough : null,
-                      ),
-                    ).expanded(),
-                  ].toRow(),
-                  [
-                    [
-                      Text(
-                        _startTimeStr,
-                        overflow: TextOverflow.clip,
-                        textAlign: TextAlign.right,
-                        maxLines: 2,
-                        textScaleFactor: context.textScaleFactor,
-                        style: _startDateTime != null
-                            ? context.textTheme.subtitle2!.copyWith(
-                                fontWeight: FontWeight.w700,
-                                color: _textColor,
-                              )
-                            : _taskTimeTextStyle,
-                      ),
-                      if (_endDateTime != null && _endTimeStr != null) ...[
-                        Icon(Icons.arrow_right_alt_rounded, size: 20, color: _textColor).padding(horizontal: 2),
-                        Text(
-                          _endTimeStr,
-                          overflow: TextOverflow.clip,
-                          textAlign: TextAlign.left,
-                          maxLines: 1,
-                          textScaleFactor: context.textScaleFactor,
-                          style: _taskTimeTextStyle,
+              ).expanded(),
+            ].toRow(),
+            [
+              [
+                Text(
+                  _startTimeStr,
+                  overflow: TextOverflow.clip,
+                  textAlign: TextAlign.right,
+                  maxLines: 2,
+                  textScaleFactor: context.textScaleFactor,
+                  style: _startDateTime != null
+                      ? context.textTheme.subtitle2!.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: _textColor,
                         )
-                      ]
-                    ].toRow(),
-                    if (widget.project != null && _dueDateTime != null)
-                      Text(
-                        'due: ${CustomDateUtils.returnDateAndMonth(_dueDateTime!)}',
-                        overflow: TextOverflow.clip,
-                        textAlign: TextAlign.right,
-                        textScaleFactor: context.textScaleFactor,
-                        style: _taskTimeTextStyle,
-                      ),
-                  ].toRow(mainAxisAlignment: (widget.project != null && _dueDateTime != null) ? MainAxisAlignment.spaceBetween : MainAxisAlignment.start),
+                      : _taskTimeTextStyle,
+                ),
+                if (_endDateTime != null && _endTimeStr != null) ...[
+                  Icon(Icons.arrow_right_alt_rounded, size: 20, color: _textColor).padding(horizontal: 2),
+                  Text(
+                    _endTimeStr,
+                    overflow: TextOverflow.clip,
+                    textAlign: TextAlign.left,
+                    maxLines: 1,
+                    textScaleFactor: context.textScaleFactor,
+                    style: _taskTimeTextStyle,
+                  )
+                ]
+              ].toRow(),
+              if (widget.project != null && _dueDateTime != null)
+                Text(
+                  'due: ${CustomDateUtils.returnDateAndMonth(_dueDateTime!)}',
+                  overflow: TextOverflow.clip,
+                  textAlign: TextAlign.right,
+                  textScaleFactor: context.textScaleFactor,
+                  style: _taskTimeTextStyle,
+                ),
+            ].toRow(mainAxisAlignment: (widget.project != null && _dueDateTime != null) ? MainAxisAlignment.spaceBetween : MainAxisAlignment.start),
 
-                  //* Subtask
-                  if (!_isEvent && _subtasks != null && _subtasks!.isNotEmpty) ...[
-                    verticalSpaceTiny,
-                    SubTaskItem(
-                      subTask: _subtasks!.first,
-                      backgroundColor: _color,
-                      type: _eventBlocType,
-                    ),
-                    if (_subtasks!.length > 1)
-                      SubTaskItem(
-                        subTask: _subtasks!.second,
-                        backgroundColor: _color,
-                        type: _eventBlocType,
-                      ),
-                  ]
-                ].toColumn(mainAxisSize: MainAxisSize.min))
-            .gestures(onTap: showDetailBottomSheet),
+            //* Subtask
+            if (!_isEvent && _subtasks != null && _subtasks!.isNotEmpty) ...[
+              verticalSpaceTiny,
+              SubTaskItem(
+                subTask: _subtasks!.first,
+                backgroundColor: _color,
+                type: _eventBlocType,
+              ),
+              if (_subtasks!.length > 1)
+                SubTaskItem(
+                  subTask: _subtasks!.second,
+                  backgroundColor: _color,
+                  type: _eventBlocType,
+                ),
+            ]
+          ].toColumn(mainAxisSize: MainAxisSize.min),
+        ),
       ).paddingDirectional(horizontal: 4),
     ).padding(horizontal: 6, vertical: 6);
   }
 
-  dynamic showDetailBottomSheet() async {
+  /* dynamic showDetailBottomSheet() async {
     Widget? _headerWidget;
 
     final _isTask = _type == TodayEntryType.task;
@@ -389,7 +387,7 @@ class _ListItemWidgetState extends State<ListItemWidget> {
         );
       },
     );
-  }
+  } */
 
   Future<void> _openEditView() async {
     final _isTask = _type == TodayEntryType.task;
@@ -450,7 +448,7 @@ class _ListItemWidgetState extends State<ListItemWidget> {
           _colorID = _result.colorID;
           // _isCompleted = _result.isCompleted;
         });
-        _sheetController.rebuild();
+        // _sheetController.rebuild();
       }
     } else if (_result is CalendarEventEntry) {
       setState(() {
@@ -467,7 +465,7 @@ class _ListItemWidgetState extends State<ListItemWidget> {
         _title = _result.subject;
         _colorID = _result.colorId;
       });
-      _sheetController.rebuild();
+      // _sheetController.rebuild();
     }
   }
 

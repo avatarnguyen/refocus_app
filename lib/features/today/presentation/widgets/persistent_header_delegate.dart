@@ -2,19 +2,13 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar/datetime_stream.dart';
 
 import 'package:refocus_app/injection.dart';
 
 class PersistentHeaderDelegate extends SliverPersistentHeaderDelegate {
-  PersistentHeaderDelegate(this.title,
-      {this.backgroundColor,
-      this.contentPadding,
-      this.textStyle,
-      this.maxSize,
-      this.minSize});
+  PersistentHeaderDelegate(this.title, {this.backgroundColor, this.contentPadding, this.textStyle, this.maxSize, this.minSize});
   final Color? backgroundColor;
   final String title;
   final double? maxSize;
@@ -25,8 +19,7 @@ class PersistentHeaderDelegate extends SliverPersistentHeaderDelegate {
   final DateTimeStream _dateTimeStream = getIt<DateTimeStream>();
 
   @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Container(
       padding: contentPadding ?? const EdgeInsets.only(left: 18, bottom: 8),
       color: backgroundColor ?? context.backgroundColor,
@@ -38,9 +31,7 @@ class PersistentHeaderDelegate extends SliverPersistentHeaderDelegate {
         textScaleFactor: context.textScaleFactor,
         style: textStyle ??
             context.bodyText2.copyWith(
-              color: Platform.isIOS
-                  ? CupertinoColors.systemGrey
-                  : Colors.grey[600],
+              color: Platform.isIOS ? CupertinoColors.systemGrey : Colors.grey[600],
             ),
       ),
     ).gestures(onTap: () {

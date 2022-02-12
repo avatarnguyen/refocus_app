@@ -48,8 +48,7 @@ class _TodayListWidgetState extends State<TodayListWidget> {
 
   @override
   void initState() {
-    _dateTimeSubscription =
-        _dateTimeStream.dateTimeStream.listen(_dateTimeReceived);
+    _dateTimeSubscription = _dateTimeStream.dateTimeStream.listen(_dateTimeReceived);
     super.initState();
     _selectedDate = DateTime.now();
   }
@@ -76,14 +75,15 @@ class _TodayListWidgetState extends State<TodayListWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return PlatformScaffold(
+    return const CurrentDateListWidget();
+    /* return PlatformScaffold(
       body: Platform.isIOS
           ? _buildBodyScrollView(context)
           : RefreshIndicator(
               onRefresh: () async => _pullToRefresh(context),
               child: _buildBodyScrollView(context),
             ),
-    );
+    ); */
   }
 
   CustomScrollView _buildBodyScrollView(BuildContext context) {
@@ -105,9 +105,7 @@ class _TodayListWidgetState extends State<TodayListWidget> {
           padding: const EdgeInsets.only(top: 8),
           sliver: SliverPersistentHeader(
             delegate: PersistentHeaderDelegate(
-              _selectedDate.isToday
-                  ? CustomDateUtils.returnDateWithDay(_selectedDate)
-                  : 'Today',
+              _selectedDate.isToday ? CustomDateUtils.returnDateWithDay(_selectedDate) : 'Today',
               contentPadding: _headerPadding,
               textStyle: _headerTextStyle,
             ),
@@ -294,23 +292,16 @@ class _TodayListWidgetState extends State<TodayListWidget> {
     DateTime? endDate,
     DateTime? dueDate,
   }) {
-    final _startDateTime = startDate != null && todayEntry.startDateTime != null
-        ? startDate
-        : todayEntry.startDateTime;
+    final _startDateTime = startDate != null && todayEntry.startDateTime != null ? startDate : todayEntry.startDateTime;
 
-    final _endDateTime = endDate != null && todayEntry.endDateTime != null
-        ? endDate
-        : todayEntry.endDateTime;
+    final _endDateTime = endDate != null && todayEntry.endDateTime != null ? endDate : todayEntry.endDateTime;
 
-    final _dueDate = dueDate != null && todayEntry.dueDateTime != null
-        ? dueDate
-        : todayEntry.dueDateTime;
+    final _dueDate = dueDate != null && todayEntry.dueDateTime != null ? dueDate : todayEntry.dueDateTime;
 
     return TaskEntry(
       id: todayEntry.id,
       isCompleted: isCompleted ?? todayEntry.isCompleted ?? false,
-      completedDate:
-          (isCompleted != null && isCompleted) ? DateTime.now() : null,
+      completedDate: (isCompleted != null && isCompleted) ? DateTime.now() : null,
       projectID: todayEntry.projectOrCalID!,
       calendarID: todayEntry.calendarEventID,
       colorID: todayEntry.color,
@@ -334,32 +325,19 @@ class CurrentDateListWidget extends StatelessWidget {
       builder: (context, state) {
         if (state is TodayLoaded) {
           final _todayList = state.todayEntries;
-          return SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) {
-                final _entry = _todayList[index];
-                return ListItemWidget(
-                  key: Key(
-                    '${_entry.id}_${_entry.startDateTime}_${_entry.dueDateTime}',
-                  ),
-                  entry: _entry,
-                  // selectedDate: _selectedDate ?? DateTime.now(),
-                  // postponeItem: () =>
-                  //     _postponeItem(TodayEventType.today, _entry),
-                  // markItemAsDone: () =>
-                  //     _markTaskAsDone(_entry, TodayEventType.today),
-                  // changeItemDate: () => _changeDateTime(_entry),
-                );
-              },
-              childCount: _todayList.length,
-            ),
-          );
+          return Column(
+              children: _todayList
+                  .map((_entry) => ListItemWidget(
+                        key: Key(
+                          '${_entry.id}_${_entry.startDateTime}_${_entry.dueDateTime}',
+                        ),
+                        entry: _entry,
+                      ))
+                  .toList());
           // } else if (state is TodayLoading) {
           //   return const LoadingWidget();
-        } else {
-          return const SliverPadding(padding: EdgeInsets.zero);
-          // return const SizedBox.shrink();
         }
+        return const SizedBox();
       },
     );
   }
@@ -369,12 +347,10 @@ class DateTypeSegmentedCtrlWidget extends StatefulWidget {
   const DateTypeSegmentedCtrlWidget({Key? key}) : super(key: key);
 
   @override
-  _DateTypeSegmentedCtrlWidgetState createState() =>
-      _DateTypeSegmentedCtrlWidgetState();
+  _DateTypeSegmentedCtrlWidgetState createState() => _DateTypeSegmentedCtrlWidgetState();
 }
 
-class _DateTypeSegmentedCtrlWidgetState
-    extends State<DateTypeSegmentedCtrlWidget> {
+class _DateTypeSegmentedCtrlWidgetState extends State<DateTypeSegmentedCtrlWidget> {
   int _currentSegmentedIdx = 0;
 
   Widget _buildSegment(String text, int index) => Container(

@@ -5,7 +5,6 @@ import 'package:refocus_app/core/presentation/helper/setting_option.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/enum/duedate_selection_type.dart';
 import 'package:refocus_app/injection.dart';
-import 'package:sliding_sheet/sliding_sheet.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class SetDueDateWidget extends StatefulWidget {
@@ -72,7 +71,7 @@ class _SetDueDateWidgetState extends State<SetDueDateWidget> {
 
   void _mapSelectionToStream(DueDateSelectionType type) {
     if (type == DueDateSelectionType.custom) {
-      _showDatePickerBottomSheet(context);
+      // _showDatePickerBottomSheet(context);
     } else {
       late DateTime _date;
       switch (type) {
@@ -95,10 +94,10 @@ class _SetDueDateWidgetState extends State<SetDueDateWidget> {
     }
   }
 
-  dynamic _showDatePickerBottomSheet(BuildContext parentContext, {bool isEndDate = false}) async {
-    final _currentDateTime = _dueDate;
+  // dynamic _showDatePickerBottomSheet(BuildContext parentContext, {bool isEndDate = false}) async {
+  // final _currentDateTime = _dueDate;
 
-    final dynamic result = await showSlidingBottomSheet<dynamic>(
+  /* final dynamic result = await showSlidingBottomSheet<dynamic>(
       context,
       builder: (context) {
         return SlidingSheetDialog(
@@ -144,9 +143,9 @@ class _SetDueDateWidgetState extends State<SetDueDateWidget> {
           },
         );
       },
-    );
-    return result;
-  }
+    ); */
+  // return result;
+  // }
 
   void _onSelectionChanged(DateRangePickerSelectionChangedArgs args, bool isEndDate) {
     final dynamic picked = args.value;

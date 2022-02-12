@@ -18,30 +18,17 @@ import 'package:refocus_app/injection.dart';
 import 'package:uuid/uuid.dart';
 
 class CalendarPage extends StatefulWidget {
-  const CalendarPage({Key? key, required this.changePage}) : super(key: key);
-
-  final VoidCallback changePage;
+  const CalendarPage({Key? key}) : super(key: key);
 
   @override
   _CalendarPageState createState() => _CalendarPageState();
 }
 
-class _CalendarPageState extends State<CalendarPage>
-    with AutomaticKeepAliveClientMixin {
+class _CalendarPageState extends State<CalendarPage> with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
     super.build(context);
-
-    return BlocProvider<CalendarBloc>(
-      create: (context) => getIt<CalendarBloc>(),
-      child: CalendarWidget(
-        changePage: _changePage,
-      ),
-    );
-  }
-
-  void _changePage() {
-    widget.changePage();
+    return const CalendarWidget();
   }
 
   @override
@@ -51,10 +38,7 @@ class _CalendarPageState extends State<CalendarPage>
 class CalendarWidget extends StatefulWidget {
   const CalendarWidget({
     Key? key,
-    required this.changePage,
   }) : super(key: key);
-
-  final VoidCallback changePage;
 
   @override
   _CalendarWidgetState createState() => _CalendarWidgetState();
@@ -75,31 +59,43 @@ class _CalendarWidgetState extends State<CalendarWidget> {
   @override
   void initState() {
     super.initState();
+    log.i('Init: ${_googleSignIn.currentUser}');
+    WidgetsBinding.instance?.addPostFrameCallback(
+      (_) {
+        _getCurrentUser();
+      },
+    );
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _getCurrentUser();
   }
 
   //TODO: move this to home page
-  void _getCurrentUser() {
-    _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) {
-      log.v('Init Google Sign In');
-
+  Future<void> _getCurrentUser() async {
+    final _isSignInGoogle = await _googleSignIn.isSignedIn();
+    if (_isSignInGoogle) {
       setState(() {
-        _currentUser = account;
+        _currentUser = _googleSignIn.currentUser;
       });
-      if (_currentUser != null) {
-        //TODO: Define Start and End
-        final _start = DateTime.now();
-        final _end = DateTime.now();
-        context
-            .read<CalendarBloc>()
-            .add(GetCalendarEntries(start: _start, end: _end));
-      }
-    });
+    } else {
+      _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) {
+        log.v('Google Sign In On Current User Changed');
+
+        setState(() {
+          _currentUser = account;
+        });
+      });
+    }
+    if (_currentUser != null) {
+      final _start = DateTime.now();
+      final _end = DateTime.now();
+      context.read<CalendarBloc>().add(GetCalendarEntries(
+            start: _start,
+            end: _end,
+          ));
+    }
   }
 
   //! Should put sign in other page
@@ -129,9 +125,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
               Icons.task_alt,
               size: 26,
               color: kcPrimary500,
-            ).ripple().gestures(onTap: () {
-              widget.changePage();
-            }),
+            ).ripple().gestures(onTap: () {}),
           ]
               .toRow(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -158,8 +152,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                   color: Colors.grey[600],
                 ),
               ),
-            ].toColumn(crossAxisAlignment: CrossAxisAlignment.start).gestures(
-                onTap: () {
+            ].toColumn(crossAxisAlignment: CrossAxisAlignment.start).gestures(onTap: () {
               _dateTimeStream.broadCastCurrentDate(DateTime.now());
             }),
             // .padding(left: 6),
@@ -184,9 +177,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.end,
           )
-        ]
-            .toColumn(crossAxisAlignment: CrossAxisAlignment.start)
-            .parent(headerContainer),
+        ].toColumn(crossAxisAlignment: CrossAxisAlignment.start).parent(headerContainer),
 
         if (showMonthView) verticalSpaceRegular else verticalSpaceTiny,
         // Calendar View
@@ -203,20 +194,20 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                 ).center(),
               ].toColumn();
             } else if (state is CalendarLoading) {
-              return const LoadingWidget();
+              return const Center(child: LoadingWidget());
             } else if (state is CalendarError) {
               return MessageDisplay(message: state.message);
             } else if (state is CalendarLoaded) {
-              return showMonthView
-                  ? CalendarMonthViewWidget(state: state)
-                  : CalendarViewWidget(state: state);
+              return showMonthView ? CalendarMonthViewWidget(state: state) : CalendarViewWidget(state: state);
             } else {
               return const MessageDisplay(message: 'Unexpected State');
             }
           },
         ),
       ]
-          .toColumn(crossAxisAlignment: CrossAxisAlignment.start)
+          .toColumn(
+            crossAxisAlignment: CrossAxisAlignment.start,
+          )
           .parent(calendarPage),
     );
   }

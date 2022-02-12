@@ -19,10 +19,10 @@ Widget todayPageParent({required Widget child}) => SizedBox(
       ).padding(bottom: 72, left: 8, right: 8),
     );
 Widget calendarPage({required Widget child}) => SafeArea(
-      child: SizedBox(
-        child: Styled.widget(child: child),
-      ).padding(bottom: 40),
-    );
+        child: Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: Styled.widget(child: child),
+    ));
 
 Widget headerContainer({required Widget child}) => Container(
       padding: const EdgeInsets.symmetric(horizontal: 16),

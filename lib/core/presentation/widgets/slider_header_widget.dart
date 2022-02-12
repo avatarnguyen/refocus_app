@@ -1,20 +1,16 @@
-import 'dart:async';
+/* import 'dart:async';
 
 import 'package:dartx/dartx.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:refocus_app/config/routes/router.dart';
 import 'package:refocus_app/core/presentation/helper/page_stream.dart';
 import 'package:refocus_app/core/presentation/helper/sliding_body_stream.dart';
 import 'package:refocus_app/core/presentation/widgets/date_picker_widget.dart';
 import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar/datetime_stream.dart';
-import 'package:refocus_app/features/create/presentation/bloc/create_bloc.dart';
 import 'package:refocus_app/injection.dart';
-import 'package:sliding_sheet/sliding_sheet.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class SlidingHeaderWidget extends StatefulWidget {
@@ -25,7 +21,6 @@ class SlidingHeaderWidget extends StatefulWidget {
     required this.expandSheet,
   }) : super(key: key);
 
-  final SheetState sheetState;
   final VoidCallback closeSheet;
   final VoidCallback expandSheet;
 
@@ -214,4 +209,4 @@ class _SlidingHeaderWidgetState extends State<SlidingHeaderWidget> {
       _dateTimeStream.broadCastCurrentDate(_picked);
     }
   }
-}
+} */

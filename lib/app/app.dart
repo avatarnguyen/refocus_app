@@ -9,11 +9,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:refocus_app/config/routes/router.dart';
 import 'package:refocus_app/core/util/ui/theme.dart';
+import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/features/auth/presentation/authentication/bloc/auth_bloc.dart';
-import 'package:refocus_app/features/auth/presentation/login/bloc/login_bloc.dart';
 import 'package:refocus_app/features/auth/presentation/signup/bloc/signup_bloc.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar/calendar_bloc.dart';
 import 'package:refocus_app/features/calendar/presentation/bloc/calendar_list/calendar_list_bloc.dart';
@@ -98,7 +99,7 @@ class _AppWidgetState extends State<_AppWidget> {
   @override
   Widget build(BuildContext context) {
     final _router = getRouterConfig(context);
-    return MaterialApp.router(
+    return PlatformApp.router(
       routerDelegate: _router.routerDelegate,
       routeInformationParser: _router.routeInformationParser,
       localizationsDelegates: const [
@@ -106,9 +107,15 @@ class _AppWidgetState extends State<_AppWidget> {
         GlobalMaterialLocalizations.delegate,
       ],
       // supportedLocales: AppLocalizations.supportedLocales,
-      theme: materialThemeData,
-      darkTheme: materialDarkThemeData,
-      themeMode: ThemeMode.light,
+      material: (context, target) => MaterialAppRouterData(
+        theme: materialThemeData,
+        darkTheme: materialDarkThemeData,
+        themeMode: ThemeMode.light,
+      ),
+      cupertino: (context, target) => CupertinoAppRouterData(
+        color: kcPrimary500,
+        theme: cupertinoLightTheme,
+      ),
     );
   }
 }

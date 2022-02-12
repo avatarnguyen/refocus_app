@@ -44,13 +44,15 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
   final GetCalendarList _getCalendarList;
 
   Future<void> _onGetCalendarEntries(
-      GetCalendarEntries event, Emitter<CalendarState> emit) async {
+    GetCalendarEntries event,
+    Emitter<CalendarState> emit,
+  ) async {
+    emit(CalendarLoading());
     await _getCalendarList(NoParams());
     await _handleGetEvent(emit);
   }
 
-  Future<void> _onAddCalendarEvent(
-      AddCalendarEvent event, Emitter<CalendarState> emit) async {
+  Future<void> _onAddCalendarEvent(AddCalendarEvent event, Emitter<CalendarState> emit) async {
     emit(CalendarLoading());
     final failureOrSuccess = await _addEvent(event.params);
 
@@ -62,8 +64,7 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
     );
   }
 
-  Future<void> _onUpdateCalendarEvent(
-      UpdateCalendarEvent event, Emitter<CalendarState> emit) async {
+  Future<void> _onUpdateCalendarEvent(UpdateCalendarEvent event, Emitter<CalendarState> emit) async {
     emit(CalendarLoading());
     final failureOrSuccess = await _updateEvent(event.params);
     await failureOrSuccess.fold(
@@ -74,8 +75,7 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
     );
   }
 
-  Future<void> _onDeleteCalendarEvent(
-      DeleteCalendarEvent event, Emitter<CalendarState> emit) async {
+  Future<void> _onDeleteCalendarEvent(DeleteCalendarEvent event, Emitter<CalendarState> emit) async {
     emit(CalendarLoading());
     final failureOrSuccess = await _deleteEvent(event.params);
     await failureOrSuccess.fold(
@@ -91,8 +91,7 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
     _handleResult(_calendarResult, emit);
   }
 
-  void _handleResult(Either<Failure, List<CalendarEventEntry>> data,
-      Emitter<CalendarState> emit) {
+  void _handleResult(Either<Failure, List<CalendarEventEntry>> data, Emitter<CalendarState> emit) {
     emit(data.fold(
       (failure) => CalendarError(message: _mapFailureToMessage(failure)),
       (entries) => CalendarLoaded(calendarData: CalendarData(events: entries)),
