@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:dartx/dartx.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -33,8 +34,10 @@ class _HomePageState extends State<HomePage> {
   final GoogleSignIn _googleSignIn = getIt<GoogleSignIn>();
 
   bool isSignedInToCalendar = false;
+  double _bottomHeight = 0;
   @override
   void initState() {
+    _pageController.addListener(_onScroll);
     super.initState();
 
     _attemptSignInGoogle();
@@ -42,6 +45,15 @@ class _HomePageState extends State<HomePage> {
           GetCalendarListEvent(),
         );
     context.read<ProjectBloc>().add(const ProjectEvent.get());
+  }
+
+  void _onScroll() {
+    final _scrollPos = _pageController.position;
+    log.i("Scroll Pos: ${_scrollPos.pixels}");
+    log.i("Scroll Max: ${_scrollPos.maxScrollExtent}");
+    // setState(() {
+    //       _bottomHeight = _scrollPos.pixels;
+    //     });
   }
 
   Future<void> _attemptSignInGoogle() async {
@@ -55,7 +67,9 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
-    _pageController.dispose();
+    _pageController
+      ..removeListener(_onScroll)
+      ..dispose();
     super.dispose();
   }
 
@@ -124,21 +138,28 @@ class _HomePageState extends State<HomePage> {
                 ),
             ],
           ),
-          body: PageView(
-            controller: _pageController,
-            scrollDirection: Axis.vertical,
+          body: Column(
             children: [
-              if (isSignedInToCalendar)
-                const CalendarPage()
-              else
-                const Center(
-                  child: progressIndicator,
-                ),
-              const TodayPage(),
+              PageView(
+                controller: _pageController,
+                scrollDirection: Axis.vertical,
+                physics: const ClampingScrollPhysics(),
+                // dragStartBehavior: DragStartBehavior.,
+                children: [
+                  if (isSignedInToCalendar)
+                    const CalendarPage()
+                  else
+                    const Center(
+                      child: progressIndicator,
+                    ),
+                  const TodayPage(),
+                ],
+              ).expanded(),
               Container(
-                height: 200,
-                color: kcPrimary500,
-              ),
+                height: _bottomHeight,
+                width: screenWidth(context),
+                color: kcSecondary500,
+              )
             ],
           ),
         ),

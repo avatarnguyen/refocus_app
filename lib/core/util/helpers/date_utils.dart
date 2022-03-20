@@ -34,14 +34,12 @@ class CustomDateUtils {
 
   /// The last day of a given month
   static DateTime lastDayOfMonth(DateTime month) {
-    final beginningNextMonth = (month.month < 12)
-        ? DateTime(month.year, month.month + 1)
-        : DateTime(month.year + 1);
+    final beginningNextMonth = (month.month < 12) ? DateTime(month.year, month.month + 1) : DateTime(month.year + 1);
     return beginningNextMonth.subtract(const Duration(days: 1));
   }
 
   /// get the first day of current month in RFC DateTime Format
-  static DateTime firstDayOfCurrentMonth() {
+  static DateTime getFirstDateOfMonth() {
     final today = DateTime.now();
     return firstDateOfSpecificMonth(today.year, today.month);
   }
@@ -51,11 +49,8 @@ class CustomDateUtils {
     final today = DateTime.now();
     final currentMonth = today.month;
 
-    final month = currentMonth <= (12 - monthsAhead)
-        ? today.month + monthsAhead
-        : (currentMonth + monthsAhead - 12);
-    final year =
-        currentMonth <= (12 - monthsAhead) ? today.year : today.year + 1;
+    final month = currentMonth <= (12 - monthsAhead) ? today.month + monthsAhead : (currentMonth + monthsAhead - 12);
+    final year = currentMonth <= (12 - monthsAhead) ? today.year : today.year + 1;
     return lastDateOfSpecificMonth(year, month);
   }
 
@@ -67,8 +62,7 @@ class CustomDateUtils {
   static DateTime lastDateOfSpecificMonth(int year, int month) {
     final monthStr = month.toString().padLeft(2, '0');
     final lastDay = lastDayOfMonth(DateTime(year, month)).day;
-    return DateTime.parse(
-        '${year.toString()}-$monthStr-${lastDay.toString()}T23:59:59+02:00');
+    return DateTime.parse('${year.toString()}-$monthStr-${lastDay.toString()}T23:59:59+02:00');
   }
 
   // static DateTime beginningOfDay(int year, int month, int day) {
@@ -92,10 +86,8 @@ class CustomDateUtils {
     final hourStr = dateTime.hour.toString().padLeft(2, '0');
     final minuteStr = dateTime.minute.toString().padLeft(2, '0');
     final secondStr = dateTime.second.toString().padLeft(2, '0');
-    final timeZoneStr =
-        '${dateTime.timeZoneOffset.isNegative ? '-' : '+'}${dateTime.timeZoneOffset.inHours.toString().padLeft(2, '0')}:00';
-    final result =
-        '$yearStr-$monthStr-${dayStr}T$hourStr:$minuteStr:$secondStr$timeZoneStr';
+    final timeZoneStr = '${dateTime.timeZoneOffset.isNegative ? '-' : '+'}${dateTime.timeZoneOffset.inHours.toString().padLeft(2, '0')}:00';
+    final result = '$yearStr-$monthStr-${dayStr}T$hourStr:$minuteStr:$secondStr$timeZoneStr';
 
     // print('Resulted String: $result');
     return DateTime.parse(result); //+02:00

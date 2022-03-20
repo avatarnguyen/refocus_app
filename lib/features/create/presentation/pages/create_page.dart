@@ -52,9 +52,6 @@ class CreatePage extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    ProjectEntry? _currentProject;
-    CalendarEntry? _currentCalendar;
-
     final _topMenuStyle = context.bodyText1.copyWith(
       decoration: TextDecoration.underline,
       color: kcPrimary100,
@@ -79,9 +76,9 @@ class CreatePage extends HookWidget {
             buildWhen: (previous, current) => previous.todayEntryType != current.todayEntryType,
             builder: (context, state) {
               final _entryType = state.todayEntryType;
+              final _currentCalendar = state.calendar;
               if (_entryType != null) {
                 if (_entryType == TodayEntryType.event) {
-                  _currentCalendar = state.calendar;
                   return BlocBuilder<cal_list.CalendarListBloc, cal_list.CalendarListState>(
                     builder: (context, cState) {
                       if (cState is cal_list.CalendarListLoaded) {
@@ -113,7 +110,6 @@ class CreatePage extends HookWidget {
                     },
                   );
                 } else {
-                  _currentProject = state.project;
                   return BlocBuilder<ProjectBloc, ProjectState>(
                     builder: (context, pState) {
                       return progressIndicator;

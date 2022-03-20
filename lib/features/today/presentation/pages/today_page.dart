@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:refocus_app/core/util/helpers/logging.dart' as custom_log;
@@ -8,57 +9,55 @@ import 'package:refocus_app/core/util/ui/ui_helper.dart';
 import 'package:refocus_app/features/today/presentation/bloc/today/today_bloc.dart';
 import 'package:refocus_app/injection.dart';
 
-class TodayPage extends StatefulWidget {
+class TodayPage extends HookWidget {
   const TodayPage({Key? key}) : super(key: key);
-
-  @override
-  _TodayPageState createState() => _TodayPageState();
-}
-
-class _TodayPageState extends State<TodayPage> {
-  late ScrollController _sController;
-  final log = custom_log.logger(TodayPage);
-
-  bool showMonthView = false;
-  bool isAtTop = false;
 
   String returnDate(DateTime date) {
     return DateFormat.yMMMMEEEEd().format(date);
   }
 
-  @override
-  void initState() {
-    _sController = ScrollController();
-    _sController.addListener(_onScroll);
-    super.initState();
-  }
-
-  void _onScroll() {
-    if (_sController.offset > 37) {
-      if (!isAtTop) {
-        setState(() {
-          isAtTop = true;
-        });
+  void _onScroll(ValueNotifier<bool> isAtTop, ScrollController controller) {
+    if (controller.offset > 37) {
+      if (!isAtTop.value) {
+        isAtTop.value = true;
       }
     } else {
-      if (isAtTop) {
-        setState(() {
-          isAtTop = false;
-        });
+      if (isAtTop.value) {
+        isAtTop.value = false;
       }
     }
   }
 
-  @override
-  void dispose() {
-    _sController
-      ..removeListener(_onScroll)
-      ..dispose();
-    super.dispose();
+  ValueNotifier<T> useLoggedState<T>(T initialData) {
+    // First, call the useState hook. It will create a ValueNotifier for you that
+    // rebuilds the Widget whenever the value changes.
+    final result = useState<T>(initialData);
+
+    // Next, call the useValueChanged hook to print the state whenever it changes
+    useValueChanged<T, void>(result.value, (_, __) {
+      print(result.value);
+    });
+
+    return result;
   }
 
   @override
   Widget build(BuildContext context) {
+    final log = custom_log.logger(TodayPage);
+    final _sController = useScrollController();
+
+    // final showMonthView = useState(false);
+    final isAtTop = useState(false);
+    final _dragPosition = useState(0.0);
+
+    useEffect(() {
+      _sController.addListener(() {
+        _onScroll(isAtTop, _sController);
+      });
+      return () => _sController.removeListener(() {
+            _onScroll(isAtTop, _sController);
+          });
+    }, []);
     final today = DateTime.now();
 
     return MultiBlocProvider(
@@ -70,11 +69,12 @@ class _TodayPageState extends State<TodayPage> {
         // BlocProvider(create: (context) => getIt<UpcomingCubit>()),
       ],
       child: SafeArea(
-        child: SizedBox(
-          height: screenHeight(context),
+        child: Container(
+          color: kcTertiary300,
+          height: 800,
+          width: screenWidth(context),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 _getGreeting(),
