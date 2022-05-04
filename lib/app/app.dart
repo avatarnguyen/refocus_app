@@ -46,7 +46,7 @@ class _AppState extends State<App> {
         ],
       ),
       routeInformationParser: _appRouter.defaultRouteParser(),
-      routeInformationProvider: AutoRouteInformationProvider(),
+      routeInformationProvider: _appRouter.routeInfoProvider(),
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,

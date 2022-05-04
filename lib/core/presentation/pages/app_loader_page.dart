@@ -58,11 +58,13 @@ class _AppLoaderPageState extends State<AppLoaderPage> {
 
   Future _configureAmplify() async {
     try {
-      await Amplify.addPlugins([
-        AmplifyAPI(),
-        AmplifyDataStore(modelProvider: ModelProvider.instance),
-        AmplifyAuthCognito(),
-      ]);
+      await Amplify.addPlugins(
+        [
+          AmplifyAPI(),
+          AmplifyDataStore(modelProvider: ModelProvider.instance),
+          AmplifyAuthCognito(),
+        ],
+      );
 
       // Once Plugins are added, configure Amplify
       await Amplify.configure(amplifyconfig);
