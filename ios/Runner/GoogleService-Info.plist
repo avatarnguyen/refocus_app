@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>478862318784-que2heq99qj8dqlj8ifvnot6vmfo2hkm.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.478862318784-que2heq99qj8dqlj8ifvnot6vmfo2hkm</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>478862318784-dn9l6msj8pgrvpodgfcmijbcdr3mm656.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCJwZSklyJ2eeZ2WGba4h3w2xMXBiD6Y9I</string>
+	<key>GCM_SENDER_ID</key>
+	<string>478862318784</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.anhnguyen.refocusapp.dev</string>
+	<key>PROJECT_ID</key>
+	<string>newagent-ki9i</string>
+	<key>STORAGE_BUCKET</key>
+	<string>newagent-ki9i.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:478862318784:ios:d028005847bb6b2ab0a125</string>
+</dict>
+</plist>

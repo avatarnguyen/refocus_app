@@ -1,0 +1,91 @@
+{
+  "providers": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-superday-staging-152743-authRole",
+      "UnauthRoleArn": "arn:aws:iam::916616256386:role/amplify-superday-staging-152743-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::916616256386:role/amplify-superday-staging-152743-authRole",
+      "Region": "eu-west-1",
+      "DeploymentBucketName": "amplify-superday-staging-152743-deployment",
+      "UnauthRoleName": "amplify-superday-staging-152743-unauthRole",
+      "StackName": "amplify-superday-staging-152743",
+      "StackId": "arn:aws:cloudformation:eu-west-1:916616256386:stack/amplify-superday-staging-152743/f68b74d0-1d4b-11ec-8427-025238ce98ef",
+      "AmplifyAppId": "d1vq0gs0oamdun"
+    }
+  },
+  "api": {
+    "Superday": {
+      "service": "AppSync",
+      "providerPlugin": "awscloudformation",
+      "output": {
+        "authConfig": {
+          "defaultAuthentication": {
+            "authenticationType": "API_KEY",
+            "apiKeyConfig": {
+              "apiKeyExpirationDays": 100,
+              "description": "da2-lj2aeanxbjd65cavotdq7lczcu"
+            }
+          },
+          "additionalAuthenticationProviders": [
+            {
+              "authenticationType": "AWS_IAM"
+            },
+            {
+              "authenticationType": "AMAZON_COGNITO_USER_POOLS",
+              "userPoolConfig": {
+                "userPoolId": "authsuperday1c222a7d"
+              }
+            }
+          ]
+        },
+        "GraphQLAPIIdOutput": "7rtg6sjrjratradakleb2pun64",
+        "GraphQLAPIEndpointOutput": "https://an5m2b625rhyzd5vni2zhtfmee.appsync-api.eu-west-1.amazonaws.com/graphql",
+        "GraphQLAPIKeyOutput": "da2-lj2aeanxbjd65cavotdq7lczcu"
+      },
+      "lastPushTimeStamp": "2021-12-20T11:14:13.516Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-superday-staging-152743-deployment/amplify-cfn-templates/api/cloudformation-template.json",
+        "logicalId": "apiSuperday"
+      },
+      "lastPushDirHash": "K412OsWggfFfFmGTa5iR1X+PwgY="
+    }
+  },
+  "auth": {
+    "superday1c222a7d": {
+      "service": "Cognito",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "customAuth": false,
+      "frontendAuthConfig": {
+        "loginMechanisms": [],
+        "signupAttributes": [
+          "EMAIL"
+        ],
+        "passwordProtectionSettings": {
+          "passwordPolicyMinLength": 8,
+          "passwordPolicyCharacters": []
+        },
+        "mfaConfiguration": "OFF",
+        "mfaTypes": [
+          "SMS"
+        ],
+        "verificationMechanisms": [
+          "EMAIL"
+        ]
+      },
+      "output": {
+        "UserPoolId": "eu-west-1_sF9SjNm9P",
+        "AppClientIDWeb": "5508j0eoemt8o8mg8r65l2e9de",
+        "AppClientID": "1ejbkqp8tjlr0rke74vk7ivkmd",
+        "IdentityPoolId": "eu-west-1:6e6a7a21-3520-4186-aa51-ed00d271d6a8",
+        "UserPoolArn": "arn:aws:cognito-idp:eu-west-1:916616256386:userpool/eu-west-1_sF9SjNm9P",
+        "IdentityPoolName": "superday1c222a7d_identitypool_1c222a7d__staging",
+        "UserPoolName": "superday1c222a7d_userpool_1c222a7d"
+      },
+      "lastPushTimeStamp": "2021-12-20T11:14:13.506Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-superday-staging-152743-deployment/amplify-cfn-templates/auth/superday1c222a7d-cloudformation-template.yml",
+        "logicalId": "authsuperday1c222a7d"
+      }
+    }
+  }
+}
